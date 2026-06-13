@@ -89,10 +89,18 @@ drop shadow) bleeding off the bottom edge. Design rules — keep them:
 
 ## Step 4 — App Preview video (Apple) / promo video (Play)
 
-Template: `preview_video.py` (PIL frames → ffmpeg). It builds: brand intro
+Templates: `preview_core.py` (the renderer + voiceover engine) and
+`example_preview.py` (a thin per-platform config calling
+`render_preview(scenes, raw_dir, icon, out_path, W, H)`). It builds: brand intro
 card (icon + name sticker + tagline) → one Ken Burns scene per raw capture
 (slow 1.00→1.10 zoom + slight drift, sticker caption on brand gradient) →
-outro card with a call-to-action line, 0.5s crossfades throughout.
+outro card with a call-to-action line, 0.5s crossfades throughout. One config
+per store (Apple 886×1920, Play 1080×1920) — same core.
+
+**Google Play** takes the promo as a **YouTube link**, not a file upload:
+render a vertical 1080×1920 mp4, upload it to YouTube (unlisted is fine), and
+paste the URL in the listing. Play is lenient on length (no 30s cap), but keep
+it tight.
 
 **Apple App Preview spec (verified June 2026 — recheck if rejected):**
 - iPhone 6.9"/6.5" portrait: **886×1920**, .mp4/.mov/.m4v, **30 fps**,

@@ -1,25 +1,11 @@
 #!/usr/bin/env python3
-"""Apple App Store preview video (886x1920 portrait, 30fps, ~25s, H.264 +
-stereo AAC — App Store Connect requires a stereo audio track).
+"""Shared App Preview / promo video renderer (Ken Burns scenes + sticker
+captions + brand cards + optional voiceover). Used by gen_app_preview.py
+(Apple, 886x1920) and gen_play_preview.py (Play, 1080x1920).
 
-Composes Ken Burns-style scenes from the raw simulator captures in
-appstore/screenshots/raw/ with sticker captions, brand intro/outro cards and
-crossfades. Output: appstore/preview/app-preview-6.9.mp4 (works for the 6.9"
-and 6.5" preview slots — both accept 886x1920).
-
-Voiceover (optional): set VO_BACKEND to add narration. When unset the audio is
-a silent stereo track (still spec-valid).
-  VO_BACKEND=say     macOS `say` (zero install; set VO_VOICE, use a Premium
-                     voice — defaults sound robotic). Local, free.
-  VO_BACKEND=kokoro  Kokoro-82M via `pip install kokoro` (Apache-2.0, local,
-                     Apple Silicon). Recommended for the published asset.
-  VO_BACKEND=piper   Piper CLI on PATH (VO_VOICE = path to .onnx voice). Local.
-  VO_BACKEND=openai  OpenAI /v1/audio/speech (needs OPENAI_API_KEY; NOT covered
-                     by the free shared-traffic tier — billed at TTS rates).
-  VO_BACKEND=file    Pre-recorded per-scene clips named vo/<out-stem>-<i>.wav.
-Each scene's on-screen caption and its `vo` line stay in lockstep — one story.
-
-Requires ffmpeg. Method: ~/.claude/skills/store-screenshots.
+Voiceover backends via VO_BACKEND (unset = silent stereo track, still valid):
+  say | kokoro | piper | openai | file   (see store-screenshots SKILL.md)
+Method: ~/.claude/skills/store-screenshots. Requires ffmpeg.
 """
 import json
 import math
@@ -29,18 +15,9 @@ import subprocess
 import tempfile
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
-from store_frames import (AMBER, CORAL, F_BLACK, F_BOLD, INK, INK_TOP, TEAL,
-                          TEAL_DEEP, WHITE, _vgrad, device_mockup,
+from store_frames import (F_BLACK, F_BOLD, WHITE, _vgrad, device_mockup,
                           paste_with_shadow, sticker)
 
-ROOT = os.path.join(os.path.dirname(__file__), "..")
-RAW = os.path.join(ROOT, "appstore", "screenshots", "raw")
-ICON = os.path.join(ROOT, "ios", "HourlyMove", "Resources",
-                    "Assets.xcassets", "AppIcon.appiconset", "icon-1024.png")
-OUT_DIR = os.path.join(ROOT, "appstore", "preview")
-OUT = os.path.join(OUT_DIR, "app-preview-6.9.mp4")
-
-W, H = 886, 1920
 FPS = 30
 FADE = 0.5          # crossfade seconds
 OVER = 1.30         # scene canvases are rendered larger to allow zooming
@@ -48,28 +25,8 @@ OVER = 1.30         # scene canvases are rendered larger to allow zooming
 VO_BACKEND = os.environ.get("VO_BACKEND", "").strip().lower()
 VO_VOICE = os.environ.get("VO_VOICE", "")
 VO_PAD = 0.6        # seconds of breathing room after each narration line
-MAX_TOTAL = 29.5    # stay inside Apple's 30s ceiling
 
-SCENES = [
-    dict(kind="card", dur=3.5, title="HOURLY MOVE",
-         sub="Stand up. Stretch. Every hour.", bg=(INK_TOP, INK),
-         vo="Sitting all day quietly wears you down."),
-    dict(kind="shot", dur=4.5, raw="tab0.png", head="SITTING ALL DAY?",
-         bg=(CORAL, AMBER), drift=-1,
-         vo="Hourly Move shows your next stand-up break at a glance."),
-    dict(kind="shot", dur=4.5, raw="tab1.png", head="YOUR HOURS, YOUR RULES",
-         bg=(INK_TOP, INK), drift=1,
-         vo="Set your own hours and pace, for weekdays and weekends."),
-    dict(kind="shot", dur=4.5, raw="tab2.png", head="SEE YOURSELF MOVE",
-         bg=(TEAL, TEAL_DEEP), drift=-1,
-         vo="Then watch every break add up."),
-    dict(kind="shot", dur=4.5, raw="tab3.png", head="NO ADS. NO ACCOUNT.",
-         bg=(AMBER, CORAL), drift=1,
-         vo="No ads. No account. It all stays on your iPhone."),
-    dict(kind="card", dur=3.5, title="HOURLY MOVE",
-         sub="Move more, starting this hour.", bg=(INK_TOP, INK),
-         vo="Move more, starting this hour."),
-]
+_KPIPE = None
 
 
 def _probe_dur(path):
@@ -80,8 +37,9 @@ def _probe_dur(path):
     return float(out.stdout.strip())
 
 
-def synth_line(text, wav_path, stem, index):
+def synth_line(text, wav_path, out_dir, stem, index):
     """Render one narration line to a 48k mono wav via the chosen backend."""
+    global _KPIPE
     if VO_BACKEND == "say":
         aiff = wav_path + ".aiff"
         cmd = ["say", "-o", aiff]
@@ -101,20 +59,17 @@ def synth_line(text, wav_path, stem, index):
                         wav_path], check=True, capture_output=True)
         os.remove(raw)
     elif VO_BACKEND == "kokoro":
-        import soundfile as sf  # noqa: lazy, only when used
+        import soundfile as sf
         voice = VO_VOICE or "af_heart"
-        global _KPIPE
-        try:
-            _KPIPE
-        except NameError:
+        if _KPIPE is None:
             # Prefer kokoro-onnx (no torch/spacy — installs on modern Python);
             # fall back to the torch `kokoro` package if that's what's present.
             try:
                 from kokoro_onnx import Kokoro
-                model = os.environ.get("KOKORO_MODEL",
-                    os.path.expanduser("~/.venvs/tts-kokoro/models/kokoro-v1.0.onnx"))
-                voices = os.environ.get("KOKORO_VOICES",
-                    os.path.expanduser("~/.venvs/tts-kokoro/models/voices-v1.0.bin"))
+                model = os.environ.get("KOKORO_MODEL", os.path.expanduser(
+                    "~/.venvs/tts-kokoro/models/kokoro-v1.0.onnx"))
+                voices = os.environ.get("KOKORO_VOICES", os.path.expanduser(
+                    "~/.venvs/tts-kokoro/models/voices-v1.0.bin"))
                 _KPIPE = ("onnx", Kokoro(model, voices))
             except ImportError:
                 from kokoro import KPipeline
@@ -148,7 +103,7 @@ def synth_line(text, wav_path, stem, index):
                         wav_path], check=True, capture_output=True)
         os.remove(raw)
     elif VO_BACKEND == "file":
-        src = os.path.join(OUT_DIR, "vo", f"{stem}-{index}.wav")
+        src = os.path.join(out_dir, "vo", f"{stem}-{index}.wav")
         if not os.path.exists(src):
             raise SystemExit(f"file backend: missing {src}")
         subprocess.run(["ffmpeg", "-y", "-i", src, "-ar", "48000", "-ac", "1",
@@ -157,8 +112,9 @@ def synth_line(text, wav_path, stem, index):
         raise SystemExit(f"unknown VO_BACKEND={VO_BACKEND!r}")
 
 
-def circular_icon(size):
-    icon = Image.open(ICON).convert("RGB").resize((size, size), Image.LANCZOS)
+def circular_icon(icon_path, size):
+    icon = Image.open(icon_path).convert("RGB").resize((size, size),
+                                                        Image.LANCZOS)
     mask = Image.new("L", (size * 4, size * 4), 0)
     ImageDraw.Draw(mask).ellipse([0, 0, size * 4 - 1, size * 4 - 1], fill=255)
     out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -166,7 +122,7 @@ def circular_icon(size):
     return out
 
 
-def compose_scene(scene):
+def compose_scene(scene, raw_dir, icon_path, W, H):
     """Static oversized canvas the per-frame zoom crops into."""
     cw, ch = int(W * OVER), int(H * OVER)
     base = _vgrad(cw, ch, *scene["bg"]).convert("RGBA")
@@ -179,7 +135,7 @@ def compose_scene(scene):
                            base, glow).convert("RGBA")
 
     if scene["kind"] == "card":
-        icon = circular_icon(int(cw * 0.40))
+        icon = circular_icon(icon_path, int(cw * 0.40))
         paste_with_shadow(base, icon, ((cw - icon.width) // 2, int(ch * 0.24)),
                           blur=40, dy=18, opacity=120)
         title = sticker(scene["title"], int(cw * 0.085), angle=-2.0)
@@ -201,20 +157,21 @@ def compose_scene(scene):
         card = sticker(scene["head"], head_size, angle=-2.0)
         paste_with_shadow(base, card, ((cw - card.width) // 2, int(ch * 0.155)),
                           blur=18, dy=12)
-        device = device_mockup(os.path.join(RAW, scene["raw"]), int(cw * 0.74))
+        device = device_mockup(os.path.join(raw_dir, scene["raw"]),
+                               int(cw * 0.74))
         paste_with_shadow(base, device, ((cw - device.width) // 2,
                                          int(ch * 0.27)),
                           blur=40, dy=24, opacity=130)
     return base.convert("RGB")
 
 
-def ease(t):
+def _ease(t):
     return 0.5 - 0.5 * math.cos(math.pi * t)
 
 
-def frame_of(canvas, local_t, dur, drift=0):
+def _frame_of(canvas, local_t, dur, W, H, drift=0):
     """Slow zoom 1.00→1.10 across the scene plus a slight lateral drift."""
-    z = 1.0 + 0.10 * ease(local_t / dur)
+    z = 1.0 + 0.10 * _ease(local_t / dur)
     cw, ch = canvas.size
     vw, vh = int(W * OVER / z), int(H * OVER / z)
     cx = cw / 2 + drift * (cw * 0.02) * (local_t / dur)
@@ -225,54 +182,53 @@ def frame_of(canvas, local_t, dur, drift=0):
                  .resize((W, H), Image.BILINEAR)
 
 
-def main():
-    os.makedirs(OUT_DIR, exist_ok=True)
+def render_preview(scenes, raw_dir, icon_path, out_path, W, H, max_total=29.5):
+    out_dir = os.path.dirname(out_path)
+    os.makedirs(out_dir, exist_ok=True)
     tmp = tempfile.mkdtemp(prefix="preview-")
-    stem = os.path.splitext(os.path.basename(OUT))[0]
+    stem = os.path.splitext(os.path.basename(out_path))[0]
     try:
         # 1. Voiceover first — clip lengths drive scene durations.
         vo_clips = []  # (scene_index, wav_path, duration)
         if VO_BACKEND:
             print(f"synthesizing voiceover via '{VO_BACKEND}'...")
-            for k, s in enumerate(SCENES):
+            for k, s in enumerate(scenes):
                 if not s.get("vo"):
                     continue
                 wav = os.path.join(tmp, f"vo{k}.wav")
-                synth_line(s["vo"], wav, stem, k)
+                synth_line(s["vo"], wav, out_dir, stem, k)
                 dur = _probe_dur(wav)
                 vo_clips.append((k, wav, dur))
-                # A scene must outlast its line (+ lead-in + tail).
                 s["dur"] = max(s["dur"], round(dur + VO_PAD + 0.4, 2))
 
-        canvases = [compose_scene(s) for s in SCENES]
-        starts = []
-        t0 = 0.0
-        for s in SCENES:
+        canvases = [compose_scene(s, raw_dir, icon_path, W, H) for s in scenes]
+        starts, t0 = [], 0.0
+        for s in scenes:
             starts.append(t0)
             t0 += s["dur"] - FADE
-        total = starts[-1] + SCENES[-1]["dur"]
-        if total > MAX_TOTAL:
-            print(f"WARNING: {total:.1f}s exceeds Apple's 30s ceiling — "
+        total = starts[-1] + scenes[-1]["dur"]
+        if total > max_total:
+            print(f"WARNING: {total:.1f}s exceeds the {max_total}s ceiling — "
                   "trim narration lines.")
         n_frames = int(total * FPS)
         print(f"{total:.1f}s, {n_frames} frames")
 
         for i in range(n_frames):
             t = i / FPS
-            active = [(k, s) for k, s in enumerate(SCENES)
+            active = [(k, s) for k, s in enumerate(scenes)
                       if starts[k] <= t < starts[k] + s["dur"]]
             k, s = active[0]
-            img = frame_of(canvases[k], t - starts[k], s["dur"],
-                           s.get("drift", 0))
+            img = _frame_of(canvases[k], t - starts[k], s["dur"], W, H,
+                            s.get("drift", 0))
             if len(active) > 1:  # crossfade into the next scene
                 k2, s2 = active[1]
-                nxt = frame_of(canvases[k2], t - starts[k2], s2["dur"],
-                               s2.get("drift", 0))
+                nxt = _frame_of(canvases[k2], t - starts[k2], s2["dur"], W, H,
+                                s2.get("drift", 0))
                 a = (t - starts[k2]) / FADE
                 img = Image.blend(img, nxt, min(1.0, a))
             img.save(os.path.join(tmp, f"f{i:05d}.png"))
 
-        # 2. Audio track: lay each VO clip ~0.3s into its scene, mix, normalize.
+        # 2. Audio: lay each VO clip ~0.3s into its scene, mix, normalize.
         # The image sequence is input 0, so wav inputs start at index 1.
         if vo_clips:
             inputs, filters, labels = [], [], []
@@ -293,15 +249,10 @@ def main():
 
         subprocess.run([
             "ffmpeg", "-y", "-framerate", str(FPS),
-            "-i", os.path.join(tmp, "f%05d.png"),
-            *audio_args,
+            "-i", os.path.join(tmp, "f%05d.png"), *audio_args,
             "-shortest", "-map", "0:v", "-c:v", "libx264", "-pix_fmt", "yuv420p",
             "-r", str(FPS), "-crf", "18", "-c:a", "aac", "-b:a", "256k",
-            "-ac", "2", OUT], check=True, capture_output=True)
+            "-ac", "2", out_path], check=True, capture_output=True)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
-    print("wrote", OUT)
-
-
-if __name__ == "__main__":
-    main()
+    print("wrote", out_path)
