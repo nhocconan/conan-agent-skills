@@ -119,11 +119,25 @@ Pick a voice source (decision order for a free, license-clean, published asset):
 
 | Backend | Quality | Cost / setup | Local? | Notes |
 |---|---|---|---|---|
-| `kokoro` | Excellent | `pip install kokoro soundfile` + espeak-ng; ~330MB weights | Yes | **Apache-2.0 → safe for commercial listings.** Best free pick. `VO_VOICE=af_heart` etc. |
+| `kokoro` | Excellent | see below; ~350MB model | Yes | **Apache-2.0 → safe for commercial listings.** Best free pick. `VO_VOICE=af_heart`/`af_bella`/`am_michael` etc. |
 | `piper` | Good | Piper binary + a `.onnx` voice (`VO_VOICE=<path>`) | Yes | Lighter than Kokoro; MIT voices available |
 | `say` | OK | zero install; **download a Premium voice** in System Settings (defaults sound robotic) | Yes | `VO_VOICE="Ava (Premium)"`. Fine for a draft |
 | `openai` | Excellent | `OPENAI_API_KEY`, model `gpt-4o-mini-tts` (~1¢) | No | **NOT covered by the "free shared-traffic" token tier** — that tier is text models only; TTS bills at standard rates |
 | `file` | — | drop `vo/<stem>-<i>.wav` per scene | Yes | Use your own recorded voice — most authentic |
+
+**Installing Kokoro (use kokoro-onnx — `pip install kokoro` breaks on Python
+3.13+ because spacy/blis won't compile):**
+```bash
+brew install espeak-ng                       # phonemizer backend
+python3.13 -m venv ~/.venvs/tts-kokoro        # isolate; 3.13 has onnxruntime wheels
+~/.venvs/tts-kokoro/bin/pip install kokoro-onnx soundfile pillow
+# one-time model download into ~/.venvs/tts-kokoro/models/:
+#   kokoro-v1.0.onnx + voices-v1.0.bin from the kokoro-onnx GitHub release
+VO_BACKEND=kokoro VO_VOICE=af_heart ~/.venvs/tts-kokoro/bin/python preview_video.py
+```
+The `kokoro` backend prefers `kokoro_onnx` and falls back to the torch
+`kokoro` package; set `KOKORO_MODEL`/`KOKORO_VOICES` to override model paths.
+Run the generator with the venv's python so Pillow + kokoro-onnx are on the path.
 
 Avoid **edge-tts** (Microsoft's free no-key neural voices) for a *published*
 asset: it's online and its ToS scopes it to Edge's read-aloud feature. Great for

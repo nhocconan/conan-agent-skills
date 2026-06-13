@@ -102,18 +102,32 @@ def synth_line(text, wav_path, stem, index):
         os.remove(raw)
     elif VO_BACKEND == "kokoro":
         import soundfile as sf  # noqa: lazy, only when used
-        from kokoro import KPipeline
+        voice = VO_VOICE or "af_heart"
         global _KPIPE
         try:
             _KPIPE
         except NameError:
-            _KPIPE = KPipeline(lang_code="a")  # American English
-        voice = VO_VOICE or "af_heart"
-        audio = None
-        for _, _, a in _KPIPE(text, voice=voice):
-            audio = a
+            # Prefer kokoro-onnx (no torch/spacy — installs on modern Python);
+            # fall back to the torch `kokoro` package if that's what's present.
+            try:
+                from kokoro_onnx import Kokoro
+                model = os.environ.get("KOKORO_MODEL",
+                    os.path.expanduser("~/.venvs/tts-kokoro/models/kokoro-v1.0.onnx"))
+                voices = os.environ.get("KOKORO_VOICES",
+                    os.path.expanduser("~/.venvs/tts-kokoro/models/voices-v1.0.bin"))
+                _KPIPE = ("onnx", Kokoro(model, voices))
+            except ImportError:
+                from kokoro import KPipeline
+                _KPIPE = ("torch", KPipeline(lang_code="a"))
+        kind, pipe = _KPIPE
+        if kind == "onnx":
+            audio, sr = pipe.create(text, voice=voice, speed=1.0, lang="en-us")
+        else:
+            audio, sr = None, 24000
+            for _, _, a in pipe(text, voice=voice):
+                audio = a
         raw = wav_path + ".raw.wav"
-        sf.write(raw, audio, 24000)
+        sf.write(raw, audio, sr)
         subprocess.run(["ffmpeg", "-y", "-i", raw, "-ar", "48000", "-ac", "1",
                         wav_path], check=True, capture_output=True)
         os.remove(raw)
