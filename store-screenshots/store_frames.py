@@ -1,20 +1,14 @@
 #!/usr/bin/env python3
-"""Generate Play Store marketing screenshots from raw app captures.
+"""Shared renderer for store marketing screenshots (Play + App Store).
 
-Reads playstore/screenshots/raw/*.png, writes story-sequenced 1080x1920
-frames (gradient brand background + sticker headline + tilted device mockup)
-to playstore/screenshots/. Method: ~/.claude/skills/store-screenshots.
+render_slides() turns raw app captures into framed marketing screenshots:
+brand-gradient background + rotated sticker headline + tilted device mockup.
+Configs live in gen_store_screenshots.py (Play, 1080x1920) and
+gen_appstore_screenshots.py (App Store, 1320x2868).
+Method: ~/.claude/skills/store-screenshots.
 """
 import os
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
-
-ROOT = os.path.join(os.path.dirname(__file__), "..")
-RAW = os.path.join(ROOT, "playstore", "screenshots", "raw")
-OUT = os.path.join(ROOT, "playstore", "screenshots")
-
-W, H = 1080, 1920
-SS = 2  # supersample
-w, h = W * SS, H * SS
 
 INK = (0x15, 0x17, 0x1C)
 INK_TOP = (0x23, 0x26, 0x30)
@@ -28,32 +22,8 @@ FONTS = "/System/Library/Fonts/Supplemental"
 F_BLACK = os.path.join(FONTS, "Arial Black.ttf")
 F_BOLD = os.path.join(FONTS, "Arial Bold.ttf")
 
-# Story order: pain -> shift -> profiles -> reliability proof -> privacy.
-SLIDES = [
-    dict(raw="01-home.png", out="01-pain.png",
-         head=["SITTING", "ALL DAY?"],
-         sub="One glance shows your next stand-up break.",
-         bg=(CORAL, AMBER), tilt=-2.5),
-    dict(raw="03-editor.png", out="02-your-rules.png",
-         head=["YOUR HOURS,", "YOUR RULES"],
-         sub="Pick a window, set the pace, keep lunch quiet.",
-         bg=(INK_TOP, INK), tilt=2.5),
-    dict(raw="02-profiles.png", out="03-profiles.png",
-         head=["WEEKDAYS ≠", "WEEKENDS"],
-         sub="Profiles switch with your week — automatically.",
-         bg=(TEAL, TEAL_DEEP), tilt=-2.5),
-    dict(raw="05-settings.png", out="04-never-miss.png",
-         head=["IMPOSSIBLE", "TO MISS"],
-         sub="Exact alarms, on the minute — even on silent.",
-         bg=(INK_TOP, INK), tilt=2.5),
-    dict(raw="04-onboarding.png", out="05-private.png",
-         head=["NO ADS.", "NO ACCOUNT."],
-         sub="No internet at all — your data stays on your phone.",
-         bg=(AMBER, CORAL), tilt=-2.5),
-]
 
-
-def vgrad(top, bottom):
+def _vgrad(w, h, top, bottom):
     img = Image.new("RGB", (w, h))
     px = img.load()
     for y in range(h):
@@ -64,7 +34,7 @@ def vgrad(top, bottom):
     return img
 
 
-def rounded_mask(size, radius):
+def _rounded_mask(size, radius):
     m = Image.new("L", (size[0] * 2, size[1] * 2), 0)
     ImageDraw.Draw(m).rounded_rectangle(
         [0, 0, size[0] * 2 - 1, size[1] * 2 - 1], radius * 2, fill=255)
@@ -106,12 +76,12 @@ def device_mockup(raw_path, device_w):
     ImageDraw.Draw(frame).rounded_rectangle(
         [0, 0, fw - 1, fh - 1], r_in + pad, fill=(0x0A, 0x0B, 0x0E, 255))
     shot_rgba = Image.new("RGBA", shot.size, (0, 0, 0, 0))
-    shot_rgba.paste(shot, (0, 0), rounded_mask(shot.size, r_in))
+    shot_rgba.paste(shot, (0, 0), _rounded_mask(shot.size, r_in))
     frame.alpha_composite(shot_rgba, (pad, pad))
     return frame
 
 
-def wrap(text, font, max_w, d):
+def _wrap(text, font, max_w, d):
     words, lines, cur = text.split(), [], ""
     for word in words:
         trial = (cur + " " + word).strip()
@@ -125,9 +95,11 @@ def wrap(text, font, max_w, d):
     return lines
 
 
-os.makedirs(OUT, exist_ok=True)
-for slide in SLIDES:
-    base = vgrad(*slide["bg"]).convert("RGBA")
+def compose_slide(slide, raw_dir, W, H, ss=2):
+    """Render one slide; returns the final RGB image at (W, H)."""
+    w, h = W * ss, H * ss
+    u = w / 2160.0  # design unit: layout tuned on a 1080-wide canvas at ss=2
+    base = _vgrad(w, h, *slide["bg"]).convert("RGBA")
 
     # Soft glow top-right so the gradient isn't flat.
     glow = Image.new("L", (w, h), 0)
@@ -138,38 +110,44 @@ for slide in SLIDES:
     base = Image.composite(
         Image.new("RGBA", (w, h), WHITE + (255,)), base, glow).convert("RGBA")
 
-    margin = 64 * SS
-    y = 78 * SS
-    head_size = 92 * SS
+    margin = int(128 * u)
+    y = int(156 * u)
+    head_size = int(184 * u)
     f_head = ImageFont.truetype(F_BLACK, head_size)
     d = ImageDraw.Draw(base)
     longest = max(slide["head"], key=lambda t: d.textlength(t, font=f_head))
     while d.textlength(longest, font=f_head) > w - 2 * margin - head_size:
-        head_size -= 2 * SS
+        head_size -= int(4 * u)
         f_head = ImageFont.truetype(F_BLACK, head_size)
 
     for i, line in enumerate(slide["head"]):
         card = sticker(line, head_size, angle=-2.0)
-        paste_with_shadow(base, card, (margin + i * 18 * SS, y),
-                          blur=10 * SS, dy=8 * SS)
+        paste_with_shadow(base, card, (margin + int(i * 36 * u), y),
+                          blur=int(20 * u), dy=int(16 * u))
         y += int(card.height * 0.86)
 
-    y += 30 * SS
-    f_sub = ImageFont.truetype(F_BOLD, 40 * SS)
+    y += int(60 * u)
+    f_sub = ImageFont.truetype(F_BOLD, int(80 * u))
     d = ImageDraw.Draw(base)
-    for line in wrap(slide["sub"], f_sub, w - 2 * margin, d):
-        d.text((margin + 2 * SS, y + 2 * SS), line, font=f_sub,
+    for line in _wrap(slide["sub"], f_sub, w - 2 * margin, d):
+        d.text((margin + int(4 * u), y + int(4 * u)), line, font=f_sub,
                fill=(0, 0, 0, 90))
         d.text((margin, y), line, font=f_sub, fill=WHITE + (255,))
-        y += int(46 * SS * 1.25)
+        y += int(92 * u * 1.25)
 
-    device = device_mockup(os.path.join(RAW, slide["raw"]), int(w * 0.76))
+    device = device_mockup(os.path.join(raw_dir, slide["raw"]), int(w * 0.76))
     device = device.rotate(slide["tilt"], expand=True, resample=Image.BICUBIC)
     dx = (w - device.width) // 2
-    dy_pos = max(y + 40 * SS, int(h * 0.345))
-    paste_with_shadow(base, device, (dx, dy_pos), blur=22 * SS, dy=14 * SS,
-                      opacity=130)
+    dy_pos = max(y + int(80 * u), int(h * 0.345))
+    paste_with_shadow(base, device, (dx, dy_pos), blur=int(44 * u),
+                      dy=int(28 * u), opacity=130)
 
-    final = base.convert("RGB").resize((W, H), Image.LANCZOS)
-    final.save(os.path.join(OUT, slide["out"]))
-    print("wrote", slide["out"])
+    return base.convert("RGB").resize((W, H), Image.LANCZOS)
+
+
+def render_slides(slides, raw_dir, out_dir, W, H):
+    os.makedirs(out_dir, exist_ok=True)
+    for slide in slides:
+        compose_slide(slide, raw_dir, W, H).save(
+            os.path.join(out_dir, slide["out"]))
+        print("wrote", slide["out"])

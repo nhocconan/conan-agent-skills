@@ -1,14 +1,15 @@
 ---
 name: store-screenshots
-description: Turn raw app screenshots into high-converting App Store / Play Store marketing screenshots — outcome-driven copywriting (not feature lists), story-sequenced, with branded device-frame graphics generated via PIL. Trigger when the user asks for store screenshots, listing screenshots, ASO screenshot copy, or to "make screenshots better / eye-catching".
+description: Turn raw app screenshots into high-converting App Store / Play Store marketing screenshots and App Preview videos — outcome-driven copywriting (not feature lists), story-sequenced, branded device-frame graphics and Ken Burns preview videos generated via PIL/ffmpeg. Trigger when the user asks for store screenshots, listing screenshots, ASO screenshot copy, an App Store preview video, or to "make screenshots better / eye-catching".
 ---
 
-# Store screenshots that convert
+# Store screenshots & previews that convert
 
 70% of a store screenshot is copywriting. Raw UI captures with no text — or text
 that lists features — read like patch notes to someone who hasn't bought in yet.
-This skill produces **story-sequenced marketing screenshots**: big outcome
-headline + framed device mockup on a branded background.
+This skill produces **story-sequenced marketing screenshots** (big outcome
+headline + framed device mockup on a branded background) and a matching
+**App Preview video**.
 
 ## Step 1 — Write the copy FIRST (before any pixels)
 
@@ -37,36 +38,79 @@ sequence, you have a catalog, not a story.
 
 Headline ≤ 4 words per line, ≤ 2 lines, ALL CAPS works well. Optional subline
 ≤ 12 words. If a screen needs two sentences, split it into two screenshots.
+Only claim what the app verifiably does on that platform (e.g. don't claim
+"rings on silent" if the platform build lacks the entitlement).
 
 ## Step 2 — Capture raw screens
 
-One clean raw capture per slide, content matching the headline (status bar
-clock set nicely, realistic seeded data, no debug UI). Keep raws in
+One clean raw capture per slide, content matching the headline. Keep raws in
 `<assets>/screenshots/raw/`; generated finals go in `<assets>/screenshots/`.
 
-## Step 3 — Generate the frames
+**iOS simulator recipe** (gives App Store-native sizes for free):
+```bash
+xcrun simctl boot "iPhone 17 Pro Max"        # 6.9" → captures are 1320×2868
+xcrun simctl status_bar booted override --time "9:41" --batteryLevel 100 \
+  --batteryState charged --cellularBars 4 --wifiBars 3
+xcrun simctl uninstall booted <bundle-id>    # fresh state so seeds apply
+xcrun simctl install booted <path>.app
+xcrun simctl launch booted <bundle-id> -uiScreenshots -uiTab 0   # etc.
+xcrun simctl io booted screenshot raw/tab0.png   # use an ABSOLUTE output path
+```
+Android: emulator + `adb exec-out screencap`; set the clock with
+`adb shell cmd alarm set-time <epoch-millis>` (no root needed).
 
-Use the template `frame_screenshots.py` next to this SKILL.md: copy it into the
-project's scripts dir, edit the `SLIDES` config (raw file, headline lines,
-subline, background gradient, tilt) and the brand `PALETTE`. It renders, per
-slide: vertical brand-gradient background + soft glow → rotated white
-"sticker" headline boxes (heavy font, ink text, drop shadow) → subline →
-device mockup (rounded corners, dark bezel, slight alternate tilt ±2.5°, drop
-shadow) bleeding off the bottom edge.
+**Add a DEBUG-only `-uiScreenshots` launch arg to the app** (pattern that pays
+for itself): skip onboarding, seed realistic demo data **including data active
+on the capture day** (e.g. a Weekend profile so a Saturday capture isn't
+empty), select the seasonally-correct default, and report permissions as
+granted so "Turn on notifications"-style banners stay out of marketing shots.
 
-Design rules baked into the template — keep them:
-- Canvas **1080×1920** (9:16 — safe for Google Play promotion slots and usable
-  cross-store; iPhone 6.7" equivalent is 1290×2796, same layout scales).
+## Step 3 — Generate the screenshot frames
+
+Templates next to this SKILL.md: copy `store_frames.py` (shared renderer) plus
+`example_screenshots.py` (per-store config) into the project's scripts dir.
+Edit the `SLIDES` list (raw file, headline lines, subline, background
+gradient, alternating tilt) and call `render_slides(SLIDES, raw_dir, out_dir, W, H)`.
+
+Canvas sizes (the renderer scales its layout to any of these):
+- **Google Play:** 1080×1920 (9:16 — required for promotion placements)
+- **Apple App Store 6.9" slot:** 1320×2868 (capture on iPhone 17 Pro Max and
+  it's already native; Apple auto-scales down for smaller slots)
+
+Per slide the renderer draws: vertical brand-gradient background + soft glow →
+rotated white "sticker" headline boxes (heavy font, ink text, drop shadow) →
+subline → device mockup (rounded corners, dark bezel, ±2.5° alternating tilt,
+drop shadow) bleeding off the bottom edge. Design rules — keep them:
 - Supersample ×2, LANCZOS downscale.
 - Use the app's own brand palette; alternate background colors between slides
   so the row pops in search results, but stay in-brand.
 - Headline must survive thumbnail size: check legibility at ~25% zoom.
 - Device bleeds off the bottom — full phones look like a catalog.
 
-## Step 4 — Verify
+## Step 4 — App Preview video (Apple) / promo video (Play)
 
-- View every output image; check text fits, no glyph boxes (e.g. ≠ missing
-  from a font), sticker doesn't cover key UI.
-- Hand test again on the finals.
-- Play limits: PNG/JPEG ≤ 8 MB, sides 320–3840 px, 2–8 phone screenshots.
+Template: `preview_video.py` (PIL frames → ffmpeg). It builds: brand intro
+card (icon + name sticker + tagline) → one Ken Burns scene per raw capture
+(slow 1.00→1.10 zoom + slight drift, sticker caption on brand gradient) →
+outro card with a call-to-action line, 0.5s crossfades throughout.
+
+**Apple App Preview spec (verified June 2026 — recheck if rejected):**
+- iPhone 6.9"/6.5" portrait: **886×1920**, .mp4/.mov/.m4v, **30 fps**,
+  **15–30 s**, ≤500 MB.
+- **A stereo audio track is required** (256kbps AAC, 44.1/48 kHz) — a silent
+  `anullsrc` stereo track satisfies it:
+  `ffmpeg -framerate 30 -i f%05d.png -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -shortest -c:v libx264 -pix_fmt yuv420p -crf 18 -c:a aac -b:a 256k out.mp4`
+- Verify with ffprobe: codec h264, 886×1920, 30/1, aac 2ch, duration 15–30.
+- Captions are fine, but footage must be (or be composed from) real app UI.
+
+Keep the video's captions the same voice/sequence as the screenshots — the
+listing reads as one story.
+
+## Step 5 — Verify
+
+- View every output image and 3–4 extracted video frames
+  (`ffmpeg -ss <t> -i out.mp4 -frames:v 1 check.png`); check text fits, no
+  glyph boxes (e.g. ≠ missing from a font), sticker doesn't cover key UI.
+- Hand test again on the finals; ffprobe the video against the spec table.
+- Play: PNG/JPEG ≤ 8 MB, sides 320–3840 px, 2–8 phone screenshots.
 - Don't claim anything the app can't verifiably do (store rejection / trust).
