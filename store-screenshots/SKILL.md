@@ -106,11 +106,42 @@ outro card with a call-to-action line, 0.5s crossfades throughout.
 Keep the video's captions the same voice/sequence as the screenshots — the
 listing reads as one story.
 
+### Voiceover (optional, allowed, recommended for polish)
+
+Apple permits a narration track; `preview_video.py` supports a pluggable
+backend via `VO_BACKEND` (unset = silent stereo track, still valid). Write one
+short `vo` line per scene that mirrors its caption; the script synths each line,
+**lets clip length drive scene duration** (so audio never gets cut off), lays
+clips ~0.3s into each scene, mixes, and `loudnorm`-normalizes — then stays
+inside the 15–30s window (warns if narration pushes past 30s).
+
+Pick a voice source (decision order for a free, license-clean, published asset):
+
+| Backend | Quality | Cost / setup | Local? | Notes |
+|---|---|---|---|---|
+| `kokoro` | Excellent | `pip install kokoro soundfile` + espeak-ng; ~330MB weights | Yes | **Apache-2.0 → safe for commercial listings.** Best free pick. `VO_VOICE=af_heart` etc. |
+| `piper` | Good | Piper binary + a `.onnx` voice (`VO_VOICE=<path>`) | Yes | Lighter than Kokoro; MIT voices available |
+| `say` | OK | zero install; **download a Premium voice** in System Settings (defaults sound robotic) | Yes | `VO_VOICE="Ava (Premium)"`. Fine for a draft |
+| `openai` | Excellent | `OPENAI_API_KEY`, model `gpt-4o-mini-tts` (~1¢) | No | **NOT covered by the "free shared-traffic" token tier** — that tier is text models only; TTS bills at standard rates |
+| `file` | — | drop `vo/<stem>-<i>.wav` per scene | Yes | Use your own recorded voice — most authentic |
+
+Avoid **edge-tts** (Microsoft's free no-key neural voices) for a *published*
+asset: it's online and its ToS scopes it to Edge's read-aloud feature. Great for
+throwaway drafts only. (voice-pro and similar all-in-one tools lean on it, plus
+F5-TTS/CosyVoice for zero-shot cloning if you want a *custom* voice — heavier,
+GPL.)
+
+Add a music bed only if you have a license for the track (ffmpeg can duck it
+under the VO with `sidechaincompress`); never grab a random song.
+
 ## Step 5 — Verify
 
 - View every output image and 3–4 extracted video frames
   (`ffmpeg -ss <t> -i out.mp4 -frames:v 1 check.png`); check text fits, no
   glyph boxes (e.g. ≠ missing from a font), sticker doesn't cover key UI.
 - Hand test again on the finals; ffprobe the video against the spec table.
+- With voiceover: confirm the track isn't silent —
+  `ffmpeg -i out.mp4 -af volumedetect -f null -` should report a mean_volume
+  around −16 dB, not −91 dB. Listen that no line is clipped at a scene cut.
 - Play: PNG/JPEG ≤ 8 MB, sides 320–3840 px, 2–8 phone screenshots.
 - Don't claim anything the app can't verifiably do (store rejection / trust).
