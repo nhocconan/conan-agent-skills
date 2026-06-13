@@ -5,7 +5,7 @@ description: Non-negotiable baseline for every admin/list/CRUD/upload page. Use 
 
 # Admin / CRUD Page Standards
 
-The user had to request each of these dozens of times across four projects. Treat them as part of the definition of done for ANY management UI — apply without being asked.
+These are the recurring gaps that turn a "finished" management UI into a pile of follow-up bug reports. Treat them as part of the definition of done for ANY management UI — apply without being asked.
 
 ## Every list page
 - **Pagination** (consistent items-per-page across the whole site — pick one, e.g. 20, use it everywhere), **search**, and **filters** (by category/status/department/whatever the domain has). Filters must affect every component on the page.
@@ -34,3 +34,16 @@ The user had to request each of these dozens of times across four projects. Trea
 
 ## Reachability
 Every feature must be reachable by clicking from a menu — if it exists only as a URL or API, it doesn't exist. New admin pages get menu entries, gated to the right roles.
+
+## Implementation patterns (modern stack)
+- **Tables/grids**: use a headless data-grid (e.g. TanStack Table v8) so sorting/filtering/column-visibility/row-selection are state you control, not bespoke per page. One shared table component site-wide (see consistency rule above).
+- **Large datasets**: server-side pagination/sort/filter for the source of truth; **virtualize** rendered rows (TanStack Virtual / react-window) — never put 10k+ DOM rows on screen. For the big-file uploads above, stream/queue server-side and show progress; the preview table virtualizes too.
+- **Pickers**: combobox/tree built on an accessible primitive (Radix, React Aria, shadcn/ui) — you get keyboard nav and ARIA for free instead of hand-rolling a broken dropdown.
+
+## Accessibility floor (non-negotiable, every management screen)
+These ship broken constantly on admin UIs — bake them in, don't bolt on later:
+- Tables use real `<table>` semantics (or grid roles); sortable headers are `<button>`s announcing sort state (`aria-sort`).
+- Every form input has an associated `<label>`; validation errors are visible, tied to the field, and say how to fix.
+- Full keyboard operability: tab order is logical, focus is always visible, modals trap focus and restore it on close, `Esc` closes overlays.
+- Status/required/selection never conveyed by color alone; contrast holds in both light and dark themes.
+- Run `a11y-audit` before calling any management screen done.
