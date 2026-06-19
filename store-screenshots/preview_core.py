@@ -23,6 +23,8 @@ FADE = 0.5          # crossfade seconds
 OVER = 1.30         # scene canvases are rendered larger to allow zooming
 
 VO_BACKEND = os.environ.get("VO_BACKEND", "").strip().lower()
+if VO_BACKEND == "none":      # explicit opt-in to a silent track
+    VO_BACKEND = ""
 VO_VOICE = os.environ.get("VO_VOICE", "")
 VO_PAD = 0.6        # seconds of breathing room after each narration line
 
@@ -253,6 +255,24 @@ def render_preview(scenes, raw_dir, icon_path, out_path, W, H, max_total=29.5):
             "-shortest", "-map", "0:v", "-c:v", "libx264", "-pix_fmt", "yuv420p",
             "-r", str(FPS), "-crf", "18", "-c:a", "aac", "-b:a", "256k",
             "-ac", "2", out_path], check=True, capture_output=True)
+
+        # 3. Self-verify the audio actually landed. A voiceover run that comes
+        # out silent means the narration was dropped — fail loudly instead of
+        # shipping a mute "preview with voice".
+        det = subprocess.run(
+            ["ffmpeg", "-i", out_path, "-af", "volumedetect", "-f", "null", "-"],
+            capture_output=True, text=True)
+        mean = None
+        for line in det.stderr.splitlines():
+            if "mean_volume:" in line:
+                mean = float(line.split("mean_volume:")[1].split("dB")[0])
+        if VO_BACKEND and (mean is None or mean < -50):
+            raise SystemExit(
+                f"VOICEOVER MISSING: {out_path} rendered with VO_BACKEND="
+                f"'{VO_BACKEND}' but mean_volume={mean} dB (silent). "
+                "The narration did not make it into the file.")
+        print(f"audio check: mean_volume={mean} dB"
+              + ("" if VO_BACKEND else " (silent track — no VO_BACKEND set)"))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     print("wrote", out_path)

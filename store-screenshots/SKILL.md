@@ -1,6 +1,6 @@
 ---
 name: store-screenshots
-description: Turn raw app screenshots into high-converting App Store / Play Store marketing screenshots and App Preview videos — outcome-driven copywriting (not feature lists), story-sequenced, branded device-frame graphics and Ken Burns preview videos generated via PIL/ffmpeg. Trigger when the user asks for store screenshots, listing screenshots, ASO screenshot copy, an App Store preview video, or to "make screenshots better / eye-catching".
+description: Turn raw app screenshots into high-converting App Store / Play Store marketing screenshots and App Preview videos — outcome-driven copywriting (not feature lists), story-sequenced, branded device-frame screenshot graphics, and full-bleed no-device-frame App Preview videos (Apple Guideline 2.3.4) from real screen captures, generated via PIL/ffmpeg. Trigger when the user asks for store screenshots, listing screenshots, ASO screenshot copy, an App Store preview video, or to "make screenshots better / eye-catching".
 ---
 
 # Store screenshots & previews that convert
@@ -48,7 +48,8 @@ One clean raw capture per slide, content matching the headline. Keep raws in
 
 **iOS simulator recipe** (gives App Store-native sizes for free):
 ```bash
-xcrun simctl boot "iPhone 17 Pro Max"        # 6.9" → captures are 1320×2868
+xcrun simctl boot "iPhone 17 Pro Max"        # native raw is 1320×2868; the
+                                             # renderer reframes to your target
 xcrun simctl status_bar booted override --time "9:41" --batteryLevel 100 \
   --batteryState charged --cellularBars 4 --wifiBars 3
 xcrun simctl uninstall booted <bundle-id>    # fresh state so seeds apply
@@ -74,8 +75,19 @@ gradient, alternating tilt) and call `render_slides(SLIDES, raw_dir, out_dir, W,
 
 Canvas sizes (the renderer scales its layout to any of these):
 - **Google Play:** 1080×1920 (9:16 — required for promotion placements)
-- **Apple App Store 6.9" slot:** 1320×2868 (capture on iPhone 17 Pro Max and
-  it's already native; Apple auto-scales down for smaller slots)
+- **Apple App Store iPhone:** App Store Connect has two iPhone slots and does
+  **NOT** auto-convert between them — a file must exactly match the slot it's
+  uploaded into, or you get *"The dimensions of one or more screenshots are
+  wrong."*
+  - **6.9" slot:** 1320×2868 or 1290×2796 (portrait), or the rotated landscape.
+  - **6.5" slot:** 1284×2778 or 1242×2688 (portrait), or rotated.
+  - You only need to fill **one** iPhone slot. **Default to the 6.5" size
+    `1284×2778`** — it's accepted on its own and is the most broadly compatible.
+    (Capturing on iPhone 17 Pro Max gives a native 1320×2868 raw, but the
+    renderer reframes to whatever W×H you pass, so the raw size doesn't matter.)
+- **Apple App Store iPad:** the 13"/12.9" slot. Use **`2048×2732`** (12.9",
+  universally accepted). Native 13" captures are 2064×2752 — reframe to
+  2048×2732 to avoid the same "wrong dimensions" rejection.
 
 Per slide the renderer draws: vertical brand-gradient background + soft glow →
 rotated white "sticker" headline boxes (heavy font, ink text, drop shadow) →
@@ -89,27 +101,92 @@ drop shadow) bleeding off the bottom edge. Design rules — keep them:
 
 ## Step 4 — App Preview video (Apple) / promo video (Play)
 
-Templates: `preview_core.py` (the renderer + voiceover engine) and
-`example_preview.py` (a thin per-platform config calling
-`render_preview(scenes, raw_dir, icon, out_path, W, H)`). It builds: brand intro
-card (icon + name sticker + tagline) → one Ken Burns scene per raw capture
-(slow 1.00→1.10 zoom + slight drift, sticker caption on brand gradient) →
-outro card with a call-to-action line, 0.5s crossfades throughout. One config
-per store (Apple 886×1920, Play 1080×1920) — same core.
+> ⚠️ **The App Preview VIDEO must NOT contain device frames** (Apple Guideline
+> 2.3.4 — *"the app preview includes device images and/or device frames… revise
+> the app preview to only use video screen captures of the app"*). This is the
+> **opposite** of screenshots: marketing **screenshots** may sit in a tilted
+> device mockup (Step 3), but the **video** must be a *full-bleed screen
+> capture* — the app fills the whole frame, no bezel, no phone, no gradient
+> margin. Text/caption/narration overlays are explicitly allowed; device frames
+> are not. A real first-submission rejection (June 2026) came from exactly this:
+> the old "Ken-Burns over a framed device on a brand gradient" preview was fine
+> as screenshots but illegal as a video. **Don't reuse `device_mockup()` in the
+> video.**
+
+Templates: `preview_clips.py` (the no-frame renderer + the same voiceover
+engine) and `example_preview.py` (a thin config calling
+`render_preview_from_media(scenes, media_dir, icon, out_path, W, H)`). It builds:
+brand intro card → real captures full-bleed with a sticker caption overlaid on
+top → outro card, 0.5s crossfades, optional voiceover. Scene kinds:
+- **`clip`** — a real screen recording (.mp4), shown full-bleed, caption on top.
+- **`still`** — a real full-screen screenshot, gentle Ken Burns (1.00→1.05 zoom),
+  caption on top. Use for calm screens you can't record with motion.
+- **`card`** — generated brand card (icon + name + tagline); intro/outro only.
+
+**Capture native (1320×2868); the renderer outputs the video at 886×1920.**
+Native captures are the *screenshot* size — the renderer downscales them for the
+video (still a true screen capture, just not 1:1). Do NOT output the video at
+1320×2868: the App Preview slot rejects that size (see spec below).
+```bash
+xcrun simctl status_bar booted override --time 09:41 --batteryState charging \
+  --batteryLevel 100 --cellularBars 4 --wifiBars 3 --dataNetwork wifi
+# LIVE clip — recordVideo is VARIABLE-FRAME-RATE: a static screen records as a
+# ~0s clip, so you need on-screen motion (clock hand, ring, list).
+# Launch FIRST and let it SETTLE, THEN record. Recording the launch catches the
+# springboard (other apps + the tap) — that reads as "not showing the app in
+# use" (another 2.3.4 angle). Capture the app only:
+xcrun simctl launch booted <bundle-id> -uiScreenshots -uiTab 0
+sleep 3.5                                    # settle on the hero screen
+xcrun simctl io booted recordVideo --codec h264 --force segments/home.mp4 &
+REC=$!; sleep 9; kill -INT $REC              # SIGINT finalizes the mp4
+# (Tip: `xcrun simctl uninstall booted <id>` junk apps too, so even a stray
+#  springboard frame is clean.)
+# CALM screens — a screenshot is cleaner than a frozen recording; the renderer
+# adds the motion via Ken Burns:
+xcrun simctl io booted screenshot segments/stills/settings.png
+```
+One live "hero" clip (the signature screen) plus screenshots for the rest is a
+reliable mix on a headless simulator (no idb/tap-injection needed). Reuse a
+trimmed tail of the hero clip (`ffmpeg -ss 3 -i home.mp4 -c copy home_b.mp4`) if
+two scenes show it, so they don't replay an identical opening.
+
+**Accurate metadata (Guideline 2.3):** only caption a scene with a feature it
+*visibly shows*. "Widgets & Siri" over a plain home screen is a rejection risk;
+so is a "Lock Screen countdown" caption over the Settings page (a real June 2026
+near-miss). For surfaces you can't screen-record on a headless sim — Lock Screen
+/ Live Activity / widget / Siri (`simctl` has no lock command, and osascript UI
+automation needs Accessibility) — **don't fake them in the VIDEO.** Either drop
+the claim there and caption what's on screen, or — better — sell them in a
+**STILL**: App Store *screenshots* may be composited, so a faithful render of a
+real feature is compliant in a still even though it's illegal in the video.
+Build the still from the shipping design (e.g. reproduce the Live Activity layout
+on a Lock Screen) and use the GENUINE SF Symbols, exported via AppKit so glyphs
+are real, not approximations:
+```swift
+// swift render.swift  → tint a template symbol with .sourceAtop, save PNG
+let cfg = NSImage.SymbolConfiguration(pointSize: 240, weight: .bold)
+let img = NSImage(systemSymbolName: "figure.walk", accessibilityDescription: nil)!
+            .withSymbolConfiguration(cfg)!     // draw → fill .sourceAtop → PNG
+```
+A real, capturable extra surface (e.g. Dynamic Island while backgrounded) can go
+in the video; everything else lives in the stills. Same accuracy rule as Step 1.
 
 **Google Play** takes the promo as a **YouTube link**, not a file upload:
 render a vertical 1080×1920 mp4, upload it to YouTube (unlisted is fine), and
-paste the URL in the listing. Play is lenient on length (no 30s cap), but keep
-it tight.
+paste the URL in the listing. Play is lenient on length (no 30s cap) and on
+device frames, but keep it tight.
 
 **Apple App Preview spec (verified June 2026 — recheck if rejected):**
-- iPhone 6.9"/6.5" portrait: **886×1920**, .mp4/.mov/.m4v, **30 fps**,
-  **15–30 s**, ≤500 MB.
+- **Render at 886×1920** (portrait) / 1920×886 (landscape) — accepted across the
+  6.5"/6.7"/6.9" iPhone App Preview slots. **Do NOT upload 1320×2868** (that's
+  the *screenshot* size): the App Preview slot rejects it — *"The app preview
+  dimensions should be: 886 × 1920px or 1920 × 886px"* (real June 2026 upload
+  error). .mp4/.mov/.m4v, **30 fps**, **15–30 s**, ≤500 MB.
+- **No device frames / bezels** in the footage (2.3.4) — full-bleed only.
 - **A stereo audio track is required** (256kbps AAC, 44.1/48 kHz) — a silent
-  `anullsrc` stereo track satisfies it:
-  `ffmpeg -framerate 30 -i f%05d.png -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -shortest -c:v libx264 -pix_fmt yuv420p -crf 18 -c:a aac -b:a 256k out.mp4`
-- Verify with ffprobe: codec h264, 886×1920, 30/1, aac 2ch, duration 15–30.
-- Captions are fine, but footage must be (or be composed from) real app UI.
+  `anullsrc` stereo track satisfies it if you ship without voiceover.
+- Verify with ffprobe: codec h264, **886×1920**, 30/1, aac 2ch, duration 15–30,
+  and that no frame shows a phone bezel.
 
 Keep the video's captions the same voice/sequence as the screenshots — the
 listing reads as one story.
@@ -117,11 +194,20 @@ listing reads as one story.
 ### Voiceover (optional, allowed, recommended for polish)
 
 Apple permits a narration track; `preview_video.py` supports a pluggable
-backend via `VO_BACKEND` (unset = silent stereo track, still valid). Write one
-short `vo` line per scene that mirrors its caption; the script synths each line,
-**lets clip length drive scene duration** (so audio never gets cut off), lays
-clips ~0.3s into each scene, mixes, and `loudnorm`-normalizes — then stays
-inside the 15–30s window (warns if narration pushes past 30s).
+backend via `VO_BACKEND`. Write one short `vo` line per scene that mirrors its
+caption; the script synths each line, **lets clip length drive scene duration**
+(so audio never gets cut off), lays clips ~0.3s into each scene, mixes, and
+`loudnorm`-normalizes — then stays inside the 15–30s window (warns if narration
+pushes past 30s).
+
+**Default to voiced — don't ship a silent "preview".** Have the per-platform
+config `os.environ.setdefault("VO_BACKEND", "kokoro")` so a bare
+`python gen_*_preview.py` run still narrates; a forgotten `VO_BACKEND` is the
+#1 way a mute video reaches the store. To deliberately ship a silent stereo
+track (still spec-valid for Apple), pass `VO_BACKEND=none`. After encoding, the
+renderer **self-verifies the audio**: if a voiced run comes out under −50 dB it
+`raise`s `VOICEOVER MISSING` instead of writing a mute file — so a silent
+result fails the build rather than slipping into the listing.
 
 Pick a voice source (decision order for a free, license-clean, published asset):
 
