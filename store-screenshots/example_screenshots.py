@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Apple App Store marketing screenshots (1320x2868, 6.9" slot) from
-appstore/screenshots/raw/ (iPhone 17 Pro Max simulator captures via
--uiScreenshots -uiSeedHistory -uiTab N).
+"""Apple App Store marketing screenshots (1284x2778, 6.5" slot — accepted on
+its own; App Store Connect does NOT auto-convert between iPhone slots) from
+appstore/screenshots/raw/ (iPhone simulator captures via
+-uiScreenshots -uiSeedHistory -uiTab N; the renderer reframes any raw size).
 
 Story order: pain -> control -> progress -> reliability -> privacy.
 Renderer: store_frames.py; method: ~/.claude/skills/store-screenshots.
@@ -36,4 +37,4 @@ SLIDES = [
          bg=(AMBER, CORAL), tilt=-2.5),
 ]
 
-render_slides(SLIDES, RAW, OUT, 1320, 2868)
+render_slides(SLIDES, RAW, OUT, 1284, 2778)
