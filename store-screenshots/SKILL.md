@@ -193,7 +193,7 @@ listing reads as one story.
 
 ### Voiceover (optional, allowed, recommended for polish)
 
-Apple permits a narration track; `preview_video.py` supports a pluggable
+Apple permits a narration track; `preview_clips.py` supports a pluggable
 backend via `VO_BACKEND`. Write one short `vo` line per scene that mirrors its
 caption; the script synths each line, **lets clip length drive scene duration**
 (so audio never gets cut off), lays clips ~0.3s into each scene, mixes, and
@@ -227,7 +227,7 @@ python3.13 -m venv ~/.venvs/tts-kokoro        # isolate; 3.13 has onnxruntime wh
 ~/.venvs/tts-kokoro/bin/pip install kokoro-onnx soundfile pillow
 # one-time model download into ~/.venvs/tts-kokoro/models/:
 #   kokoro-v1.0.onnx + voices-v1.0.bin from the kokoro-onnx GitHub release
-VO_BACKEND=kokoro VO_VOICE=af_heart ~/.venvs/tts-kokoro/bin/python preview_video.py
+VO_BACKEND=kokoro VO_VOICE=af_heart ~/.venvs/tts-kokoro/bin/python example_preview.py
 ```
 The `kokoro` backend prefers `kokoro_onnx` and falls back to the torch
 `kokoro` package; set `KOKORO_MODEL`/`KOKORO_VOICES` to override model paths.
