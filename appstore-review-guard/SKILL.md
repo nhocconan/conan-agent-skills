@@ -32,6 +32,7 @@ there" is how you get rejected.
 |---|---|---|---|---|---|
 | 1 | 2026-06-17 | **2.3.4** Accurate Metadata (previews) | App Preview **video** showed a device frame / bezel | Video pipeline reused the still-image `device_mockup()`; previews must be full-bleed screen capture | Preview re-rendered full-bleed from real captures (no mockup); marketing screenshots may keep frames, the **video may not**. Also dropped an unshipped "Widgets & Siri" claim. See `store-screenshots` skill. |
 | 2 | 2026-06-21 | **3.1.1** In-App Purchase (Restore) | App offers restorable IAP but no distinct **"Restore Purchases"** button; auto-restore on launch ≠ acceptable | The only Restore control lived inside the paywall's purchase section, gated `proUnlockEnabled && !isPro` → it **vanished once purchased**, and Settings had no IAP-restore button (only a same-named "Restore from file" backup button, which misleads) | Added a distinct, always-present "Restore purchases" button in **Settings → Pro plan** (gated only on `proUnlockEnabled`) and a dedicated always-visible Restore section in the **Paywall**; restore returns a precise outcome (restored / nothing-to-restore / failed) with an alert. See [3.1.1 deep-dive](#guideline-311--restore-purchases-the-pattern). |
+| 3 | 2026-06-22 | **2.1 / 5.1.1** Broken listing URLs (pre-submission catch) | Support / Privacy / Legal URLs in the listing copy returned **HTTP 404** — the app's marketing site never hosted those pages, and the copy wrongly pointed them at the **backend API host** (which serves JSON routes only, no static pages) | Listing copy was written against the backend subdomain (`<api-host>/privacy`) instead of the marketing host; the marketing site had the app's sibling pages but not this app's | Created `dep.app/sub-player/{index,privacy,terms,support}.html` on the marketing host (same template as the sibling app) and **repointed every listing/review-notes URL** (`en-US.md`, `listing.html`, `SUBMISSION-GUIDE.md`, `docs/APPSTORE.md`, localized copy) to `dep.app/sub-player/*`. The backend subdomain is now referenced **only** where review notes explain the gateway. Caught by the [URL-live recipe](#fast-verification-recipes) before submit — no rejection, but it *would* have been a clean 2.1/5.1.1 reject. |
 
 **Pattern across both:** a required thing existed in the code but was **not
 reachable in the state the reviewer was in.** That's the failure mode to hunt.
@@ -52,8 +53,19 @@ Group by guideline area. ☐ = must verify every submission.
 - ☐ No mention of external/web purchasing or other payment methods for digital goods.
 - ☐ Non-consumable: don't use "free trial" wording that implies an auto-renewing subscription. An app-managed trial is fine if described as one-time.
 
+### 3.1.2 — Auto-renewable subscription disclosure
+> Reviewers reproduce subscription terms from the **binary**, not just App Store
+> Connect. If the disclosure is incomplete in-app, you get 3.1.2 even when ASC is
+> correct. Apple requires it "clearly and conspicuously".
+- ☐ The paywall shows, **inline (not only inside a Terms sheet)**: subscription **title**, **length/period**, **price per period**, and a one-line **auto-renew disclosure** ("Automatically renews unless cancelled at least 24 hours before the end of the current period").
+- ☐ **Free-trial terms** are stated where a trial is offered: trial length, what happens at conversion (paid subscription begins), and that you can cancel during the trial. Don't show a "free trial" badge without the conversion sentence.
+- ☐ **Terms of Use / EULA** and **Privacy Policy** are reachable from the paywall as tappable links (sheets or external URLs that return 200).
+- ☐ If you offer **multiple cadences** (weekly/monthly/yearly/lifetime), each plan's price + period is shown; a plan with no trial must not be captioned as having one.
+- ☐ Don't sell a subscription whose **"ongoing value"** Apple can't see — a subscription that unlocks a static one-time deliverable (e.g. a one-off content drop) is a common 3.1.2 reject. The Pro entitlement must deliver continuing value (unlimited use, ongoing features).
+
 ### 2.1 — App completeness
 - ☐ No placeholder/lorem/"coming soon" content, no dead buttons, no broken links.
+- ☐ **Every URL in the listing returns HTTP 200 anonymously** — Support, Privacy, Marketing, any URL in review notes (e.g. a takedown contact). Run the [URL-live recipe](#fast-verification-recipes) against the **repo listing files** to collect every URL, then curl each as an anonymous visitor (no auth cookie). A 404/redirect-to-login/private-repo URL is an automatic 2.1/5.1.1 reject. **Don't trust the repo's copy as the source of truth** — cross-check against the live App Store Connect value; they drift apart after manual edits. (See ledger #3.)
 - ☐ App doesn't crash on launch on the **reviewer's device class** (they test iPad too — see 4.0).
 - ☐ Demo account / reviewer notes provided if any gating exists.
 - ☐ Every advertised feature actually works on this platform build.
@@ -71,6 +83,17 @@ Group by guideline area. ☐ = must verify every submission.
 - ☐ App Privacy "nutrition label" matches reality. If "Data Not Collected" is claimed in-app, there must be **no network/analytics/tracking SDK** in the binary.
 - ☐ `Info.plist` contains **only the permission usage strings the app actually uses.** A stray `NS*UsageDescription` invites "why do you need this?" questions. No `NSUserTrackingUsageDescription` unless ATT is actually used.
 
+### 4.3 — Spam / "apps that do not add value" (Design)
+> Top single reason for rejection (~28%). Apple **tightened 4.3 on June 9 2026** —
+> see [researched refinements](#researched-refinements-sharp-checks-worth-singling-out).
+> Once flagged, a note sticks to the developer's file; subsequent submissions get
+> harder. Hardest on **saturated categories** (video players, timers, calculators,
+> matchstick puzzles, notes).
+- ☐ The app has a **clear, demonstrable differentiator** vs. the obvious alternatives — and that USP is **shown** in screenshots/preview, not just claimed in copy. If a reviewer can name two apps that do the same thing, you're at risk.
+- ☐ Not a reskin/template/cookie-cutter of another app under the same account (shared source, shared assets, near-identical UI). **Own every visual asset** (icon, screenshots, preview video); don't lift stock/copyrighted art into metadata (separate **IP.6.1** metadata reject — fixable without a new build, but still a reject).
+- ☐ For a **new** account/app in a saturated category, the app clears a genuine usefulness bar, not just "it works". Reviewer notes should spell out *why this exists*, not just *how to test it*.
+- ☐ No duplicate apps under the same Apple ID doing essentially the same job (consolidate, don't multiply).
+
 ### 2.3.1 / 2.5 — Hidden features, debug code, APIs
 - ☐ **No debug/QA hook can activate in a release build.** Every launch-arg / test path is wrapped in `#if DEBUG`; the flags it sets default to inert.
 - ☐ No hidden/undocumented features toggled by special input.
@@ -85,6 +108,29 @@ Group by guideline area. ☐ = must verify every submission.
 ### 4.0 — Design & device coverage
 - ☐ App is **fully usable on iPad** if the binary targets iPad (reviewers test iPad Air/Pro). No iPhone-only layout that hides controls on a regular-width size class. **Both 2.3.4 and 3.1.1 above were reviewed on iPad** — test there.
 - ☐ Supports the orientations it declares; no truncated/inaccessible controls; Dynamic Type / large text doesn't clip critical buttons.
+
+---
+
+## Google Play — pre-submission checklist
+
+Same philosophy, different scanner: Play review is more automated, and **Play
+Protect** does static pattern-matching on the binary. Real rejection basis: a
+crypto-adjacent build flagged as suspicious purely because unobfuscated
+wallet/signing symbols were visible in the bytecode.
+
+### Play Protect / binary hygiene
+- ☐ **R8/ProGuard on for release**: `isMinifyEnabled = true` + `isShrinkResources = true` + a real `proguard-rules.pro` (keep rules for the engine, reflection paths, SDKs). Unobfuscated financial/crypto symbols (`signAndSendTransactions`, `Base58`, wallet classes) pattern-match malware signatures.
+- ☐ **v2+ APK signing** (`enableV2Signing = true` minimum; v3 for key rotation). v1-only is rejected. Verify alignment: `zipalign -c 4 app.apk`.
+- ☐ `targetSdkVersion` meets Play's current floor (rises yearly — check the current requirement, ≥34 as of 2024).
+- ☐ **Permissions audit**: nothing high-risk without justification (`READ_SMS`, `SYSTEM_ALERT_WINDOW`, `REQUEST_INSTALL_PACKAGES`, accessibility). Every permission in the manifest maps to a visible feature.
+- ☐ No dynamic code loading (`DexClassLoader` on downloaded code, remote `.so`) — all code bundled at build time.
+- ☐ Wire these as **automated pre/post-build checks in the release script** (verify R8 on, proguard file non-trivial, signing scheme, alignment) so a misconfigured build can't ship.
+
+### Listing & policy
+- ☐ **Data safety form matches the binary** (Play's version of the privacy label) — declared collection/sharing = actual SDK behaviour.
+- ☐ Billing: same "distinct Restore purchases button" rule as 3.1.1 (`queryPurchasesAsync()` behind an explicit control).
+- ☐ Promo video is a **YouTube link** (vertical 1080×1920 is fine; Play tolerates device frames and >30s, but keep the same story as the screenshots).
+- ☐ If rejected/flagged: check Play Console pre-launch report first; `bundletool validate`; appeal false positives with a plain-language description of the legitimate functionality.
 
 ---
 
@@ -157,6 +203,19 @@ When this guard flags a 2.3.x metadata risk, hand the asset work to
 Run these against the repo before submitting (paths are examples; adapt):
 
 ```bash
+# 2.1 / 5.1.1 — collect EVERY url in the listing/review-notes copy, then curl
+# each as an anonymous visitor. Any non-200 (404, redirect-to-login, private repo)
+# is a blocker. Run from the repo root.
+grep -rhoE 'https?://[^ )"`>]+' appstore/ docs/APPSTORE*.md \
+  | grep -vE 'developer\.apple\.com|apps\.apple\.com/account|archive\.org|microsoft|googleapis' \
+  | sort -u | while read -r u; do
+      code=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 10 "$u")
+      printf '%-55s %s\n' "$code" "$u"; done
+#   → every line must be 200. Re-check the LIVE App Store Connect value too;
+#     repo files and ASC drift apart after manual edits.
+```
+
+```bash
 # 3.1.1 — is there a Restore control NOT gated behind purchase state?
 grep -rn "Restore purchases\|AppStore.sync\|restorePurchases" ios/ --include="*.swift"
 #   → expect a button in Settings gated only on the IAP flag, plus an always-visible paywall section.
@@ -196,9 +255,12 @@ must be visible and working in all four.
 
 ## Researched refinements (sharp checks worth singling out)
 
-These came out of researching current (guidelines revised **Nov 13 2025**) reviewer behaviour — the non-obvious ways the "obvious" items still fail:
+These came out of researching current (guidelines revised **Nov 13 2025**; **4.3 tightened Jun 9 2026**) reviewer behaviour — the non-obvious ways the "obvious" items still fail:
 
-- **Verify links as an anonymous visitor.** A Support/Privacy URL that 404s, hits a login wall, or points to a **private** repo is a routine reject. `curl -s -o /dev/null -w '%{http_code}' -L <url>` must return `200` with **no auth**; also open in a private window. **Check the LIVE App Store Connect value, not the repo's copy** — repo listing files drift out of sync (this app's `en-US.md` still held dead GitHub URLs while ASC actually used working `dep.app` ones; auditing the repo alone would have raised a false blocker *and* missed the real source of truth).
+- **The 4.3 "value" bar moved up (Jun 9 2026).** Apple expanded **4.3 Spam** to "apps that do not add value to the App Store" and can now **remove already-published apps** for low engagement in saturated categories — not just reject new ones. This is the single most common reject (~28% in 2026 surveys). Hardest hit: **video players, timers, calculators, notes, matchstick puzzles**. For a utility app, the differentiator must be *visible in the first screenshot*, and review notes should argue *why it exists*, not just *how to test it*. Once a reviewer leaves a 4.3 note on your developer file, future submissions get scrutinized harder — avoid the first flag at all costs. (Sources: 9to5Mac, MacRumors, MediaNama — Jun 2026.)
+- **2026 reject leaderboard.** Community/App-figure data puts the top reasons at **4.3 Spam ≈28%**, then **2.1 Completeness** (bugs/broken links/missing demo), **5.1.1 Privacy** (policy URL dead / label ≠ binary), **3.1.2 Subscription disclosure**, and **IP.6.1 metadata** (trademarked art/names in icon/screenshots/description — fixable *without* a new build). Design your pre-flight around this order, not alphabetical.
+- **3.1.2 disclosure must live in the binary, "clearly and conspicuously."** Apple reproduces the subscription terms from the **app**, not App Store Connect. The minimum inline set on the paywall: title, period, price/period, the "auto-renews unless cancelled ≥24h before period end" sentence, trial length + conversion sentence (where a trial exists), and tappable Terms + Privacy links. Hiding any of these only inside a Terms sheet is the common miss. A subscription whose "ongoing value" isn't demonstrable (a one-time content drop sold as a sub) is a separate, harder 3.1.2 reject — use a non-consumable for those.
+- **Verify links as an anonymous visitor.** A Support/Privacy URL that 404s, hits a login wall, or points to a **private** repo is a routine reject. `curl -s -o /dev/null -w '%{http_code}' -L <url>` must return `200` with **no auth**; also open in a private window. **Check the LIVE App Store Connect value, not the repo's copy** — repo listing files drift out of sync (ledger #3: copy pointed Support/Privacy/Legal at the **backend API host** which serves only JSON routes; the real pages lived on the marketing host). Use the [URL-live recipe](#fast-verification-recipes) to collect *every* URL from the repo, not just the ones you remember.
 - **Restore must call `AppStore.sync()` only behind the button** (never on launch) and re-read **`Transaction.currentEntitlements`** — not `Transaction.all` (which includes refunded/revoked) — taking only `.verified` results with `revocationDate == nil`. Never show a custom Apple-ID/password field.
 - **Every restore tap needs visible feedback in every screen that hosts the button.** A `Task { await store.restore() }` that discards the result is a gap: `.nothingToRestore` often clears the error state, so the user sees a spinner stop and *nothing*. Capture the outcome and alert (restored / nothing / failed) regardless of entitlement state.
 - **Background modes ↔ real tasks (2.5.4).** Declaring `processing` in `UIBackgroundModes` with no `BGProcessingTaskRequest` (or `fetch` with no `BGAppRefreshTaskRequest`) is flagged. Every `BGTaskScheduler` id must also be in `BGTaskSchedulerPermittedIdentifiers` and registered before launch finishes, or you get **ITMS-90771** at upload.
@@ -216,3 +278,12 @@ These came out of researching current (guidelines revised **Nov 13 2025**) revie
 - User Privacy and Data Use (ATT, tracking definition, purpose strings) — https://developer.apple.com/app-store/user-privacy-and-data-use/
 - Restore IAP with StoreKit 2 (`AppStore.sync` + `currentEntitlements`) — https://tanaschita.com/20231009-restore-in-app-purchases-storekit/
 - `BGTaskScheduler` — https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler
+
+### 2026 rejection-frequency & guideline-update research (added Jun 22 2026)
+
+- Apple tightens 4.3 — "apps that do not add value", removal of published low-engagement apps — https://9to5mac.com/2026/06/09/apple-tightens-app-review-guidelines-against-apps-that-do-not-add-value-to-the-app-store/ and https://www.macrumors.com/2026/06/09/app-store-guidelines-low-quality-apps/ and https://www.medianama.com/2026/06/223-apple-remove-app-store-apps-low-engagement/
+- Auto-renewable Subscriptions (in-app presentation requirements) — https://developer.apple.com/app-store/subscriptions/
+- App Review Guideline updates (news feed, incl. 3.1.2(a) changes) — https://developer.apple.com/news/?id=xqk627qu
+- Adapty 2026 checklist (subscription disclosure table) — https://adapty.io/blog/how-to-pass-app-store-review/
+- RevenueCat – Ultimate Guide to App Store Rejections — https://www.revenuecat.com/blog/growth/the-ultimate-guide-to-app-store-rejections/
+- App Store rejection reasons index (2026 heatmap: 4.3, 2.1, 5.1.1 dominant) — https://pushmyapp.ai/blog/app-store-rejection-reasons

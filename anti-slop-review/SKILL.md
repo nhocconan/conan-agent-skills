@@ -22,6 +22,11 @@ Published content carries the author's name. Fabricated facts and AI-flavored fi
 - Walls of bullet padding that restate the heading.
 - Em-dash-and-triad rhythm, "it's not just X, it's Y", and other tells of unedited model output.
 
+## Layout slop (pages and slides are content too)
+- No metaphor/tagline line under a heading; no subtitle that restates the title in different words. A heading either stands alone or is followed by real information.
+- Landing/showcase pages lead with ONE hero element (the strongest visual or claim); everything else becomes compact grouped detail below — not a parade of equal-weight sections each with its own breathless intro.
+- Cut decorative stat rows ("3 easy steps", "100% awesome") and icon-grid filler that carries no verifiable information.
+
 ## Language & readability
 - Proofread for real spelling errors and tone consistency in whatever language the content is in. For non-English content, watch for the homophone/diacritic mistakes native readers notice instantly.
 - Match the content's existing language; keep technical terms in their conventional form (often English) where that reads naturally.
