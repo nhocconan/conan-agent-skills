@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  INTERACTIVE COURSE — STARTER TEMPLATE  (house standard for ALL courses)
+  ----------------------------------------------------------------------------
+  Self-contained single file. No build step, no framework. Renders standalone
+  in a browser AND inside an LMS iframe (progress auto-reports via postMessage;
+  the messages are harmless when no LMS is listening).
+
+  HOW TO USE
+    1. Copy this file to  courses/<your-slug>.html
+    2. Set COURSE_SLUG + COURSE_TITLE + the LESSONS array in the <script> at the
+       bottom. The sidebar, progress bar, pagination and completion screen all
+       derive from that array — you never hand-maintain nav.
+    3. Pick a theme:  <body data-theme="navy">  (navy is canonical/default).
+       Color mode: LIGHT by default; dark is the topbar toggle (persisted).
+    4. Set  <html lang="…">  to the course's language (vi/en/…).
+    5. Author lessons by copying the COMPONENT blocks below. Every lesson MUST
+       end with a Takeaway and a Quiz, and carry a Level badge (L1–L5) and a
+       reading-time chip.
+    6. Run through the Authoring Checklist in reference.md before shipping.
+
+  Search the file for  "COMPONENT:"  to jump between reusable blocks.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Title · Standalone Subtitle</title>
+<meta name="description" content="One-sentence course description for the catalog card and social preview.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   1 · DESIGN TOKENS  — the single source of truth. Components only read tokens,
+   never raw hex. Swap the accent trio per course via [data-theme]; swap the
+   whole surface set via the data-mode toggle. Nothing below §1 hardcodes color.
+   ============================================================================ */
+:root{
+  /* Brand constants (immutable across themes) */
+  --brand-navy:#0a2540;  --brand-navy-deep:#061b33;
+  --brand-sky:#2563eb;   --brand-coral:#ea403f;
+  --brand-gold:#ffe14e;  --brand-red:#d82827;
+
+  /* Accent trio — the course's identity. Overridden per [data-theme]. */
+  --accent:#0a2540;          /* primary ink accent, headings, active nav   */
+  --accent-2:#2563eb;        /* links, focus, gradient bridge              */
+  --accent-3:#ea403f;        /* reserved kicker (danger, mandatory, hero)  */
+  --grad:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 55%,var(--accent-3) 100%);
+  --grad-bar:linear-gradient(90deg,var(--accent) 0%,var(--accent-2) 55%,var(--accent-3) 100%);
+
+  /* Semantic surfaces (light) */
+  --bg:#ffffff;          --surface:#ffffff;     --surface-2:#f1f5f9;
+  --surface-3:#eef2f7;   --border:#e2e8f0;      --border-strong:#cbd5e1;
+  --ink:#0a2540;         --ink-2:#475569;       --ink-3:#64748b;
+  --on-accent:#ffffff;
+
+  /* Status */
+  --success:#15a37a;  --success-bg:#ecfdf5;
+  --warning:#d97706;  --warning-bg:#fffbeb;
+  --danger:#dc2626;   --danger-bg:#fef2f2;
+  --info:#2563eb;     --info-bg:#eff6ff;
+
+  /* Type */
+  --font-body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,'SF Mono',Consolas,monospace;
+
+  /* Rhythm */
+  --radius:16px;  --radius-sm:10px;  --radius-lg:22px;
+  --shadow-sm:0 1px 2px rgba(10,37,64,.06),0 1px 3px rgba(10,37,64,.05);
+  --shadow-md:0 4px 12px rgba(10,37,64,.10);
+  --shadow-lg:0 18px 48px -12px rgba(10,37,64,.28);
+  --sidebar-w:288px;  --maxw:820px;
+  --focus:0 0 0 2px var(--bg),0 0 0 4px var(--accent-2);
+}
+
+/* ---- Approved standalone themes (structure identical, accent swapped) ---- */
+[data-theme="navy"]  {--accent:#0a2540; --accent-2:#2563eb; --accent-3:#ea403f;} /* canonical */
+[data-theme="midnight"]{--accent:#0b1f3a; --accent-2:#2f6bff; --accent-3:#ff5a3c;} /* navy family, coral kicker */
+[data-theme="indigo"]{--accent:#312e81; --accent-2:#6366f1; --accent-3:#f59e0b;}
+[data-theme="teal"]  {--accent:#0f766e; --accent-2:#14b8a6; --accent-3:#f97316;}
+[data-theme="plum"]  {--accent:#4a1d52; --accent-2:#a855f7; --accent-3:#ec4899;}
+[data-theme="slate"] {--accent:#1e293b; --accent-2:#0ea5e9; --accent-3:#ef4444;}
+
+/* ---- Dark mode: TOGGLE-ONLY (house rule: default is ALWAYS light — never
+   prefers-color-scheme). The engine sets data-mode="dark" on <body> from the
+   topbar toggle and persists the choice. Only surfaces + ink flip; accents
+   lighten just enough to stay legible. ---- */
+body[data-mode="dark"]{
+  --bg:#0a0d18;        --surface:#11141f;     --surface-2:#161a27;
+  --surface-3:#1b2130; --border:#232938;      --border-strong:#333b50;
+  --ink:#e7e9f1;       --ink-2:#9aa3b8;       --ink-3:#7d879c;
+  --accent:#93b4ff;    --accent-2:#60a5fa;
+  --success:#2dd4a8;   --success-bg:#0c2a22;
+  --warning:#fbbf24;   --warning-bg:#2a2109;
+  --danger:#f87171;    --danger-bg:#2a1213;
+  --info:#60a5fa;      --info-bg:#0e223f;
+  --shadow-lg:0 18px 48px -12px rgba(0,0,0,.6);
+  --focus:0 0 0 2px var(--bg),0 0 0 4px var(--accent-2);
+}
+body[data-mode="dark"][data-theme="teal"]{--accent:#5eead4}
+body[data-mode="dark"][data-theme="indigo"]{--accent:#a5b4fc}
+body[data-mode="dark"][data-theme="midnight"]{--accent:#93b4ff}
+body[data-mode="dark"][data-theme="plum"]{--accent:#d8b4fe}
+body[data-mode="dark"][data-theme="slate"]{--accent:#7dd3fc}
+
+/* ============================================================================
+   2 · RESET + BASE
+   ============================================================================ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+body{
+  font-family:var(--font-body); background:var(--bg); color:var(--ink);
+  font-size:16px; line-height:1.65; -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+h1,h2,h3,h4{line-height:1.2;font-weight:700;letter-spacing:-.02em;color:var(--ink)}
+a{color:var(--accent-2);text-decoration:none}
+a:hover{text-decoration:underline}
+strong{font-weight:700;color:var(--ink)}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);
+  padding:.12em .4em;border-radius:6px;border:1px solid var(--border);color:var(--ink)}
+:focus-visible{outline:none;box-shadow:var(--focus);border-radius:6px}
+.mono{font-family:var(--font-mono)}
+.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent-2);font-weight:600}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* Skip link (a11y) */
+.skip-link{position:fixed;top:-60px;left:12px;z-index:200;background:var(--accent);
+  color:#fff;padding:10px 16px;border-radius:8px;transition:top .15s}
+.skip-link:focus{top:12px;text-decoration:none}
+
+/* ============================================================================
+   3 · LAYOUT — fixed sidebar + scrollable main
+   ============================================================================ */
+.layout{display:flex;min-height:100vh}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar-w);height:100vh;
+  background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;z-index:40}
+.sidebar-brand{padding:20px 20px 14px;border-bottom:1px solid var(--border)}
+.sidebar-brand-title{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.sidebar-brand-title em{font-style:normal;color:var(--accent-3)}
+.sidebar-brand-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-3);
+  letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+.progress-wrap{padding:12px 20px;border-bottom:1px solid var(--border)}
+.progress-meta{display:flex;justify-content:space-between;font-family:var(--font-mono);
+  font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.progress-track{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:var(--grad-bar);border-radius:99px;transition:width .3s ease}
+.nav-scroll{flex:1;overflow-y:auto;padding:12px 10px 24px}
+.nav-scroll::-webkit-scrollbar{width:6px}
+.nav-scroll::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+.nav-group{margin-top:18px}.nav-group:first-child{margin-top:4px}
+.nav-part{display:flex;align-items:center;gap:8px;padding:0 10px 8px;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);font-weight:600}
+.nav-part::after{content:"";flex:1;height:1px;background:var(--border)}
+.nav-link{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;
+  font-size:13.5px;color:var(--ink-2);cursor:pointer;transition:background .12s;border-left:2px solid transparent}
+.nav-link:hover{background:var(--surface-2);text-decoration:none}
+.nav-link.active{background:var(--surface-2);color:var(--ink);font-weight:600;border-left-color:var(--accent)}
+.nav-dot{width:7px;height:7px;border-radius:99px;background:var(--border-strong);flex-shrink:0;transition:background .2s}
+.nav-link.done .nav-dot{background:var(--success);box-shadow:0 0 8px color-mix(in srgb,var(--success) 45%,transparent)}
+.nav-num{font-family:var(--font-mono);font-size:10px;color:var(--ink-3);width:18px;flex-shrink:0}
+.nav-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.main{flex:1;margin-left:var(--sidebar-w);min-width:0}
+.container{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+/* Mobile toggle + backdrop */
+.mobile-toggle{display:none;position:fixed;top:14px;left:14px;z-index:60;
+  background:var(--accent);color:#fff;border:none;border-radius:10px;padding:9px;cursor:pointer;box-shadow:var(--shadow-md)}
+.backdrop{display:none;position:fixed;inset:0;background:rgba(10,14,10,.5);z-index:35}
+@media (max-width:1024px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s ease;box-shadow:var(--shadow-lg)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .mobile-toggle{display:block}
+  .backdrop.show{display:block}
+  .container{padding:0 18px}
+  .main .topbar{padding-left:66px}
+  .main .topbar-mini{display:none}
+}
+
+/* ============================================================================
+   4 · TOPBAR
+   ============================================================================ */
+.topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 85%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:10px 24px;
+  font-family:var(--font-mono);font-size:11px;color:var(--ink-2)}
+.topbar-mini{height:3px;background:var(--surface-2);border-radius:99px;flex:1;max-width:180px;margin:0 16px;overflow:hidden}
+.topbar #tb-crumb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.topbar-mini-fill{height:100%;width:0;background:var(--grad-bar);transition:width .3s}
+.topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.mode-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:34px;
+  border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--ink-2);
+  cursor:pointer;font-size:15px;line-height:1;transition:border-color .15s,color .15s}
+.mode-toggle:hover{border-color:var(--accent-2);color:var(--ink)}
+
+/* ============================================================================
+   5 · HERO / COVER
+   ============================================================================ */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--border);
+  background:var(--surface);
+  background-image:
+    radial-gradient(760px 300px at 88% -12%,color-mix(in srgb,var(--brand-gold) 24%,transparent),transparent 60%),
+    radial-gradient(640px 380px at 6% 112%,color-mix(in srgb,var(--accent-2) 14%,transparent),transparent 60%),
+    radial-gradient(560px 340px at 50% 0%,color-mix(in srgb,var(--accent) 8%,transparent),transparent 65%)}
+.hero-inner{max-width:var(--maxw);margin:0 auto;padding:72px 24px 60px}
+.hero-kicker{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-2);
+  border:1px solid var(--border);border-radius:99px;padding:5px 12px;background:var(--surface)}
+.hero h1{font-size:clamp(2.1rem,5vw,3.4rem);font-weight:800;margin:20px 0 0;letter-spacing:-.03em}
+.hero-sub{font-size:clamp(1rem,2vw,1.2rem);color:var(--ink-2);margin-top:18px;max-width:60ch}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;
+  color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:6px 12px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;
+  padding:12px 22px;border-radius:12px;cursor:pointer;border:1px solid transparent;transition:transform .15s,box-shadow .15s}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{text-decoration:none;transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.btn-ghost{background:var(--surface);color:var(--ink);border-color:var(--border)}
+.btn-ghost:hover{text-decoration:none;border-color:var(--accent)}
+
+/* ============================================================================
+   6 · TOC / CURRICULUM
+   ============================================================================ */
+.section-pad{padding:56px 0}
+.section-head{display:flex;align-items:baseline;gap:14px;margin-bottom:28px}
+.section-head h2{font-size:1.9rem}
+.section-head .line{flex:1;height:1px;background:var(--border)}
+.toc-part-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);font-weight:600;margin:26px 0 12px}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.toc-card{display:flex;gap:14px;align-items:flex-start;padding:16px;border:1px solid var(--border);
+  border-radius:var(--radius);background:var(--surface);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s}
+.toc-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--accent);text-decoration:none}
+.toc-card-num{font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--accent-2);line-height:1}
+.toc-card-title{display:block;font-weight:700;font-size:15px;color:var(--ink)}
+.toc-card-desc{display:block;font-size:12.5px;color:var(--ink-2);margin-top:4px;line-height:1.5}
+.toc-card>span:last-child{display:block}
+
+/* ============================================================================
+   7 · LESSON PAGINATION (one lesson visible at a time)
+   ============================================================================ */
+.module-header,.lesson,.pane{display:none}
+.module-header.active,.lesson.active,.pane.active{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.module-header{padding:44px 0 6px}
+.module-header .eyebrow{margin-bottom:10px;display:block}
+.module-header h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800}
+.module-header p{color:var(--ink-2);margin-top:14px;font-size:1.05rem;max-width:62ch}
+
+.lesson{margin:22px 0 40px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+.lesson-head{background:var(--grad);color:#fff;padding:26px 30px}
+.lesson-head .eyebrow{color:color-mix(in srgb,var(--brand-gold) 90%,#fff)}
+.lesson-head h3{color:#fff;font-size:clamp(1.4rem,3vw,1.9rem);margin-top:4px}
+.lesson-body{padding:26px 30px 6px;font-size:16px}
+.lesson-body>*+*{margin-top:18px}
+.lesson-body p{color:var(--ink)}
+.lesson-body ul,.lesson-body ol{padding-left:22px;color:var(--ink)}
+.lesson-body li+li{margin-top:6px}
+@media (max-width:640px){.lesson-head,.lesson-body{padding-left:20px;padding-right:20px}}
+
+/* COMPONENT: Level badge (L1–L5 progression) */
+.level-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;
+  padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.level-dots{display:inline-flex;gap:3px}
+.level-dots i{width:5px;height:5px;border-radius:99px;background:rgba(255,255,255,.35)}
+.level-dots i.on{background:var(--brand-gold)}
+
+/* COMPONENT: Learning objectives */
+.objectives{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.objectives .eyebrow{margin-bottom:8px;display:block}
+.objectives ul{list-style:none;padding:0}
+.objectives li{position:relative;padding-left:26px;color:var(--ink-2);font-size:14.5px}
+.objectives li::before{content:"→";position:absolute;left:4px;color:var(--accent-2);font-weight:700}
+
+/* COMPONENT: Callout (info / warn / success / danger / insight) */
+.callout{border-radius:var(--radius);padding:16px 18px 16px 46px;position:relative;
+  border:1px solid var(--border);background:var(--surface-2)}
+.callout::before{position:absolute;left:16px;top:15px;font-size:17px;line-height:1}
+.callout-title{font-weight:700;font-size:14px;margin-bottom:3px}
+.callout p{font-size:14.5px;color:var(--ink-2)}
+.callout.info{border-color:color-mix(in srgb,var(--info) 40%,var(--border));background:var(--info-bg)}
+.callout.info::before{content:"ℹ️"}
+.callout.warn{border-color:color-mix(in srgb,var(--warning) 45%,var(--border));background:var(--warning-bg)}
+.callout.warn::before{content:"⚠️"}
+.callout.success{border-color:color-mix(in srgb,var(--success) 45%,var(--border));background:var(--success-bg)}
+.callout.success::before{content:"✅"}
+.callout.danger{border-color:color-mix(in srgb,var(--danger) 45%,var(--border));background:var(--danger-bg)}
+.callout.danger::before{content:"🛑"}
+.callout.insight{border-color:color-mix(in srgb,var(--accent-2) 40%,var(--border));background:var(--info-bg)}
+.callout.insight::before{content:"💡"}
+
+/* COMPONENT: Comparison grid (do / don't, novice / power-user) */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.compare{grid-template-columns:1fr}}
+.compare-col{border-radius:var(--radius);padding:16px 18px;border-left:4px solid}
+.compare-col .eyebrow{margin-bottom:4px;display:block}
+.compare-col ul{list-style:none;padding:0;font-size:14px}
+.compare-col li{position:relative;padding-left:18px;margin-top:7px;color:var(--ink-2)}
+.compare-col li::before{position:absolute;left:0;font-weight:700}
+.compare-col.bad{border-color:var(--danger);background:var(--danger-bg)}
+.compare-col.bad .eyebrow{color:var(--danger)}
+.compare-col.bad li::before{content:"✕";color:var(--danger)}
+.compare-col.good{border-color:var(--success);background:var(--success-bg)}
+.compare-col.good .eyebrow{color:var(--success)}
+.compare-col.good li::before{content:"✓";color:var(--success)}
+
+/* COMPONENT: Mental model / concept box */
+.concept{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px}
+.concept .eyebrow{margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.concept .eyebrow::before{content:"";width:8px;height:8px;border-radius:99px;background:var(--accent-2)}
+.concept h4{margin-bottom:6px}
+
+/* COMPONENT: Figure + SVG diagram (or optimized raster image — see reference §3) */
+.figure{margin:4px 0;border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;background:var(--surface)}
+.figure svg{display:block;width:100%;height:auto;background:var(--surface)}
+.figure img{display:block;width:100%;height:auto}
+.figure figcaption{padding:10px 16px;font-size:12.5px;color:var(--ink-2);
+  border-top:1px solid var(--border);background:var(--surface-2)}
+.figure figcaption b{color:var(--ink)}
+/* diagram token helpers for inline SVG (use via class on SVG elements) */
+.dgm-box{fill:var(--surface-2);stroke:var(--border-strong)}
+.dgm-accent{fill:color-mix(in srgb,var(--accent-2) 14%,var(--surface));stroke:var(--accent-2)}
+.dgm-warn{fill:var(--warning-bg);stroke:var(--warning)}
+.dgm-ink{fill:var(--ink)}
+.dgm-ink2{fill:var(--ink-2)}
+.dgm-line{stroke:var(--ink-3);fill:none}
+.dgm-flow{stroke:var(--accent-2);fill:none}
+
+/* COMPONENT: Prompt / code card with copy button */
+.prompt-card,.code-card{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.prompt-head{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;
+  background:var(--surface-2);border-bottom:1px solid var(--border);
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.copy-btn{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:4px 10px;cursor:pointer;color:var(--ink-2);transition:all .15s}
+.copy-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.copy-btn.copied{background:var(--success);color:#fff;border-color:var(--success)}
+.prompt-card pre,.code-card pre{margin:0;padding:16px;overflow-x:auto;
+  font-family:var(--font-mono);font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:var(--ink)}
+.code-card pre{white-space:pre;word-break:normal}
+.tok-c{color:var(--ink-3);font-style:italic}       /* comment */
+.tok-k{color:var(--accent-3);font-weight:600}       /* keyword */
+.tok-s{color:var(--success)}                        /* string  */
+
+/* COMPONENT: Accordion "Apply" */
+details.accordion{border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);overflow:hidden}
+details.accordion+details.accordion{margin-top:8px}
+details.accordion>summary{list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
+details.accordion>summary::-webkit-details-marker{display:none}
+details.accordion>summary:hover{background:var(--surface-2)}
+.chev{color:var(--accent-2);transition:transform .2s;flex-shrink:0}
+details[open]>summary .chev{transform:rotate(90deg)}
+.accordion-body{padding:0 16px 16px 40px;font-size:14px;color:var(--ink-2)}
+.accordion-tag{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2)}
+
+/* COMPONENT: Steps / flow list */
+.steps{list-style:none;padding:0;counter-reset:s}
+.steps li{position:relative;padding:0 0 16px 44px;counter-increment:s}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:28px;height:28px;
+  border-radius:99px;background:var(--accent);color:var(--on-accent);font-family:var(--font-mono);
+  font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.steps li::after{content:"";position:absolute;left:13px;top:30px;bottom:2px;width:2px;background:var(--border)}
+.steps li:last-child::after{display:none}
+.steps h4{font-size:15px;margin-bottom:2px}
+.steps p{font-size:14px;color:var(--ink-2)}
+
+/* COMPONENT: Data table */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:460px}
+thead th{background:var(--surface-2);text-align:left;padding:11px 14px;font-family:var(--font-mono);
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--border)}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--ink);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+
+/* COMPONENT: Takeaway (mandatory, once per lesson) */
+.takeaway{background:var(--grad);color:#fff;border-radius:var(--radius);padding:22px 26px;position:relative;overflow:hidden}
+.takeaway .eyebrow{color:color-mix(in srgb,var(--brand-gold) 90%,#fff);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.takeaway p{color:#fff;font-size:1.12rem;font-weight:600;line-height:1.5}
+.takeaway .hl{color:var(--brand-gold)}
+
+/* COMPONENT: Quiz (mandatory, once per lesson) */
+.quiz{border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;background:var(--surface-2)}
+.quiz .eyebrow{margin-bottom:8px;display:block}
+.quiz-q{font-weight:700;color:var(--ink);margin-bottom:14px}
+.quiz-opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;
+  border:2px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;background:var(--surface);
+  cursor:pointer;font-size:14.5px;color:var(--ink);transition:all .13s}
+.quiz-opt+.quiz-opt{margin-top:8px}
+.quiz-opt:hover:not(:disabled){border-color:var(--accent-2);background:var(--info-bg)}
+.quiz-opt:disabled{cursor:default}
+.quiz-letter{font-family:var(--font-mono);font-weight:600;color:var(--ink-2);flex-shrink:0}
+.quiz-opt.correct{background:var(--success);color:#fff;border-color:var(--success)}
+.quiz-opt.correct .quiz-letter{color:#fff}
+.quiz-opt.wrong{background:var(--danger);color:#fff;border-color:var(--danger)}
+.quiz-opt.wrong .quiz-letter{color:#fff}
+.quiz-feedback{margin-top:14px;font-size:14px;padding:12px 14px;border-radius:var(--radius-sm);display:none}
+.quiz-feedback.show{display:block}
+.quiz-feedback.ok{background:var(--success-bg);color:var(--success);border:1px solid color-mix(in srgb,var(--success) 40%,transparent)}
+.quiz-feedback.no{background:var(--danger-bg);color:var(--danger);border:1px solid color-mix(in srgb,var(--danger) 40%,transparent)}
+
+/* COMPONENT: Lesson nav footer */
+.lesson-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;
+  padding:22px 30px 28px;border-top:1px solid var(--border);margin-top:22px}
+@media (max-width:720px){.lesson-nav{grid-template-columns:1fr}}
+.lesson-nav a,.lesson-nav button{display:flex;flex-direction:column;justify-content:center;
+  min-height:62px;border-radius:12px;padding:12px 18px;border:1px solid var(--border);
+  background:var(--surface-2);cursor:pointer;transition:all .15s;text-decoration:none}
+.lesson-nav a:hover{border-color:var(--accent);background:var(--surface);transform:translateY(-1px);box-shadow:var(--shadow-md);text-decoration:none}
+.lesson-nav .nav-next{text-align:right}
+.lesson-nav .nl-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.lesson-nav .nl-title{font-weight:600;font-size:14px;color:var(--ink);margin-top:3px}
+.lesson-nav .nav-empty{opacity:.4;pointer-events:none;border-style:dashed}
+.nav-complete{background:var(--accent);color:var(--on-accent);border-color:var(--accent);
+  align-items:center;flex-direction:row;justify-content:center;gap:8px;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.nav-complete:hover{background:var(--brand-navy-deep);transform:translateY(-1px)}
+.nav-complete.done{background:var(--grad)}
+
+/* COMPONENT: Completion screen */
+.complete{text-align:center;padding:70px 24px}
+.complete-badge{width:76px;height:76px;border-radius:99px;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 22px;color:#fff;font-size:34px}
+.complete h2{font-size:2.2rem}
+.complete p{color:var(--ink-2);max-width:52ch;margin:14px auto 0}
+
+footer.site{border-top:1px solid var(--border);padding:26px 24px;text-align:center;
+  font-family:var(--font-mono);font-size:11px;color:var(--ink-3)}
+
+/* Print: the active lesson prints clean (chrome hidden, card flattened) */
+@media print{
+  .sidebar,.topbar,.mobile-toggle,.backdrop,.lesson-nav,.skip-link{display:none!important}
+  .main{margin-left:0}
+  .lesson{box-shadow:none;border-color:#bbb}
+  body{background:#fff;color:#000}
+}
+</style>
+</head>
+<body data-theme="navy">
+<a href="#main" class="skip-link">Skip to content</a>
+
+<button class="mobile-toggle" aria-label="Open navigation" onclick="toggleSidebar()">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+<div class="backdrop" id="backdrop" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar" aria-label="Course navigation">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-title">Course <em>Name</em></div>
+      <div class="sidebar-brand-sub">N lessons · 2026 edition</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-meta"><span>Progress</span><span><b id="pg-done">0</b>/<span id="pg-total">0</span> · <span id="pg-pct">0</span>%</span></div>
+      <div class="progress-track" id="pg-track" role="progressbar" aria-label="Course progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-fill" id="pg-fill"></div></div>
+    </div>
+    <nav class="nav-scroll" id="nav-list" aria-label="Lessons"></nav>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main" id="main" tabindex="-1">
+    <div class="topbar">
+      <span class="mono" id="tb-crumb">Overview</span>
+      <div class="topbar-mini"><div class="topbar-mini-fill" id="tb-fill"></div></div>
+      <div class="topbar-actions">
+        <span class="mono" style="color:var(--ink-3)" aria-hidden="true">← → navigate</span>
+        <a href="#overview" class="mono" style="cursor:pointer">⌂ Overview</a>
+        <button class="mode-toggle" id="mode-toggle" onclick="toggleMode()" aria-label="Switch to dark mode" aria-pressed="false">🌙</button>
+      </div>
+    </div>
+
+    <!-- ---- OVERVIEW PANE (home) ---- -->
+    <section class="pane" id="overview" data-pane>
+      <div class="hero">
+        <div class="hero-inner">
+          <span class="hero-kicker">Interactive Course · 2026</span>
+          <h1><span class="grad-text">Course Title</span> that stands on its own</h1>
+          <p class="hero-sub">One or two sentences on who this is for and the transformation it delivers. Concrete outcome, not adjectives.</p>
+          <div class="hero-meta">
+            <span class="chip">⏱ ~X hours</span>
+            <span class="chip">📶 L1 → L5</span>
+            <span class="chip">🧩 N lessons</span>
+            <span class="chip">✅ Quizzes + takeaways</span>
+          </div>
+          <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
+            <a class="btn btn-primary" id="start-btn">Start learning →</a>
+            <a class="btn btn-ghost" href="#curriculum">See curriculum</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-pad" id="curriculum">
+        <div class="section-head"><h2>Curriculum</h2><span class="line"></span><span class="mono" style="font-size:11px;color:var(--ink-3)">click any lesson</span></div>
+        <div id="toc-body"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         MODULE 1  (copy this whole block per module)
+         ============================================================ -->
+    <div class="container">
+      <!-- COMPONENT: module header -->
+      <header class="module-header" data-module="1">
+        <span class="eyebrow">Module 01 · Part I · Foundations</span>
+        <h2>Module title in plain language</h2>
+        <p>One paragraph framing why this module matters and what the learner will be able to do after it.</p>
+      </header>
+
+      <!-- COMPONENT: lesson (copy per lesson) -->
+      <article class="lesson" id="m1-l1" data-lesson>
+        <div class="lesson-head">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+            <div>
+              <span class="eyebrow">Lesson 1.1</span>
+              <h3>A concrete lesson title</h3>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span class="level-badge">L1 · Foundations
+                <span class="level-dots"><i class="on"></i><i></i><i></i><i></i><i></i></span>
+              </span>
+              <span class="level-badge">⏱ ~4 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="lesson-body">
+
+          <div class="objectives">
+            <span class="eyebrow">By the end you can</span>
+            <ul>
+              <li>State the one idea this lesson turns on.</li>
+              <li>Apply it to a real situation from your own work.</li>
+              <li>Recognise the failure mode it prevents.</li>
+            </ul>
+          </div>
+
+          <p>Open with the <strong>problem the learner actually feels</strong>, not a definition. One vivid, concrete scenario beats three abstract sentences. Then name the idea.</p>
+
+          <!-- Callouts -->
+          <div class="callout insight"><div class="callout-title">Mental model</div><p>A one-line analogy the learner will remember a week later.</p></div>
+
+          <!-- Comparison -->
+          <div class="compare">
+            <div class="compare-col bad"><span class="eyebrow">Anti-pattern</span><ul><li>What people do wrong</li><li>And why it feels reasonable</li></ul></div>
+            <div class="compare-col good"><span class="eyebrow">Better</span><ul><li>What to do instead</li><li>And the mechanism it fixes</li></ul></div>
+          </div>
+
+          <!-- SVG figure -->
+          <figure class="figure">
+            <svg viewBox="0 0 640 200" role="img" aria-label="Example flow: input goes through a process box to an output">
+              <rect class="dgm-box" x="24" y="74" width="150" height="52" rx="10"/>
+              <text class="dgm-ink" x="99" y="105" text-anchor="middle" font-size="14" font-family="IBM Plex Mono">input</text>
+              <path class="dgm-flow" d="M174 100 H236" stroke-width="2" marker-end="url(#ah)"/>
+              <rect class="dgm-accent" x="236" y="66" width="168" height="68" rx="10" stroke-width="2"/>
+              <text class="dgm-ink" x="320" y="96" text-anchor="middle" font-size="14" font-weight="700">process</text>
+              <text class="dgm-ink2" x="320" y="116" text-anchor="middle" font-size="11" font-family="IBM Plex Mono">the idea in action</text>
+              <path class="dgm-flow" d="M404 100 H466" stroke-width="2" marker-end="url(#ah)"/>
+              <rect class="dgm-box" x="466" y="74" width="150" height="52" rx="10"/>
+              <text class="dgm-ink" x="541" y="105" text-anchor="middle" font-size="14" font-family="IBM Plex Mono">output</text>
+              <defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="var(--accent-2)"/></marker></defs>
+            </svg>
+            <figcaption><b>Figure 1.1</b> — Every diagram earns its place: it must show a relationship words alone make you hold in your head.</figcaption>
+          </figure>
+
+          <!-- Prompt card -->
+          <div class="prompt-card">
+            <div class="prompt-head"><span>Prompt · copy &amp; adapt</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre>You are a senior engineer. Context: &lt;paste&gt;.
+Task: &lt;one crisp objective&gt;.
+Constraints: &lt;bounds&gt;. Output: &lt;exact format&gt;.</pre>
+          </div>
+
+          <!-- Accordion apply -->
+          <div>
+            <span class="eyebrow" style="display:block;margin-bottom:10px">Apply it</span>
+            <details class="accordion"><summary><span class="chev">▶</span><span class="accordion-tag">Backend</span><span>A worked example for one audience</span></summary>
+              <div class="accordion-body">Show the before/after so the reader can copy the shape into their own work.</div>
+            </details>
+            <details class="accordion"><summary><span class="chev">▶</span><span class="accordion-tag">Data</span><span>A second audience</span></summary>
+              <div class="accordion-body">Different domain, same principle — that repetition is what makes it stick.</div>
+            </details>
+          </div>
+
+          <!-- Takeaway (MANDATORY) -->
+          <div class="takeaway">
+            <span class="eyebrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v6m0 8v6M4.9 4.9l4.2 4.2m5.8 5.8l4.2 4.2M2 12h6m8 0h6M4.9 19.1l4.2-4.2m5.8-5.8l4.2-4.2"/></svg>
+              Takeaway
+            </span>
+            <p>The one sentence you want the learner to repeat back. Put the <span class="hl">load-bearing phrase</span> in gold.</p>
+          </div>
+
+          <!-- Quiz (MANDATORY) -->
+          <div class="quiz" data-correct="1">
+            <span class="eyebrow">Quick check</span>
+            <p class="quiz-q">A scenario-based question — never trivia. Make the wrong answers plausible.</p>
+            <button class="quiz-opt" onclick="quizPick(this,0)"><span class="quiz-letter">A</span><span>A tempting but wrong answer.</span></button>
+            <button class="quiz-opt" onclick="quizPick(this,1)"><span class="quiz-letter">B</span><span>The correct answer, stated precisely.</span></button>
+            <button class="quiz-opt" onclick="quizPick(this,2)"><span class="quiz-letter">C</span><span>Another plausible distractor.</span></button>
+            <div class="quiz-feedback" role="status" data-explain="One sentence on WHY — reinforce the takeaway, don't just say 'correct'."></div>
+          </div>
+        </div>
+        <!-- lesson-nav is generated by JS; leave this placeholder empty -->
+        <div class="lesson-nav" data-navfor="m1-l1"></div>
+      </article>
+    </div><!-- /container module 1 -->
+
+    <!-- ---- COMPLETION PANE ---- -->
+    <section class="pane" id="complete" data-pane>
+      <div class="complete">
+        <div class="complete-badge">✓</div>
+        <h2>Course complete</h2>
+        <p>Summarise the transformation. Point to the next course in the path, and one concrete thing to do in the next 24 hours.</p>
+        <div style="margin-top:26px"><a class="btn btn-primary" href="#overview">Back to start</a></div>
+      </div>
+    </section>
+
+    <footer class="site">Interactive Course · built to the house standard</footer>
+  </main>
+</div>
+
+<script>
+/* ============================================================================
+   COURSE ENGINE  — framework-free. Configure the 3 constants + LESSONS array;
+   nav, progress, pagination, completion and LMS reporting all derive from it.
+   ============================================================================ */
+const COURSE_SLUG  = 'template-course';          // unique per course
+const COURSE_TITLE = 'Course Name';
+const STORAGE_PREFIX = 'ai-course:';
+
+/* One row per lesson, in order. `part` groups them in the sidebar. */
+const LESSONS = [
+  {id:'m1-l1', mod:1, part:'Part I · Foundations', title:'A concrete lesson title', desc:'What this lesson delivers.'},
+  // {id:'m1-l2', mod:1, part:'Part I · Foundations', title:'…', desc:'…'},
+];
+
+const PANES = ['overview','complete'];
+const LAST_KEY   = STORAGE_PREFIX+'last:'+COURSE_SLUG;
+const SCROLL_KEY = STORAGE_PREFIX+'scroll:'+COURSE_SLUG+':';
+const MODE_KEY   = STORAGE_PREFIX+'mode:'+COURSE_SLUG;
+const DONE_KEY   = id => STORAGE_PREFIX+COURSE_SLUG+':'+id;
+
+/* ---- storage: LMS bridge (window.storage) → localStorage fallback ---- */
+async function sGet(k){try{if(window.storage?.get){const r=await window.storage.get(k);return r?r.value:null}}catch(e){}try{return localStorage.getItem(k)}catch(e){return null}}
+async function sSet(k,v){try{if(window.storage?.set)return await window.storage.set(k,v)}catch(e){}try{localStorage.setItem(k,v)}catch(e){}}
+async function sDel(k){try{if(window.storage?.delete)return await window.storage.delete(k)}catch(e){}try{localStorage.removeItem(k)}catch(e){}}
+
+/* ---- color mode: LIGHT by default, dark only via the toggle (persisted) ---- */
+function applyMode(mode){
+  const dark = mode==='dark';
+  document.body.dataset.mode = dark ? 'dark' : 'light';
+  const b=document.getElementById('mode-toggle');
+  if(b){b.textContent=dark?'☀️':'🌙';b.setAttribute('aria-pressed',String(dark));
+    b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode')}
+}
+async function toggleMode(){
+  const next = document.body.dataset.mode==='dark' ? 'light' : 'dark';
+  applyMode(next); await sSet(MODE_KEY,next);
+}
+window.toggleMode=toggleMode;
+
+/* ---- build sidebar + TOC from LESSONS ---- */
+function buildNav(){
+  const nav=document.getElementById('nav-list'), toc=document.getElementById('toc-body');
+  const groups={};
+  LESSONS.forEach(l=>{(groups[l.part]=groups[l.part]||[]).push(l)});
+  nav.innerHTML=''; toc.innerHTML='';
+  Object.keys(groups).forEach(part=>{
+    const g=document.createElement('div'); g.className='nav-group';
+    g.innerHTML=`<div class="nav-part">${part.replace(/^Part [IVX]+ · /,'')}</div>`;
+    const tl=document.createElement('div'); tl.className='toc-part-label'; tl.textContent=part;
+    const tg=document.createElement('div'); tg.className='toc-grid';
+    groups[part].forEach(l=>{
+      const n=String(LESSONS.indexOf(l)+1).padStart(2,'0');
+      const a=document.createElement('a'); a.href='#'+l.id; a.className='nav-link'; a.dataset.lesson=l.id;
+      a.innerHTML=`<span class="nav-dot"></span><span class="nav-num">${n}</span><span class="nav-title">${l.title}</span>`;
+      g.appendChild(a);
+      const c=document.createElement('a'); c.href='#'+l.id; c.className='toc-card';
+      c.innerHTML=`<span class="toc-card-num">${String(LESSONS.indexOf(l)+1).padStart(2,'0')}</span><span><span class="toc-card-title">${l.title}</span><span class="toc-card-desc">${l.desc||''}</span></span>`;
+      tg.appendChild(c);
+    });
+    nav.appendChild(g); toc.appendChild(tl); toc.appendChild(tg);
+  });
+  // build lesson-nav footers
+  LESSONS.forEach((l,i)=>{
+    const foot=document.querySelector(`.lesson-nav[data-navfor="${l.id}"]`); if(!foot)return;
+    const prev=i>0?LESSONS[i-1]:null, next=i<LESSONS.length-1?LESSONS[i+1]:{id:'complete',title:'Finish course'};
+    foot.innerHTML=
+      (prev?`<a class="nav-prev" href="#${prev.id}"><span class="nl-label">← Previous</span><span class="nl-title">${prev.title}</span></a>`
+           :`<span class="nav-prev nav-empty"><span class="nl-label">Start</span><span class="nl-title">First lesson</span></span>`)
+     +`<button class="nav-complete" data-lesson="${l.id}" onclick="markComplete('${l.id}')"><span class="cl">Mark complete</span></button>`
+     +`<a class="nav-next" href="#${next.id}"><span class="nl-label">Next →</span><span class="nl-title">${next.title}</span></a>`;
+  });
+}
+
+/* ---- progress ---- */
+async function refreshProgress(){
+  let done=0; for(const l of LESSONS){if(await sGet(DONE_KEY(l.id))==='done')done++}
+  const pct=LESSONS.length?Math.round(done/LESSONS.length*100):0;
+  document.getElementById('pg-fill').style.width=pct+'%';
+  document.getElementById('tb-fill').style.width=pct+'%';
+  document.getElementById('pg-done').textContent=done;
+  document.getElementById('pg-total').textContent=LESSONS.length;
+  document.getElementById('pg-pct').textContent=pct;
+  document.getElementById('pg-track')?.setAttribute('aria-valuenow',String(pct));
+  try{window.parent.postMessage({type:'lms:progress',course:COURSE_SLUG,percent:pct,done,total:LESSONS.length},'*')}catch(e){}
+}
+async function hydrate(){for(const l of LESSONS){if(await sGet(DONE_KEY(l.id))==='done')markUI(l.id,true)}await refreshProgress()}
+function markUI(id,done){
+  const link=document.querySelector(`.nav-link[data-lesson="${id}"]`); if(link)link.classList.toggle('done',done);
+  const btn=document.querySelector(`.nav-complete[data-lesson="${id}"]`);
+  if(btn){btn.classList.toggle('done',done);const l=btn.querySelector('.cl');if(l)l.textContent=done?'✓ Completed':'Mark complete'}
+}
+
+/* ---- pagination ---- */
+function show(id){
+  const valid = PANES.includes(id) || LESSONS.some(l=>l.id===id);
+  if(!valid) id='overview';
+  document.querySelectorAll('[data-pane],[data-lesson],.module-header').forEach(el=>el.classList.remove('active'));
+  const t=document.getElementById(id); if(t)t.classList.add('active');
+  let crumb=COURSE_TITLE;
+  if(!PANES.includes(id)){
+    const mod=id.split('-')[0].slice(1);
+    const mh=document.querySelector(`.module-header[data-module="${mod}"]`); if(mh)mh.classList.add('active');
+    const l=LESSONS.find(x=>x.id===id); if(l)crumb=l.title;
+  } else if(id==='overview'){crumb='Overview'} else if(id==='complete'){crumb='Complete'}
+  document.getElementById('tb-crumb').textContent=crumb;
+  document.querySelectorAll('.nav-link').forEach(a=>{
+    const on=a.dataset.lesson===id; a.classList.toggle('active',on);
+    if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+  });
+  const an=document.querySelector('.nav-link.active'),ns=document.querySelector('.nav-scroll');
+  if(an&&ns){ns.scrollTo({top:Math.max(0,an.offsetTop-ns.clientHeight/2),behavior:'auto'})}
+  sSet(LAST_KEY,id);
+  if(window.innerWidth<1024){document.getElementById('sidebar').classList.remove('open');document.getElementById('backdrop').classList.remove('show')}
+  window.scrollTo({top:0,behavior:'instant'});
+  document.getElementById('main').focus({preventScroll:true}); // screen readers announce from the top of the new lesson
+  try{window.parent.postMessage({type:'lms:lesson-change',course:COURSE_SLUG,lessonId:id},'*')}catch(e){}
+}
+window.show=show;
+
+async function markComplete(id){
+  const k=DONE_KEY(id), was=(await sGet(k))==='done';
+  if(was){await sDel(k);markUI(id,false)} else{await sSet(k,'done');markUI(id,true)}
+  await refreshProgress();
+  if(!was){const i=LESSONS.findIndex(l=>l.id===id);location.hash=i<LESSONS.length-1?LESSONS[i+1].id:'complete'}
+}
+window.markComplete=markComplete;
+
+function copyCode(btn){
+  const pre=btn.closest('.prompt-card,.code-card').querySelector('pre');
+  const done=()=>{btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied')},1600)};
+  const txt=pre.innerText;
+  if(navigator.clipboard?.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallback(txt,done))}else fallback(txt,done);
+}
+function fallback(t,cb){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);cb()}
+window.copyCode=copyCode;
+
+function quizPick(el,idx){
+  const q=el.closest('.quiz'); if(q.dataset.done)return;
+  const correct=parseInt(q.dataset.correct,10);
+  q.querySelectorAll('.quiz-opt').forEach((o,i)=>{o.disabled=true;if(i===correct)o.classList.add('correct');if(i===idx&&i!==correct)o.classList.add('wrong')});
+  q.dataset.done='1';
+  const fb=q.querySelector('.quiz-feedback'), ok=idx===correct;
+  if(fb){fb.classList.add('show',ok?'ok':'no');fb.textContent=(ok?'✓ Correct. ':'✗ Not quite. ')+(fb.dataset.explain||'')}
+}
+window.quizPick=quizPick;
+
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('backdrop').classList.toggle('show')}
+window.toggleSidebar=toggleSidebar;
+
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)||'overview'));
+document.addEventListener('DOMContentLoaded',async()=>{
+  applyMode(await sGet(MODE_KEY)==='dark'?'dark':'light'); // default LIGHT, always
+  document.getElementById('sidebar').querySelector('.sidebar-brand-title').innerHTML=COURSE_TITLE.replace(/(\S+)$/,'<em>$1</em>');
+  const sb=document.getElementById('start-btn'); if(sb&&LESSONS[0])sb.href='#'+LESSONS[0].id;
+  buildNav(); await hydrate();
+  let start=location.hash.slice(1);
+  if(!start){const last=await sGet(LAST_KEY); if(last&&last!=='complete')start=last}
+  show(start||'overview');
+  const y=parseInt(await sGet(SCROLL_KEY+(start||'overview'))||'0',10);
+  if(y>0)requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo({top:y,behavior:'instant'})));
+});
+let _st; window.addEventListener('scroll',()=>{clearTimeout(_st);_st=setTimeout(()=>{
+  const id=document.querySelector('.nav-link.active')?.dataset.lesson||'overview',y=Math.round(window.scrollY);
+  if(y<64)sDel(SCROLL_KEY+id);else sSet(SCROLL_KEY+id,String(y));
+},400)},{passive:true});
+
+/* Keyboard navigation: ← → move between lessons (skipped while typing) */
+document.addEventListener('keydown',e=>{
+  if(e.target.closest?.('input,textarea,select')||e.metaKey||e.ctrlKey||e.altKey)return;
+  if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;
+  const cur=document.querySelector('.nav-link.active')?.dataset.lesson;
+  const i=LESSONS.findIndex(l=>l.id===cur);
+  if(e.key==='ArrowRight'){if(!cur){location.hash=LESSONS[0].id}else if(i>-1&&i<LESSONS.length-1){location.hash=LESSONS[i+1].id}else if(i===LESSONS.length-1){location.hash='complete'}}
+  else{if(i>0){location.hash=LESSONS[i-1].id}else if(i===0){location.hash='overview'}}
+});
+</script>
+</body>
+</html>
