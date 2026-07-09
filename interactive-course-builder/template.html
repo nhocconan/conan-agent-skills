@@ -48,8 +48,6 @@
   --accent:#0a2540;          /* primary ink accent, headings, active nav   */
   --accent-2:#2563eb;        /* links, focus, gradient bridge              */
   --accent-3:#ea403f;        /* reserved kicker (danger, mandatory, hero)  */
-  --grad:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 55%,var(--accent-3) 100%);
-  --grad-bar:linear-gradient(90deg,var(--accent) 0%,var(--accent-2) 55%,var(--accent-3) 100%);
 
   /* Semantic surfaces (light) */
   --bg:#ffffff;          --surface:#ffffff;     --surface-2:#f1f5f9;
@@ -83,6 +81,15 @@
 [data-theme="teal"]  {--accent:#0f766e; --accent-2:#14b8a6; --accent-3:#f97316;}
 [data-theme="plum"]  {--accent:#4a1d52; --accent-2:#a855f7; --accent-3:#ec4899;}
 [data-theme="slate"] {--accent:#1e293b; --accent-2:#0ea5e9; --accent-3:#ef4444;}
+
+/* Gradients MUST be declared on body (not :root): [data-theme] overrides the
+   accents on <body>, and a custom property substitutes var() where it is
+   DECLARED — declared on :root it would freeze the navy defaults for every
+   theme (real bug, caught 2026-07 in a browser pass). */
+body{
+  --grad:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 55%,var(--accent-3) 100%);
+  --grad-bar:linear-gradient(90deg,var(--accent) 0%,var(--accent-2) 55%,var(--accent-3) 100%);
+}
 
 /* ---- Dark mode: TOGGLE-ONLY (house rule: default is ALWAYS light — never
    prefers-color-scheme). The engine sets data-mode="dark" on <body> from the

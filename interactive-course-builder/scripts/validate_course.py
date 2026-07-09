@@ -242,7 +242,10 @@ def main() -> int:
         if wc > MAX_LESSON_WORDS:
             warns.append(f"{lid}: ~{wc} words (> {MAX_LESSON_WORDS}) — split the lesson")
         # prose-wall heuristic: words in gaps between visual/interactive breaks
-        for gap in VISUAL_BREAKS.split(card):  # segments between visual breaks
+        # table/steps CONTENT is not prose — blank it before the wall check
+        card_prose = re.sub(r"<table\b.*?</table>", "<table></table>", card, flags=re.S)
+        card_prose = re.sub(r"<ol\b.*?</ol>", "<ol></ol>", card_prose, flags=re.S)
+        for gap in VISUAL_BREAKS.split(card_prose):  # segments between visual breaks
             if gap and word_count(gap) > PROSE_WALL_WORDS:
                 warns.append(f"{lid}: a prose stretch of ~{word_count(gap)} words with no visual break")
                 break
