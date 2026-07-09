@@ -336,3 +336,34 @@ would never sit through each other's half. When splitting:
 - Duplicate the minimal shared foundation into each rather than cross-linking a
   hard dependency (a light "if you're new, see X first" pointer is fine).
 - Keep slugs discoverable: `foo-context-engineering`, `foo-harness-engineering`.
+
+---
+
+## 12 · Pipeline & mechanical gates (model-agnostic builds)
+
+The full build pipeline lives in **`PLAYBOOK.md`** (source digests →
+curriculum contract → fragments → scripted assembly → scripted validation →
+human pass). Rules from it that are part of the standard itself:
+
+- **Source-digest discipline.** Facts enter a course only via a digest file
+  produced from the primary source (definitions/formulas, figures-to-redraw,
+  worked examples with verbatim numbers, relevance hooks). Authors never
+  write from memory; reviewers verify against digests, not recollection.
+- **SVG id prefixing.** Every internal SVG id (marker/gradient/clipPath) is
+  prefixed with its lesson id (`m2l1-arrow`). Merged fragments with generic
+  ids (`#ah`, `#arrow`) collide silently — first definition wins and other
+  diagrams' arrowheads render with the wrong color or not at all.
+- **Chrome localization.** For a non-English course, every visible template +
+  engine string must be localized ("Mark complete", "← Previous", the
+  `Overview`/`Complete` crumbs, quiz "✓ Correct."…). The canonical list is
+  the `VI_CHROME` table in `scripts/assemble_course.py`; the validator flags
+  leftovers when `<html lang>` ≠ en. The sidebar part-label regex must also
+  strip the localized part prefix (e.g. `Phần I · `).
+- **Decorative vs content SVG.** Diagrams (inside `<figure>`) carry
+  `role="img"` + `aria-label` + `viewBox`; decorative icons (e.g. the
+  takeaway star) carry `aria-hidden="true" focusable="false"`.
+- **Mechanical gates before taste.** `scripts/validate_course.py` must report
+  0 errors before any human review time is spent; `scripts/assemble_course.py`
+  is the only way multi-fragment builds become a file. Legacy pre-template
+  courses fail these gates structurally — bring them onto the template when
+  next touched, don't chase individual checks.

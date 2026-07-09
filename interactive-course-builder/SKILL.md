@@ -20,12 +20,15 @@ one component kit, one engine, one accessibility bar for every course — a
 per-course accent (`data-theme`) is the only thing that changes, so each course
 **stands alone** yet clearly belongs to the family.
 
-## The kit (three files, same folder)
+## The kit (same folder)
 
 | File | Role |
 |---|---|
 | **`template.html`** | The executable standard. A complete, working, accessible reference course. **Start every new course by copying it.** Every reusable block is marked `COMPONENT:`. |
 | **`reference.md`** | The full spec: tokens, component vocabulary, leveled pedagogy, a11y, the LMS engine contract, the "world-class" bar, the ship checklist, and splitting rules. **Read it before authoring or reviewing.** |
+| **`PLAYBOOK.md`** | The model-agnostic authoring pipeline: source digests → curriculum contract → (parallel) lesson fragments → scripted assembly → scripted validation → human pass. **Follow its phases for every build** — sequence + artifacts + mechanical gates are what make the result identical no matter which model does the work. |
+| **`scripts/validate_course.py`** | The ship checklist as executable checks (structure, per-lesson mandates, a11y, hex, slop lexicon, chrome localization, LMS contract). **Loop until 0 errors.** |
+| **`scripts/assemble_course.py`** | Deterministic assembly for fan-out builds: JSON contract + module fragments → finished course (auto-runs the validator). Nobody hand-edits a 400KB HTML file. |
 | `SKILL.md` | This loader. |
 
 If template and reference ever disagree, the **template wins** (it's tested).
@@ -78,19 +81,26 @@ This skill owns the **house design system + pedagogy** those plug into.
 **Content**
 - Concrete over generic; ban empty intensifiers. Verify all facts/versions/model
   names and date them. Run `anti-slop-review` before shipping.
+- **Never author from memory:** every fact traces to a source digest file
+  (`PLAYBOOK.md` Phase 1). Beginner courses follow the "dễ hiểu" rules
+  (example before definition, first-use term explanations, one idea per
+  paragraph, formula ⇒ worked number ⇒ plain-words reading).
 
-## Workflow
+## Workflow (full detail: `PLAYBOOK.md` — follow its phases in order)
 
-1. `cp template.html courses/<slug>.html`.
-2. Set `<title>`, `<meta description>`, hero, sidebar brand, footer; pick
-   `data-theme` (default `navy`).
-3. Set `COURSE_SLUG`, `COURSE_TITLE`, the `LESSONS` array.
-4. Outline Parts → Modules → Lessons with level bands **before** prose.
-5. Author each lesson to the rhythm; copy `COMPONENT:` blocks; add the visual +
-   mandatory Takeaway + Quiz.
-6. Run the **Ship checklist** (`reference.md §10`): `node --check` the engine,
-   keyboard pass, 375px mobile pass, both-color-modes pass (light default +
-   toggle persists), anti-slop + fact check.
+1. **Digest the sources** into `digests/*.md` — a fact not in a digest does
+   not enter the course (this is the anti-hallucination gate).
+2. **Curriculum contract before prose** — parts/modules/lessons + per-lesson
+   briefs; this is what lets parallel builders (or a weaker model) produce
+   composable, on-tone work.
+3. Build lessons to the rhythm. Solo (≤ ~8 lessons): author in a copy of
+   `template.html`. Bigger: fan-out with the fragment protocol
+   (`PLAYBOOK.md` Phase 3 — svg ids prefixed `mNlK-`).
+4. Fan-out builds: `python3 scripts/assemble_course.py <contract.json>`
+   (theme/hero/LESSONS/chrome-localization handled deterministically).
+5. **Loop `python3 scripts/validate_course.py <course.html>` to 0 errors**,
+   then the human pass: keyboard, 375px, both color modes, fact-check vs
+   digests, anti-slop, and the 5-question self-test (`PLAYBOOK.md` Phase 5).
 
 ## The bar
 
