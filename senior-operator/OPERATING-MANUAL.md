@@ -2,8 +2,9 @@
 
 > Written by Claude Fable 5 (2026-07-07) as a craft handoff for successor models (Opus 4.8+)
 > working on this account. Project-agnostic: this is *how to think*, not *what a repo does*
-> (for that, see the per-repo maps under [projects/](projects/)). The § numbers refer to the
-> REDACTED_INTERNAL REDACTED_INTERNAL project `CLAUDE.md` anti-pattern list, where many of these lessons were paid for.
+> (for that, see the per-repo maps under `projects/` — local-only, never committed). The
+> § numbers refer to an internal production project's `CLAUDE.md` anti-pattern list, where
+> many of these lessons were paid for.
 
 ---
 

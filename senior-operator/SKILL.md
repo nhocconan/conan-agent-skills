@@ -17,17 +17,12 @@ plus the **distill recipe** that lets the strong model keep training the next on
 
 ## Project map index
 
-| Slug | Repo | Distilled | By |
-| --- | --- | --- | --- |
-| [redacted-internal](projects/redacted-internal.md) | `REDACTED_COMPANY/REDACTED_INTERNAL_REPO` (REDACTED_INTERNAL_PRODUCT) | 2026-07-07 | Fable 5 |
-| [redacted-internal-project-1](projects/redacted-internal-project-1.md) | `REDACTED_INTERNAL_REPO` (multi-tenant SaaS chatbot platform) | 2026-07-07 | Opus 4.8, reviewed by Fable 5 |
-| [redacted-internal-project-2](projects/redacted-internal-project-2.md) | `REDACTED_INTERNAL_REPO` (marketing-content Spam/Attribute/Sentiment QC) | 2026-07-07 | Opus 4.8, reviewed by Fable 5 |
-| [project-d](projects/project-d.md) | `Trading/project-d` (project-d — VN quant trading, broker live plane) | 2026-07-07 | Opus 4.8, reviewed by Fable 5 |
-| [app-e](projects/app-e.md) | `Android-Apps/app-e` (Compose-Multiplatform game, Android+iOS+NestJS) | 2026-07-07 | Opus 4.8, reviewed by Fable 5 |
-| [app-f](projects/app-f.md) | `Android-Apps/app-f` (LibGDX kids' game — code is v5) | 2026-07-07 | Opus 4.8, reviewed by Fable 5 |
-
-No row for the repo you're in? Run [DISTILL.md](DISTILL.md) — ideally on the strongest
-model available — then add the row.
+The index and the maps themselves live in `projects/` — **local-only,
+gitignored, never committed**: maps describe how real repos run (including
+employer-internal systems), so they must never reach the public skills repo.
+Start at `projects/INDEX.md`. No map for the repo you're in? Run
+[DISTILL.md](DISTILL.md) — ideally on the strongest model available — then add
+the row in `projects/INDEX.md`.
 
 ## Order of operations (any project)
 
@@ -47,4 +42,6 @@ model available — then add the row.
 
 - Project maps are dated snapshots — the repo's own rulebook wins on conflict; fix the map to match, never the reverse.
 - New paid-for gotcha (cost ≥ one session) → append to that project's trap table. Append-only.
-- New repo distilled → new `projects/<slug>.md` + index row here. Commit + push (`~/.conan-agent-skills` is the source of truth; `~/.claude/skills/` holds symlinks).
+- New repo distilled → new `projects/<slug>.md` + index row in `projects/INDEX.md`.
+  `~/.conan-agent-skills` is the source of truth (`~/.claude/skills/` holds symlinks);
+  the repo is PUBLIC, so `projects/` stays local-only — commit/push everything else.

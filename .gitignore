@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# per-repo execution maps: employer/internal context — NEVER commit (repo is public)
+senior-operator/projects/
+PROPOSALS.md  # internal skill-planning notes — references internal systems
