@@ -59,6 +59,25 @@ with paths/names/numbers. Authors may claim about the system ONLY what this
 file says. One wrong system claim poisons the learner's trust in every
 correct one.
 
+### The distribution gate (decide BEFORE digesting — a lived failure)
+
+Declare in `curriculum.md` line 1: **PUBLIC or INTERNAL.** For a PUBLIC
+course, the system-context digest must be **anonymized at digest time, not at
+review time**: no client/shop names, no real revenue or operational metrics,
+no internal repo/product/component names, no internal doc citations (§N), and
+the system is framed as *"một hệ ví dụ"* — an illustrative example — never
+"our production system". Add a visible disclaimer callout on the overview
+pane saying names/numbers are example values.
+
+Why digest-time: fragments and digests are the **source of truth** — if only
+the assembled HTML is scrubbed, the next re-assembly silently re-leaks
+everything (this happened: a public course shipped a real client's name and
+client-confirmed revenue that survived one "de-brand" pass because the pass
+cleaned the output, not the sources). Keep a `sensitive-terms.txt` (client
+names, internal repos, real figures) next to the digests and run
+`validate_course.py <file> --sensitive sensitive-terms.txt` as part of every
+build and every review of a public course.
+
 ## Phase 2 · Curriculum contract — before any prose
 
 Write `curriculum.md` (the shared contract every builder reads first):
@@ -66,9 +85,14 @@ Write `curriculum.md` (the shared contract every builder reads first):
 - Course identity: final file path, title, audience, promise, `data-theme`,
   `lang`, slug. Explicit pointer duties to sibling courses.
 - Parts (= L1→L5 level bands) → modules → lessons. 12–28 lessons total.
-- **Per-lesson brief** (5–8 lines each): id (`mN-lK`), title, level, ~minutes,
-  the *felt problem* to open with, which digest sections feed it, the visual
-  plan (what the SVG shows), and the map-to-reality hook if any.
+- **Per-lesson brief** (6–9 lines each): id (`mN-lK`), title, level, ~minutes,
+  **the core idea in ONE sentence** (the felt problem, the takeaway and the
+  quiz must all serve this sentence — the coherence triangle, see
+  `examples.md §4`), the *felt problem* to open with, which digest sections
+  feed it, the visual plan (which diagram FORM from the `examples.md §6`
+  decision tree, and what relationship it shows), **new terms introduced
+  (≤3 for L1–L2 lessons; each gets a first-use explanation + glossary row)**,
+  and the map-to-reality hook if any.
 - The fragment protocol (Phase 3 below) copied in, so the contract is
   self-contained for builder agents.
 - Quality bar reminders: quiz style ("test application, not recall"),
@@ -105,11 +129,33 @@ lessons — don't batch 20 lessons of errors.
 The recap lesson ("Tổng kết · cheat sheet") is built LAST, from the
 `takeaway` fields of all meta files — that's why metas carry takeaways.
 
-**Builder prompt shape that works** (when builders are models): give each
-builder (1) the curriculum contract path, (2) reference.md + template.html
-paths, (3) its digest paths, (4) output paths, (5) "final reply = lesson
-list + word counts + takeaway sentences + deviations". Builders that must
-summarize their own compliance catch their own violations.
+**Builder prompt — copy this verbatim and fill the blanks** (do not
+re-derive it; weaker builders degrade exactly when the prompt is improvised):
+
+```
+You are building module {N} of an interactive course to a fixed house
+standard. Work ONLY from these files, in this order:
+1. {path}/curriculum.md            — the contract; your module's briefs are §{…}
+2. {skill}/reference.md            — the standard (§3 visuals, §4 pedagogy)
+3. {skill}/examples.md             — GOLD vs FAIL patterns; imitate the GOLD shapes
+4. {skill}/template.html           — copy component markup exactly from here
+5. {digest paths}                  — the ONLY source of facts
+
+Write: {fragments}/module-{N}.html and module-{N}-meta.json per the fragment
+protocol in curriculum.md. Hard rules: every fact traces to a digest line —
+no digest, no claim; every internal SVG id prefixed m{N}l{K}-; each lesson =
+felt problem → name it → show it → apply it → takeaway → quiz, all serving
+the ONE core idea in its brief; distractors are misconceptions
+(examples.md §2 procedure); ≤3 new terms per L1–L2 lesson; formulas always
+formula ⇒ worked number ⇒ plain words.
+
+Final reply (this is your compliance check, not a message): per lesson —
+id · title · word count · the core idea · the takeaway sentence · quiz
+correct-letter · any deviation from the brief and why.
+```
+
+Vary the quiz correct-answer positions across lessons — a module where every
+`data-correct` is the same index reads as untrustworthy (the validator warns).
 
 ## Phase 4 · Assemble — by script, never by hand
 
@@ -144,6 +190,12 @@ fragments stay the source of truth and the build is reproducible.
    4. Would the course still work with all images removed EXCEPT the SVGs
       (i.e., do diagrams carry load, not decoration)?
    5. Is there one sentence per lesson a learner will still quote in 6 months?
+   6. For 3 random lessons: do the felt problem, takeaway and quiz all serve
+      the SAME core idea (the coherence triangle)? Drift here is the #1
+      structural failure of parallel builds.
+   7. If the course is PUBLIC: did the `--sensitive` pass run clean, and is
+      the example system framed as illustrative (never "our production
+      system"), with the disclaimer callout present?
 
 ## Failure modes — the tells (check yourself against this table)
 
@@ -158,6 +210,30 @@ fragments stay the source of truth and the build is reproducible.
 | Arrowheads missing/wrong after merge | Duplicate SVG marker ids | `mNlK-` prefix rule |
 | A later lesson quietly assumes an earlier optional one | Difficulty not monotonic | Reorder or state the prerequisite in the module header |
 | Reviewer "fixes" a correct source number | Trusted memory over digest | Digests win; re-verify before changing any number |
+| Quiz correct answer is the same letter in most lessons | Builder defaulted; learners game it | Vary `data-correct`; validator warns on skew |
+| Quiz tests a side detail from paragraph 4 | Coherence triangle broken | Re-anchor quiz on the brief's core-idea sentence |
+| "X is like a library/toolbox" analogy | Maps vibes, not mechanism | Rewrite: map the mechanism AND state where the analogy breaks (`examples.md §5`) |
+| Client name / real revenue / internal repo in a public course | Distribution gate skipped; sources never scrubbed | Anonymize the DIGESTS, add `sensitive-terms.txt`, run `--sensitive`; scrubbing only the output re-leaks on re-assembly |
+| `data-explain` says "Correct!" and nothing else | Feedback praises instead of teaching | Explain why each distractor is wrong (`examples.md §2`) |
+
+## Reviewing & retrofitting an existing course
+
+Reviews come in two shapes — classify FIRST, then pick the lane:
+
+1. **Template-native** (has the `LESSONS` engine): run the validator; fix
+   every error; fix or consciously accept each warning (record the acceptance
+   — e.g. "10 lessons < 12 floor: focused course, padding would be slop").
+   Then the human pass (Phase 5.2–5.4). Content fixes are edited in place.
+2. **Legacy / pre-template** (no engine, external CSS/JS, hardcoded hex):
+   do NOT chase individual structural checks — they fail by construction.
+   Allowed in place: content-level fixes only (facts, slop, meta description,
+   sensitive terms, broken links). Everything structural waits for a full
+   migration: digest the existing course's own content (Phase 1, with the
+   course as source), write the contract, rebuild via fragments + assembler.
+   Migration is a scheduled decision, not a side effect of a review.
+
+Every review of a PUBLIC course includes the `--sensitive` pass, regardless
+of what the review was originally about.
 
 ## Writing so ANYONE understands (the "dễ hiểu" rules)
 

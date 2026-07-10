@@ -141,6 +141,16 @@ the standard.
   Never hardcode fills.
 - Label nodes in mono; keep to ≤ ~9 nodes; one clear left-to-right or
   top-to-down flow; arrowheads via a `<marker>`.
+- **Pick the diagram FORM from the relationship** (decision tree + worked
+  contrast in `examples.md §6`): flow → boxes+arrows; contrast → two-panel;
+  model correspondence → parallel rows + dashed mapping lines; hierarchy →
+  nested boxes; threshold → axis with shaded zones; feedback → loop with one
+  labeled return arrow. Three boxes restating the headings is decoration.
+- **Information test:** the picture must carry ≥2 facts that are NOT in its
+  caption; otherwise delete or redraw.
+- **Mobile legibility:** at `viewBox` width ≥ 700, text below `font-size:9`
+  is unreadable on a 375px phone (the validator warns). Fewer, bigger labels;
+  detail goes in the caption.
 - Every figure earns a **`<figcaption>`** that states the takeaway of the
   picture — a diagram without a caption is decoration.
 
@@ -194,6 +204,33 @@ module header when a jump is real.
 4. **Apply it** — accordions per audience / a prompt card / steps.
 5. **Takeaway** — one memorable sentence (mandatory).
 6. **Quiz** — one scenario question that *tests the takeaway* (mandatory).
+
+**The coherence triangle (per lesson, non-negotiable).** Every lesson has ONE
+core idea, stated in one sentence in its curriculum brief. The felt problem
+dramatizes it, the takeaway states it, the quiz forces a decision that hinges
+on it — three exposures of the same idea at three depths. A quiz that tests a
+side detail, or a takeaway that summarizes a different point than the opening
+raised, is a structural bug even if each piece reads well alone
+(`examples.md §4`).
+
+**Concept budget.** L1–L2 lessons introduce **≤3 new terms** each (working
+memory is the constraint); every new term gets a first-use plain-language
+explanation and a glossary row. If a brief needs 5 new terms, it's two lessons.
+
+**Quiz distractor standard.** Distractors are *misconceptions a smart reader
+could hold*, written confidently — never jokes, non-sequiturs, or obviously
+absurd fillers. Procedure and worked GOLD/FAIL pair: `examples.md §2`. The
+`data-explain` must teach why the wrong options are wrong, not just praise
+the right one. Vary the correct-answer position across lessons.
+
+**Analogy standard (the `insight` callout).** An analogy must map the
+*mechanism* (not the vibe) and *state where it breaks* — the break is what
+stops learners over-extending it (`examples.md §5`).
+
+**Callbacks (spaced retrieval).** From module 2 on, each module makes ≥1
+explicit callback to an earlier lesson's concept ("bạn đã gặp shape này ở bài
+2.1 — đây là nó dưới ràng buộc mới"). The recap's synthesis quiz must span
+concepts from ≥3 different modules.
 
 **Examples must be concrete and role-plural.** Show the same principle in ≥2
 domains (e.g. backend + data, or sales + research) — the repetition across
@@ -266,6 +303,18 @@ Courses are content, served in a signed-in iframe. Privacy by construction.
   edition). Wrong facts destroy authority faster than plain prose.
 - Run the `anti-slop-review` skill on prose before shipping.
 
+**Public-course data rules (hard — a real leak taught these).** A course
+whose distribution is PUBLIC must contain **no** client/shop names, real
+revenue or operational metrics, internal repo/product/component names, or
+internal doc citations. Real systems appear only as *anonymized illustrative
+examples* ("một hệ ví dụ"), with a disclaimer callout on the overview pane
+stating that names/numbers are example values. Anonymize at **digest** time
+(PLAYBOOK Phase 1's distribution gate) — scrubbing the assembled file while
+the digests/fragments stay dirty re-leaks on the next re-assembly. Keep
+`sensitive-terms.txt` beside the digests; run
+`validate_course.py <file> --sensitive sensitive-terms.txt` on every build
+and review.
+
 ---
 
 ## 8 · Authoring workflow
@@ -307,6 +356,13 @@ A course clears the bar only if a demanding learner would say **all** of:
 - [ ] Level badge with correct dots. [ ] Objectives (2–4, verb-first).
 - [ ] Opens with a felt problem. [ ] ≥1 figure/comparison/steps/table.
 - [ ] No >2 screens of unbroken prose. [ ] Mandatory Takeaway. [ ] Mandatory Quiz with `data-explain`.
+- [ ] Coherence triangle holds: felt problem, takeaway and quiz serve the same core idea.
+- [ ] Distractors are plausible misconceptions; `data-explain` teaches why they're wrong.
+- [ ] ≤3 new terms (L1–L2); each explained at first use + in the glossary.
+
+**Public courses only**
+- [ ] `--sensitive` pass clean (no client names, real figures, internal identifiers).
+- [ ] Example system framed as illustrative; disclaimer callout present on overview.
 
 **System**
 - [ ] `node --check` on the engine script passes; no console errors on load.

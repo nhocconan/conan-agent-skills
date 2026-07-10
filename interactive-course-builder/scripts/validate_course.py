@@ -3,7 +3,7 @@
 """Mechanical validator for house-standard interactive courses.
 
 Usage:
-    python3 validate_course.py <course.html> [--strict]
+    python3 validate_course.py <course.html> [--strict] [--sensitive terms.txt]
 
 Turns the reference.md ship checklist into executable checks so ANY model
 (or human) can loop until clean instead of relying on taste. Exit code 0 =
@@ -11,6 +11,10 @@ no errors (warnings allowed unless --strict).
 
 ERRORS  = objective violations of the standard (must fix).
 WARNINGS = judgment calls surfaced for review (fix or consciously accept).
+
+--sensitive terms.txt : for PUBLIC courses. Newline-delimited banned terms
+(client names, internal repos, real figures; '#' comments allowed). Any hit
+anywhere in the file is an ERROR — see reference.md §7 / PLAYBOOK Phase 1.
 """
 import re
 import subprocess
@@ -63,8 +67,17 @@ def word_count(html: str) -> int:
 
 
 def main() -> int:
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    strict = "--strict" in sys.argv
+    argv = sys.argv[1:]
+    sensitive_file = None
+    if "--sensitive" in argv:
+        i = argv.index("--sensitive")
+        if i + 1 >= len(argv):
+            print("--sensitive requires a terms file")
+            return 2
+        sensitive_file = Path(argv[i + 1])
+        argv = argv[:i] + argv[i + 2:]
+    args = [a for a in argv if not a.startswith("--")]
+    strict = "--strict" in argv
     if not args:
         print(__doc__)
         return 2
@@ -177,10 +190,30 @@ def main() -> int:
     head_end = html.find("</head>")
     body_html = html[head_end:] if head_end != -1 else html
     body_no_script = re.sub(r"<script\b.*?</script>", "", body_html, flags=re.S)
-    hexes = re.findall(r'(?:fill|stroke|color|background)\s*[:=]\s*"?(#[0-9a-fA-F]{3,8})\b',
+    hexes = re.findall(r'(?:fill|stroke|color|background|stop-color)\s*[:=]\s*"?(#[0-9a-fA-F]{3,8})\b',
                        body_no_script)
     if hexes:
         errors.append(f"hardcoded color in markup (use tokens/dgm-*): {sorted(set(hexes))[:8]}")
+    funcs = re.findall(r'(?:fill|stroke|color|background|stop-color)\s*[:=]\s*"?((?:rgba?|hsla?)\([^)]*\))',
+                       body_no_script)
+    if funcs:
+        errors.append(f"hardcoded rgb()/hsl() color in markup (use tokens/dgm-*): {sorted(set(funcs))[:6]}")
+    if re.search(r'aria-label="\s*"', body_no_script):
+        errors.append('empty aria-label="" found — give a real name or remove the attribute')
+
+    # sensitive-terms pass (PUBLIC courses)
+    if sensitive_file is not None:
+        if not sensitive_file.exists():
+            errors.append(f"--sensitive file not found: {sensitive_file}")
+        else:
+            low_all = unicodedata.normalize("NFC", html).lower()
+            for raw in sensitive_file.read_text(encoding="utf-8").splitlines():
+                term = raw.split("#", 1)[0].strip()
+                if not term:
+                    continue
+                n = low_all.count(unicodedata.normalize("NFC", term).lower())
+                if n:
+                    errors.append(f"SENSITIVE term in public course ({n}×): {term!r}")
 
     low = unicodedata.normalize("NFC", strip_tags(body_no_script)).lower()
     hits = sorted({s for s in SLOP if s.lower() in low})
@@ -194,6 +227,9 @@ def main() -> int:
 
     # ---------- per-lesson mandates ----------
     cards = re.findall(r'(<article class="lesson" id="[^"]+".*?</article>)', html, re.S)
+    takeaway_texts: dict[str, list[str]] = {}
+    quiz_corrects: list[int] = []
+    lesson_titles: dict[str, list[str]] = {}
     for card in cards:
         lid = re.search(r'id="([^"]+)"', card).group(1)
 
@@ -204,15 +240,37 @@ def main() -> int:
         need(r'class="level-badge"', "level badge")
         need(r"⏱", "reading-time chip", warns)
         need(r'class="objectives"', "objectives block")
+        obj_m = re.search(r'class="objectives".*?</ul>', card, re.S)
+        if obj_m:
+            n_obj = len(re.findall(r"<li", obj_m.group(0)))
+            if not 2 <= n_obj <= 4:
+                warns.append(f"{lid}: {n_obj} objectives (standard: 2–4 verb-first)")
+        title_m = re.search(r"<h3[^>]*>(.*?)</h3>", card, re.S)
+        if title_m:
+            t = strip_tags(title_m.group(1)).strip().lower()
+            lesson_titles.setdefault(t, []).append(lid)
         if not VISUAL_BREAKS.search(card.replace('class="objectives"', "")):
             errors.append(f"{lid}: no figure/comparison/steps/table (visual mandate)")
         n_take = len(re.findall(r'class="takeaway"', card))
         if n_take != 1:
             errors.append(f"{lid}: {n_take} takeaway blocks (need exactly 1)")
+        tk_m = re.search(r'class="takeaway".*?<p>(.*?)</p>', card, re.S)
+        if tk_m:
+            tk = re.sub(r"\s+", " ", strip_tags(tk_m.group(1))).strip()
+            takeaway_texts.setdefault(tk.lower(), []).append(lid)
+            if len(tk) < 25:
+                warns.append(f"{lid}: takeaway is only {len(tk)} chars — too thin to be quotable")
+            if 'class="hl"' not in tk_m.group(0):
+                warns.append(f"{lid}: takeaway has no <span class=\"hl\"> gold phrase")
         quizzes = re.findall(r'class="quiz"[^>]*data-correct="(\d+)"', card)
         if not quizzes:
             errors.append(f"{lid}: missing quiz with data-correct")
+        quiz_corrects.extend(int(q) for q in quizzes)
         need(r'data-explain="..', "quiz data-explain")
+        for ex in re.findall(r'data-explain="([^"]*)"', card):
+            if len(ex.strip()) < 40:
+                warns.append(f"{lid}: data-explain is {len(ex.strip())} chars — must teach why "
+                             f"wrong options are wrong, not just confirm")
         opts = len(re.findall(r'class="quiz-opt"', card))
         if quizzes and opts < 3:
             errors.append(f"{lid}: quiz has {opts} options (<3)")
@@ -234,9 +292,24 @@ def main() -> int:
             if "aria-hidden" not in svg and 'role="img"' not in svg:
                 warns.append(f"{lid}: decorative <svg> icon without aria-hidden=\"true\"")
                 break
+        tiny_warned = False
         for fig in re.findall(r"<figure.*?</figure>", card, re.S):
             if "<figcaption" not in fig:
                 errors.append(f"{lid}: figure without figcaption")
+            else:
+                cap_m = re.search(r"<figcaption[^>]*>(.*?)</figcaption>", fig, re.S)
+                cap = re.sub(r"\s+", " ", strip_tags(cap_m.group(1))).strip() if cap_m else ""
+                if len(cap) < 20:
+                    warns.append(f"{lid}: figcaption {len(cap)} chars — must state the picture's point")
+            # mobile legibility: tiny SVG text scales to unreadable at 375px
+            vb_m = re.search(r'viewBox="0 0 (\d+)', fig)
+            if not tiny_warned and vb_m and int(vb_m.group(1)) >= 700:
+                tiny = re.findall(r'font-size="([0-8](?:\.\d+)?)"', fig)
+                if tiny:
+                    warns.append(f"{lid}: svg text font-size {sorted(set(tiny))} with "
+                                 f"viewBox width {vb_m.group(1)} — unreadable at 375px "
+                                 f"(min 9; fewer, bigger labels)")
+                    tiny_warned = True
 
         wc = word_count(card)
         if wc > MAX_LESSON_WORDS:
@@ -249,6 +322,29 @@ def main() -> int:
             if gap and word_count(gap) > PROSE_WALL_WORDS:
                 warns.append(f"{lid}: a prose stretch of ~{word_count(gap)} words with no visual break")
                 break
+
+    # ---------- cross-lesson checks ----------
+    for tk, lids in takeaway_texts.items():
+        if len(lids) > 1 and tk:
+            errors.append(f"identical takeaway pasted into {len(lids)} lessons ({', '.join(lids[:4])}) "
+                          f"— each lesson has ONE core idea of its own")
+    for t, lids in lesson_titles.items():
+        if len(lids) > 1 and t:
+            warns.append(f"duplicate lesson title {t!r} ({', '.join(lids[:4])})")
+    if len(quiz_corrects) >= 6:
+        top = max(set(quiz_corrects), key=quiz_corrects.count)
+        share = quiz_corrects.count(top) / len(quiz_corrects)
+        if share > 0.7:
+            warns.append(f"{share:.0%} of quizzes share correct index {top} — learners game the "
+                         f"pattern; vary data-correct")
+    if lang == "vi" and cards and 'id="glossary"' not in html:
+        warns.append("vi course without an overview glossary section (reference.md §4)")
+    if cards:
+        last_title = list(lesson_titles)[-1] if lesson_titles else ""
+        tail = strip_tags(cards[-1][:800]).lower()
+        if not any(k in tail or k in last_title for k in
+                   ("tổng kết", "cheat", "recap", "tóm tắt", "summary")):
+            warns.append("no recap/cheat-sheet closing lesson detected (reference.md §4 learner tooling)")
 
     # ---------- report ----------
     print(f"validate_course: {path.name} · lang={lang} · {len(lesson_ids)} lessons · {size:,} bytes")
