@@ -26,7 +26,8 @@ per-course accent (`data-theme`) is the only thing that changes, so each course
 |---|---|
 | **`template.html`** | The executable standard. A complete, working, accessible reference course. **Start every new course by copying it.** Every reusable block is marked `COMPONENT:`. |
 | **`reference.md`** | The full spec: tokens, component vocabulary, leveled pedagogy, a11y, the LMS engine contract, the "world-class" bar, the ship checklist, and splitting rules. **Read it before authoring or reviewing.** |
-| **`PLAYBOOK.md`** | The model-agnostic authoring pipeline: source digests → curriculum contract → (parallel) lesson fragments → scripted assembly → scripted validation → human pass. **Follow its phases for every build** — sequence + artifacts + mechanical gates are what make the result identical no matter which model does the work. |
+| **`PLAYBOOK.md`** | The model-agnostic authoring pipeline: source digests → curriculum contract → (parallel) lesson fragments → scripted assembly → scripted validation → human pass. **Follow its phases for every build** — sequence + artifacts + mechanical gates are what make the result identical no matter which model does the work. Also holds the retrofit protocol for existing courses. |
+| **`examples.md`** | The few-shot pack: GOLD vs FAIL pairs (felt-problem openings, quiz distractors, takeaways, analogies, diagram forms, formula treatment), each annotated with the load-bearing difference. **Every builder prompt includes it** — rules tell a strong model what to do; examples are what weaker models actually imitate. |
 | **`scripts/validate_course.py`** | The ship checklist as executable checks (structure, per-lesson mandates, a11y, hex, slop lexicon, chrome localization, LMS contract). **Loop until 0 errors.** |
 | **`scripts/assemble_course.py`** | Deterministic assembly for fan-out builds: JSON contract + module fragments → finished course (auto-runs the validator). Nobody hand-edits a 400KB HTML file. |
 | `SKILL.md` | This loader. |
@@ -64,6 +65,10 @@ This skill owns the **house design system + pedagogy** those plug into.
   → apply it → Takeaway → Quiz.**
 - **Every lesson MUST** carry a Level badge, ≥1 objective set, a **Takeaway**,
   and a **Quiz** (scenario-based, with a `data-explain` that reinforces the takeaway).
+- **Coherence triangle:** each lesson has ONE core idea; the felt problem,
+  takeaway and quiz all serve it (`reference.md §4`, `examples.md §4`).
+  Quiz distractors are plausible misconceptions, never filler.
+- **≤3 new terms per L1–L2 lesson**, each explained at first use.
 
 **Visual density** ("diagrams, not walls of text")
 - ≥1 figure / comparison / steps / table **per lesson**; never >~2 screens of
@@ -85,6 +90,10 @@ This skill owns the **house design system + pedagogy** those plug into.
   (`PLAYBOOK.md` Phase 1). Beginner courses follow the "dễ hiểu" rules
   (example before definition, first-use term explanations, one idea per
   paragraph, formula ⇒ worked number ⇒ plain-words reading).
+- **Distribution gate:** declare PUBLIC or INTERNAL before digesting. Public
+  courses carry no client names, real figures, or internal identifiers —
+  anonymize the *digests*, not just the output, and run the validator's
+  `--sensitive` pass (`reference.md §7`, `PLAYBOOK.md` Phase 1).
 
 ## Workflow (full detail: `PLAYBOOK.md` — follow its phases in order)
 
