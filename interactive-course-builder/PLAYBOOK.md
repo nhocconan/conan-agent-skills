@@ -215,6 +215,7 @@ fragments stay the source of truth and the build is reproducible.
 | "X is like a library/toolbox" analogy | Maps vibes, not mechanism | Rewrite: map the mechanism AND state where the analogy breaks (`examples.md §5`) |
 | Client name / real revenue / internal repo in a public course | Distribution gate skipped; sources never scrubbed | Anonymize the DIGESTS, add `sensitive-terms.txt`, run `--sensitive`; scrubbing only the output re-leaks on re-assembly |
 | `data-explain` says "Correct!" and nothing else | Feedback praises instead of teaching | Explain why each distractor is wrong (`examples.md §2`) |
+| Slop-lexicon warning inside an anti-slop lesson | Validator can't tell quoted negative examples from real slop | Conscious-accept and record it — NEVER "fix" the negative examples a lesson exists to teach against |
 
 ## Reviewing & retrofitting an existing course
 
