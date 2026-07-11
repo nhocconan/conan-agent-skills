@@ -23,7 +23,7 @@ os.environ.setdefault("VO_BACKEND", "kokoro")  # never ship a silent "preview"
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 MEDIA = os.path.join(ROOT, "appstore", "preview", "segments")
-ICON = os.path.join(ROOT, "ios", "HourlyMove", "Resources",
+ICON = os.path.join(ROOT, "ios", "YourApp", "Resources",  # adapt to your project
                     "Assets.xcassets", "AppIcon.appiconset", "icon-1024.png")
 OUT = os.path.join(ROOT, "appstore", "preview", "app-preview-6.9.mp4")
 
@@ -41,11 +41,11 @@ if not os.path.exists(HOME_B):
 # Only put a feature claim on a scene that visibly SHOWS it (accurate metadata):
 # e.g. don't caption "Siri" unless Siri is on screen.
 SCENES = [
-    dict(kind="card", dur=3.0, title="HOURLY MOVE",
-         sub="Stand up. Stretch. Every hour.", bg=(INK_TOP, INK),
-         vo="Sitting all day quietly wears you down."),
+    dict(kind="card", dur=3.0, title="STAND TIMER",
+         sub="Your hourly nudge to move.", bg=(INK_TOP, INK),
+         vo="Long days in a chair quietly wear you down."),
     dict(kind="clip", dur=3.6, src="home.mp4", head="SITTING ALL DAY?",
-         vo="Hourly Move shows your next stand-up break at a glance."),
+         vo="Stand Timer shows your next stand-up break at a glance."),
     dict(kind="still", dur=3.6, src="stills/profiles.png",
          head="YOUR HOURS, YOUR RULES", drift=1,
          vo="Set your own pace, from minutes to hours, weekdays and weekends."),
@@ -62,7 +62,7 @@ SCENES = [
          vo="Pick your theme and keep everything on your terms."),
     dict(kind="clip", dur=3.6, src="home_b.mp4", head="NO ADS. NO ACCOUNT.",
          vo="No ads, no account. It all stays on your iPhone."),
-    dict(kind="card", dur=3.0, title="HOURLY MOVE",
+    dict(kind="card", dur=3.0, title="STAND TIMER",
          sub="Move more, starting this hour.", bg=(INK_TOP, INK),
          vo="Move more, starting this hour."),
 ]
