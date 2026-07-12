@@ -5,14 +5,14 @@ description: Light backup & restore of Claude Cowork + Claude Code session histo
 
 # Claude Cowork / Claude Code — light backup & restore
 
-Backs up the two places Claude stores conversation history on macOS, keeping the
-folders separate and **filtering to only sessions that belong to this machine**.
+Backs up the three trees Claude stores conversation history in on macOS, keeping
+the folders separate and **filtering to only sessions that belong to this machine**.
 
 ## Where the data lives (macOS)
 
 | App | Path | History file |
 |---|---|---|
-| **Claude Cowork** (local agent mode in Claude Desktop) | `~/Library/Application Support/Claude/claude-code-sessions/<workspace-id>/<session-id>/` | `local_*.json` |
+| **Claude Cowork** (local agent mode in Claude Desktop) | `~/Library/Application Support/Claude/claude-code-sessions/<account-uuid>/<space-uuid>/` **and** `~/Library/Application Support/Claude/local-agent-mode-sessions/<account-uuid>/<space-uuid>/` — Cowork uses BOTH trees; back up both or you lose half the history | `local_*.json` |
 | **Claude Code** (CLI) | `~/.claude/projects/<slug>/` | `*.jsonl` |
 
 Each history file records the session's `cwd` (working directory). That field is
@@ -43,10 +43,11 @@ Produces:
 
 ```
 DEST_DIR/
-  Claude-Code/     <slug>/*.jsonl              (kept projects only)
-  Claude-Cowork/   <ws-id>/<sess-id>/local_*.json  (kept sessions only)
-  MANIFEST.txt     full kept/skipped list + sizes
-  RESTORE.md       restore instructions (copied from RESTORE_TEMPLATE.md)
+  Claude-Code/          <slug>/*.jsonl                    (kept projects only)
+  Claude-Cowork/        <acct>/<space>/local_*.json       (claude-code-sessions tree)
+  Claude-Cowork-Local/  <acct>/<space>/local_*.json       (local-agent-mode-sessions tree)
+  MANIFEST.txt          full kept/skipped list + sizes
+  RESTORE.md            restore instructions (copied from RESTORE_TEMPLATE.md)
 ```
 
 Structure is preserved verbatim so restore is a straight mirror-back. Review
@@ -58,17 +59,21 @@ Structure is preserved verbatim so restore is a straight mirror-back. Review
 python3 scripts/restore.py SRC_DIR [--dry-run] [--force]
 ```
 
-- Mirrors `Claude-Cowork/` back to `~/Library/Application Support/Claude/claude-code-sessions/`
-  and `Claude-Code/` back to `~/.claude/projects/`.
+- Mirrors `Claude-Cowork/` back to `~/Library/Application Support/Claude/claude-code-sessions/`,
+  `Claude-Cowork-Local/` back to `~/Library/Application Support/Claude/local-agent-mode-sessions/`,
+  and `Claude-Code/` back to `~/.claude/projects/`. (Pre-2026-07 backups without
+  `Claude-Cowork-Local/` restore fine — missing subfolders are skipped.)
 - **Safe by default**: never overwrites an existing live file (merge/skip). Use
   `--force` to overwrite. Always dry-run first: `--dry-run`.
 - **Quit the Claude Desktop / Cowork app before restoring**, then relaunch so it
   re-indexes. Claude Code picks sessions up on next launch.
 
 ### Cross-machine notes
-- The Cowork `<workspace-id>` folders are per-install UUIDs. Restoring the UUID
-  folders verbatim works because the app scans the directory and reads `cwd` from
-  each file; it does not depend on the UUID matching the new install.
+- The Cowork `<account-uuid>/<space-uuid>` folders are per-account/per-install
+  UUIDs. Restoring them verbatim preserves the history, but the app only LISTS
+  sessions under the logged-in account's active space — if the target machine's
+  account/space UUIDs differ, use `map_account.py` (below) after restoring to
+  merge them into the current login's active space.
 - A restored session only resumes meaningfully if its `cwd` also exists on the
   target machine (same absolute path). History is preserved regardless.
 - This repo (`~/.conan-agent-skills`) is git-synced, so this skill travels with

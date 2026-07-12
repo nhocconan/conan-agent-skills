@@ -1,6 +1,18 @@
 ---
 name: senior-operator
-description: Cross-project senior-operator playbook — a model-to-model craft handoff (written by Claude Fable 5 to train successor/weaker models like Opus) plus per-project execution-flow maps. Three parts — OPERATING-MANUAL.md (how to think on hard tasks: read the real ask, decompose along verification lines, risk = blast radius × silence, verify by re-derivation, label known-vs-guessed, attack your own conclusion, answer-first communication, false-competence tells, 5-question self-test), projects/<slug>.md (how a specific repo actually runs: commands, gates, ground truth, trap tables), and DISTILL.md (the recipe for generating a new project map, so a strong model can train the next one). Use at the START of any nontrivial or ambiguous task in ANY project, when onboarding a new model/agent (Opus, Codex, Gemini) to a codebase, before diagnosing bugs / touching money-math, dates, tenancy / shipping, when the user says "làm theo playbook", "đọc operating manual", "check theo self-test", "train Opus", "distill project này", or asks how to hand work to a weaker model.
+description: >-
+  Cross-project senior-operator playbook — a model-to-model craft handoff (a strong model
+  training successor/weaker models) plus per-project execution-flow maps. Three parts —
+  OPERATING-MANUAL.md (how to think on hard tasks — read the real ask, decompose along
+  verification lines, risk = blast radius × silence, verify by re-derivation, label
+  known-vs-guessed, attack your own conclusion, answer-first communication, 5-question
+  self-test), projects/<slug>.md (how a specific repo runs — commands, gates, ground truth,
+  trap tables), and DISTILL.md (the recipe for generating a new project map). Use at the
+  START of any nontrivial or ambiguous task in ANY project, when onboarding a new
+  model/agent (Opus, Codex, Gemini) to a codebase, before diagnosing bugs, touching
+  money-math/dates/tenancy, or shipping, when the user says "làm theo playbook", "đọc
+  operating manual", "check theo self-test", "train Opus", "distill project này", or asks
+  how to hand work to a weaker model.
 ---
 
 # Senior Operator

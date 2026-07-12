@@ -10,8 +10,12 @@ Usage:
     --force    overwrite files that already exist (default: skip existing = safe merge)
 
 Targets:
-    Claude-Cowork/*  ->  ~/Library/Application Support/Claude/claude-code-sessions/
-    Claude-Code/*    ->  ~/.claude/projects/
+    Claude-Cowork/*        ->  ~/Library/Application Support/Claude/claude-code-sessions/
+    Claude-Cowork-Local/*  ->  ~/Library/Application Support/Claude/local-agent-mode-sessions/
+    Claude-Code/*          ->  ~/.claude/projects/
+
+(Claude-Cowork-Local/ is absent in backups made before 2026-07; that's fine —
+the script skips missing subfolders.)
 
 Safe by default: existing live files are never overwritten unless --force.
 Restart the Claude Desktop / Cowork app after restoring so it re-indexes.
@@ -19,8 +23,15 @@ Restart the Claude Desktop / Cowork app after restoring so it re-indexes.
 import os, glob, shutil, sys
 
 HOME = os.path.expanduser("~")
-COWORK_DST = os.path.join(HOME, "Library/Application Support/Claude/claude-code-sessions")
-CODE_DST   = os.path.join(HOME, ".claude/projects")
+# (backup subfolder, live destination)
+TARGETS = [
+    ("Claude-Cowork",
+     os.path.join(HOME, "Library/Application Support/Claude/claude-code-sessions")),
+    ("Claude-Cowork-Local",
+     os.path.join(HOME, "Library/Application Support/Claude/local-agent-mode-sessions")),
+    ("Claude-Code",
+     os.path.join(HOME, ".claude/projects")),
+]
 
 def restore_tree(src_root, dst_root, dry, force):
     copied = skipped = 0
@@ -52,15 +63,14 @@ def main():
     force = "--force" in args
     print(f"Restore from: {src}   dry_run={dry}  force={force}\n")
 
-    print("Cowork ->", COWORK_DST)
-    c1, s1 = restore_tree(os.path.join(src, "Claude-Cowork"), COWORK_DST, dry, force)
-    print(f"  copied {c1}, skipped(existing) {s1}\n")
+    tot_c = tot_s = 0
+    for sub, dst_root in TARGETS:
+        print(f"{sub} -> {dst_root}")
+        c, s = restore_tree(os.path.join(src, sub), dst_root, dry, force)
+        print(f"  copied {c}, skipped(existing) {s}\n")
+        tot_c += c; tot_s += s
 
-    print("Code   ->", CODE_DST)
-    c2, s2 = restore_tree(os.path.join(src, "Claude-Code"), CODE_DST, dry, force)
-    print(f"  copied {c2}, skipped(existing) {s2}\n")
-
-    print(f"DONE. total copied={c1+c2}, skipped={s1+s2}")
+    print(f"DONE. total copied={tot_c}, skipped={tot_s}")
     if not dry:
         print("Restart the Claude Desktop / Cowork app so it re-indexes the sessions.")
 

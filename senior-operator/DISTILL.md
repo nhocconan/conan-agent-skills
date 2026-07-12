@@ -57,11 +57,13 @@ Trap-table admission rule: the entry must have actually happened. Format:
 ## Step 3 — Wire it in
 
 1. Save as `~/.conan-agent-skills/senior-operator/projects/<slug>.md`.
-2. Add an index row in [SKILL.md](SKILL.md) (slug, repo name, date, distilling model).
+2. Add an index row in `projects/INDEX.md` (slug, repo name, date, distilling model).
+   NOT in SKILL.md — the skills repo is public and `projects/` (including the index)
+   is gitignored precisely so internal repo names never leave this machine.
 3. Optional but strongest wiring: add one line to the repo's own `CLAUDE.md` routing
    section — `Đầu session / task khó → invoke **senior-operator** (đọc projects/<slug>.md)`.
-4. Commit and push `~/.conan-agent-skills` (it is the source of truth; `~/.claude/skills/`
-   only symlinks).
+4. Do NOT commit the map — `projects/` is local-only by design. Commit/push only
+   changes outside `projects/` (manual, DISTILL, SKILL.md).
 
 ## Step 4 — Verify the distillation (don't skip)
 

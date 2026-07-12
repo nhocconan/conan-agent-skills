@@ -1,7 +1,6 @@
 ---
 name: interactive-course-builder
 description: House standard for authoring world-class interactive HTML training courses as standalone single-file pages (LMS-embedded or independent). Use when creating, reviewing, redesigning, or unifying the style of ANY interactive/self-paced learning course, lesson, curriculum, or training module rendered as HTML. Covers the shared design system (tokens, per-course themes, light-default + dark-toggle modes), the component kit (lesson cards, SVG diagrams, images, callouts, comparisons, takeaways, quizzes), the leveled pedagogy (L1→L5, felt-problem→takeaway→quiz rhythm), WCAG 2.2 AA accessibility, the framework-free interactivity engine, and the optional LMS progress contract. Trigger on "interactive course", "training course", "make a course", "lesson HTML", "course style", "unify course design", "add takeaways/quizzes/diagrams to a course".
-trigger: /interactive-course-builder
 ---
 
 # Interactive Course Builder — house standard
@@ -42,9 +41,9 @@ If template and reference ever disagree, the **template wins** (it's tested).
 - Adding the mandatory pieces (levels, takeaways, quizzes, SVG diagrams) a
   course is missing.
 
-Sibling skills: `codebase-to-course` explains *a codebase* as a course;
-`anti-slop-review` fact-checks the prose; `a11y-audit` deep-checks accessibility.
-This skill owns the **house design system + pedagogy** those plug into.
+Sibling skills: `anti-slop-review` fact-checks the prose; `a11y-audit`
+deep-checks accessibility. This skill owns the **house design system +
+pedagogy** those plug into.
 
 ## Non-negotiables (the short version — full detail in `reference.md`)
 
