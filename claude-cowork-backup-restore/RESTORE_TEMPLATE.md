@@ -4,9 +4,10 @@ This folder is a **light backup** of Claude session history, filtered to only
 sessions whose working folder existed on the source machine.
 
 ```
-Claude-Code/     -> restores to  ~/.claude/projects/
-Claude-Cowork/   -> restores to  ~/Library/Application Support/Claude/claude-code-sessions/
-MANIFEST.txt     -> what was kept / skipped, with sizes
+Claude-Code/          -> restores to  ~/.claude/projects/
+Claude-Cowork/        -> restores to  ~/Library/Application Support/Claude/claude-code-sessions/
+Claude-Cowork-Local/  -> restores to  ~/Library/Application Support/Claude/local-agent-mode-sessions/
+MANIFEST.txt          -> what was kept / skipped, with sizes
 ```
 
 ## Restore with the helper script (recommended)
@@ -31,17 +32,20 @@ python3 ~/.conan-agent-skills/claude-cowork-backup-restore/scripts/restore.py "<
 ## Restore manually (no script)
 
 ```bash
-# Cowork sessions
-rsync -av "<THIS_FOLDER>/Claude-Cowork/"  "$HOME/Library/Application Support/Claude/claude-code-sessions/"
+# Cowork sessions (both trees)
+rsync -av "<THIS_FOLDER>/Claude-Cowork/"        "$HOME/Library/Application Support/Claude/claude-code-sessions/"
+rsync -av "<THIS_FOLDER>/Claude-Cowork-Local/"  "$HOME/Library/Application Support/Claude/local-agent-mode-sessions/"
 # Claude Code sessions
-rsync -av "<THIS_FOLDER>/Claude-Code/"    "$HOME/.claude/projects/"
+rsync -av "<THIS_FOLDER>/Claude-Code/"          "$HOME/.claude/projects/"
 ```
 
 (Add `--ignore-existing` to rsync to avoid overwriting live files.)
 
 ## Notes
-- Cowork `<workspace-id>` folders are per-install UUIDs; restoring them verbatim
-  works because the app scans the dir and reads `cwd` from each JSON file.
+- Cowork `<account-uuid>/<space-uuid>` folders are per-account UUIDs; restoring
+  them verbatim preserves history. If sessions don't show up after restoring
+  (different account/space on this machine), run the skill's
+  `scripts/map_account.py --list` and merge into the current login's active space.
 - A session only *resumes* if its `cwd` path also exists on this machine; the
   history is preserved either way.
 - Backup date and full contents are listed in `MANIFEST.txt`.

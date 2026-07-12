@@ -1,6 +1,13 @@
 ---
 name: appstore-review-guard
-description: Pre-submission compliance gate for Apple App Store (and Google Play) that prevents repeat rejections. Run BEFORE every submit/resubmit, and AFTER any rejection to record the cause + fix in the rejection ledger. Catches the avoidable "silly" rejections — missing Restore Purchases (3.1.1), device frames in preview videos (2.3.4), metadata that promises unshipped features, debug/QA hooks shipping in release, unused permission strings, missing privacy policy URL. Triggers: "App Store reject", "app got rejected", "guideline 3.1.1/2.3.4/2.1/4.x", "before I submit", "pre-submission check", "resubmit", "App Review".
+description: >-
+  Pre-submission compliance gate for Apple App Store (and Google Play) that prevents repeat
+  rejections. Run BEFORE every submit/resubmit, and AFTER any rejection to record the cause
+  + fix in the rejection ledger. Catches the avoidable "silly" rejections — missing Restore
+  Purchases (3.1.1), device frames in preview videos (2.3.4), metadata that promises
+  unshipped features, debug/QA hooks shipping in release, unused permission strings, missing
+  privacy policy URL. Triggers include "App Store reject", "app got rejected", "guideline
+  3.1.1/2.3.4/2.1/4.x", "before I submit", "pre-submission check", "resubmit", "App Review".
 ---
 
 # App Store Review Guard

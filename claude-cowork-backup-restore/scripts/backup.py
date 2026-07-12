@@ -10,15 +10,24 @@ Usage:
     # DEST_DIR defaults to ~/Claude_Light_Backup_<YYYYMMDD>
 
 What it copies (light = history files only, no caches / VM / binaries):
-    Cowork : ~/Library/Application Support/Claude/claude-code-sessions/<ws>/<sess>/local_*.json
+    Cowork : ~/Library/Application Support/Claude/claude-code-sessions/<acct>/<space>/local_*.json
+             ~/Library/Application Support/Claude/local-agent-mode-sessions/<acct>/<space>/local_*.json
     Code   : ~/.claude/projects/<slug>/*.jsonl
-Structure is preserved verbatim so restore.py can mirror it straight back.
+Cowork keeps history in BOTH trees — backing up only claude-code-sessions
+silently loses the local-agent-mode half. Structure is preserved verbatim so
+restore.py can mirror it straight back.
 """
 import json, os, glob, shutil, collections, sys, time
 
 HOME = os.path.expanduser("~")
-COWORK_SRC = os.path.join(HOME, "Library/Application Support/Claude/claude-code-sessions")
-CODE_SRC   = os.path.join(HOME, ".claude/projects")
+# (live source root, subfolder name inside the backup)
+COWORK_TREES = [
+    (os.path.join(HOME, "Library/Application Support/Claude/claude-code-sessions"),
+     "Claude-Cowork"),
+    (os.path.join(HOME, "Library/Application Support/Claude/local-agent-mode-sessions"),
+     "Claude-Cowork-Local"),
+]
+CODE_SRC = os.path.join(HOME, ".claude/projects")
 
 def first_cwd_from_jsonl(path):
     try:
@@ -37,36 +46,40 @@ def first_cwd_from_jsonl(path):
 def main():
     dest = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
         HOME, "Claude_Light_Backup_" + time.strftime("%Y%m%d"))
-    code_dest   = os.path.join(dest, "Claude-Code")
-    cowork_dest = os.path.join(dest, "Claude-Cowork")
+    code_dest = os.path.join(dest, "Claude-Code")
     os.makedirs(code_dest, exist_ok=True)
-    os.makedirs(cowork_dest, exist_ok=True)
 
     man = ["Claude Light Backup — " + time.strftime("%Y-%m-%d %H:%M"),
            "Rule: keep only sessions whose cwd still exists on THIS machine.\n"]
 
-    # ---- COWORK ----
-    cw_keep = cw_skip = cw_bytes = 0
-    kept = collections.Counter(); skipped = collections.Counter()
-    for f in glob.glob(os.path.join(COWORK_SRC, "*", "*", "local_*.json")):
-        try:
-            d = json.load(open(f))
-            cwd = d.get("cwd") or d.get("originCwd") or ""
-        except Exception:
-            continue
-        if cwd and os.path.isdir(cwd):
-            rel = os.path.relpath(f, COWORK_SRC)
-            dst = os.path.join(cowork_dest, rel)
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            shutil.copy2(f, dst)
-            cw_keep += 1; cw_bytes += os.path.getsize(f); kept[cwd] += 1
-        else:
-            cw_skip += 1; skipped[cwd or "(no cwd)"] += 1
-    man += ["=" * 60, f"CLAUDE COWORK — kept {cw_keep} sessions, skipped {cw_skip}", "=" * 60,
-            "\n[KEPT] cwd -> #sessions:"]
-    man += [f"  {n:3d}  {c}" for c, n in sorted(kept.items())]
-    man += ["\n[SKIPPED] cwd not on this machine:"]
-    man += [f"  {n:3d}  {c}" for c, n in sorted(skipped.items())]
+    # ---- COWORK (both trees) ----
+    cw_bytes = 0
+    for cowork_src, sub in COWORK_TREES:
+        cowork_dest = os.path.join(dest, sub)
+        os.makedirs(cowork_dest, exist_ok=True)
+        cw_keep = cw_skip = 0
+        kept = collections.Counter(); skipped = collections.Counter()
+        for f in glob.glob(os.path.join(cowork_src, "*", "*", "local_*.json")):
+            try:
+                d = json.load(open(f))
+                cwd = d.get("cwd") or d.get("originCwd") or ""
+            except Exception:
+                continue
+            if cwd and os.path.isdir(cwd):
+                rel = os.path.relpath(f, cowork_src)
+                dst = os.path.join(cowork_dest, rel)
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copy2(f, dst)
+                cw_keep += 1; cw_bytes += os.path.getsize(f); kept[cwd] += 1
+            else:
+                cw_skip += 1; skipped[cwd or "(no cwd)"] += 1
+        man += ["=" * 60,
+                f"CLAUDE COWORK [{os.path.basename(cowork_src)}] — kept {cw_keep} sessions, skipped {cw_skip}",
+                "=" * 60, "\n[KEPT] cwd -> #sessions:"]
+        man += [f"  {n:3d}  {c}" for c, n in sorted(kept.items())]
+        man += ["\n[SKIPPED] cwd not on this machine:"]
+        man += [f"  {n:3d}  {c}" for c, n in sorted(skipped.items())]
+        man += [""]
 
     # ---- CLAUDE CODE ----
     cc_proj = cc_sess = cc_skip = cc_bytes = 0
