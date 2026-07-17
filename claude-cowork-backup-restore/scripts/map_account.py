@@ -122,7 +122,27 @@ def cmd_list():
             print(f"       • {t[:52]:52s}  {c}")
         print()
 
-def cmd_map(src, dst, dst_space, dry, move):
+def _item_meta(item):
+    """Return (lastActivity_ms, cwd) for a local_*.json file OR its sibling dir.
+
+    local-agent-mode-sessions stores BOTH `local_<uuid>.json` (metadata) and a
+    `local_<uuid>/` dir (transcript) per session; they share one date from the
+    .json. Falls back to file mtime when the json is missing/unreadable."""
+    import time as _t
+    if os.path.isdir(item):
+        json_path = item + ".json"
+    else:
+        json_path = item
+    try:
+        d = json.load(open(json_path))
+        la = d.get("lastActivityAt") or int(os.path.getmtime(json_path) * 1000)
+        cwd = d.get("cwd") or d.get("originCwd") or ""
+    except Exception:
+        la = int(os.path.getmtime(item) * 1000)
+        cwd = ""
+    return la, cwd
+
+def cmd_map(src, dst, dst_space, dry, move, since_days=None, cwd_filter=True):
     dst = dst or current_uuid()
     if not src or not dst:
         print("ERROR: need --from SRC and a resolvable --to/current account."); sys.exit(1)
@@ -133,23 +153,38 @@ def cmd_map(src, dst, dst_space, dry, move):
         print(f"ERROR: target account {dst} has no space yet.\n"
               f"       Log in with it, start ONE session, quit, then rerun."); sys.exit(1)
 
+    cutoff = (time.time() - since_days * 86400) * 1000 if since_days else None
+    label = f" (since {since_days}d, cwd_filter={cwd_filter})" if since_days else ""
     print(f"{'MOVE' if move else 'COPY'} sessions:  {src}  ->  {dst}/{dst_space}"
-          f"   dry_run={dry}\n")
-    total_add = total_skip = 0
+          f"   dry_run={dry}{label}\n")
+    total_add = total_skip = total_skip_age = total_skip_cwd = 0
     for t in TREES:
         src_base = os.path.join(CL, t, src)
         if not os.path.isdir(src_base):
             print(f"[{t}] no source account folder, skip"); continue
         dst_dir = os.path.join(CL, t, dst, dst_space)
-        add = skip = 0
+        add = skip = skip_age = skip_cwd = 0
         for src_space in glob.glob(os.path.join(src_base, "*")):
             if not os.path.isdir(src_space):
                 continue
             for item in glob.glob(os.path.join(src_space, "*")):
                 name = os.path.basename(item)
+                # Only session histories share the `local_*` namespace; the
+                # local-agent-mode-sessions tree also holds per-account config
+                # (cowork_settings.json, cowork-*-cache.json, memory/, agent/,
+                # debug/, cowork_plugins/) that must NOT be copied across.
+                if not name.startswith("local_"):
+                    continue
                 target = os.path.join(dst_dir, name)
                 if os.path.exists(target):
                     skip += 1
+                    continue
+                la, cwd = _item_meta(item)
+                if cutoff is not None and la < cutoff:
+                    skip_age += 1
+                    continue
+                if cwd_filter and cwd and not os.path.isdir(cwd):
+                    skip_cwd += 1
                     continue
                 if dry:
                     print(f"  [{t}] would add {name}")
@@ -167,9 +202,12 @@ def cmd_map(src, dst, dst_space, dry, move):
                     os.rmdir(src_space)
                 except OSError:
                     pass
-        print(f"[{t}] added {add}, skipped(existing) {skip}")
+        print(f"[{t}] added {add}, skipped(existing) {skip}, "
+              f"skipped(age) {skip_age}, skipped(cwd) {skip_cwd}")
         total_add += add; total_skip += skip
-    print(f"\nDONE. added={total_add}, skipped={total_skip}"
+        total_skip_age += skip_age; total_skip_cwd += skip_cwd
+    print(f"\nDONE. added={total_add}, skipped(existing)={total_skip}, "
+          f"skipped(age)={total_skip_age}, skipped(cwd)={total_skip_cwd}"
           + (" (moved from source)" if move and not dry else ""))
     if not dry:
         print("Fully quit (Cmd+Q) and relaunch Claude Desktop so it re-indexes.")
@@ -182,8 +220,11 @@ def main():
         cmd_list(); return
     def val(flag):
         return a[a.index(flag)+1] if flag in a and a.index(flag)+1 < len(a) else None
+    sd = val("--since-days")
+    sd = int(sd) if sd else None
     cmd_map(val("--from"), val("--to"), val("--to-space"),
-            "--dry-run" in a, "--move" in a)
+            "--dry-run" in a, "--move" in a,
+            since_days=sd, cwd_filter=("--no-cwd-filter" not in a))
 
 if __name__ == "__main__":
     main()
