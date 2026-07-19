@@ -36,6 +36,23 @@ Start at `projects/INDEX.md`. No map for the repo you're in? Run
 [DISTILL.md](DISTILL.md) — ideally on the strongest model available — then add
 the row in `projects/INDEX.md`.
 
+## Any-model use (Claude / Codex / Gemini)
+
+Everything here is plain Markdown — no harness feature required. A harness without a
+skill loader (Codex CLI, ChatGPT, Gemini) uses it by reading files directly, in the
+same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
+`projects/<slug>.md` for the repo at hand.
+
+- **Wiring for Codex:** point the repo's `AGENTS.md` (or a `.codex/skills/` wrapper) at
+  this directory with one line: "Nontrivial task → read
+  `~/.conan-agent-skills/senior-operator/SKILL.md` and follow it."
+- **Lead/worker split is lineage-independent:** whichever model is strongest (Claude
+  Fable → Opus/Sonnet workers; OpenAI SOL → Luna/Terra workers) runs DISTILL.md to
+  produce the map, and the workers execute on it. A map distilled by one lineage is
+  fully usable by another — it's commands, gates, and traps, not model behavior.
+- Harness-specific references inside the manual/maps (memory paths, browser tools,
+  `CLAUDE.md`) are examples, not requirements — substitute the local equivalent.
+
 ## Order of operations (any project)
 
 1. **Bootstrap:** the repo's own `CLAUDE.md`/`AGENTS.md` (always authoritative — this skill NEVER overrides them) + its session-memory index if one exists + the matching `projects/<slug>.md` §0.

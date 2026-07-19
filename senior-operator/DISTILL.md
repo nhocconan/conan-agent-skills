@@ -23,10 +23,11 @@ when a repo has no `projects/<slug>.md`, or when the existing map's date stamp i
    read a body only when the name is load-bearing and ambiguous).
 3. **The gates:** CI workflows (`.github/workflows/`), pre-commit/pre-push hooks, audit
    scripts. Identify the ONE command that mirrors all gates, if it exists.
-4. **Session memory:** the project's memory dir under `~/.claude/projects/<slug>/memory/`
-   — read `MEMORY.md` (index) fully; open individual files only for entries marked
-   feedback/gotcha. This is where the traps live: memory is the residue of every past
-   session's pain.
+4. **Session memory:** whatever persistent per-project memory the harness keeps — Claude
+   Code: `~/.claude/projects/<slug>/memory/` (read `MEMORY.md`, the index, fully; open
+   individual files only for entries marked feedback/gotcha); other harnesses (Codex,
+   Gemini): their session-notes / saved-context equivalent, or skip if none exists. This
+   is where the traps live: memory is the residue of every past session's pain.
 5. **Runbooks & docs:** `docs/` for runbooks, ADRs, credentials files, ground-truth
    references. Note ground-truth anchors (oracles, frozen expected values) explicitly —
    the weaker model must know that truth lives OUTSIDE the code.
@@ -60,8 +61,9 @@ Trap-table admission rule: the entry must have actually happened. Format:
 2. Add an index row in `projects/INDEX.md` (slug, repo name, date, distilling model).
    NOT in SKILL.md — the skills repo is public and `projects/` (including the index)
    is gitignored precisely so internal repo names never leave this machine.
-3. Optional but strongest wiring: add one line to the repo's own `CLAUDE.md` routing
-   section — `Đầu session / task khó → invoke **senior-operator** (đọc projects/<slug>.md)`.
+3. Optional but strongest wiring: add one line to the repo's own rulebook routing section
+   (`CLAUDE.md`, or `AGENTS.md` for Codex-native repos) —
+   `Đầu session / task khó → invoke **senior-operator** (đọc projects/<slug>.md)`.
 4. Do NOT commit the map — `projects/` is local-only by design. Commit/push only
    changes outside `projects/` (manual, DISTILL, SKILL.md).
 
