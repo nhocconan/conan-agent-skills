@@ -223,7 +223,7 @@ code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);
   font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-2);
   border:1px solid var(--border);border-radius:99px;padding:5px 12px;background:var(--surface)}
 .hero h1{font-size:clamp(2.1rem,5vw,3.4rem);font-weight:800;margin:20px 0 0;letter-spacing:-.03em}
-.hero-sub{font-size:clamp(1rem,2vw,1.2rem);color:var(--ink-2);margin-top:18px;max-width:60ch}
+.hero-sub{font-size:clamp(1rem,2vw,1.2rem);color:var(--ink-2);margin-top:18px}
 .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
 .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;
   color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:6px 12px}
@@ -430,11 +430,11 @@ tbody tr:hover{background:var(--surface-2)}
 .lesson-nav .nl-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
 .lesson-nav .nl-title{font-weight:600;font-size:14px;color:var(--ink);margin-top:3px}
 .lesson-nav .nav-empty{opacity:.4;pointer-events:none;border-style:dashed}
-.nav-complete{background:var(--accent);color:var(--on-accent);border-color:var(--accent);
+.lesson-nav .nav-complete{background:var(--accent);color:var(--on-accent);border-color:var(--accent);
   align-items:center;flex-direction:row;justify-content:center;gap:8px;
   font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
-.nav-complete:hover{background:var(--brand-navy-deep);transform:translateY(-1px)}
-.nav-complete.done{background:var(--grad)}
+.lesson-nav .nav-complete:hover{background:var(--brand-navy-deep);transform:translateY(-1px)}
+.lesson-nav .nav-complete.done{background:var(--grad)}
 
 /* COMPONENT: Completion screen */
 .complete{text-align:center;padding:70px 24px}
