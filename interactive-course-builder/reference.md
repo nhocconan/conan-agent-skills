@@ -141,6 +141,20 @@ the standard.
   Never hardcode fills.
 - Label nodes in mono; keep to ≤ ~9 nodes; one clear left-to-right or
   top-to-down flow; arrowheads via a `<marker>`.
+- **Arrowheads — two failure modes that render silently wrong** (both shipped
+  to production 2026-07; audit with `scripts/audit-svg-arrows.py`):
+  1. **One connector per `<path>`.** SVG paints `marker-end` on the LAST vertex
+     of the whole path element, so `d="M0 0h20 M0 40h20"` draws exactly ONE
+     arrowhead — the other branch silently loses its head. A fan-out to three
+     boxes needs three `<path>` elements, not one path with three subpaths.
+     (Decorative rails that are not connectors carry no marker at all.)
+  2. **The final segment IS the arrow direction.** With `orient="auto"` the
+     marker rotates to the last segment, so a trailing jog like `…v60h-4`
+     points the head backwards, out of the box it should enter. Route the
+     connector *outside* the target box, then enter it with a final segment
+     that travels INTO the box: `M238 65 H246 V127 H250` (box starts x=254).
+  Sanity check when drawing: for every arrow, name the box it enters and
+  confirm the last command in `d` moves toward that box.
 - **Pick the diagram FORM from the relationship** (decision tree + worked
   contrast in `examples.md §6`): flow → boxes+arrows; contrast → two-panel;
   model correspondence → parallel rows + dashed mapping lines; hierarchy →
