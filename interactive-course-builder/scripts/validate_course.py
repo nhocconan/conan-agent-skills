@@ -287,6 +287,14 @@ def main() -> int:
                     errors.append(f"{lid}: figure <svg> without aria-label")
                 if "viewBox" not in svg:
                     errors.append(f"{lid}: figure <svg> without viewBox (must scale fluidly)")
+        # marker-end paints on the LAST vertex of a <path> only: a path holding
+        # several subpaths renders one arrowhead and silently drops the rest.
+        for p in re.findall(r"<path\b[^>]*marker-(?:end|start)=\"url\(#[^)]+\)\"[^>]*>", card):
+            d_m = re.search(r'\sd="([^"]+)"', p)
+            if d_m and len(re.findall(r"[Mm]", d_m.group(1))) > 1:
+                errors.append(
+                    f"{lid}: one <path> with {len(re.findall(r'[Mm]', d_m.group(1)))} subpaths carries a "
+                    f"marker — only the last branch draws an arrowhead; split into one <path> per connector")
         card_no_fig = re.sub(r"<figure.*?</figure>", "", card, flags=re.S)
         for svg in re.findall(r"<svg\b[^>]*>", card_no_fig):
             if "aria-hidden" not in svg and 'role="img"' not in svg:
