@@ -172,9 +172,29 @@ the standard.
      marker rotates to the last segment, so a trailing jog like `…v60h-4`
      points the head backwards, out of the box it should enter. Route the
      connector *outside* the target box, then enter it with a final segment
-     that travels INTO the box: `M238 65 H246 V127 H250` (box starts x=254).
-  Sanity check when drawing: for every arrow, name the box it enters and
-  confirm the last command in `d` moves toward that box.
+     that travels INTO the box.
+  3. **The final segment must be LONGER than the head's backward reach.**
+     `markerUnits` defaults to `strokeWidth`, so a `refX="7"` head on a
+     `stroke-width="2"` path reaches **14 user units back** from its tip. Land
+     that on a 4-unit jog and the head spills across the corner onto the
+     previous segment — on screen it is a detached blob, not an arrow.
+     Rule of thumb: give every connector an approach run of at least
+     `refX × stroke-width`, and turn *earlier* rather than shrinking the head.
+
+     Fixing 2 by adding a tiny jog is what causes 3. Both were shipped from
+     this file: an earlier revision held up `M238 65 H246 V127 H250` as the
+     model answer, and that exact path rendered the blob a reader reported in
+     `ai-agent-operational-training` Hình 2.3 (07/2026). The correct shape for
+     that step is a plain elbow with a real runway — exit the source box, turn
+     once, and run into the target edge:
+     `M238 65 H270 V96` (target box spans x 254–466, top edge y=96 → a 31-unit
+     final approach for a 14-unit head).
+  Sanity check when drawing: for every arrow, name the box it enters, confirm
+  the last command in `d` moves toward that box, and confirm that last command
+  is longer than the head that sits on it. Then **look at the rendered figure** —
+  `scripts/audit-svg-arrows.py` in the courses repo checks all three classes,
+  but a passing audit only means nothing is provably broken, not that the
+  diagram reads right.
 - **Pick the diagram FORM from the relationship** (decision tree + worked
   contrast in `examples.md §6`): flow → boxes+arrows; contrast → two-panel;
   model correspondence → parallel rows + dashed mapping lines; hierarchy →
