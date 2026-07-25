@@ -94,6 +94,26 @@ blocks in `template.html`, you have introduced a bug.
 A new theme = one line: `[data-theme="x"]{--accent;--accent-2;--accent-3}` +
 a dark-mode `--accent` override for contrast. Nothing else.
 
+**Picking the accent trio — check the gradient midpoint, not just the endpoints.**
+`--grad` paints headline text via `background-clip:text`, so any desaturated
+zone in the ramp shows up as dull grey letters in the middle of the wordmark.
+Two accents on roughly opposite hues interpolate through neutral: cyan `#0ea5e9`
+→ amber `#f59e0b` passed through olive and washed out `Engin**eer**ing` in the
+loop theme (fixed 2026-07-25 by moving `--accent-3` to emerald `#10b981`, which
+keeps chroma the whole way). Render the wordmark and look before committing a trio.
+
+**Accent ≠ text colour.** A vivid accent used for `.sidebar-brand-title em`
+often fails AA against white: amber `#f59e0b` on `#fff` is ~2.1:1. Keep a
+separate `--brand-em` token (dark in light mode, light in dark mode) for accent
+text, and measure it — 17px/800 is not "large text" under WCAG.
+
+**Callout icons are masked SVG, never emoji.** `.callout::before` is a 17×17
+box with `background-color:currentColor` and the glyph applied as a
+`mask`/`-webkit-mask` data-URI; each variant sets `color:var(--info|--warning|
+--success|--danger|--accent-2)`. This inherits the semantic token in both colour
+modes and renders identically on every platform, which emoji do not. The
+`insight` icon is the same spark path as the Takeaway eyebrow — reuse it.
+
 **Dark mode is toggle-only (house rule).** Light is ALWAYS the default —
 never `prefers-color-scheme`. The topbar 🌙/☀️ button sets
 `data-mode="dark"` on `<body>` and the engine persists the choice per course
@@ -264,6 +284,14 @@ before/after over hand-waving.
   interactive element (built into tokens). Accordions are native `<details>`.
   Quiz options are real `<button>`s.
 - **Touch targets** ≥ 44px (lesson-nav min-height 62px; buttons padded).
+  Padding alone does **not** get you there — measure. `.mobile-toggle` and
+  `.mode-toggle` both need explicit `min-width:44px;min-height:44px`; a
+  `padding:9px` hamburger renders 40×43 and a `min-height:34px` mode toggle
+  renders 44×34. Audited 2026-07-25: 12 of 14 shipped courses were failing this.
+- **Keyboard-only affordances are hidden on touch widths.** The `← → chuyển bài`
+  hint carries `class="mono kbd-hint"`, and the `max-width:1024px` block carries
+  `.kbd-hint{display:none}` — arrow keys don't exist on a phone, and leaving the
+  hint in truncates the breadcrumb next to it.
 - `prefers-reduced-motion` disables animations (built in).
 - Every `<svg>` diagram: `role="img"` + `aria-label`. Every control has a
   discernible name (text or `aria-label`).
@@ -282,6 +310,14 @@ before/after over hand-waving.
 The engine (bottom `<script>`) is framework-free and course-agnostic. Configure
 three constants + the `LESSONS` array; touch nothing else unless extending.
 
+- **`COURSE_TITLE` is not the sidebar wordmark.** The template used to run
+  `sidebar-brand-title.innerHTML = COURSE_TITLE.replace(/(\S+)$/,'<em>$1</em>')`,
+  which overwrote the short hand-authored brand with the full title *and*
+  accent-coloured whatever word happened to land last — shipping a 3-line
+  sidebar header ending in a stray red "ship" / "IDSS" / "liệu". Removed from the
+  template and from 6 shipped courses on 2026-07-25. The brand stays **static
+  markup**: `<div class="sidebar-brand-title">Short <em>Name</em></div>`.
+  `COURSE_TITLE` is for `<title>` and the LMS payload only.
 - **Storage**: `window.storage` (the LMS bridge) first, `localStorage` fallback.
   Keys namespaced `ai-course:<slug>:<lessonId>`. Never write to `window.storage`
   directly from lesson HTML.
