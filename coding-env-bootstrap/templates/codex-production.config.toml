@@ -1,0 +1,18 @@
+# Portable production profile. Invoke with: codex --profile production
+# Authentication, model selection, provider URLs, notifications, plugins, and
+# machine trust belong in the user's base config and are deliberately absent.
+
+model_reasoning_effort = "medium"
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+web_search = "cached"
+project_doc_max_bytes = 32768
+project_doc_fallback_filenames = ["CLAUDE.md"]
+
+[sandbox_workspace_write]
+network_access = false
+writable_roots = []
+
+[shell_environment_policy]
+inherit = "core"
+ignore_default_excludes = false

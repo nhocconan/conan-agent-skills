@@ -13,15 +13,15 @@ MANIFEST.txt          -> what was kept / skipped, with sizes
 ## Restore with the helper script (recommended)
 
 The script lives in the reusable skill at
-`~/.conan-agent-skills/claude-cowork-backup-restore/scripts/restore.py`.
+`~/.conan-agent-skills/agent-session-backup/scripts/restore.py`.
 
 ```bash
 # 1. Quit the Claude Desktop / Cowork app first.
 # 2. Dry-run to preview (copies nothing):
-python3 ~/.conan-agent-skills/claude-cowork-backup-restore/scripts/restore.py "<THIS_FOLDER>" --dry-run
+python3 ~/.conan-agent-skills/agent-session-backup/scripts/restore.py "<THIS_FOLDER>" --dry-run
 
 # 3. Real restore (safe: never overwrites existing live files):
-python3 ~/.conan-agent-skills/claude-cowork-backup-restore/scripts/restore.py "<THIS_FOLDER>"
+python3 ~/.conan-agent-skills/agent-session-backup/scripts/restore.py "<THIS_FOLDER>"
 
 # Overwrite existing files instead of skipping them:
 #   ... restore.py "<THIS_FOLDER>" --force

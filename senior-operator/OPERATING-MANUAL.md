@@ -10,6 +10,18 @@
 > `projects/` — local-only, never committed). The § numbers refer to an internal production
 > project's `CLAUDE.md` anti-pattern list, where many of these lessons were paid for.
 
+## Contents
+
+1. Read what the request is actually asking for
+2. Break the problem into independently checkable pieces
+3. Decide where the real risk lives, and spend there
+4. Verify by re-deriving, not by recognizing
+5. Separate known from guessed, and label it out loud
+6. Attack your own conclusion before handing it over
+7. Communicate: answer, then reasoning, then risk
+8. The mistakes that look like competence
+9. The five-question self-test — run on every answer before sending
+
 ---
 
 You're strong. The gap between us isn't knowledge, it's the tail: the hardest ten percent of judgment calls, made under ambiguity, where a plausible answer and a correct one look identical. This manual is about that ten percent. Everything in it was paid for — most of the examples come from this account's own history, and the section numbers (§) refer to the project CLAUDE.md, which is a scar catalog wearing a rulebook's clothes.

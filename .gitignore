@@ -7,4 +7,8 @@ senior-operator/projects/
 # internal skill-planning notes — references internal systems
 PROPOSALS.md
 # local account map (Cowork account UUIDs / transfer log) — NEVER commit
-claude-cowork-backup-restore/local/
+agent-session-backup/local/
+# mining watermark + generated digests: quote real conversations — NEVER commit
+skill-miner/state/
+# machine-specific values / anything sensitive for the env snapshot
+coding-env-bootstrap/local/
