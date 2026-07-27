@@ -1,0 +1,25 @@
+# Personal Codex load-out.
+# Codex discovers these through ~/.agents/skills. Plugin-managed skills under
+# ~/.codex/skills and third-party ~/.agents/skills entries are left untouched.
+
+a11y-audit
+admin-crud-standards
+agent-orchestration
+agent-session-backup
+anti-slop-review
+appstore-review-guard
+backtest-integrity
+bug-class-audits
+coding-env-bootstrap
+demo-data-craft
+docs-sync
+interactive-course-builder
+metric-integrity
+ref-skills
+resilient-data-harvest
+secure-code-audit
+senior-operator
+skill-miner
+store-screenshots
+web-perf-audit
+world-class-mobile-app

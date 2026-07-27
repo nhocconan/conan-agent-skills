@@ -6,7 +6,7 @@ description: >-
   OPERATING-MANUAL.md (how to think on hard tasks — read the real ask, decompose along
   verification lines, risk = blast radius × silence, verify by re-derivation, label
   known-vs-guessed, attack your own conclusion, answer-first communication, 5-question
-  self-test), projects/<slug>.md (how a specific repo runs — commands, gates, ground truth,
+  self-test), a per-repo map under projects/ (how a specific repo runs — commands, gates, ground truth,
   trap tables), and DISTILL.md (the recipe for generating a new project map). Use at the
   START of any nontrivial or ambiguous task in ANY project, when onboarding a new
   model/agent (Opus, Codex, Gemini) to a codebase, before diagnosing bugs, touching

@@ -35,6 +35,15 @@ These are the recurring gaps that turn a "finished" management UI into a pile of
 ## Reachability
 Every feature must be reachable by clicking from a menu — if it exists only as a URL or API, it doesn't exist. New admin pages get menu entries, gated to the right roles.
 
+## Operational actions belong in the admin UI, not in a growing pile of scripts
+The moment an operation is needed a **second** time, it stops being a script and becomes a screen. Backfills, re-syncs, backup/restore, reindex, cache purge, data export/import — an operator should not have to remember which script in which directory with which flags, on a machine they may not even be on.
+- **Self-service parameters.** The screen exposes what the script took as argv: which org/tenant, which connector/data type, which period (from → to). "Re-run the whole thing" is not an option, it is a fallback.
+- **One command for environment-level ops.** Deploying or bringing the stack up must be a single documented command, and **migrations run automatically** on startup — never a checklist the operator is expected to walk. *"admin có rảnh đâu mà đi check từng cái."*
+- **Configuration lives in the product, not in files.** Anything a tenant/customer sets (credentials, connector config, thresholds) belongs in a form with a **Test connection** button and a save — not in `.env`, which cannot scale past one customer and cannot be edited by the person who owns the value.
+- **Long jobs are jobs**: queued, with visible status, progress, and history — not a request that hangs. Failures name the failing unit and are re-runnable for that unit alone.
+- **Dry-run / preview before commit** for anything that writes at scale, and an audit trail of who ran what with which parameters.
+- Health/status pages must reflect reality: a connector shown green must have actually succeeded recently, and a stored error is rendered as human copy, never a raw stack trace or validation dump.
+
 ## Implementation patterns (modern stack)
 - **Tables/grids**: use a headless data-grid (e.g. TanStack Table v8) so sorting/filtering/column-visibility/row-selection are state you control, not bespoke per page. One shared table component site-wide (see consistency rule above).
 - **Large datasets**: server-side pagination/sort/filter for the source of truth; **virtualize** rendered rows (TanStack Virtual / react-window) — never put 10k+ DOM rows on screen. For the big-file uploads above, stream/queue server-side and show progress; the preview table virtualizes too.
