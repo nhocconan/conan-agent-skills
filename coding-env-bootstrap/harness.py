@@ -43,6 +43,24 @@ def run(command: list[str], *, check: bool = False) -> subprocess.CompletedProce
     return result
 
 
+def find_cli(name: str) -> str | None:
+    """Find an agent CLI, including common per-user install locations."""
+    discovered = shutil.which(name)
+    if discovered:
+        return discovered
+
+    candidates = [
+        HOME / ".local" / "bin" / name,
+        HOME / ".claude" / "local" / name,
+        HOME / ".npm-global" / "bin" / name,
+        HOME / ".volta" / "bin" / name,
+    ]
+    for candidate in candidates:
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
+
+
 def merge(base, overlay):
     if isinstance(base, dict) and isinstance(overlay, dict):
         result = dict(base)
@@ -132,37 +150,40 @@ def install_skills(target: str, profile: str) -> None:
         raise RuntimeError(f"skill installation failed for {target}/{profile}")
 
 
-def mcp_names(cli: str) -> str:
-    if not shutil.which(cli):
+def mcp_names(cli: str | None) -> str:
+    if not cli:
         return ""
     return run([cli, "mcp", "list"]).stdout
 
 
 def install_context7(target: str) -> None:
-    cli = target
-    if not shutil.which(cli):
-        raise RuntimeError(f"{cli} CLI is missing; cannot install context7")
+    cli = find_cli(target)
+    if not cli:
+        raise RuntimeError(
+            f"{target} CLI was not found in PATH or a common user install "
+            "location; cannot install context7"
+        )
     configured = mcp_names(cli).lower()
     if "context7" in configured:
         print(f"{target} MCP context7: already configured")
     else:
         if target == "claude":
             command = [
-                "claude", "mcp", "add", "-s", "user", "context7", "--",
+                cli, "mcp", "add", "-s", "user", "context7", "--",
                 "npx", "-y", "@upstash/context7-mcp@latest",
             ]
         else:
             command = [
-                "codex", "mcp", "add", "context7", "--",
+                cli, "mcp", "add", "context7", "--",
                 "npx", "-y", "@upstash/context7-mcp@latest",
             ]
         if run(command).returncode:
             raise RuntimeError(f"failed to configure context7 for {target}")
     if target == "codex":
-        configured = mcp_names("codex").lower()
+        configured = mcp_names(cli).lower()
         if "openaideveloperdocs" not in configured:
             command = [
-                "codex", "mcp", "add", "openaiDeveloperDocs",
+                cli, "mcp", "add", "openaiDeveloperDocs",
                 "--url", "https://developers.openai.com/mcp",
             ]
             if run(command).returncode:

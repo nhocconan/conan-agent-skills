@@ -17,9 +17,15 @@ CORE_COUNT = len([
 ])
 
 
-def invoke(home: Path, *args: str) -> subprocess.CompletedProcess[str]:
+def invoke(
+    home: Path,
+    *args: str,
+    env_updates: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
     env = dict(os.environ)
     env["HOME"] = str(home)
+    if env_updates:
+        env.update(env_updates)
     return subprocess.run(
         [sys.executable, *args],
         cwd=REPO,
@@ -30,6 +36,38 @@ def invoke(home: Path, *args: str) -> subprocess.CompletedProcess[str]:
 
 
 class HarnessTests(unittest.TestCase):
+    def test_with_mcp_finds_claude_in_user_bin_when_missing_from_path(self):
+        with tempfile.TemporaryDirectory() as raw_home:
+            home = Path(raw_home)
+            cli = home / ".local/bin/claude"
+            cli.parent.mkdir(parents=True)
+            cli.write_text(
+                "#!/bin/sh\n"
+                'printf "%s\\n" "$*" >> "$HOME/claude-invocations"\n'
+            )
+            cli.chmod(0o755)
+
+            result = invoke(
+                home,
+                str(HARNESS),
+                "apply",
+                "--target",
+                "claude",
+                "--profile",
+                "core",
+                "--with-mcp",
+                env_updates={"PATH": "/usr/bin:/bin"},
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            calls = (home / "claude-invocations").read_text()
+            self.assertIn("mcp list", calls)
+            self.assertIn(
+                "mcp add -s user context7 -- "
+                "npx -y @upstash/context7-mcp@latest",
+                calls,
+            )
+
     def test_clean_home_apply_is_idempotent_for_both_agents(self):
         with tempfile.TemporaryDirectory() as raw_home:
             home = Path(raw_home)
