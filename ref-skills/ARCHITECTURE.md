@@ -153,6 +153,7 @@ on" heading still exists in upstream.
   markers in `SKILL.md.merge` and report; never half-apply.
 - Always finishes by running `skill-miner/validate_skills.py`, because an upgrade can
   reintroduce a spec violation (an over-length description, a >500-line body).
+- On one target, the default `auto` profile selects the workstation load-out only when a real browser runtime and every referenced skill are available; otherwise it selects the headless `core` profile. Explicit profiles remain strict, and load-out failures propagate to the command exit code.
 
 Sources: `local:<path>` · `github:<owner>/<repo>@<ref>:<path>` · `https:<url>`.
 

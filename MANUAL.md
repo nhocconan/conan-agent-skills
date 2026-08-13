@@ -69,6 +69,8 @@ python3 ~/.conan-agent-skills/coding-env-bootstrap/harness.py \
 
 Codex jobs use the installed bounded profile with `codex --profile production`.
 
+`refsync.py loadout` and `refsync.py upgrade` use `auto` when one target is selected. On Claude, auto requires a detected real browser runtime and a complete workstation dependency tree; otherwise it selects the headless `core` profile and reports what it skipped. `CONAN_AGENT_HEADLESS=1` or `CONAN_AGENT_BROWSER=0` forces `core`; `CONAN_AGENT_BROWSER=1` is an explicit opt-in for a supported remote browser session. An explicit `--profile claude-dev` or `codex-dev` remains strict and fails on missing entries.
+
 **Why bother:** every active skill's description competes for attention when the model
 picks which one to fire. 89 skills with vague descriptions caused wrong picks. 45 with
 sharp ones do not. It is a precision problem, not a disk-space one.
@@ -147,6 +149,8 @@ Or just say **"upgrade skills"**.
 It runs in order: check each upstream for changes → merge forks / flag wraps for review →
 run the validator → **re-apply the load-out**.
 
+When one target is selected, the default is `auto`: a headless or incomplete workstation install falls back to `core`, while an explicit workstation profile still fails instead of silently dropping entries. For a production refresh of both agents, use `harness.py apply --target both --profile core`.
+
 > ⚠️ **Do not run `/gstack-upgrade` directly.** gstack's installer writes its ~74 skills
 > into `~/.claude/skills` in *both* of its install branches, and no setting prevents it.
 > Going through `refsync upgrade` works because re-applying the load-out runs last.
@@ -156,9 +160,9 @@ Other commands:
 
 ```bash
 refsync.py status            # what drifted + load-out diff; changes nothing
-refsync.py loadout           # dry-run the load-out diff
-refsync.py loadout --apply   # force it back to loadout.txt
-refsync.py loadout --target codex --profile codex-dev --apply
+refsync.py loadout           # dry-run the auto-selected load-out diff
+refsync.py loadout --apply   # apply the auto-selected load-out; explicit profiles stay strict
+refsync.py loadout --target codex --profile codex-dev --apply  # explicit workstation profile
 refsync.py rescue            # list skills that exist ONLY on this machine
 refsync.py rescue --out ~/Backups   # tarball them (skips node_modules etc.)
 

@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import re
 import shutil
 import subprocess
@@ -58,6 +59,19 @@ TARGET_DIRS = {
     "codex": HOME / ".agents" / "skills",
 }
 
+AUTO_PROFILE = "auto"
+BROWSER_COMMANDS = (
+    "google-chrome",
+    "google-chrome-stable",
+    "chromium",
+    "chromium-browser",
+    "chrome",
+    "msedge",
+)
+BROWSER_APP_PATHS = (
+    Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+    Path("/Applications/Chromium.app/Contents/MacOS/Chromium"),
+)
 
 # ------------------------------------------------------------------ helpers
 
@@ -127,8 +141,21 @@ def cmd_status(args) -> int:
     skills = ref_skills()
     if not skills:
         print("no ref skills yet (no */REF.md in the repo)")
+    requested_profile = args.profile or default_profile(args.target)
+    profiles = selected_profiles(args.target, requested_profile)
+    active_refs = {
+        name
+        for profile in profiles.values()
+        for name in read_loadout(profile)
+    }
     drift = 0
     for d, fm, body in skills:
+        if d.name not in active_refs:
+            print(
+                f"  {d.name:26} skipped; not active in "
+                f"{', '.join(sorted(set(profiles.values())))}"
+            )
+            continue
         mode = fm.get("mode", "?")
         src = fm.get("source", "")
         cur = read_source(src)
@@ -145,11 +172,11 @@ def cmd_status(args) -> int:
         for s in missing:
             print(f"      ! depended-on section vanished upstream: {s!r}")
     print()
-    cmd_loadout(argparse.Namespace(
+    loadout_rc = cmd_loadout(argparse.Namespace(
         apply=False, migrate=False, quiet=False,
-        target="claude", profile="claude-dev",
+        target=args.target, profile=requested_profile,
     ))
-    return 1 if drift else 0
+    return 1 if drift or loadout_rc else 0
 
 
 # ------------------------------------------------------------------ upgrade
@@ -187,9 +214,22 @@ def bump_ref(ref: Path, fingerprint: str, version: str | None) -> None:
 
 def cmd_upgrade(args) -> int:
     targets = set(args.names or [])
+    requested_profile = args.profile or default_profile(args.target)
+    profiles = selected_profiles(args.target, requested_profile)
+    active_refs = {
+        name
+        for profile in profiles.values()
+        for name in read_loadout(profile)
+    }
     problems = 0
     for d, fm, body in ref_skills():
         if targets and d.name not in targets:
+            continue
+        if not targets and d.name not in active_refs:
+            print(
+                f"{d.name}: skipped; not active in "
+                f"{', '.join(sorted(set(profiles.values())))}"
+            )
             continue
         src = fm.get("source", "")
         cur = read_source(src)
@@ -246,21 +286,19 @@ def cmd_upgrade(args) -> int:
     problems += v.returncode
 
     print("\n--- re-applying load-out ---")
-    cmd_loadout(argparse.Namespace(
+    loadout_rc = cmd_loadout(argparse.Namespace(
         apply=True, migrate=False, quiet=False,
-        target="claude", profile="claude-dev",
+        target=args.target, profile=requested_profile,
     ))
-    return 1 if problems else 0
+    return 1 if problems or loadout_rc else 0
 
 
 # ------------------------------------------------------------------ loadout
 
 def default_profile(target: str) -> str:
-    if target == "claude":
-        return "claude-dev"
-    if target == "codex":
-        return "codex-dev"
-    return "core"
+    # Auto is safe on both developer workstations and remote machines: it
+    # keeps the workstation profile only when its runtime is present.
+    return "core" if target == "both" else AUTO_PROFILE
 
 
 def loadout_path(profile: str) -> Path:
@@ -298,6 +336,77 @@ def requested_targets(target: str) -> list[str]:
     return list(TARGET_DIRS) if target == "both" else [target]
 
 
+def real_browser_available() -> bool:
+    """Return whether this host has a usable interactive browser runtime.
+
+    Auto selection is intentionally conservative: a browser executable on a
+    headless Linux host is not enough for workstation browser/design skills.
+    Set CONAN_AGENT_BROWSER=1 to opt in on a host with a supported remote
+    browser session; CONAN_AGENT_BROWSER=0 or CONAN_AGENT_HEADLESS=1 forces
+    the production-safe profile.
+    """
+    override = os.environ.get("CONAN_AGENT_BROWSER")
+    if override is not None:
+        return override.strip().lower() in {"1", "true", "yes", "on"}
+    if os.environ.get("CONAN_AGENT_HEADLESS", "").strip().lower() in {
+        "1", "true", "yes", "on",
+    }:
+        return False
+
+    executable = any(shutil.which(command) for command in BROWSER_COMMANDS)
+    app_bundle = any(path.is_file() for path in BROWSER_APP_PATHS)
+    if not (executable or app_bundle):
+        return False
+    if sys.platform == "darwin":
+        return True
+    return bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"))
+
+
+def unresolved_names(profile: str) -> list[str]:
+    return sorted({name for name in read_loadout(profile) if resolve(name) is None})
+
+
+def select_profile(target: str, requested: str, *, announce: bool = True) -> str:
+    """Resolve auto to a complete profile, keeping explicit profiles strict."""
+    if requested != AUTO_PROFILE:
+        return requested
+
+    if target == "both":
+        return "core"
+
+    workstation = "claude-dev" if target == "claude" else "codex-dev"
+    if target == "claude" and not real_browser_available():
+        missing = unresolved_names(workstation)
+        detail = f"; unavailable entries: {', '.join(missing)}" if missing else ""
+        if announce:
+            print(
+                f"{target}/auto: no real browser detected; using core "
+                f"(skipping {workstation} workstation/browser skills{detail})"
+            )
+        return "core"
+
+    missing = unresolved_names(workstation)
+    if not missing:
+        if announce:
+            print(f"{target}/auto: using {workstation}")
+        return workstation
+
+    if announce:
+        missing_text = ", ".join(missing)
+        print(
+            f"{target}/auto: {workstation} is unavailable ({len(missing)} "
+            f"unresolved: {missing_text}); using core"
+        )
+    return "core"
+
+
+def selected_profiles(target: str, requested: str) -> dict[str, str]:
+    return {
+        name: select_profile(name, requested)
+        for name in requested_targets(target)
+    }
+
+
 def repo_owned_link(path: Path) -> bool:
     if not path.is_symlink():
         return False
@@ -310,6 +419,7 @@ def repo_owned_link(path: Path) -> bool:
 
 def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
     active = TARGET_DIRS[target]
+    profile = select_profile(target, profile, announce=not quiet)
     wanted = read_loadout(profile)
     label = f"{target}/{profile}"
     if not wanted:
@@ -518,12 +628,16 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
 
-    sub.add_parser("status")
+    st = sub.add_parser("status")
+    st.add_argument("--target", choices=["claude", "codex", "both"], default="claude")
+    st.add_argument("--profile", help="load-out profile or auto (defaults to auto on one target)")
 
     up = sub.add_parser("upgrade")
     up.add_argument("names", nargs="*")
     up.add_argument("--accept", action="store_true",
                     help="record the new upstream fingerprint after reviewing it")
+    up.add_argument("--target", choices=["claude", "codex", "both"], default="claude")
+    up.add_argument("--profile", help="load-out profile or auto (defaults to auto on one target)")
 
     lo = sub.add_parser("loadout")
     lo.add_argument("--apply", action="store_true")
@@ -532,7 +646,7 @@ def main() -> int:
     lo.add_argument("--target", choices=["claude", "codex", "both"], default="claude")
     lo.add_argument(
         "--profile",
-        help="loadout name under ref-skills/loadouts (defaults per target)",
+        help="load-out profile under ref-skills/loadouts; defaults to auto on one target and core for both",
     )
 
     rc = sub.add_parser("rescue", help="find skills that exist only on this machine")

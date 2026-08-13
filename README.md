@@ -26,6 +26,8 @@ Full runbook (toolchain, agent CLIs, plugins, MCP, secrets):
 python3 ~/.conan-agent-skills/ref-skills/refsync.py upgrade
 ```
 
+On a headless or production machine, the upgrade path auto-selects the headless `core` profile when the real-browser runtime or workstation skill sources are unavailable. To refresh both agents deterministically, run `python3 ~/.conan-agent-skills/coding-env-bootstrap/harness.py apply --target both --profile core`; explicit workstation profiles remain strict.
+
 Do **not** run an upstream installer (`/gstack-upgrade`) directly — it rewrites
 `~/.claude/skills` with its whole suite. See [`ref-skills`](ref-skills/SKILL.md).
 

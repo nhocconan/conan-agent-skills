@@ -244,7 +244,7 @@ def audit(args) -> int:
     print(f"repo: {REPO}")
     failures = []
     for target in targets(args.target):
-        profile = args.profile or ("core" if args.target == "both" else f"{target}-dev")
+        profile = args.profile or "core"
         result = run([
             sys.executable, str(REFSYNC), "loadout",
             "--target", target, "--profile", profile,
@@ -259,7 +259,7 @@ def audit(args) -> int:
 
 def apply(args) -> int:
     for target in targets(args.target):
-        profile = args.profile or ("core" if args.target == "both" else f"{target}-dev")
+        profile = args.profile or "core"
         install_skills(target, profile)
         if target == "claude":
             install_claude_config()
@@ -276,7 +276,7 @@ def main() -> int:
     parser.add_argument("--target", choices=["claude", "codex", "both"], default="both")
     parser.add_argument(
         "--profile",
-        help="explicit load-out profile; both targets default to core",
+        help="explicit load-out profile; defaults to core on every target (use claude-dev/codex-dev only on a workstation)",
     )
     parser.add_argument(
         "--with-mcp",
