@@ -1,9 +1,9 @@
 ---
-name: world-class-mobile-app
+name: mobile-app-playbook
 description: >-
-  End-to-end operating playbook for building and shipping a world-class (top-chart quality)
+  End-to-end operating playbook for building and shipping a top-chart-quality
   Android + iOS app or game — the full thinking process of a senior orchestrator model,
-  written so weaker/cheaper models (Opus, Sonnet) can execute it. Covers: defining the
+  written so worker-tier models can execute it. Covers: defining the
   quality bar with numbers, architecture choice (KMP/Compose Multiplatform seams, platform
   traps), game-feel/UX standards, retention meta-systems, monetization that survives store
   policy, the verification discipline (fake-green traps, per-stage gates, bot-verified
@@ -15,7 +15,7 @@ description: >-
   "monetization plan".
 ---
 
-# World-Class Mobile App — the full playbook
+# Mobile App Playbook — build through store, top-chart bar
 
 > Written by Claude Fable 5 (2026-07) as a capability handoff: the complete thinking
 > process for taking a mobile app/game from "works" to "top of market", distilled from
@@ -97,31 +97,19 @@ an undifferentiated product.
 
 ## §OP. Orchestration — spend model capacity like money
 
-The strongest model available should do exactly four things: **decide, review, verify,
-and write the tricky 10%**. Everything else is delegated.
+The full fleet discipline (tier routing, parallel DAG, briefs, scored verification,
+integration) lives in **`agent-orchestration`** — that skill is the single source; read
+it when staffing any multi-workstream build. What's specific to mobile work:
 
-| Work | Model tier | Why |
-| --- | --- | --- |
-| Codebase survey, feature inventory, doc reading | cheap (Sonnet-class), parallel read-only agents | breadth, no judgment calls |
-| Web research (store policy, specs, benchmarks) | cheap, with "flag UNVERIFIED" instruction | facts either verify or don't |
-| Implementation of a specified workstream | mid (Opus-class) | needs competence, not final judgment |
-| Documentation, changelogs, store copy drafts | cheap→mid | review catches drift |
-| Architecture decisions, diff review, gate verification, risk calls | strongest available | this is where wrong = expensive |
-
-The loop that works (per workstream):
-
-1. Orchestrator writes a **tight spec**: files in scope, exact acceptance checks, the
-   traps from §9 that apply, "implement, do NOT commit".
-2. Implementation agent works in the repo (worktree if parallel agents touch the same
-   modules).
-3. Orchestrator **verifies with its own commands** (never trusts the agent's claim of
-   green — agents inherit the fake-green traps of §5), reviews the diff hunk by hunk,
-   then commits atomically with explicit paths.
-4. Anything learned goes into the spec of the next workstream.
-
-Parallelize only what verifies independently. Two agents editing the same Gradle module
-= merge hell; one agent per module or per layer (engine / UI / backend / assets) is the
-natural cut.
+- **The natural cut** is per module or per layer (engine / UI / backend / assets). Two
+  agents editing the same Gradle module is merge hell — one writer per module, worktrees
+  when they must overlap.
+- **Briefs quote the traps from §9** (this file's failure catalog) that apply to the
+  workstream, plus "implement, do NOT commit".
+- **Verification inherits the fake-green traps of §5** — the orchestrator re-runs the
+  build/test itself, on device/emulator where the check is behavioral, and reviews the
+  diff hunk by hunk before committing atomically.
+- Anything learned mid-workstream goes into the spec of the next one.
 
 ---
 

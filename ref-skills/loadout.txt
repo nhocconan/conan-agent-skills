@@ -35,7 +35,7 @@ senior-operator
 skill-miner
 store-screenshots
 web-perf-audit
-world-class-mobile-app
+mobile-app-playbook
 
 # ── ref skills: thin wrappers over upstream (see each REF.md) ────────────────
 ref-skills

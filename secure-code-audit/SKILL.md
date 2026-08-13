@@ -17,7 +17,7 @@ A repeatable, vendor-neutral security pass any repo can run locally. Four layers
 - Triage by reachability and severity — a critical CVE in a transitive, unused path is lower priority than a high in your request path. Pin/upgrade; record anything intentionally deferred with the reason.
 
 ## 3. Static analysis (SAST)
-- General: `semgrep --config auto` (or `p/owasp-top-ten`, `p/secrets`, framework packs like `p/react`, `p/nextjs`, `p/django`).
+- General: `semgrep --config auto` (or `p/owasp-top-ten`, `p/secrets`, framework packs like `p/react`, `p/nextjs`, `p/django`). Semgrep's registry rules carry the restrictive Semgrep Rules License (since 2024-12); when that matters — commercial/SaaS reuse — the LGPL fork **`opengrep`** is a drop-in (same rule format + SARIF output, 30+ languages).
 - Language linters: `bandit -r .` (Python), `eslint` with `eslint-plugin-security` / `eslint-plugin-no-unsanitized` (JS), `gosec ./...` (Go).
 - Tune out false positives with inline ignores + a short justification; don't silence a whole rule globally without saying why.
 

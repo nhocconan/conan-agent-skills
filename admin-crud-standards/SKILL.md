@@ -45,7 +45,7 @@ The moment an operation is needed a **second** time, it stops being a script and
 - Health/status pages must reflect reality: a connector shown green must have actually succeeded recently, and a stored error is rendered as human copy, never a raw stack trace or validation dump.
 
 ## Implementation patterns (modern stack)
-- **Tables/grids**: use a headless data-grid (e.g. TanStack Table v8) so sorting/filtering/column-visibility/row-selection are state you control, not bespoke per page. One shared table component site-wide (see consistency rule above).
+- **Tables/grids**: use a headless data-grid (e.g. TanStack Table — v9 stable since 2026-08: tree-shakable feature imports, TanStack Store state; v8 knowledge mostly carries over) so sorting/filtering/column-visibility/row-selection are state you control, not bespoke per page. One shared table component site-wide (see consistency rule above).
 - **Large datasets**: server-side pagination/sort/filter for the source of truth; **virtualize** rendered rows (TanStack Virtual / react-window) — never put 10k+ DOM rows on screen. For the big-file uploads above, stream/queue server-side and show progress; the preview table virtualizes too.
 - **Pickers**: combobox/tree built on an accessible primitive (Radix, React Aria, shadcn/ui) — you get keyboard nav and ARIA for free instead of hand-rolling a broken dropdown.
 

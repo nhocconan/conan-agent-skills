@@ -22,4 +22,4 @@ senior-operator
 skill-miner
 store-screenshots
 web-perf-audit
-world-class-mobile-app
+mobile-app-playbook

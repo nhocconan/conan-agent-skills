@@ -18,4 +18,4 @@ resilient-data-harvest
 secure-code-audit
 senior-operator
 web-perf-audit
-world-class-mobile-app
+mobile-app-playbook
