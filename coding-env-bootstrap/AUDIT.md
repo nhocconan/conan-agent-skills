@@ -43,7 +43,7 @@ defects → 93 skills, 2 errors** (both upstream-owned).
   reserved word `claude` in `name` *and* had never been symlinked into `~/.claude/skills`
   at all — it had been completely invisible since creation. Now valid and installed.
 - `senior-operator` — `<slug>` in the description parsed as an XML tag; rephrased.
-- `world-class-mobile-app` — 539-line body over the 500-line limit; §6–§8 (submission,
+- `mobile-app-playbook` — 539-line body over the 500-line limit; §6–§8 (submission,
   ASO, post-launch) split into `reference/launch-and-growth.md` with a table of contents
   and explicit router entries.
 - `interview-spec`, `spec-task-breakdown` — `SKILL.md` began with `name:` instead of

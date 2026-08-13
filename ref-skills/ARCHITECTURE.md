@@ -5,7 +5,7 @@ directory; three wraps (`shipping-changes`, `investigating-bugs`, `browsing-web`
 and the load-out is applied. §5 below was revised after reading gstack's installer — the
 original plan was wrong. §8's questions are answered.
 
-Goal, in the operator's words: *useful skills derived from gstack / Anthropic / other SOTA
+Goal, in the operator's words: *useful skills derived from gstack / Anthropic / other upstream
 suites, living in this repo instead of their full-blown originals, marked as referring to
 upstream, refined for my use case, and upgradable from the original on command.*
 

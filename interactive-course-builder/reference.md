@@ -401,7 +401,7 @@ and review.
 
 ---
 
-## 9 · Definition of "world-class" (the bar this standard is held to)
+## 9 · The quality bar (what this standard is held to)
 
 A course clears the bar only if a demanding learner would say **all** of:
 - "I always knew where I was and what I'd get." (nav, objectives, levels)

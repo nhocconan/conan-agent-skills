@@ -92,7 +92,7 @@ sharp ones do not. It is a precision problem, not a disk-space one.
 | Skill | Fires when |
 | --- | --- |
 | `senior-operator` | Hard or ambiguous task. Read **before** acting |
-| `agent-orchestration` | Delegating to Opus/Sonnet, fanning out subagents, multi-hour work |
+| `agent-orchestration` | Delegating, fanning out sub-agents in parallel across model tiers, verifying + merging their work, multi-hour runs |
 | `investigating-bugs` | Something is broken — reproduce before editing |
 | `shipping-changes` | Commit + push (main only, your identity, hooks must pass) |
 | `browsing-web` | Anything involving a browser |
@@ -104,7 +104,7 @@ sharp ones do not. It is a precision problem, not a disk-space one.
 | Skill | Fires when |
 | --- | --- |
 | `interactive-course-builder` | HTML courses |
-| `world-class-mobile-app` | Mobile app/game, build through store |
+| `mobile-app-playbook` | Mobile app/game, build through store |
 | `appstore-review-guard` | Before any store submission |
 | `store-screenshots` | Store marketing screenshots and preview videos |
 | `admin-crud-standards` | Admin / list / CRUD / upload screens |

@@ -1,12 +1,12 @@
 ---
 name: interactive-course-builder
-description: House standard for authoring world-class interactive HTML training courses as standalone single-file pages (LMS-embedded or independent). Use when creating, reviewing, redesigning, or unifying the style of ANY interactive/self-paced learning course, lesson, curriculum, or training module rendered as HTML. Covers the shared design system (tokens, per-course themes, light-default + dark-toggle modes), the component kit (lesson cards, SVG diagrams, images, callouts, comparisons, takeaways, quizzes), the leveled pedagogy (L1→L5, felt-problem→takeaway→quiz rhythm), WCAG 2.2 AA accessibility, the framework-free interactivity engine, and the optional LMS progress contract. Trigger on "interactive course", "training course", "make a course", "lesson HTML", "course style", "unify course design", "add takeaways/quizzes/diagrams to a course".
+description: House standard for authoring interactive HTML training courses as standalone single-file pages (LMS-embedded or independent). Use when creating, reviewing, redesigning, or unifying the style of ANY interactive/self-paced learning course, lesson, curriculum, or training module rendered as HTML. Covers the shared design system (tokens, per-course themes, light-default + dark-toggle modes), the component kit (lesson cards, SVG diagrams, images, callouts, comparisons, takeaways, quizzes), the leveled pedagogy (L1→L5, felt-problem→takeaway→quiz rhythm), WCAG 2.2 AA accessibility, the framework-free interactivity engine, and the optional LMS progress contract. Trigger on "interactive course", "training course", "make a course", "lesson HTML", "course style", "unify course design", "add takeaways/quizzes/diagrams to a course".
 ---
 
 # Interactive Course Builder — house standard
 
-Build (and review) interactive training courses that are **world-class,
-self-contained, and visually consistent** — every course the owner ships,
+Build (and review) interactive training courses that are **self-contained,
+visually consistent, and held to the §9 bar** — every course the owner ships,
 whether it lives in an LMS or stands alone.
 
 **The owner's style contract (every course, always):** modern & clean UI ·
@@ -24,7 +24,7 @@ per-course accent (`data-theme`) is the only thing that changes, so each course
 | File | Role |
 |---|---|
 | **`template.html`** | The executable standard. A complete, working, accessible reference course. **Start every new course by copying it.** Every reusable block is marked `COMPONENT:`. |
-| **`reference.md`** | The full spec: tokens, component vocabulary, leveled pedagogy, a11y, the LMS engine contract, the "world-class" bar, the ship checklist, and splitting rules. **Read it before authoring or reviewing.** |
+| **`reference.md`** | The full spec: tokens, component vocabulary, leveled pedagogy, a11y, the LMS engine contract, the quality bar (§9), the ship checklist, and splitting rules. **Read it before authoring or reviewing.** |
 | **`PLAYBOOK.md`** | The model-agnostic authoring pipeline: source digests → curriculum contract → (parallel) lesson fragments → scripted assembly → scripted validation → human pass. **Follow its phases for every build** — sequence + artifacts + mechanical gates are what make the result identical no matter which model does the work. Also holds the retrofit protocol for existing courses. |
 | **`examples.md`** | The few-shot pack: GOLD vs FAIL pairs (felt-problem openings, quiz distractors, takeaways, analogies, diagram forms, formula treatment), each annotated with the load-bearing difference. **Every builder prompt includes it** — rules tell a strong model what to do; examples are what weaker models actually imitate. |
 | **`scripts/validate_course.py`** | The ship checklist as executable checks (structure, per-lesson mandates, a11y, hex, slop lexicon, chrome localization, LMS contract). **Loop until 0 errors.** |
