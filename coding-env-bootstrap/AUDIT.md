@@ -176,3 +176,19 @@ sure exists on every machine; it is also the cheapest fix for wrong-API-signatur
 5. **Decide Codex's reasoning effort deliberately** rather than leaving it at the default
    `low` while Claude Code runs `high`.
 6. On the production machine, **install the curated subset**, not the whole workstation.
+
+
+## Follow-up portability check, 2026-08-13
+
+The previous default `refsync.py upgrade` path always re-applied the Claude workstation profile. On a remote machine without the browser/runtime sources, that made an otherwise valid core install fail on unresolved optional skills.
+
+### Rule 1 — Never force a workstation load-out onto a headless target
+
+Choose the narrowest profile supported by the target runtime. `auto` may fall back to `core`; an explicit workstation profile must fail closed when an entry is unavailable. This prevents a missing optional browser suite from blocking the production-owned skills and prevents a partial install from being reported as complete.
+
+- **Fixed** — one-target `refsync.py` commands now use `auto`: no real browser or an incomplete workstation dependency tree selects `core` and reports the skipped set.
+- **Fixed** — `harness.py` defaults to `core` for every target, including single-target production installs.
+- **Fixed** — `status` and `upgrade` propagate load-out failures instead of reporting success after a partial apply.
+- **Guard** — regression coverage lives in `coding-env-bootstrap/tests/test_harness.py`; `CONAN_AGENT_HEADLESS=1` or `CONAN_AGENT_BROWSER=0` forces the conservative decision.
+
+Explicit `claude-dev` and `codex-dev` profiles remain strict. They are for workstations with their dependencies installed; they do not silently prune missing entries.

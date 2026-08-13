@@ -147,6 +147,8 @@ Load-outs are explicit and version-controlled:
 
 Do not edit a shared load-out to prune a server. Select `--profile core`.
 
+The harness defaults to `core` even when `--target claude` or `--target codex` is selected alone. The lower-level `refsync.py` commands use `auto` for one target: on a headless host they select `core`, report the skipped workstation/browser set, and keep explicit workstation profiles strict. Set `CONAN_AGENT_HEADLESS=1` when the host should be treated as headless by policy.
+
 **Verify**
 
 ```bash

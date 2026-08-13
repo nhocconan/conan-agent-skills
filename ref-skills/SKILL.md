@@ -25,14 +25,16 @@ It does, in order: check every `REF.md` source for drift → merge forks / flag 
 run `validate_skills.py` → re-apply the load-out. Report each step honestly, including
 what it skipped.
 
+On a machine without a real browser, the default `auto` profile selects `core` and skips the workstation/browser load-out. Use `CONAN_AGENT_HEADLESS=1` to force that decision, or pass an explicit workstation profile only when its dependencies are present.
+
 Other entry points:
 
 ```bash
 python3 refsync.py status                    # drift + load-out diff, changes nothing
 python3 refsync.py upgrade shipping-changes  # one skill
 python3 refsync.py upgrade <name> --accept   # record the new fingerprint after review
-python3 refsync.py loadout                   # dry-run the load-out diff
-python3 refsync.py loadout --apply           # Claude workstation, backward compatible
+python3 refsync.py loadout                   # dry-run the auto-selected load-out diff
+python3 refsync.py loadout --apply           # apply auto; explicit profiles stay strict
 python3 refsync.py loadout --target codex --profile codex-dev --apply
 python3 refsync.py loadout --target both --profile core --apply
 python3 refsync.py rescue                    # list skills that exist ONLY on this machine

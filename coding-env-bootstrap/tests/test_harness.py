@@ -68,6 +68,15 @@ class HarnessTests(unittest.TestCase):
                 calls,
             )
 
+    def test_single_target_harness_defaults_to_core(self):
+        with tempfile.TemporaryDirectory() as raw_home:
+            home = Path(raw_home)
+            result = invoke(home, str(HARNESS), "apply", "--target", "claude")
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            active = home / ".claude/skills"
+            self.assertEqual(len(list(active.iterdir())), CORE_COUNT)
+
     def test_clean_home_apply_is_idempotent_for_both_agents(self):
         with tempfile.TemporaryDirectory() as raw_home:
             home = Path(raw_home)
@@ -93,6 +102,83 @@ class HarnessTests(unittest.TestCase):
                 "tomllib.loads((pathlib.Path.home()/'.codex/production.config.toml').read_text())",
             )
             self.assertEqual(strict.returncode, 0, strict.stdout + strict.stderr)
+
+    def test_default_claude_loadout_uses_core_without_real_browser(self):
+        with tempfile.TemporaryDirectory() as raw_home:
+            home = Path(raw_home)
+            result = invoke(
+                home,
+                str(REFSYNC),
+                "loadout",
+                "--apply",
+                env_updates={"CONAN_AGENT_BROWSER": "0"},
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("no real browser detected; using core", result.stdout)
+            active = home / ".claude/skills"
+            self.assertEqual(len(list(active.iterdir())), CORE_COUNT)
+            self.assertTrue(all(path.is_symlink() for path in active.iterdir()))
+
+    def test_upgrade_skips_unavailable_inactive_refs_on_headless_host(self):
+        with tempfile.TemporaryDirectory() as raw_home:
+            home = Path(raw_home)
+            result = invoke(
+                home,
+                str(REFSYNC),
+                "upgrade",
+                env_updates={"CONAN_AGENT_BROWSER": "0"},
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("skipped; not active in core", result.stdout)
+            self.assertEqual(
+                len(list((home / ".claude/skills").iterdir())),
+                CORE_COUNT,
+            )
+
+    def test_explicit_workstation_profile_remains_strict_on_headless_host(self):
+        with tempfile.TemporaryDirectory() as raw_home:
+            home = Path(raw_home)
+            result = invoke(
+                home,
+                str(REFSYNC),
+                "loadout",
+                "--profile",
+                "claude-dev",
+                "--apply",
+                env_updates={"CONAN_AGENT_BROWSER": "0"},
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("refusing a partial apply", result.stdout)
+
+    def test_named_upgrade_remains_strict_when_auto_omits_it(self):
+        with tempfile.TemporaryDirectory() as raw_home:
+            result = invoke(
+                Path(raw_home),
+                str(REFSYNC),
+                "upgrade",
+                "browsing-web",
+                env_updates={"CONAN_AGENT_BROWSER": "0"},
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("UNREACHABLE source", result.stdout)
+
+    def test_upgrade_propagates_loadout_failure(self):
+        with tempfile.TemporaryDirectory() as raw_home:
+            result = invoke(
+                Path(raw_home),
+                str(REFSYNC),
+                "upgrade",
+                "--profile",
+                "missing-profile",
+                env_updates={"CONAN_AGENT_BROWSER": "0"},
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("load-out is empty or missing", result.stdout)
 
     def test_claude_merge_preserves_custom_keys_but_removes_dangerous_bypass(self):
         with tempfile.TemporaryDirectory() as raw_home:
