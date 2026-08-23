@@ -54,7 +54,7 @@ TEMPLATE_PLACEHOLDERS = [
 ]
 
 VISUAL_BREAKS = re.compile(
-    r'<(?:figure|table|svg|details|div class="(?:compare|callout|steps|takeaway|quiz|'
+    r'<(?:figure|table|svg|details|(?:div|ol|ul) class="(?:compare|callout|steps|takeaway|quiz|'
     r'prompt-card|code-card|objectives|concept))', re.I)
 
 
@@ -326,6 +326,7 @@ def main() -> int:
         # table/steps CONTENT is not prose — blank it before the wall check
         card_prose = re.sub(r"<table\b.*?</table>", "<table></table>", card, flags=re.S)
         card_prose = re.sub(r"<ol\b.*?</ol>", "<ol></ol>", card_prose, flags=re.S)
+        card_prose = re.sub(r"<svg\b.*?</svg>", "<svg></svg>", card_prose, flags=re.S)
         for gap in VISUAL_BREAKS.split(card_prose):  # segments between visual breaks
             if gap and word_count(gap) > PROSE_WALL_WORDS:
                 warns.append(f"{lid}: a prose stretch of ~{word_count(gap)} words with no visual break")
