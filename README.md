@@ -23,8 +23,14 @@ Full runbook (toolchain, agent CLIs, plugins, MCP, secrets):
 ## Upgrading everything
 
 ```bash
-python3 ~/.conan-agent-skills/ref-skills/refsync.py upgrade
+git -C ~/.conan-agent-skills pull                          # 1. new/changed skills in THIS repo
+python3 ~/.conan-agent-skills/ref-skills/refsync.py \
+  loadout --target both --profile core --apply             # 2. symlink anything newly registered
+python3 ~/.conan-agent-skills/ref-skills/refsync.py upgrade  # 3. re-sync EXTERNAL upstreams only
 ```
+
+`upgrade` alone never fetches this repo — it only re-fingerprints skills that wrap an
+external `source:`. A skill added here reaches another machine via steps 1–2.
 
 On a headless or production machine, the upgrade path auto-selects the headless `core` profile when the real-browser runtime or workstation skill sources are unavailable. To refresh both agents deterministically, run `python3 ~/.conan-agent-skills/coding-env-bootstrap/harness.py apply --target both --profile core`; explicit workstation profiles remain strict.
 
