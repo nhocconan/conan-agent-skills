@@ -95,6 +95,7 @@ sharp ones do not. It is a precision problem, not a disk-space one.
 | --- | --- |
 | `senior-operator` | Hard or ambiguous task. Read **before** acting |
 | `agent-orchestration` | Delegating, fanning out sub-agents in parallel across model tiers, verifying + merging their work, multi-hour runs |
+| `delegate-run` | Giao việc trọn gói cho MỘT agent: 3 điểm chạm (đề bài → duyệt plan nếu rủi ro → nghiệm thu), không hỏi giữa chừng, exit report format cứng + trust ledger |
 | `investigating-bugs` | Something is broken — reproduce before editing |
 | `shipping-changes` | Commit + push (main only, your identity, hooks must pass) |
 | `browsing-web` | Anything involving a browser |
