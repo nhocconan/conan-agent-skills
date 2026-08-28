@@ -21,6 +21,7 @@ admin-crud-standards
 agent-orchestration
 agent-session-backup
 autonomous-loops
+delegate-run
 anti-slop-review
 appstore-review-guard
 backtest-integrity
