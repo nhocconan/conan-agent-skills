@@ -39,8 +39,8 @@ These come from real reports on this operator's own projects, and they repeat:
 - **Do not "improve" adjacent design** that nobody complained about. Fix the defect.
 
 For the audit procedure, checklist and screenshot mechanics, read
-`~/.shared-ai-skills/design-review/SKILL.md` — its **"When to invoke this skill"** and
-**"Skill routing"** sections.
+`~/.shared-ai-skills/design-review/SKILL.md` — its **"When to invoke this skill"**,
+**"Phases 1-6: Design Audit Baseline"** and **"Design Critique Format"** sections.
 
 ## Sibling lenses
 

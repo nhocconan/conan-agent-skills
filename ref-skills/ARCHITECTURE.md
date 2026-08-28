@@ -255,3 +255,41 @@ Usage counts are explicit invocations only, so they undercount auto-triggered sk
 - `refsync upgrade` does not itself run gstack's installer; it assumes the upstream tree
   is already updated. Wiring the installer invocation in (so one command truly does
   everything) is the next increment.
+
+## Context budget — the carve and the ratchet
+
+Adopted from gstack v1.71 (2026-08-27), which cut its per-invocation prompt cost
+~50%. Only part of that transfers: most of gstack's win was deleting an ~18KB
+inline-bash preamble every one of its skills carried. Ours have no preamble. The
+transferable half is the **section carve**, and the discipline that keeps it.
+
+**Two numbers, measured by `skill-miner/context_budget.py`:**
+
+- `always_on` — the frontmatter description. Paid in every session for every
+  skill in the load-out. **Do not trim it to save tokens.** The description is
+  the entire reason the wraps exist: it is what makes a skill fire on the
+  phrasings actually used here. ~3.8K tokens for the whole set is the price of
+  correct routing, and it is worth it.
+- `eager` — all of SKILL.md, paid once when the skill fires. This is what a
+  carve moves.
+
+**When to carve.** A SKILL.md over ~12KB whose bulk is reference material
+consulted at one step, not read-through doctrine. Below that, the indirection
+and the extra Read round-trip cost more than they save. Four skills met the bar
+(appstore-review-guard 28→3.5KB, mobile-app-playbook 26.6→6.8KB,
+agent-orchestration 17.4→5.9KB, store-screenshots 15.8→7.6KB); the other 22 did
+not, and were deliberately left whole.
+
+**How to carve.** The skeleton stays a decision tree, never a summary: intro,
+the doctrine that applies at all times, and a `## Section index — Read each
+section when its situation applies` table mapping *situation* → file. Bodies go
+to `sections/` (or the skill's existing `reference/`). Rewrite in-document
+anchors to file paths — `(#some-heading)` silently goes dead the moment its
+heading leaves the file. A rule whose absence causes a wrong action, not just a
+slower one, stays in the skeleton even if it is also in a section.
+
+**The ratchet.** `context_budget.py` grades every skill against
+`skill-miner/context-budget.json` and runs inside `refsync.py upgrade`. A shrink
+lowers the ceiling and locks it; growth past a ceiling fails the run. To grow a
+skill on purpose, raise its ceiling in the same diff — visibly, where a reviewer
+sees the trade.

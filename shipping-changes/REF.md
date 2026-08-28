@@ -3,8 +3,8 @@ mode: wrap
 upstream: gstack
 source: local:~/.shared-ai-skills/ship/SKILL.md
 version: 1.60.1.0
-fingerprint: sha256:b316ed89fa58128a4afbce92c374084e2a38dba0e58f0d18be3a330d7525fa62
-reviewed: 2026-07-25
+fingerprint: sha256:fad896a79f2b4e527fb0a908de90d2fceed3bd0351d2d1a035b8450006ff262f
+reviewed: 2026-08-28
 ---
 
 # Provenance
@@ -26,8 +26,9 @@ Upstream's description is 31 chars ("Pre-landing PR review."-class) and cannot r
 
 ## Upstream sections this depends on
 
-- "Skill routing"
+- "Section index — Read each section when its situation applies"
 - "Completeness Principle"
+- carved files: `ship/sections/changelog.md`, `ship/sections/pr-body.md` (v1.71)
 
 If `refsync.py status` reports one of these has vanished, the wrapper's routing
 instructions are stale and must be re-pointed before the skill is trusted again.

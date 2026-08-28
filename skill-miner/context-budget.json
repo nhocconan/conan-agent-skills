@@ -1,0 +1,110 @@
+{
+  "a11y-audit": {
+    "always_on": 600,
+    "eager": 5000
+  },
+  "admin-crud-standards": {
+    "always_on": 400,
+    "eager": 6500
+  },
+  "agent-orchestration": {
+    "always_on": 1100,
+    "eager": 7900
+  },
+  "agent-session-backup": {
+    "always_on": 600,
+    "eager": 7500
+  },
+  "anti-slop-review": {
+    "always_on": 400,
+    "eager": 3700
+  },
+  "appstore-review-guard": {
+    "always_on": 700,
+    "eager": 3700
+  },
+  "autonomous-loops": {
+    "always_on": 1000,
+    "eager": 6100
+  },
+  "backtest-integrity": {
+    "always_on": 700,
+    "eager": 5400
+  },
+  "browsing-web": {
+    "always_on": 600,
+    "eager": 3000
+  },
+  "bug-class-audits": {
+    "always_on": 600,
+    "eager": 4500
+  },
+  "coding-env-bootstrap": {
+    "always_on": 600,
+    "eager": 3000
+  },
+  "demo-data-craft": {
+    "always_on": 600,
+    "eager": 5400
+  },
+  "design-qa": {
+    "always_on": 700,
+    "eager": 3400
+  },
+  "docs-sync": {
+    "always_on": 300,
+    "eager": 2600
+  },
+  "interactive-course-builder": {
+    "always_on": 900,
+    "eager": 8600
+  },
+  "investigating-bugs": {
+    "always_on": 600,
+    "eager": 3100
+  },
+  "metric-integrity": {
+    "always_on": 700,
+    "eager": 6000
+  },
+  "mobile-app-playbook": {
+    "always_on": 1100,
+    "eager": 7200
+  },
+  "ref-skills": {
+    "always_on": 600,
+    "eager": 7000
+  },
+  "resilient-data-harvest": {
+    "always_on": 800,
+    "eager": 6600
+  },
+  "secure-code-audit": {
+    "always_on": 500,
+    "eager": 7000
+  },
+  "senior-operator": {
+    "always_on": 1100,
+    "eager": 5400
+  },
+  "shipping-changes": {
+    "always_on": 600,
+    "eager": 3200
+  },
+  "skill-miner": {
+    "always_on": 600,
+    "eager": 9700
+  },
+  "store-screenshots": {
+    "always_on": 600,
+    "eager": 8100
+  },
+  "web-perf-audit": {
+    "always_on": 500,
+    "eager": 4100
+  },
+  "web-qa": {
+    "always_on": 600,
+    "eager": 3200
+  }
+}
