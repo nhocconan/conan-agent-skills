@@ -11,6 +11,7 @@ appstore-review-guard
 backtest-integrity
 bug-class-audits
 coding-env-bootstrap
+delegate-run
 demo-data-craft
 docs-sync
 interactive-course-builder

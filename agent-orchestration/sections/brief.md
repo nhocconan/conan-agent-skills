@@ -25,3 +25,31 @@ out. Full template in [`TEMPLATES.md`](TEMPLATES.md); every brief carries:
 conclusion will confirm it. Give a verifier the location and the rules — never the verdict.
 
 ---
+
+## Briefing the current generation (Opus 5 / Fable 5 — verified vs Anthropic docs, 2026-08-28)
+
+The documented direction is **subtractive**: scaffolding tuned for the 4.x
+generation now degrades output. When writing or migrating briefs, skills, and
+rule files:
+
+- **Delete carried-over verification nudges.** Opus 5 "verifies its own work
+  without being told to"; "double-check your answer" compounds into
+  over-verification and cost. Evidence-grounding is different and stays:
+  "before reporting progress, audit each claim against a tool result from
+  this session" — this is the documented cure for fabricated status reports.
+- **Delete anti-laziness pushes** ("if in doubt, use the tool", forced
+  update cadences) — current models overtrigger on them.
+- **Describe the outcome, not the steps; give the reason, not only the
+  request.** Instruction-following is literal now: models don't silently
+  generalize, and they generalize *well* from a stated why.
+- **Emphasis budget: one line.** Emphasize many lines and none stands out.
+- **Effort is the primary knob**, re-swept on every model upgrade (Fable:
+  start `high` even for workloads that ran `xhigh` before). Prompt length
+  no longer follows effort — steer verbosity explicitly.
+- **Prefer fresh-context verifier subagents over self-critique**, async over
+  blocking; cap spawn depth/concurrency/budget where the harness allows.
+- **Prune prescriptive skills on upgrade** — prior-generation step-by-step
+  skills "can degrade output quality"; keep outcome + constraints, drop
+  narration.
+- **Never ask the model to echo its reasoning** — on Fable this can trigger
+  the `reasoning_extraction` refusal.
