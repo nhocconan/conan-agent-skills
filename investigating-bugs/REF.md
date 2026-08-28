@@ -3,8 +3,8 @@ mode: wrap
 upstream: gstack
 source: local:~/.shared-ai-skills/investigate/SKILL.md
 version: 1.60.1.0
-fingerprint: sha256:6296d2cedc1dda85d55044f68a52bce2f6dbf867e770e255a9d3bb2b67dec747
-reviewed: 2026-07-25
+fingerprint: sha256:87a4dcf61b4b8a89dd82b9e62a4a0927db373a98fce2324a4d50fb4a2d955e70
+reviewed: 2026-08-28
 ---
 
 # Provenance
@@ -26,7 +26,8 @@ Upstream's description does not state when to fire, so it under-triggers on the 
 
 ## Upstream sections this depends on
 
-- "Skill routing"
+- "Phase 1: Root Cause Investigation"
+- "Phase 2: Pattern Analysis"
 - "Confusion Protocol"
 
 If `refsync.py status` reports one of these has vanished, the wrapper's routing

@@ -99,6 +99,16 @@ only when you truly intend to diverge.** Cap the set: ten wraps is a working sys
 forty is a second job. A wrap must earn itself with real overrides or a real triggering
 fix — "upstream's wording is a bit off" is not a reason.
 
+## Context budget
+
+`skill-miner/context_budget.py` grades every skill against committed ceilings in
+`context-budget.json` and runs inside `upgrade`. Shrinks lower the ceiling and lock;
+growth past one fails the run — raise the ceiling deliberately, in the same diff.
+Over ~12KB of SKILL.md, carve the reference bulk into `sections/` behind a
+"Section index" table and leave the doctrine in the skeleton. Never trim a
+`description` to save tokens: that is the always-on cost that buys correct routing.
+See ARCHITECTURE.md → "Context budget".
+
 ## Related
 
 `skill-miner` — decides whether something should be a skill at all, and ships

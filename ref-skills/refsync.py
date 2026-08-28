@@ -47,6 +47,9 @@ LEGACY_LOADOUT = REPO / "ref-skills" / "loadout.txt"
 # Where a load-out name is resolved from, in order.
 ROOTS = [
     REPO,
+    # gstack's own skill dirs. Its v1.71 setup installs from here directly, so
+    # this must win over the shim dirs its older setup left in ~/.shared-ai-skills.
+    HOME / ".shared-ai-skills" / "gstack",
     HOME / ".shared-ai-skills",
     HOME / ".agents" / "skills",
     HOME / ".codex" / "skills",
@@ -285,6 +288,14 @@ def cmd_upgrade(args) -> int:
     print(v.stdout.strip() or v.stderr.strip())
     problems += v.returncode
 
+    # Context-budget ratchet: an upgrade is exactly when a skill quietly grows.
+    # Shrinks lower the ceiling here; growth past one fails the run.
+    print("\n--- context budget ---")
+    b = subprocess.run([sys.executable, str(REPO / "skill-miner" / "context_budget.py")],
+                       capture_output=True, text=True)
+    print(b.stdout.strip() or b.stderr.strip())
+    problems += b.returncode
+
     print("\n--- re-applying load-out ---")
     loadout_rc = cmd_loadout(argparse.Namespace(
         apply=True, migrate=False, quiet=False,
@@ -417,6 +428,49 @@ def repo_owned_link(path: Path) -> bool:
         return False
 
 
+def installer_owned(path: Path) -> bool:
+    """A real dir written by an upstream installer: every entry is a symlink
+    pointing into one of ROOTS. gstack's ./setup produces exactly this."""
+    if path.is_symlink() or not path.is_dir():
+        return False
+    entries = list(path.iterdir())
+    if not entries:
+        return False
+    for e in entries:
+        if not e.is_symlink():
+            return False
+        try:
+            tgt = e.resolve(strict=True)
+        except OSError:
+            return False
+        if not any(_under(tgt, r) for r in ROOTS):
+            return False
+    return True
+
+
+def _under(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root.resolve())
+        return True
+    except (OSError, ValueError):
+        return False
+
+
+def same_skill(a: Path, b: Path) -> bool:
+    """Two install layouts of one skill: their SKILL.md is the same file."""
+    try:
+        return (a / "SKILL.md").resolve(strict=True) == (b / "SKILL.md").resolve(strict=True)
+    except OSError:
+        return False
+
+
+def _drop(path: Path) -> None:
+    if path.is_symlink() or path.is_file():
+        path.unlink()
+    elif path.is_dir():
+        shutil.rmtree(path)
+
+
 def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
     active = TARGET_DIRS[target]
     profile = select_profile(target, profile, announce=not quiet)
@@ -435,6 +489,7 @@ def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
     want = set(wanted)
     missing = sorted(want - have)
     collisions = []
+    relink = []
     for name in sorted(want & have):
         path = active / name
         expected = resolve(name)
@@ -442,8 +497,12 @@ def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
             actual = path.resolve(strict=True)
         except OSError:
             actual = None
-        if expected is not None and actual != expected.resolve():
-            collisions.append((name, actual, expected.resolve()))
+        if expected is None or actual == expected.resolve():
+            continue
+        if installer_owned(path) and same_skill(path, expected):
+            relink.append(name)
+            continue
+        collisions.append((name, actual, expected.resolve()))
 
     for name, actual, expected in collisions:
         print(f"  ! '{name}' collision: {actual or 'broken link'} (expected {expected})")
@@ -471,24 +530,26 @@ def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
     if not quiet:
         print(
             f"{label}: {len(want)} wanted · {len(missing)} to add · "
-            f"{len(extra)} to remove"
+            f"{len(relink)} to relink · {len(extra)} to remove"
         )
         for n in missing:
             print(f"    + {n}")
+        for n in relink:
+            print(f"    ~ {n} (installer layout → canonical link)")
         for n in extra:
             print(f"    - {n}")
 
     if not apply:
-        if missing or extra:
+        if missing or relink or extra:
             print("  (dry run — re-run with --apply)")
         return 0
 
     active.mkdir(parents=True, exist_ok=True)
-    for n in missing:
+    for n in missing + relink:
         src = resolve(n)
         dst = active / n
         if dst.exists() or dst.is_symlink():
-            dst.unlink()
+            _drop(dst)
         dst.symlink_to(src)
         print(f"    linked {n} -> {src}")
 
@@ -500,7 +561,10 @@ def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
         elif target == "claude":
             # Never delete real content that lives only here.
             park = HOME / ".shared-ai-skills" / n
-            if park.exists():
+            if installer_owned(p):
+                shutil.rmtree(p)
+                print(f"    removed {n} (installer layout; content lives upstream)")
+            elif park.exists():
                 shutil.rmtree(p)
                 print(f"    removed {n} (real dir; copy retained at {park})")
             else:

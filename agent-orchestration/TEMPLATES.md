@@ -17,6 +17,7 @@ invented assumption in the executor.
 ## 1. Handoff brief (implementation node)
 
 ```markdown
+MODE: build | investigate | patch | refactor | migrate | verify   (contract in sections/worker-modes.md)
 GOAL (one sentence, outcome not activity)
   Creator detail page shows the same NMV as the org export for the selected month.
 
@@ -43,7 +44,7 @@ BOUNDARIES
   Implement, do NOT commit. Do not touch migrations. Do not create new docs or scratch
   files outside <scratch dir>. Do not widen scope to adjacent files.
 
-RETURN (exactly this, nothing else)
+RETURN (exactly this, nothing else — the builder contract in sections/worker-modes.md)
   - files changed + one line each on what changed and why
   - the two command outputs above, verbatim tail (EXIT line included)
   - anything you could NOT verify, and why
@@ -158,6 +159,10 @@ Lives in the plan file or beside it. One row per node, updated on landing.
 ```
 
 `Verdict` is the lead's, after re-running the check — not the agent's self-report.
+
+Close every run with the four pilot numbers under the table, so fleets are judged by
+data: `wall-clock vs solo: … · tokens: … · defects caught by verification: … · operator
+interventions: …`.
 `rework 2/2` means the next failure escalates a tier or comes back to the lead
 (`SKILL.md` §5.6).
 

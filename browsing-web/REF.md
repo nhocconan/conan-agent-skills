@@ -3,8 +3,8 @@ mode: wrap
 upstream: gstack
 source: local:~/.shared-ai-skills/browse/SKILL.md
 version: 1.60.1.0
-fingerprint: sha256:a33632d9948aa65e207fcdcf6bd6c39d46fee8a4028cafc56a472481609d106f
-reviewed: 2026-07-25
+fingerprint: sha256:88fc9376988d8d1bd5e2b913a36d0b4f7ba536de6a7c19984b535b7428ffe199
+reviewed: 2026-08-28
 ---
 
 # Provenance
@@ -27,7 +27,8 @@ Binary-backed (compiled browse + daemon) so it can only ever be wrapped, never f
 ## Upstream sections this depends on
 
 - "SETUP (run this check BEFORE any browse command)"
-- "Skill routing"
+- "Most-Used Commands"
+- carved file: `browse/sections/command-list.md` (v1.71) — the full command reference
 
 If `refsync.py status` reports one of these has vanished, the wrapper's routing
 instructions are stale and must be re-pointed before the skill is trusted again.

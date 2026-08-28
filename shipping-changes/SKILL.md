@@ -33,8 +33,12 @@ that upstream gets wrong for this operator, and they win on every conflict.
 3. Review the diff hunk by hunk. Delegation moves the typing, not the accountability.
 4. For the mechanics beyond this point (version bump, changelog, commit message
    composition, push), read `~/.shared-ai-skills/ship/SKILL.md` — specifically its
-   **"Skill routing"** and **"Completeness Principle — Boil the Ocean"** sections — and
-   follow it with the house rules above applied.
+   **"Section index — Read each section when its situation applies"** and
+   **"Completeness Principle — Boil the Ocean"** sections — then read the on-demand
+   section that index names for the step you are on — they live under
+   `~/.shared-ai-skills/gstack/ship/sections/` (changelog wording in `changelog.md`,
+   PR body in `pr-body.md`) and since v1.71 no longer load with the skill body —
+   and follow it with the house rules above applied.
 5. Verify after: `git log --oneline -1`, `git status` clean, and the remote actually
    advanced.
 

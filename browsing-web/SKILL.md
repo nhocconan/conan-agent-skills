@@ -25,8 +25,13 @@ forked, only wrapped). Upstream owns the commands; this file owns the standing r
 ## Getting the commands
 
 Read `~/.shared-ai-skills/browse/SKILL.md` — its **"SETUP (run this check BEFORE any
-browse command)"** section first, then **"Skill routing"**. Run the setup check before
-the first browse command of a session; the daemon may need starting.
+browse command)"** section first, then **"Most-Used Commands"**. Run the setup check
+before the first browse command of a session; the daemon may need starting.
+
+For any command or snapshot flag beyond that table, read
+`~/.shared-ai-skills/gstack/browse/sections/command-list.md`. Upstream carved the full
+command reference out of SKILL.md (v1.71), so it no longer arrives with the skill body —
+read it rather than working from memory of the old inline list.
 
 ## When the task is bulk data collection
 

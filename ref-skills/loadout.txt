@@ -20,6 +20,7 @@ a11y-audit
 admin-crud-standards
 agent-orchestration
 agent-session-backup
+autonomous-loops
 anti-slop-review
 appstore-review-guard
 backtest-integrity

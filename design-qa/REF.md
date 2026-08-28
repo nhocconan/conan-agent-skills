@@ -3,8 +3,8 @@ mode: wrap
 upstream: gstack
 source: local:~/.shared-ai-skills/design-review/SKILL.md
 version: 1.60.1.0
-fingerprint: sha256:a7fb587db289843467c0008d1941ebd39eff57afed0eab422f08b7d6604107e5
-reviewed: 2026-07-25
+fingerprint: sha256:8a74c2068bea907e66f4d08facb5648e3cde52f2488b11b9037f40c97b4c2c37
+reviewed: 2026-08-28
 ---
 
 # Provenance
@@ -39,7 +39,8 @@ review; the validator caught it.
 ## Upstream sections this depends on
 
 - "When to invoke this skill"
-- "Skill routing"
+- "Phases 1-6: Design Audit Baseline"
+- "Design Critique Format"
 
 ## Decision log
 
