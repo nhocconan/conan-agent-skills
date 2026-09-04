@@ -53,3 +53,11 @@ rule files:
   narration.
 - **Never ask the model to echo its reasoning** — on Fable this can trigger
   the `reasoning_extraction` refusal.
+
+## Shell hygiene in every brief
+
+Tell each worker: absolute paths only; never `cd <dir> && …` (a Read deny rule in
+the project settings makes the permission checker refuse the whole line, and the
+operator gets a prompt per command); `git -C`, `pnpm -C`/`--dir`; Read/Grep/Glob
+tools over shell for reading and searching. A worker that raises prompts is
+re-briefed at once, not left to page the operator (incident 2026-09-03).

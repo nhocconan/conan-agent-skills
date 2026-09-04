@@ -68,3 +68,20 @@ still report whatever its search fed it. Every scoping rule the run depends on i
 filter the lead applies to the returned data (or a workflow-script check), with dropped
 items logged — a live run once shipped ~50 out-of-scope findings on prompt text alone.
 Silent truncation reads as full coverage: every cap gets a `log()` line.
+
+## Heartbeat — the operator must see the tower working
+
+Background workers make the lead look idle. Every 10 minutes of fleet time the
+lead posts one status block to the operator: per workstream DONE / RUNNING
+(elapsed) / NEXT, plus the one blocker if any and an ETA for the next
+integration point. A turn that ends on "waiting for agents" without that block
+is a defect. The ledger on disk is for crash recovery; the heartbeat is for the
+human — both are required, neither substitutes for the other. A worker that is
+stopped or dies is resumed or relaunched from its worktree/output by the lead,
+not surfaced to the operator as a question (incident 2026-09-03: an hour of
+silence, then a question, on a delegated run).
+The lead does not end its turn to wait for workers: it blocks on them (TaskOutput
+`block=true`, ≤10-minute slices) and prints the heartbeat between slices, so the
+fleet run is one continuous turn from kickoff to integration report. A turn that
+ends mid-fleet is read by the operator as a confirmation request (incident
+2026-09-03, second occurrence).
