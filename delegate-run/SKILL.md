@@ -45,6 +45,27 @@ first when one exists — machine facts live there.
 
 ## Run — the no-babysit laws
 
+- **One run = ONE turn. Never end the turn to wait.** Ending a turn while
+  helpers, gates or deploys are still running reads to the operator as
+  "please confirm" — that is the babysitting the contract exists to remove.
+  While anything runs in the background the lead BLOCKS on it (TaskOutput
+  `block=true` in ≤10-minute slices, or a Monitor event), prints a status
+  line between slices, then continues with the next step in the same turn.
+  The turn ends at exactly two points: the exit report, or a hard block that
+  only the operator can lift. "Waiting on X" is never the last line of a turn.
+- **Heartbeat, or the run is silent.** While anything runs in the background
+  (agents, gates, builds, deploys), the lead posts a user-visible status at
+  least every 10 minutes: DONE / RUNNING (elapsed, what it is doing) / NEXT /
+  BLOCKED. A turn never ends on a bare "waiting" line — either the next
+  independent piece of work happens now, or the heartbeat goes out with a
+  concrete ETA and the exact thing being waited on. More than 15 minutes with
+  nothing visible to the operator is a defect of the run, reported in the
+  exit report like any other.
+- **A stopped or dead helper is a crash, not a question.** When a sub-agent
+  is stopped, times out, or dies, inspect its worktree/output for partial
+  work, then resume or relaunch from disk state and continue. Never turn a
+  crash into "tell me whether to resume".
+
 - No mid-run questions. Pick the most defensible assumption, log it in the
   plan file, continue; open questions batch into the exit report. The only
   hard stop is an irreversible action or an ambiguity that would invalidate
@@ -89,6 +110,14 @@ for that class. One unclean run → the gate comes back. Autonomy follows the
 recorded track record, not vibes or enthusiasm.
 
 ## Per-project instantiation (day one, once)
+
+- **No prompt storms.** Every prompt a helper raises lands on the operator's
+  screen. Two known generators: (1) `Read(...)` deny rules in the project's
+  agent settings make the checker refuse ANY `cd <dir> && <cmd>` shell line —
+  brief helpers to use absolute paths, `git -C`, `pnpm -C`, and the
+  Read/Grep/Glob tools, never a `cd` prefix; (2) commands outside the
+  allowlist. If a run produces more than a handful of prompts, that is a
+  defect of the brief or the settings, fixed in the run and recorded here.
 
 - **Permissions**: allowlist the repo's own read/verify commands (the
   canonical gate, test/lint/typecheck, `git status/diff/log`, search) and
