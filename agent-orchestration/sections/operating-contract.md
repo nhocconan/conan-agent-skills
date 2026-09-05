@@ -21,7 +21,7 @@ never by prestige (§3).
 | Scout | cheap, parallel | read-only | conclusions only (`worker-modes.md` contracts), never the transcript |
 | Builder | mid (frontier for tight contracts) | writes its owned files only | diff summary + gate output + unverified list |
 | Verifier | strong, **fresh context** | read-only | scored findings, P0–P3, or `No findings.` |
-| Red team | **different lineage** (Codex / Gemini) | read-only | a dissenting reading of one load-bearing conclusion |
+| Red team | **different lineage** (Codex / agy) | read-only | a dissenting reading of one load-bearing conclusion |
 | Lead | frontier | everything, incl. the merge | the one coherent change, and the honest report |
 
 The lead writes the tricky 10% itself: if it cannot be specified, it cannot be delegated.

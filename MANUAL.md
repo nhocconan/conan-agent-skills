@@ -54,7 +54,7 @@ it installs and verifies itself.
 | `~/.shared-ai-skills` | gstack + other installed suites — **not all of it is active** | gstack's installer |
 | `~/.claude/skills` | **Claude, active.** Symlinks built from `loadout.txt` (`claude-dev`) | `refsync.py` |
 | `~/.agents/skills` | **Codex, active** (its documented user scope). Repo-owned links curated; unrelated suites preserved | `refsync.py` + other installers |
-| `~/.gemini/skills` | **Gemini CLI, active.** Its primary user scope; it also reads `~/.agents/skills` as an alias | `refsync.py` |
+| `~/.gemini/config/skills` | **Antigravity CLI (agy), active.** Its user-skill scope for global skills | `refsync.py` |
 | `~/.agents/skills.retired` | Parked third-party skills — moved out, not deleted. Move a folder back to re-enable | You |
 
 Ba profile, ba kích cỡ khác nhau — vì mỗi agent nhét description của **mọi** skill vào
@@ -64,7 +64,7 @@ system prompt và cắt theo một trần khác nhau:
 | --- | --- | --- | --- |
 | Claude | `claude-dev` | 50 skills · 25,733 ký tự | không công bố |
 | Codex | `codex-dev` | 11 skills · 7,724 ký tự | 2% context (~5,440 ở 272k), fallback 8,000 |
-| Gemini | `gemini-dev` | 26 skills · 16,213 ký tự | 2% context — cửa sổ lớn hơn nhiều nên rộng tay hơn |
+| agy | `agy-dev` | 26 skills · 16,213 ký tự | Context lớn, progressive disclosure |
 
 Codex **rút gọn description trước khi bỏ skill** — mà trigger phrase nằm ở cuối
 description, nên bị cắt đúng phần quyết định skill có fire hay không. Vì vậy `codex-dev`

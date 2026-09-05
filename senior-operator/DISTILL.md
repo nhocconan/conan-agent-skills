@@ -26,7 +26,7 @@ when a repo has no `projects/<slug>.md`, or when the existing map's date stamp i
 4. **Session memory:** whatever persistent per-project memory the harness keeps — Claude
    Code: `~/.claude/projects/<slug>/memory/` (read `MEMORY.md`, the index, fully; open
    individual files only for entries marked feedback/gotcha); other harnesses (Codex,
-   Gemini): their session-notes / saved-context equivalent, or skip if none exists. This
+   agy): their session-notes / saved-context equivalent, or skip if none exists. This
    is where the traps live: memory is the residue of every past session's pain.
 5. **Runbooks & docs:** `docs/` for runbooks, ADRs, credentials files, ground-truth
    references. Note ground-truth anchors (oracles, frozen expected values) explicitly —

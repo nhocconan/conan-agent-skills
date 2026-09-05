@@ -66,10 +66,9 @@ TARGET_DIRS = {
     # ~/.codex/skills is reserved for bundled/plugin-managed content and is
     # intentionally only a resolution root.
     "codex": HOME / ".agents" / "skills",
-    # Gemini CLI's primary user scope. It also treats ~/.agents/skills as an
-    # alias, so a Codex apply already reaches Gemini; writing the primary path
-    # too keeps the two load-outs independent and does not rely on the alias.
-    "gemini": HOME / ".gemini" / "skills",
+    # Antigravity CLI's (agy) user-skill scope. Discovered via
+    # ~/.gemini/config/skills.
+    "agy": HOME / ".gemini" / "config" / "skills",
 }
 
 # "both" stays claude+codex for every existing invocation and runbook.
@@ -1019,25 +1018,25 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     st = sub.add_parser("status")
-    st.add_argument("--target", choices=["claude", "codex", "gemini", "both", "all"], default="claude")
+    st.add_argument("--target", choices=["claude", "codex", "agy", "both", "all"], default="claude")
     st.add_argument("--profile", help="load-out profile or auto (defaults to auto on one target)")
 
     up = sub.add_parser("upgrade")
     up.add_argument("names", nargs="*")
     up.add_argument("--accept", action="store_true",
                     help="record the new upstream fingerprint after reviewing it")
-    up.add_argument("--target", choices=["claude", "codex", "gemini", "both", "all"], default="all")
+    up.add_argument("--target", choices=["claude", "codex", "agy", "both", "all"], default="all")
     up.add_argument("--profile", help="load-out profile or auto (defaults to auto)")
 
     en = sub.add_parser("ensure", help="fetch wrap sources and keep-upstreams the load-out depends on")
-    en.add_argument("--target", choices=["claude", "codex", "gemini", "both", "all"], default="all")
+    en.add_argument("--target", choices=["claude", "codex", "agy", "both", "all"], default="all")
     en.add_argument("--profile", help="load-out profile or auto (defaults to auto)")
 
     lo = sub.add_parser("loadout")
     lo.add_argument("--apply", action="store_true")
     lo.add_argument("--migrate", action="store_true")
     lo.add_argument("--quiet", action="store_true")
-    lo.add_argument("--target", choices=["claude", "codex", "gemini", "both", "all"], default="claude")
+    lo.add_argument("--target", choices=["claude", "codex", "agy", "both", "all"], default="claude")
     lo.add_argument(
         "--profile",
         help="load-out profile under ref-skills/loadouts; defaults to auto on one target and core for both",

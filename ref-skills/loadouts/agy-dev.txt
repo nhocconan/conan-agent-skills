@@ -1,12 +1,10 @@
-# Personal Gemini CLI load-out.
-# Gemini discovers these through ~/.gemini/skills (it also treats
-# ~/.agents/skills as an alias, so the codex apply already reaches it; this
-# profile exists so the two can diverge without one editing the other's dir).
+# Personal Antigravity CLI (agy) load-out.
+# agy discovers these through ~/.gemini/config/skills.
 # Skills whose value is a Claude-only harness feature are deliberately absent.
 #
-# Broader than codex-dev on purpose: Gemini applies the same 2%-of-context cap,
-# but against a much larger window, so this set (~16.2k chars measured
-# 2026-09-05) fits where the same set does not fit in Codex's 272k.
+# Broader than codex-dev on purpose: agy has a much larger context window,
+# so this set (~16.2k chars measured 2026-09-05) fits comfortably where
+# the same set does not fit in Codex's 272k.
 
 a11y-audit
 admin-crud-standards

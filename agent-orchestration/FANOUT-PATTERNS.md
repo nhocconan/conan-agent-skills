@@ -9,7 +9,7 @@ change faster than this file.
 1. Choosing the fleet shape
 2. Claude Code — the Agent tool
 3. Claude Code — the Workflow tool (opt-in)
-4. Other lineages — Codex, Gemini
+4. Other lineages — Codex, agy
 5. Worktrees, by hand
 6. Cost, caps, and the honest limits
 
@@ -21,7 +21,7 @@ change faster than this file.
 | --- | --- |
 | 2–8 independent nodes, one wave, you'll judge the results yourself | inline subagents, one message, N calls |
 | Multi-stage with a fixed structure (find → verify → synthesize), or ≥10 nodes | a scripted workflow, if the harness has one and the operator opted in |
-| One load-bearing conclusion that needs an outside opinion | cross-lineage CLI (Codex / Gemini) |
+| One load-bearing conclusion that needs an outside opinion | cross-lineage CLI (Codex / agy) |
 | Long-running external work (CI, deploy, a big build) | background task + poll, never a blocking wait |
 | Under ~20 min of work, or the pieces share a file | no fleet — do it yourself |
 
@@ -129,20 +129,24 @@ each agent actually returned.
 
 ---
 
-## 4. Other lineages — Codex, Gemini
+## 4. Other lineages — Codex, agy
 
-For independence (`SKILL.md` §3), not for capacity. Verified installed on this machine on
-2026-08-13: `codex` 0.147.0, `gemini` 0.55.1 — re-check with `codex --version` before
-relying on flags, the CLI surface moves.
+For independence (`SKILL.md` §3), not for capacity. Verified installed on this machine:
+`codex` 0.153.0, `agy` 1.1.27 — re-check before relying on flags, CLI surfaces move.
 
 ```bash
+# Codex
 codex exec --skip-git-repo-check -m "$MODEL" -c 'model_reasoning_effort="high"' "$PROMPT"
+
+# Antigravity CLI (agy)
+agy -p "$PROMPT" --effort high
 ```
 
 - Give the full environment in the prompt: absolute working directory, the exact startup
   command, which credentials exist. It shares none of your session state.
 - Sandbox/approval bypass flags exist and are what the upstream `codex-subagent` skill
-  uses; grant the narrowest thing that lets the task run, and never for a node that
+  uses (for agy, use `--dangerously-skip-permissions` if non-interactive tool calls are needed);
+  grant the narrowest thing that lets the task run, and never for a node that
   writes to anything production-shaped.
 - Ask for a verdict plus its reasoning, and treat the answer as one vote — a different
   lineage is independent, not authoritative.
