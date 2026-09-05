@@ -19,6 +19,19 @@ Every project drifts: the PRD describes the old version, the user manual misses 
 - Diagrams: prefer **excalidraw** (render to SVG/PNG embedded in the HTML). If mermaid is used (e.g. on GitHub), validate it renders — escape `<br/>` and special chars that break the parser.
 - Sample/template files referenced by guides must actually exist and be downloadable from the page that mentions them.
 
+## Where an artifact is allowed to land
+- **`docs/` is shipped documentation only** — what a reader outside the work would open.
+  Agent working artifacts (evaluations, plans, handoffs, audit scratch, mined digests) do
+  not go there; a docs folder that grows a file per session stops being navigable.
+- **Working artifacts go to one declared, gitignored path** (`private/`, `local/`, or the
+  repo's existing equivalent). Declare it once in the repo's agent rulebook so every
+  session and every agent uses the same one.
+- **Supersede, don't accumulate.** A replaced handoff or audit is deleted or merged into
+  the current one in the same change. Two handoffs mean the next run picks the wrong one.
+- **Register the audience per folder.** Shipped docs take the product's voice and the
+  reader's language; private working notes may take the operator's own register. Whichever
+  applies, it is a property of the folder, not of the mood of the session.
+
 ## Process
 1. Diff docs against shipped reality (routes, menus, features, rules) — list every stale claim.
 2. Update; if docs are served in-app, verify the route renders the new version.

@@ -148,6 +148,9 @@ felt problem → name it → show it → apply it → takeaway → quiz, all ser
 the ONE core idea in its brief; distractors are misconceptions
 (examples.md §2 procedure); ≤3 new terms per L1–L2 lesson; formulas always
 formula ⇒ worked number ⇒ plain words.
+Prose rhythm: write asides as their own sentences — at most one em dash per
+paragraph, and none in most; never "không phải X — mà là Y" / "not just X but Y";
+every analogy states where it breaks; every number carries its dated source.
 
 Final reply (this is your compliance check, not a message): per lesson —
 id · title · word count · the core idea · the takeaway sentence · quiz
@@ -215,7 +218,10 @@ fragments stay the source of truth and the build is reproducible.
 | "X is like a library/toolbox" analogy | Maps vibes, not mechanism | Rewrite: map the mechanism AND state where the analogy breaks (`examples.md §5`) |
 | Client name / real revenue / internal repo in a public course | Distribution gate skipped; sources never scrubbed | Anonymize the DIGESTS, add `sensitive-terms.txt`, run `--sensitive`; scrubbing only the output re-leaks on re-assembly |
 | `data-explain` says "Correct!" and nothing else | Feedback praises instead of teaching | Explain why each distractor is wrong (`examples.md §2`) |
-| Slop-lexicon warning inside an anti-slop lesson | Validator can't tell quoted negative examples from real slop | Conscious-accept and record it — NEVER "fix" the negative examples a lesson exists to teach against |
+| Slop-lexicon warning inside an anti-slop lesson | Validator can't tell quoted negative examples from real slop | Wrap the quoted examples in an element with `data-slop-exempt` (or `<!-- slop-allow: term, term -->` at file level) — NEVER "fix" the negative examples a lesson exists to teach against |
+| Em-dash every other sentence (validator: ≥8/1k warn, ≥13/1k error) | Model-default aside rhythm; the house reference course runs 6.4/1k | Write asides as their own sentence; gloss in parentheses; define with a colon. At most one em dash per paragraph, and none in most |
+| "không phải X — mà là Y" / "not just X, but Y" repeated | Negative parallelism, the top syntactic AI tell | State Y once, plainly; keep the contrast only when correcting a misconception the lesson just named |
+| Analogy with no stated break | "Sloppy analogy" (JMIR Med Educ 2025 slop code) | Every analogy names where it stops holding (`examples.md §5`) |
 
 ## Reviewing & retrofitting an existing course
 

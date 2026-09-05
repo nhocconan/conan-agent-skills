@@ -62,6 +62,9 @@ merge conflicts and confident wrong answers.
 3. **Write the plan file and the fleet ledger to disk** (§7) — before wave 1, not after.
    A single wave of two or three agents needs only the ledger; anything multi-wave or
    longer than one sitting gets the file, because that is what makes it resumable.
+   Both land in the repo's declared gitignored working path, never in `docs/`
+   (`docs-sync` → "Where an artifact is allowed to land"); a superseded plan is deleted
+   in the same change, so a resuming agent cannot pick the wrong one.
 4. **Choose the fleet shape** (`FANOUT-PATTERNS.md` §1): inline subagents, a scripted
    workflow, cross-CLI, or just do it yourself. Cost scales with fleet size; anything
    above a handful of agents is the operator's call, not yours.

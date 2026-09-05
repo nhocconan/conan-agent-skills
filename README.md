@@ -1,10 +1,22 @@
 # conan-agent-skills
 
-My personal, reusable Claude Code and Codex agent skills. This repo is the single source
-of truth. Claude loads the curated symlinks under `~/.claude/skills`; Codex loads them
-under its documented user scope, `~/.agents/skills`. "Installed" and "active" are
-deliberately separate, because upstream suites install far more than should be competing
-for the model's attention.
+My personal, reusable agent skills for Claude Code, Codex and Gemini CLI. This repo is
+the single source of truth; each agent gets a curated set of symlinks into it.
+"Installed" and "active" are deliberately separate, because upstream suites install far
+more than should be competing for the model's attention.
+
+| Agent | User-scope skill directory | Load-out profile |
+|---|---|---|
+| Claude Code | `~/.claude/skills` | `claude-dev` (workstation) / `core` (headless) |
+| Codex | `~/.agents/skills` — its documented user scope; it follows symlinks | `codex-dev` |
+| Gemini CLI | `~/.gemini/skills` — it also treats `~/.agents/skills` as an alias | `gemini-dev` |
+
+The skills themselves are plain Markdown and name no harness-specific tool, so a skill
+written here works in all three. Only the install path differs.
+
+Keep the active set small on purpose: Codex caps the injected skill list at 2% of the
+context window (8,000 characters when it cannot tell), shortening descriptions and then
+dropping skills entirely. An over-full directory does not fail loudly — it goes quiet.
 
 👉 **[MANUAL.md](MANUAL.md) — start here** (tiếng Việt): what's here, what fires when,
 how to upgrade, how to roll back.
@@ -14,8 +26,13 @@ how to upgrade, how to roll back.
 ```bash
 git clone https://github.com/nhocconan/conan-agent-skills.git ~/.conan-agent-skills
 python3 ~/.conan-agent-skills/coding-env-bootstrap/harness.py \
-  apply --target both --profile core --with-mcp
+  apply --target all --profile auto --with-mcp
 ```
+
+That one command links the skills, fetches the few gstack markdown files the wrappers
+read (into `.vendor/gstack/`, not a gstack install), and on a workstation installs
+impeccable for UI work. On a headless host `auto` selects `core` and skips those.
+Production box that must stay headless: pass `--profile core` instead of `auto`.
 
 Full runbook (toolchain, agent CLIs, plugins, MCP, secrets):
 [`coding-env-bootstrap/BOOTSTRAP.md`](coding-env-bootstrap/BOOTSTRAP.md).
@@ -23,19 +40,42 @@ Full runbook (toolchain, agent CLIs, plugins, MCP, secrets):
 ## Upgrading everything
 
 ```bash
-git -C ~/.conan-agent-skills pull                          # 1. new/changed skills in THIS repo
-python3 ~/.conan-agent-skills/ref-skills/refsync.py \
-  loadout --target both --profile core --apply             # 2. symlink anything newly registered
-python3 ~/.conan-agent-skills/ref-skills/refsync.py upgrade  # 3. re-sync EXTERNAL upstreams only
+python3 ~/.conan-agent-skills/ref-skills/refsync.py upgrade
 ```
 
-`upgrade` alone never fetches this repo — it only re-fingerprints skills that wrap an
-external `source:`. A skill added here reaches another machine via steps 1–2.
+`upgrade` now does the whole sequence: fast-forward this repo (skips if the tree is
+dirty), fetch wrap sources from GitHub into `.vendor/`, update impeccable when the
+selected profile needs it, re-check wrapper fingerprints, validate, then re-apply the
+load-out. Default target is `all` (Claude + Codex + Gemini); default profile is `auto`.
 
-On a headless or production machine, the upgrade path auto-selects the headless `core` profile when the real-browser runtime or workstation skill sources are unavailable. To refresh both agents deterministically, run `python3 ~/.conan-agent-skills/coding-env-bootstrap/harness.py apply --target both --profile core`; explicit workstation profiles remain strict.
+Do **not** run gstack's `./setup` or `/gstack-upgrade` — that writes ~74 skills into
+`~/.claude/skills`. This repo only needs the markdown the wrappers point at. See
+[`ref-skills`](ref-skills/SKILL.md).
 
-Do **not** run an upstream installer (`/gstack-upgrade`) directly — it rewrites
-`~/.claude/skills` with its whole suite. See [`ref-skills`](ref-skills/SKILL.md).
+`auto` keeps the workstation profile when a real browser is present and falls back to
+`core` when it is not. Third-party skills that live only on this machine (no installer,
+not in this repo) are skipped on a fresh clone instead of aborting the apply.
+
+## The design stack — who owns what
+
+Five things can claim a UI task; they are layered deliberately so they do not compete.
+
+| Layer | Owner | Fires when |
+|---|---|---|
+| Build & refine | **impeccable** (upstream, `keep.txt`) | making or reshaping a UI: `shape`, `polish`, `critique`, `typeset`, `layout`, `animate`, `harden`, `adapt` — 23 commands + a deterministic detector binary |
+| Taste & anti-default | `frontend-design` (official Anthropic plugin) | aesthetic direction, typography, avoiding the looks generated pages converge on |
+| Visual defect review | [`design-qa`](design-qa/SKILL.md) | a rendered page that works but looks wrong — wrapping, collisions, imbalance, cross-page inconsistency |
+| Correctness gates | [`a11y-audit`](a11y-audit/SKILL.md), [`web-perf-audit`](web-perf-audit/SKILL.md) | WCAG 2.2 AA; LCP/INP/CLS. Neither is negotiable by taste |
+| Feature floor | [`admin-crud-standards`](admin-crud-standards/SKILL.md) | any admin/list/CRUD screen — pagination, filters, confirms |
+
+impeccable installs its own per-harness trees (`.claude/`, `.agents/`, `.gemini/`, and a
+dozen more) and is therefore listed in [`ref-skills/loadouts/keep.txt`](ref-skills/loadouts/keep.txt),
+which the load-out neither creates nor removes. `refsync.py upgrade` / `ensure` is what
+runs `npx impeccable install --yes --global` — do not run that installer by hand.
+
+The `~/.shared-ai-skills/frontend-design` copy was retired on 2026-09-05: a 2026-01
+Codex-era port that shadowed the current official plugin under the same `name:`. See the
+note at the end of [`ref-skills/loadout.txt`](ref-skills/loadout.txt).
 
 ## Adding a new skill
 
@@ -43,7 +83,7 @@ Do **not** run an upstream installer (`/gstack-upgrade`) directly — it rewrite
    `description` that states what **and when**), plus any scripts/assets beside it.
 2. Add the name to the relevant file under `ref-skills/loadouts/` (and to
    [`ref-skills/loadout.txt`](ref-skills/loadout.txt) for the Claude workstation), then
-   run `refsync.py loadout --target <claude|codex> --profile <name> --apply`.
+   run `refsync.py loadout --target <claude|codex|gemini|all> --profile <name> --apply`.
 3. **Validate** — `python3 skill-miner/validate_skills.py`. Errors here make a skill
    silently untriggerable.
 4. Add a row to the index below, commit, push.
@@ -81,4 +121,8 @@ wrap by default, fork only when you mean to diverge.
 | 24 | [browsing-web](browsing-web/SKILL.md) | Wrap over gstack `browse` (compiled binary — wrap is the only possible mode). The sanctioned browser path; never the Chrome MCP. Don't stop to re-confirm an already-open logged-in session; bulk collection hands off to `resilient-data-harvest`. |
 | 25 | [web-qa](web-qa/SKILL.md) | Wrap over gstack `qa` + `qa-only` — one job with a mode switch, not two skills. **Report-only is the default**; fixing happens only when asked, and then under the `shipping-changes` house rules. Every finding carries an artifact and is reproduced before it is written down; the scope and tier actually covered are stated, not implied. Routes visual defects to `design-review`, wrong numbers to `metric-integrity`. One browser stack (gstack `browse`) — never the Chrome MCP, never `agent-browser`. |
 | 26 | [design-qa](design-qa/SKILL.md) | Wrap over gstack `design-review` — the visual lens `web-qa` doesn't cover. Carries the six recurring defect classes drawn from real reports (text wrapping/dropping lines, content not using its width, chart/text collisions, layout imbalance, cross-page inconsistency, AI-slop layout), and the rule that both themes **and** 375px get checked. Fixing is in scope, under `shipping-changes` house rules. |
+| 28 | [dev-env-lifecycle](dev-env-lifecycle/SKILL.md) | Own the lifecycle of everything a run starts. Inventory before starting; one documented `up`/`down`/`status` artifact each; `down` reclaims **all** of it (workers, schedulers, tunnels, sidecars), verified against the port and process tables rather than an exit code; scratch output is ephemeral by default; confirm-with-sizes before deleting anything you did not create, and delete the files, not just the index row. Inverts on a `prod` host: inventory and report only. |
+| 29 | [remote-host-access](remote-host-access/SKILL.md) | The "I opened the port and it still won't connect" ladder, descended one rung at a time: read the failure (timeout = dropped, refused = nothing bound — never edit a firewall for a refusal) → resolution → TCP path from two networks → the perimeter you cannot see from inside (cloud SG, hypervisor firewall) → which host firewall is actually in charge (iptables-as-nft shim, front-ends that regenerate rules, chain order, zero packet counters) → bind address → socket-activated units → the app's own allowlist and its ban daemon. Plus durable remote agent sessions (multiplexer + auto-reconnect + keepalive). |
+| 30 | [tenant-scope-integrity](tenant-scope-integrity/SKILL.md) | Scope as an argument, not a filter. Five invariants: every write carries an explicit scope; "none selected" is a defined state and never means *all* on a write; scoped writes are constrained at the layer nearest the database; **every uniqueness/upsert/idempotency key is scope-prefixed** (where the cross-tenant overwrite actually happens); the selection is visible and persisted. Ranked failure sites — imports, connectors, jobs and retries, bulk deletes, admin tooling, caches. Covers the write path `metric-integrity` and `secure-code-audit` both miss. |
+| 31 | [reference-parity](reference-parity/SKILL.md) | Rebuilding to match an existing artifact: extract the reference's own inventory first — every tab, sub-tab, content type, **state** (empty/partial/error/denied), input and number — turn it into a parity checklist with status + evidence + decision columns, and report progress as a fraction, not as effort. Order of work is the reviewer's order: coverage → content → hierarchy → polish. Deliberate differences are recorded as decisions; the reference is the oracle, and where it looks wrong that is a finding for its owner. |
 | 27 | [delegate-run](delegate-run/SKILL.md) | Three-touchpoint contract for a fully-delegated single-agent run: acceptance checks + plan file before any edit, plan gate only for risky work, no mid-run questions (assumptions logged, batched to the exit report), every claim audited against a tool result, fixed exit-report format, and a trust ledger — three consecutive clean runs in a task class lets the operator drop that class's plan gate. Solo counterpart to `agent-orchestration` (fleets) and `autonomous-loops` (recurring jobs). |

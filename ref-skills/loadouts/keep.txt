@@ -1,0 +1,13 @@
+# Skills the load-out must not touch — neither create nor remove.
+#
+# For upstreams that ship their own installer for several harnesses at once
+# (their own .claude/, .agents/, .gemini/ trees). Two tools managing the same
+# directory entry means each undoes the other on every run; listing the name
+# here makes refsync step around it instead.
+#
+# Applies to every target. Add a line only when the upstream genuinely owns its
+# own multi-harness install — otherwise register the skill in a load-out.
+
+# Design engine: 23 commands + a deterministic detector binary, installed by
+# `npx impeccable install --global`, which writes the per-harness trees itself.
+impeccable

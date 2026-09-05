@@ -43,17 +43,25 @@
     "always_on": 600,
     "eager": 3000
   },
+  "delegate-run": {
+    "always_on": 800,
+    "eager": 7900
+  },
   "demo-data-craft": {
     "always_on": 600,
     "eager": 5400
   },
   "design-qa": {
     "always_on": 700,
-    "eager": 3400
+    "eager": 3700
+  },
+  "dev-env-lifecycle": {
+    "always_on": 700,
+    "eager": 5400
   },
   "docs-sync": {
     "always_on": 300,
-    "eager": 2600
+    "eager": 3600
   },
   "interactive-course-builder": {
     "always_on": 900,
@@ -65,7 +73,7 @@
   },
   "metric-integrity": {
     "always_on": 700,
-    "eager": 6000
+    "eager": 6500
   },
   "mobile-app-playbook": {
     "always_on": 1100,
@@ -75,9 +83,17 @@
     "always_on": 600,
     "eager": 7000
   },
+  "reference-parity": {
+    "always_on": 800,
+    "eager": 5700
+  },
+  "remote-host-access": {
+    "always_on": 800,
+    "eager": 7200
+  },
   "resilient-data-harvest": {
     "always_on": 800,
-    "eager": 6600
+    "eager": 7800
   },
   "secure-code-audit": {
     "always_on": 500,
@@ -98,6 +114,10 @@
   "store-screenshots": {
     "always_on": 600,
     "eager": 8100
+  },
+  "tenant-scope-integrity": {
+    "always_on": 800,
+    "eager": 6700
   },
   "web-perf-audit": {
     "always_on": 500,

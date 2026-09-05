@@ -17,9 +17,11 @@ an upstream installer directly.
 
 Usage:
   python3 refsync.py status
-  python3 refsync.py upgrade [name ...]
-  python3 refsync.py loadout                         # Claude dev dry run
-  python3 refsync.py loadout --apply                 # backward-compatible Claude dev
+  python3 refsync.py upgrade [name ...]              # pull this repo, install deps, re-apply
+  python3 refsync.py ensure                          # fetch wrap markdown; install keep-upstreams
+  python3 refsync.py loadout                         # Claude auto dry run
+  python3 refsync.py loadout --apply                 # apply the auto-selected load-out
+  python3 refsync.py loadout --target all --apply
   python3 refsync.py loadout --target both --profile core --apply
   python3 refsync.py loadout --target codex --profile codex-dev --apply
   python3 refsync.py loadout --migrate               # legacy symlink → real directory
@@ -28,13 +30,16 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import configparser
 import hashlib
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
 import tempfile
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from urllib.request import urlopen
@@ -57,10 +62,27 @@ ROOTS = [
 
 TARGET_DIRS = {
     "claude": HOME / ".claude" / "skills",
-    # Codex's documented user-skill location. ~/.codex/skills is reserved for
-    # bundled/plugin-managed content and is intentionally only a resolution root.
+    # Codex's documented user-skill location (it follows symlinks there).
+    # ~/.codex/skills is reserved for bundled/plugin-managed content and is
+    # intentionally only a resolution root.
     "codex": HOME / ".agents" / "skills",
+    # Gemini CLI's primary user scope. It also treats ~/.agents/skills as an
+    # alias, so a Codex apply already reaches Gemini; writing the primary path
+    # too keeps the two load-outs independent and does not rely on the alias.
+    "gemini": HOME / ".gemini" / "skills",
 }
+
+# "both" stays claude+codex for every existing invocation and runbook.
+TARGET_GROUPS = {
+    "both": ["claude", "codex"],
+    "all": list(TARGET_DIRS),
+}
+
+# Skills another installer owns across several harnesses (impeccable ships its
+# own .claude/.agents/.gemini trees). The load-out neither creates nor removes
+# these — it steps around them so the two tools stop overwriting each other.
+KEEP_FILE = LOADOUT_DIR / "keep.txt"
+UPSTREAMS_FILE = Path(__file__).resolve().parent / "upstreams.ini"
 
 AUTO_PROFILE = "auto"
 BROWSER_COMMANDS = (
@@ -100,20 +122,56 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
     return out, body
 
 
+def expand_home(path: str | Path) -> Path:
+    """Expand ~ using $HOME so tests can isolate the filesystem."""
+    return Path(os.path.expanduser(str(path)))
+
+
+def vendor_root() -> Path:
+    override = os.environ.get("CONAN_AGENT_VENDOR")
+    if override:
+        return Path(override)
+    return REPO / ".vendor"
+
+
+def parse_github_spec(spec: str) -> tuple[str, str, str, str] | None:
+    m = re.match(r"github:([^/]+)/([^@]+)@([^:]+):(.+)", spec)
+    if not m:
+        return None
+    return m.groups()
+
+
+def fetch_github_file(
+    owner: str, repo: str, ref: str, path: str, *, cache: bool = True,
+) -> str | None:
+    """Read a file from the local vendor cache, a test mirror, or GitHub."""
+    if cache:
+        vendor = vendor_root() / repo / path
+        if vendor.is_file():
+            return vendor.read_text(encoding="utf-8", errors="replace")
+    mirror = os.environ.get("CONAN_AGENT_RAW_MIRROR")
+    if mirror:
+        local = Path(mirror) / path
+        if local.is_file():
+            return local.read_text(encoding="utf-8", errors="replace")
+        return None
+    url = f"https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{path}"
+    with urlopen(url, timeout=30) as r:
+        return r.read().decode("utf-8", "replace")
+
+
 def read_source(spec: str) -> str | None:
     """spec: local:<path> | github:<owner>/<repo>@<ref>:<path> | https:<url>"""
     try:
         if spec.startswith("local:"):
-            p = Path(spec[6:].strip()).expanduser()
+            p = expand_home(spec[6:].strip())
             return p.read_text(encoding="utf-8", errors="replace") if p.exists() else None
         if spec.startswith("github:"):
-            m = re.match(r"github:([^/]+)/([^@]+)@([^:]+):(.+)", spec)
-            if not m:
+            parsed = parse_github_spec(spec)
+            if not parsed:
                 return None
-            owner, repo, ref, path = m.groups()
-            url = f"https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{path}"
-            with urlopen(url, timeout=30) as r:
-                return r.read().decode("utf-8", "replace")
+            owner, repo, ref, path = parsed
+            return fetch_github_file(owner, repo, ref, path)
         if spec.startswith(("http://", "https://")):
             with urlopen(spec, timeout=30) as r:
                 return r.read().decode("utf-8", "replace")
@@ -218,13 +276,16 @@ def bump_ref(ref: Path, fingerprint: str, version: str | None) -> None:
 def cmd_upgrade(args) -> int:
     targets = set(args.names or [])
     requested_profile = args.profile or default_profile(args.target)
-    profiles = selected_profiles(args.target, requested_profile)
+    print("--- pulling this repo ---")
+    pull_self()
+    profiles = selected_profiles(args.target, requested_profile, will_ensure=True)
+    print("\n--- ensuring upstreams ---")
+    problems = ensure_upstreams(set(profiles.values()))
     active_refs = {
         name
         for profile in profiles.values()
         for name in read_loadout(profile)
     }
-    problems = 0
     for d, fm, body in ref_skills():
         if targets and d.name not in targets:
             continue
@@ -307,9 +368,10 @@ def cmd_upgrade(args) -> int:
 # ------------------------------------------------------------------ loadout
 
 def default_profile(target: str) -> str:
-    # Auto is safe on both developer workstations and remote machines: it
-    # keeps the workstation profile only when its runtime is present.
-    return "core" if target == "both" else AUTO_PROFILE
+    # Always auto: each expanded target picks its own workstation profile, or
+    # `core` when that profile's required runtime is missing. Passing `core`
+    # (or any other name) remains explicit and strict.
+    return AUTO_PROFILE
 
 
 def loadout_path(profile: str) -> Path:
@@ -344,7 +406,250 @@ def resolve(name: str) -> Path | None:
 
 
 def requested_targets(target: str) -> list[str]:
-    return list(TARGET_DIRS) if target == "both" else [target]
+    return list(TARGET_GROUPS.get(target, [target]))
+
+
+def kept_names() -> set[str]:
+    if not KEEP_FILE.exists():
+        return set()
+    names = set()
+    for line in KEEP_FILE.read_text().split("\n"):
+        line = line.split("#")[0].strip()
+        if line:
+            names.add(line)
+    return names
+
+
+# ------------------------------------------------------------------ upstreams
+
+
+@dataclass
+class Upstream:
+    name: str
+    kind: str
+    repo: str = ""
+    ref: str = "main"
+    files: tuple[str, ...] = ()
+    install: str = ""
+    update: str = ""
+    provides: frozenset[str] = field(default_factory=frozenset)
+    keep: bool = False
+
+
+def _csv(value: str) -> frozenset[str]:
+    return frozenset(part.strip() for part in value.split(",") if part.strip())
+
+
+def read_upstreams() -> dict[str, Upstream]:
+    if not UPSTREAMS_FILE.exists():
+        return {}
+    parser = configparser.ConfigParser(interpolation=None)
+    parser.read(UPSTREAMS_FILE)
+    out: dict[str, Upstream] = {}
+    for name in parser.sections():
+        s = parser[name]
+        files = tuple(
+            part.strip()
+            for part in s.get("files", "").replace("\n", ",").split(",")
+            if part.strip()
+        )
+        out[name] = Upstream(
+            name=name,
+            kind=s.get("kind", "").strip(),
+            repo=s.get("repo", "").strip(),
+            ref=s.get("ref", "main").strip() or "main",
+            files=files,
+            install=s.get("install", "").strip(),
+            update=s.get("update", "").strip(),
+            provides=_csv(s.get("provides", "")),
+            keep=s.getboolean("keep", fallback=False),
+        )
+    return out
+
+
+def provided_by_upstreams() -> set[str]:
+    names: set[str] = set()
+    for spec in read_upstreams().values():
+        names |= spec.provides
+    return names
+
+
+def repo_skill_names() -> set[str]:
+    return {path.parent.name for path in REPO.glob("*/SKILL.md")}
+
+
+def is_optional_name(name: str) -> bool:
+    """True when a load-out entry is neither in this repo nor an upstream provide.
+
+    Those are machine-local third parties. A fresh clone must not fall back to
+    `core` (or refuse the apply) just because they are absent.
+    """
+    if name in repo_skill_names() or name in provided_by_upstreams() or name in kept_names():
+        return False
+    return True
+
+
+def partition_unresolved(names: list[str]) -> tuple[list[str], list[str]]:
+    optional, blocking = [], []
+    for name in names:
+        (optional if is_optional_name(name) else blocking).append(name)
+    return optional, blocking
+
+
+def ensure_disabled() -> bool:
+    return os.environ.get("CONAN_AGENT_ENSURE", "").strip().lower() in {
+        "0", "false", "no", "off",
+    }
+
+
+def _run_logged(command: list[str], *, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
+    print(f"  $ {' '.join(command)}")
+    result = subprocess.run(command, cwd=cwd, text=True, capture_output=True)
+    if result.stdout.strip():
+        print(result.stdout.rstrip())
+    if result.stderr.strip():
+        print(result.stderr.rstrip(), file=sys.stderr)
+    return result
+
+
+def pull_self() -> None:
+    git_dir = REPO / ".git"
+    if not git_dir.exists():
+        print("repo: not a git checkout; skipped pull")
+        return
+    status = subprocess.run(
+        ["git", "-C", str(REPO), "status", "--porcelain"],
+        capture_output=True, text=True,
+    )
+    if status.returncode:
+        print(f"repo: git status failed; skipped pull ({status.stderr.strip()})")
+        return
+    if status.stdout.strip():
+        print("repo: dirty working tree; skipped pull (commit or stash, then re-run)")
+        return
+    result = _run_logged(["git", "-C", str(REPO), "pull", "--ff-only"])
+    if result.returncode:
+        print("repo: pull --ff-only refused; left the checkout alone")
+        return
+    print("repo: up to date" if "Already up to date" in (result.stdout + result.stderr)
+          else "repo: pulled")
+
+
+def ensure_github_files(spec: Upstream) -> int:
+    """Copy listed files from GitHub (or a test mirror) into .vendor/<name>/."""
+    if not spec.repo or not spec.files:
+        print(f"{spec.name}: github-files needs repo= and files=")
+        return 1
+    if "/" not in spec.repo:
+        print(f"{spec.name}: repo must be owner/name, got {spec.repo!r}")
+        return 1
+    owner, repo = spec.repo.split("/", 1)
+    dest = vendor_root() / spec.name
+    wrote = skipped = 0
+    for rel in spec.files:
+        text = fetch_github_file(owner, repo, spec.ref, rel, cache=False)
+        if text is None:
+            print(f"  ! {rel}: unreachable")
+            return 1
+        target = dest / rel
+        if target.is_file() and target.read_text(encoding="utf-8", errors="replace") == text:
+            skipped += 1
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding="utf-8")
+        wrote += 1
+        print(f"  + {rel}")
+    print(f"{spec.name}: {wrote} fetched · {skipped} already current → {dest}")
+    return 0
+
+
+def _keep_missing_targets(name: str) -> list[str]:
+    missing = []
+    for target, path in TARGET_DIRS.items():
+        if not (path / name / "SKILL.md").exists():
+            missing.append(target)
+    return missing
+
+
+def ensure_npx(spec: Upstream) -> int:
+    if not shutil.which("npx"):
+        print(f"{spec.name}: npx is required ({spec.install or spec.update})")
+        return 1
+    missing = _keep_missing_targets(spec.name) if spec.keep else []
+    cmdline = spec.install if missing or not spec.update else spec.update
+    if not cmdline:
+        print(f"{spec.name}: no install/update command")
+        return 1
+    if missing:
+        print(f"{spec.name}: missing on {', '.join(missing)}")
+    # Run from $HOME so a project-scoped installer cannot drop .claude/.codex
+    # trees into this repo.
+    result = _run_logged(shlex.split(cmdline), cwd=expand_home("~"))
+    if result.returncode:
+        print(f"{spec.name}: {'install' if missing else 'update'} failed")
+        return 1
+    print(f"{spec.name}: {'installed' if missing else 'updated'}")
+    return 0
+
+
+def upstreams_needed(profiles: set[str]) -> list[Upstream]:
+    """Suites required by the selected profiles' load-outs, wraps, or keep list."""
+    catalog = read_upstreams()
+    if not catalog:
+        return []
+    wanted: set[str] = set()
+    loadout_names: set[str] = set()
+    for profile in profiles:
+        if profile == "core":
+            continue
+        loadout_names.update(read_loadout(profile))
+    if not loadout_names and not any(p != "core" for p in profiles):
+        return []
+
+    for d, fm, _body in ref_skills():
+        if d.name in loadout_names:
+            upstream = fm.get("upstream", "").strip()
+            if upstream:
+                wanted.add(upstream)
+    for spec in catalog.values():
+        if spec.provides & loadout_names:
+            wanted.add(spec.name)
+        # Design-engine keep-upstreams need a real display; skip them headless.
+        if (
+            spec.keep
+            and spec.name in kept_names()
+            and real_browser_available()
+            and any(p != "core" for p in profiles)
+        ):
+            wanted.add(spec.name)
+    return [catalog[name] for name in catalog if name in wanted]
+
+
+def ensure_upstreams(profiles: set[str]) -> int:
+    if ensure_disabled():
+        print("ensure: skipped (CONAN_AGENT_ENSURE=0)")
+        return 0
+    needed = upstreams_needed(profiles)
+    if not needed:
+        print("ensure: no upstreams required")
+        return 0
+    rc = 0
+    for spec in needed:
+        print(f"\n--- ensuring {spec.name} ({spec.kind}) ---")
+        if spec.kind == "github-files":
+            rc |= ensure_github_files(spec)
+        elif spec.kind == "npx":
+            rc |= ensure_npx(spec)
+        else:
+            print(f"{spec.name}: unknown kind {spec.kind!r}")
+            rc |= 1
+    return rc
+
+
+def cmd_ensure(args) -> int:
+    requested = args.profile or default_profile(args.target)
+    profiles = selected_profiles(args.target, requested, will_ensure=True)
+    return ensure_upstreams(set(profiles.values()))
 
 
 def real_browser_available() -> bool:
@@ -377,15 +682,18 @@ def unresolved_names(profile: str) -> list[str]:
     return sorted({name for name in read_loadout(profile) if resolve(name) is None})
 
 
-def select_profile(target: str, requested: str, *, announce: bool = True) -> str:
+def select_profile(
+    target: str,
+    requested: str,
+    *,
+    announce: bool = True,
+    will_ensure: bool = False,
+) -> str:
     """Resolve auto to a complete profile, keeping explicit profiles strict."""
     if requested != AUTO_PROFILE:
         return requested
 
-    if target == "both":
-        return "core"
-
-    workstation = "claude-dev" if target == "claude" else "codex-dev"
+    workstation = {"claude": "claude-dev", "codex": "codex-dev"}.get(target, f"{target}-dev")
     if target == "claude" and not real_browser_available():
         missing = unresolved_names(workstation)
         detail = f"; unavailable entries: {', '.join(missing)}" if missing else ""
@@ -397,23 +705,33 @@ def select_profile(target: str, requested: str, *, announce: bool = True) -> str
         return "core"
 
     missing = unresolved_names(workstation)
-    if not missing:
+    optional, blocking = partition_unresolved(missing)
+    if will_ensure:
+        provided = provided_by_upstreams()
+        blocking = [name for name in blocking if name not in provided]
+    if not blocking:
         if announce:
-            print(f"{target}/auto: using {workstation}")
+            skipped = f"; will skip optional: {', '.join(optional)}" if optional else ""
+            print(f"{target}/auto: using {workstation}{skipped}")
         return workstation
 
     if announce:
-        missing_text = ", ".join(missing)
+        missing_text = ", ".join(blocking)
         print(
-            f"{target}/auto: {workstation} is unavailable ({len(missing)} "
+            f"{target}/auto: {workstation} is unavailable ({len(blocking)} "
             f"unresolved: {missing_text}); using core"
         )
     return "core"
 
 
-def selected_profiles(target: str, requested: str) -> dict[str, str]:
+def selected_profiles(
+    target: str,
+    requested: str,
+    *,
+    will_ensure: bool = False,
+) -> dict[str, str]:
     return {
-        name: select_profile(name, requested)
+        name: select_profile(name, requested, will_ensure=will_ensure)
         for name in requested_targets(target)
     }
 
@@ -485,8 +803,10 @@ def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
         print("  run this command again with --migrate")
         return 1
 
+    keep = kept_names()
     have = {p.name for p in active.iterdir()} if active.exists() else set()
-    want = set(wanted)
+    have -= keep
+    want = set(wanted) - keep
     missing = sorted(want - have)
     collisions = []
     relink = []
@@ -521,11 +841,17 @@ def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
         )
 
     unresolved = [n for n in missing if resolve(n) is None]
-    for n in unresolved:
+    optional, blocking = partition_unresolved(unresolved)
+    for n in optional:
+        print(f"  skip '{n}' (optional third-party; not in repo, no upstream installer)")
+    for n in blocking:
         print(f"  ! '{n}' in {profile} resolves to no skill in any root")
-    if unresolved:
-        print(f"{label}: refusing a partial apply ({len(unresolved)} unresolved)")
+    if blocking:
+        print(f"{label}: refusing a partial apply ({len(blocking)} unresolved)")
         return 1
+    skip = set(optional)
+    missing = [n for n in missing if n not in skip]
+    want = {n for n in want if n not in skip}
 
     if not quiet:
         print(
@@ -693,21 +1019,25 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     st = sub.add_parser("status")
-    st.add_argument("--target", choices=["claude", "codex", "both"], default="claude")
+    st.add_argument("--target", choices=["claude", "codex", "gemini", "both", "all"], default="claude")
     st.add_argument("--profile", help="load-out profile or auto (defaults to auto on one target)")
 
     up = sub.add_parser("upgrade")
     up.add_argument("names", nargs="*")
     up.add_argument("--accept", action="store_true",
                     help="record the new upstream fingerprint after reviewing it")
-    up.add_argument("--target", choices=["claude", "codex", "both"], default="claude")
-    up.add_argument("--profile", help="load-out profile or auto (defaults to auto on one target)")
+    up.add_argument("--target", choices=["claude", "codex", "gemini", "both", "all"], default="all")
+    up.add_argument("--profile", help="load-out profile or auto (defaults to auto)")
+
+    en = sub.add_parser("ensure", help="fetch wrap sources and keep-upstreams the load-out depends on")
+    en.add_argument("--target", choices=["claude", "codex", "gemini", "both", "all"], default="all")
+    en.add_argument("--profile", help="load-out profile or auto (defaults to auto)")
 
     lo = sub.add_parser("loadout")
     lo.add_argument("--apply", action="store_true")
     lo.add_argument("--migrate", action="store_true")
     lo.add_argument("--quiet", action="store_true")
-    lo.add_argument("--target", choices=["claude", "codex", "both"], default="claude")
+    lo.add_argument("--target", choices=["claude", "codex", "gemini", "both", "all"], default="claude")
     lo.add_argument(
         "--profile",
         help="load-out profile under ref-skills/loadouts; defaults to auto on one target and core for both",
@@ -724,6 +1054,8 @@ def main() -> int:
         return cmd_status(args)
     if args.cmd == "upgrade":
         return cmd_upgrade(args)
+    if args.cmd == "ensure":
+        return cmd_ensure(args)
     if args.cmd == "rescue":
         return cmd_rescue(args)
     return cmd_loadout(args)

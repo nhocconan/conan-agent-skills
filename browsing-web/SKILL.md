@@ -1,12 +1,20 @@
 ---
 name: browsing-web
-description: Drives a real browser for anything on the web — opening pages, QA-testing a running app, filling forms, capturing screenshots, reading console and network output, and pulling data from logged-in sites. Use for every web interaction: "mở web", "check trang này", "test cái site", "chụp màn hình", "lấy data từ trang", "console log", or verifying a UI change actually renders. This is the only sanctioned browser path on this machine — the Chrome MCP tools must never be used.
+description: >-
+  Drives a real browser for anything on the web — opening pages, QA-testing a running app,
+  filling forms, capturing screenshots, reading console and network output, and pulling data
+  from logged-in sites. Use for every web interaction: "mở web", "check trang này", "test cái
+  site", "chụp màn hình", "lấy data từ trang", "console log", or verifying a UI change
+  actually renders. This is the only sanctioned browser path on this machine — the Chrome MCP
+  tools must never be used.
 ---
 
 # Browsing the web
 
-Thin wrapper over gstack's `browse` (a compiled binary plus its daemon — this cannot be
-forked, only wrapped). Upstream owns the commands; this file owns the standing rules.
+Thin wrapper over gstack's `browse` procedure (markdown only — fetched into
+`.vendor/gstack/`, not a gstack install). Upstream owns the commands; this file owns
+the standing rules. If the compiled `browse` binary is not on this machine, still
+never use the Chrome MCP; drive the browser with the tools this harness has.
 
 ## Standing rules
 
@@ -24,14 +32,15 @@ forked, only wrapped). Upstream owns the commands; this file owns the standing r
 
 ## Getting the commands
 
-Read `~/.shared-ai-skills/browse/SKILL.md` — its **"SETUP (run this check BEFORE any
-browse command)"** section first, then **"Most-Used Commands"**. Run the setup check
-before the first browse command of a session; the daemon may need starting.
+Read `~/.conan-agent-skills/.vendor/gstack/browse/SKILL.md` — its **"SETUP (run this check BEFORE any
+browse command)"** section first, then **"Most-Used Commands"**. Skip the binary setup
+check when `browse` is not installed; the house rules above still apply.
 
 For any command or snapshot flag beyond that table, read
-`~/.shared-ai-skills/gstack/browse/sections/command-list.md`. Upstream carved the full
+`~/.conan-agent-skills/.vendor/gstack/browse/sections/command-list.md`. Upstream carved the full
 command reference out of SKILL.md (v1.71), so it no longer arrives with the skill body —
-read it rather than working from memory of the old inline list.
+read it rather than working from memory of the old inline list. `refsync.py ensure`
+fetches both files.
 
 ## When the task is bulk data collection
 

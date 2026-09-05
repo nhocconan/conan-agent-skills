@@ -1,0 +1,36 @@
+# Personal Gemini CLI load-out.
+# Gemini discovers these through ~/.gemini/skills (it also treats
+# ~/.agents/skills as an alias, so the codex apply already reaches it; this
+# profile exists so the two can diverge without one editing the other's dir).
+# Skills whose value is a Claude-only harness feature are deliberately absent.
+#
+# Broader than codex-dev on purpose: Gemini applies the same 2%-of-context cap,
+# but against a much larger window, so this set (~16.2k chars measured
+# 2026-09-05) fits where the same set does not fit in Codex's 272k.
+
+a11y-audit
+admin-crud-standards
+agent-orchestration
+agent-session-backup
+anti-slop-review
+appstore-review-guard
+backtest-integrity
+bug-class-audits
+coding-env-bootstrap
+delegate-run
+demo-data-craft
+dev-env-lifecycle
+docs-sync
+interactive-course-builder
+metric-integrity
+mobile-app-playbook
+ref-skills
+reference-parity
+remote-host-access
+resilient-data-harvest
+secure-code-audit
+senior-operator
+skill-miner
+store-screenshots
+tenant-scope-integrity
+web-perf-audit

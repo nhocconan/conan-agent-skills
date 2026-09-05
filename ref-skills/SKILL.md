@@ -21,20 +21,26 @@ Skills here that are derived from an upstream suite carry a `REF.md`. Two modes:
 python3 ~/.conan-agent-skills/ref-skills/refsync.py upgrade
 ```
 
-It does, in order: check every `REF.md` source for drift → merge forks / flag wraps →
-run `validate_skills.py` → re-apply the load-out. Report each step honestly, including
-what it skipped.
+It does, in order: fast-forward this repo (skips a dirty tree) → fetch wrap sources
+listed in `ref-skills/upstreams.ini` (gstack **files** into `.vendor/`, not a gstack
+install; impeccable via npx) → check every `REF.md` source for drift → merge forks /
+flag wraps → run `validate_skills.py` → re-apply the load-out. Report each step
+honestly, including what it skipped. Default target is `all`; default profile is `auto`.
 
-On a machine without a real browser, the default `auto` profile selects `core` and skips the workstation/browser load-out. Use `CONAN_AGENT_HEADLESS=1` to force that decision, or pass an explicit workstation profile only when its dependencies are present.
+On a machine without a real browser, `auto` selects `core` for Claude and skips
+those fetches. `CONAN_AGENT_HEADLESS=1` forces that; `CONAN_AGENT_ENSURE=0`
+skips the network step. Pass an explicit workstation profile only when you mean
+to require its full set.
 
 Other entry points:
 
 ```bash
 python3 refsync.py status                    # drift + load-out diff, changes nothing
+python3 refsync.py ensure                    # fetch wrap markdown + keep-upstreams
 python3 refsync.py upgrade shipping-changes  # one skill
 python3 refsync.py upgrade <name> --accept   # record the new fingerprint after review
 python3 refsync.py loadout                   # dry-run the auto-selected load-out diff
-python3 refsync.py loadout --apply           # apply auto; explicit profiles stay strict
+python3 refsync.py loadout --apply           # apply auto; optional third-parties are skipped
 python3 refsync.py loadout --target codex --profile codex-dev --apply
 python3 refsync.py loadout --target both --profile core --apply
 python3 refsync.py rescue                    # list skills that exist ONLY on this machine

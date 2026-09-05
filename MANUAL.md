@@ -17,7 +17,8 @@ Three things worth remembering, and only three:
 
 | You want | Say / run |
 | --- | --- |
-| Update everything | "upgrade skills" — or `refsync.py upgrade` |
+| Update everything | "upgrade skills" — or `python3 ~/.conan-agent-skills/ref-skills/refsync.py upgrade` |
+| New machine | `harness.py apply --target all --profile auto --with-mcp` |
 | Something feels broken | `python3 ~/.conan-agent-skills/skill-miner/validate_skills.py` |
 | Undo the whole setup | See §7 Rollback |
 
@@ -38,8 +39,7 @@ On a **new** machine you need only:
 | Claude Code | the thing that loads skills | `claude --version` |
 
 That is the whole hard requirement. Optional, per what you actually do: `node`/`pnpm`
-(JS projects), `gh` (PRs), `rg` (fast search), `docker` (containerised stacks), `bun`
-(only if you rebuild gstack's `browse` binary).
+(JS projects), `gh` (PRs), `rg` (fast search), `docker` (containerised stacks).
 
 Full new-machine runbook: `coding-env-bootstrap/BOOTSTRAP.md` — point an agent at it and
 it installs and verifies itself.
@@ -52,10 +52,27 @@ it installs and verifies itself.
 | --- | --- | --- |
 | `~/.conan-agent-skills` | **Source of truth.** Your skills, in git, pushed to GitHub | You |
 | `~/.shared-ai-skills` | gstack + other installed suites — **not all of it is active** | gstack's installer |
-| `~/.claude/skills` | **What's actually running.** A real directory of symlinks built from `loadout.txt` | `refsync.py` |
-| `~/.agents/skills` | Codex user skills. Repo-owned links are curated; unrelated suites are preserved | `refsync.py` + other installers |
+| `~/.claude/skills` | **Claude, active.** Symlinks built from `loadout.txt` (`claude-dev`) | `refsync.py` |
+| `~/.agents/skills` | **Codex, active** (its documented user scope). Repo-owned links curated; unrelated suites preserved | `refsync.py` + other installers |
+| `~/.gemini/skills` | **Gemini CLI, active.** Its primary user scope; it also reads `~/.agents/skills` as an alias | `refsync.py` |
+| `~/.agents/skills.retired` | Parked third-party skills — moved out, not deleted. Move a folder back to re-enable | You |
 
-The point: **"installed" ≠ "active."** gstack installs ~74 skills; you run 45. Inactive
+Ba profile, ba kích cỡ khác nhau — vì mỗi agent nhét description của **mọi** skill vào
+system prompt và cắt theo một trần khác nhau:
+
+| Agent | Profile | Đo được 2026-09-05 | Trần |
+| --- | --- | --- | --- |
+| Claude | `claude-dev` | 50 skills · 25,733 ký tự | không công bố |
+| Codex | `codex-dev` | 11 skills · 7,724 ký tự | 2% context (~5,440 ở 272k), fallback 8,000 |
+| Gemini | `gemini-dev` | 26 skills · 16,213 ký tự | 2% context — cửa sổ lớn hơn nhiều nên rộng tay hơn |
+
+Codex **rút gọn description trước khi bỏ skill** — mà trigger phrase nằm ở cuối
+description, nên bị cắt đúng phần quyết định skill có fire hay không. Vì vậy `codex-dev`
+cố tình nhỏ. Skill không nằm trong load-out vẫn dùng được: bảo nó đọc
+`~/.conan-agent-skills/<tên>/SKILL.md` rồi làm theo. Load-out chỉ quản việc **tự động
+fire**, không quản việc có sẵn hay không.
+
+The point: **"installed" ≠ "active."** gstack installs ~74 skills; you run 50. Inactive
 skills are invisible to the model but their files stay on disk, and the wrappers still
 read them by path.
 
@@ -72,12 +89,14 @@ Codex jobs use the installed bounded profile with `codex --profile production`.
 `refsync.py loadout` and `refsync.py upgrade` use `auto` when one target is selected. On Claude, auto requires a detected real browser runtime and a complete workstation dependency tree; otherwise it selects the headless `core` profile and reports what it skipped. `CONAN_AGENT_HEADLESS=1` or `CONAN_AGENT_BROWSER=0` forces `core`; `CONAN_AGENT_BROWSER=1` is an explicit opt-in for a supported remote browser session. An explicit `--profile claude-dev` or `codex-dev` remains strict and fails on missing entries.
 
 **Why bother:** every active skill's description competes for attention when the model
-picks which one to fire. 89 skills with vague descriptions caused wrong picks. 45 with
-sharp ones do not. It is a precision problem, not a disk-space one.
+picks which one to fire. Đo 2026-09-05: gstack's installer đã ghi đè load-out và đẩy
+`~/.claude/skills` lên **101 skills / 47,035 ký tự (~11.8k token mỗi session)**. Áp lại
+load-out đưa về **50 / 25,733 (~6.4k token)**. Đây là bài toán độ chính xác, không phải
+dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt.
 
 ---
 
-## 3. What you have (45 active)
+## 3. What you have (50 active on Claude)
 
 ### Yours — correctness checks
 | Skill | Fires when |
@@ -89,6 +108,7 @@ sharp ones do not. It is a precision problem, not a disk-space one.
 | `web-perf-audit` | Slow page, Core Web Vitals |
 | `a11y-audit` | Is this UI actually WCAG-correct |
 | `bug-class-audits` | A bug appears a second time → fix the class, add an audit script |
+| `tenant-scope-integrity` | Multi-tenant/brand/org: scope phải là điều kiện của MỌI write, key upsert phải có scope, picker phải nhớ lựa chọn |
 
 ### Yours — how work gets done
 | Skill | Fires when |
@@ -101,7 +121,10 @@ sharp ones do not. It is a precision problem, not a disk-space one.
 | `browsing-web` | Anything involving a browser |
 | `web-qa` | Test a running web app (reports by default; fixes only if you ask) |
 | `design-qa` | "Nhìn xấu / rớt hàng / chữ bị đè" — visual defects, both themes + 375px |
-| `resilient-data-harvest` | Scraping, backfills, system-to-system migration |
+| `resilient-data-harvest` | Scraping, backfills, system-to-system migration — và sync lần sau không được đè lên sửa tay |
+| `dev-env-lifecycle` | Bật/tắt dev stack: `down` phải dọn HẾT, không để rác, hỏi trước khi xoá |
+| `remote-host-access` | "Mở port rồi mà vẫn không connect" — thang bậc từ DNS → firewall nào đang cầm trịch → bind address; + session agent bền trên server |
+| `reference-parity` | Làm lại cho giống một artifact có sẵn — liệt kê đủ tab/state/content trước, checklist parity là định nghĩa của "xong" |
 
 ### Yours — building things
 | Skill | Fires when |
@@ -123,7 +146,13 @@ sharp ones do not. It is a precision problem, not a disk-space one.
 | `agent-session-backup` | Back up / restore session history |
 
 The rest are third-party kept as-is: `context7` (live library docs — genuinely useful),
-`playwright-skill` (writing reusable test scripts), `frontend-design`, `graphify`, `spec`.
+`playwright-skill` (writing reusable test scripts), `graphify`, `spec`.
+
+**Design stack** (2026-09-05): việc *làm* và *sửa* UI thuộc về `impeccable` (upstream;
+`refsync.py upgrade` cài nó, load-out không đụng vì nằm trong `keep.txt`). Gu thẩm mỹ
+để cho plugin `frontend-design` chính chủ của Anthropic. `design-qa` chỉ còn là lăng
+kính review. Bản `~/.shared-ai-skills/frontend-design` đã gỡ — nó là bản port thời
+Codex tháng 1/2026, trùng `name:` và đang che mất plugin mới (26 lượt fire so với 7).
 
 ---
 
@@ -147,15 +176,17 @@ python3 ~/.conan-agent-skills/ref-skills/refsync.py upgrade
 
 Or just say **"upgrade skills"**.
 
-It runs in order: check each upstream for changes → merge forks / flag wraps for review →
-run the validator → **re-apply the load-out**.
+It runs in order: fast-forward this repo (skips a dirty tree) → fetch the gstack
+markdown the wrappers read (`.vendor/gstack/`, not a gstack install) and update
+impeccable when the selected profile needs it → check each wrapper's upstream for
+drift → merge forks / flag wraps for review → run the validator → **re-apply the
+load-out**. Default target is every agent; default profile is `auto`.
 
-When one target is selected, the default is `auto`: a headless or incomplete workstation install falls back to `core`, while an explicit workstation profile still fails instead of silently dropping entries. For a production refresh of both agents, use `harness.py apply --target both --profile core`.
+On a production box, pin the headless set: `harness.py apply --target both --profile core`.
 
-> ⚠️ **Do not run `/gstack-upgrade` directly.** gstack's installer writes its ~74 skills
-> into `~/.claude/skills` in *both* of its install branches, and no setting prevents it.
-> Going through `refsync upgrade` works because re-applying the load-out runs last.
-> If you already ran it by hand: `python3 refsync.py loadout --apply`.
+> ⚠️ **Do not run `/gstack-upgrade` or gstack `./setup`.** They write ~74 skills into
+> `~/.claude/skills`. This repo fetches only the markdown the wrappers need. If you
+> already ran one by hand: `python3 refsync.py loadout --apply`.
 
 Other commands:
 
@@ -201,7 +232,7 @@ created because of that).
 | --- | --- |
 | Load-out wrong / a skill vanished | `python3 refsync.py loadout --apply` |
 | Undo the whole load-out change | `rm -rf ~/.claude/skills && mv ~/.claude/skills.symlink-backup-2026-07-25 ~/.claude/skills` |
-| `browse` says NEEDS_SETUP | Check `gstack` is still a line in `loadout.txt` — the binary lives at `~/.claude/skills/gstack/browse/dist/browse` |
+| A wrapper's upstream file is missing | `python3 refsync.py ensure` — fetches into `.vendor/` |
 | Claude Code settings broken | `~/.claude/settings.json.bak-20260725` |
 | Codex broken | `~/.codex/config.toml.bak-20260725` |
 | A skill won't fire | Run `validate_skills.py` first |
@@ -220,6 +251,6 @@ created because of that).
   `excalidraw-diagram-skill`. Run `refsync.py rescue --out <somewhere off this machine>`.
   Vendoring them into this repo instead would make them git-backed automatically, but
   this repo is public — that is a licensing call, not a technical one.
-- **`refsync upgrade` does not yet run gstack's own installer** — it assumes the upstream
-  tree is already updated, so "one command does everything" is not literally true yet.
-  In practice: upgrade gstack however you normally do, then run `refsync upgrade`.
+- **Orphan third-party skills in `~/.shared-ai-skills` still have no installer.** A fresh
+  machine skips them instead of aborting; they come back only if you copy them or add
+  an upstream entry in `ref-skills/upstreams.ini`.

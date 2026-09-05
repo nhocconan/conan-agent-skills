@@ -252,9 +252,10 @@ Usage counts are explicit invocations only, so they undercount auto-triggered sk
   idempotent. Testing also caught conflict markers printing temp paths — now labelled
   YOURS / BASE / THEIRS. No *real* fork exists yet, so no upstream has been tracked
   over an actual release.
-- `refsync upgrade` does not itself run gstack's installer; it assumes the upstream tree
-  is already updated. Wiring the installer invocation in (so one command truly does
-  everything) is the next increment.
+- `refsync upgrade` now fetches declared wrap sources (`ref-skills/upstreams.ini`,
+  kind `github-files`) into `.vendor/` — individual SKILL.md files, not a gstack
+  clone or `./setup`. impeccable stays an npx keep-upstream. `ensure` is the isolated
+  entry point.
 
 ## Context budget — the carve and the ratchet
 

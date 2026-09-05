@@ -109,7 +109,15 @@ accounts, they have per-CLI profile tooling for that (§7).
 The operator's own skills carry accumulated project knowledge. This single step delivers
 most of the quality difference between a fresh machine and the source machine.
 
-For a headless production machine:
+On a workstation (real browser present):
+
+```bash
+python3 "$HOME/.conan-agent-skills/coding-env-bootstrap/harness.py" \
+  apply --target all --profile auto --with-mcp
+```
+
+`auto` fetches the wrap sources (gstack markdown into `.vendor/`) and installs impeccable before linking. It does **not** run gstack's installer.
+On a headless production machine, pin `core` so those suites are skipped:
 
 ```bash
 python3 "$HOME/.conan-agent-skills/coding-env-bootstrap/harness.py" \
@@ -147,7 +155,7 @@ Load-outs are explicit and version-controlled:
 
 Do not edit a shared load-out to prune a server. Select `--profile core`.
 
-The harness defaults to `core` even when `--target claude` or `--target codex` is selected alone. The lower-level `refsync.py` commands use `auto` for one target: on a headless host they select `core`, report the skipped workstation/browser set, and keep explicit workstation profiles strict. Set `CONAN_AGENT_HEADLESS=1` when the host should be treated as headless by policy.
+The harness defaults to `core` (production-safe). Pass `--profile auto` on a workstation so it fetches wrap sources + impeccable and then links the matching per-agent load-out. `refsync.py` defaults to `auto` on every target: headless hosts get `core` for Claude, and optional third-party skills that exist only on some machines are skipped rather than aborting the apply. `CONAN_AGENT_HEADLESS=1` forces the headless decision; `CONAN_AGENT_ENSURE=0` skips network installs.
 
 **Verify**
 
@@ -167,19 +175,14 @@ python3 "$HOME/.conan-agent-skills/skill-miner/validate_skills.py" \
 
 ### 3b. [DEV] Third-party skill suites
 
-The source machine also has a large third-party skill suite (gstack: browser/QA/ship/
-design/review workflows) installed under `~/.shared-ai-skills` with
-`~/.claude/skills` symlinked to it.
+Do **not** install gstack. The wrappers in this repo (`browsing-web`, `shipping-changes`,
+`investigating-bugs`, `web-qa`, `design-qa`) read a handful of SKILL.md files that
+`harness.py apply --profile auto` / `refsync.py ensure` fetch from GitHub into
+`$HOME/.conan-agent-skills/.vendor/gstack/`.
 
-**On a production machine: skip it.** Most of it drives an interactive browser, a
-desktop Chrome extension, or design review — none of which apply headless, and each
-skill's description consumes context in every session.
-
-If the target is a workstation, install it from its own upstream installer (not by
-copying the directory — it has built binaries and a version manifest). Note that on the
-source machine `~/.shared-ai-skills` is **not** a git repo, so it is reinstall-from-
-upstream, not restore-from-backup; anything hand-authored inside it exists on one
-machine only. Before wiping any machine, check for locally-authored skills there.
+The source machine may still have a leftover `~/.shared-ai-skills` tree from an older
+gstack install. Leave it; do not re-run `./setup`. Before wiping a machine, `refsync.py
+rescue` lists anything that lives only there.
 
 ---
 

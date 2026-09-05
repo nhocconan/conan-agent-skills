@@ -1,6 +1,12 @@
 ---
 name: shipping-changes
-description: Ships verified work end to end — run the gates, review the diff, bump version and changelog, commit and push. Use when the user says "ship it", "land this", "đẩy lên", "commit và push", "merge về main", or when a change is finished and needs to land. Enforces the house rules that upstream tooling gets wrong: main only with no feature branches, commits under the operator's own identity with no assistant attribution, and pre-commit/pre-push hooks that must actually pass.
+description: >-
+  Ships verified work end to end — run the gates, review the diff, bump version and changelog,
+  commit and push. Use when the user says "ship it", "land this", "đẩy lên", "commit và push",
+  "merge về main", or when a change is finished and needs to land. Enforces the house rules
+  that upstream tooling gets wrong: main only with no feature branches, commits under the
+  operator's own identity with no assistant attribution, and pre-commit/pre-push hooks that
+  must actually pass.
 ---
 
 # Shipping changes
@@ -32,13 +38,13 @@ that upstream gets wrong for this operator, and they win on every conflict.
 2. Run the project's real gate — tests, typecheck, lint — per rule 4.
 3. Review the diff hunk by hunk. Delegation moves the typing, not the accountability.
 4. For the mechanics beyond this point (version bump, changelog, commit message
-   composition, push), read `~/.shared-ai-skills/ship/SKILL.md` — specifically its
+   composition, push), read `~/.conan-agent-skills/.vendor/gstack/ship/SKILL.md` — specifically its
    **"Section index — Read each section when its situation applies"** and
    **"Completeness Principle — Boil the Ocean"** sections — then read the on-demand
    section that index names for the step you are on — they live under
-   `~/.shared-ai-skills/gstack/ship/sections/` (changelog wording in `changelog.md`,
+   `~/.conan-agent-skills/.vendor/gstack/ship/sections/` (changelog wording in `changelog.md`,
    PR body in `pr-body.md`) and since v1.71 no longer load with the skill body —
-   and follow it with the house rules above applied.
+   and follow it with the house rules above applied. `refsync.py ensure` fetches these.
 5. Verify after: `git log --oneline -1`, `git status` clean, and the remote actually
    advanced.
 

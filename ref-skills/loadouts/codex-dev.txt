@@ -1,26 +1,29 @@
-# Personal Codex load-out.
-# Codex discovers these through ~/.agents/skills. Plugin-managed skills under
-# ~/.codex/skills and third-party ~/.agents/skills entries are left untouched.
+# Personal Codex load-out — deliberately the SMALLEST of the three.
+#
+# Codex injects the name+description of every discovered skill into the system
+# prompt and caps that block at 2% of the model's context window (~5,440 chars
+# at 272k; 8,000 when the window is unknown). Over the cap it SHORTENS
+# descriptions before it omits skills — and these descriptions carry their
+# trigger phrases at the end, so truncation eats exactly the part that decides
+# whether a skill fires. A trimmed list beats a truncated one.
+#
+# Measured 2026-09-05: the full 22-skill profile cost 16,213 chars, 3x the cap.
+# The set below is ~7.4k, which fits under the 8,000 fallback alongside the one
+# remaining third-party entry. Everything else is still on disk and reachable by
+# path: read ~/.conan-agent-skills/<name>/SKILL.md and follow it. The load-out
+# governs automatic triggering, not availability.
+#
+# Chosen for what Codex is actually used for here: enterprise BI/multi-tenant
+# work, remote/production hosts, and long delegated runs.
 
-a11y-audit
-admin-crud-standards
-agent-orchestration
-agent-session-backup
-anti-slop-review
-appstore-review-guard
-backtest-integrity
-bug-class-audits
-coding-env-bootstrap
+senior-operator
 delegate-run
-demo-data-craft
-docs-sync
-interactive-course-builder
+agent-orchestration
 metric-integrity
-ref-skills
+tenant-scope-integrity
+bug-class-audits
+dev-env-lifecycle
+remote-host-access
 resilient-data-harvest
 secure-code-audit
-senior-operator
-skill-miner
-store-screenshots
-web-perf-audit
-mobile-app-playbook
+docs-sync
