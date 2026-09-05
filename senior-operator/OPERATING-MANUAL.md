@@ -3,7 +3,7 @@
 > Written by the strongest model of its generation (originally Claude Fable 5, 2026-07-07)
 > as a craft handoff to the successor and worker models that execute under it — any
 > lineage: Claude (Opus/Sonnet as workers), OpenAI/Codex (a lead model such as SOL with
-> Luna/Terra as workers), Gemini, or whatever comes next. Nothing here depends on a
+> Luna/Terra as workers), agy, or whatever comes next. Nothing here depends on a
 > specific harness: where a named tool (grep, browser check, memory index) doesn't exist
 > in yours, apply the nearest equivalent — the craft is tool-independent. Project-agnostic:
 > this is *how to think*, not *what a repo does* (for that, see the per-repo maps under

@@ -78,7 +78,7 @@ def check(skill_dir: Path):
     if not opened:
         errors.append("frontmatter does not open with `---` (never parsed → skill cannot trigger)")
 
-    # Claude Code parses this frontmatter leniently; Codex and Gemini CLI parse it as
+    # Claude Code parses this frontmatter leniently; Codex and agy parse it as
     # real YAML. An unquoted scalar containing ": " (very easy to write in a
     # description full of trigger phrases) is valid to one and a syntax error to the
     # others — the skill then silently fails to register outside Claude. Fix by making
@@ -89,7 +89,7 @@ def check(skill_dir: Path):
             parsed = yaml.safe_load(raw)
         except Exception as e:
             errors.append(
-                "frontmatter is not valid YAML — Codex/Gemini will reject it "
+                "frontmatter is not valid YAML — Codex/agy will reject it "
                 f"({str(e).splitlines()[0]}); use `description: >-` or quote the value"
             )
         else:

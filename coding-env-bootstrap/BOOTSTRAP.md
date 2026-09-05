@@ -86,7 +86,7 @@ for c in node npm pnpm python3 uv git gh rg jq; do printf "%-8s " "$c"; command 
 
 ```bash
 npm i -g @openai/codex          # Codex CLI
-npm i -g @google/gemini-cli     # optional second opinion / cheap fan-out
+curl -fsSL https://antigravity.google/cli/install.sh | bash  # Antigravity CLI (agy)
 # Claude Code: install per https://docs.claude.com/en/docs/claude-code
 ```
 
@@ -95,12 +95,13 @@ Then authenticate each — **interactive, the operator must do this themselves**
 ```
 claude    # then /login
 codex     # follow its login prompt
+agy       # follow its login prompt
 ```
 
 Do not attempt to copy credentials from another machine. If the operator runs multiple
 accounts, they have per-CLI profile tooling for that (§7).
 
-**Verify**: `claude --version`, `codex --version`, and one trivial prompt through each.
+**Verify**: `claude --version`, `codex --version`, `agy --version`, and one trivial prompt through each.
 
 ---
 

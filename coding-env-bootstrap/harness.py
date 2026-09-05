@@ -32,7 +32,7 @@ def targets(value: str) -> list[str]:
     if value == "both":
         return ["claude", "codex"]
     if value == "all":
-        return ["claude", "codex", "gemini"]
+        return ["claude", "codex", "agy"]
     return [value]
 
 
@@ -221,7 +221,7 @@ def active_dir(target: str) -> Path:
     return {
         "claude": HOME / ".claude" / "skills",
         "codex": HOME / ".agents" / "skills",
-        "gemini": HOME / ".gemini" / "skills",
+        "agy": HOME / ".gemini" / "config" / "skills",
     }[target]
 
 
@@ -305,7 +305,7 @@ def main() -> int:
     parser.add_argument("command", choices=["audit", "apply", "verify"])
     parser.add_argument(
         "--target",
-        choices=["claude", "codex", "gemini", "both", "all"],
+        choices=["claude", "codex", "agy", "both", "all"],
         default="both",
     )
     parser.add_argument(

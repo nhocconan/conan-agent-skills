@@ -9,7 +9,7 @@ description: >-
   self-test), a per-repo map under projects/ (how a specific repo runs — commands, gates, ground truth,
   trap tables), and DISTILL.md (the recipe for generating a new project map). Use at the
   START of any nontrivial or ambiguous task in ANY project, when onboarding a new
-  model/agent (Opus, Codex, Gemini) to a codebase, before diagnosing bugs, touching
+  model/agent (Opus, Codex, agy) to a codebase, before diagnosing bugs, touching
   money-math/dates/tenancy, or shipping, when the user says "làm theo playbook", "đọc
   operating manual", "check theo self-test", "train Opus", "distill project này", or asks
   how to hand work to a weaker model.
@@ -36,10 +36,10 @@ Start at `projects/INDEX.md`. No map for the repo you're in? Run
 [DISTILL.md](DISTILL.md) — ideally on the strongest model available — then add
 the row in `projects/INDEX.md`.
 
-## Any-model use (Claude / Codex / Gemini)
+## Any-model use (Claude / Codex / agy)
 
 Everything here is plain Markdown — no harness feature required. A harness without a
-skill loader (Codex CLI, ChatGPT, Gemini) uses it by reading files directly, in the
+skill loader (Codex CLI, ChatGPT, agy) uses it by reading files directly, in the
 same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
 `projects/<slug>.md` for the repo at hand.
 

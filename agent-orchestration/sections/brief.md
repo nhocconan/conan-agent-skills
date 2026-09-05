@@ -17,7 +17,7 @@ out. Full template in [`TEMPLATES.md`](TEMPLATES.md); every brief carries:
 - **Return format** — say exactly what to report: the diff summary, command output,
   and everything it could not verify. Structured output (a schema) beats prose whenever
   the result feeds a merge step.
-- **The environment**, for any agent outside this session (Codex, Gemini, a fresh CLI):
+- **The environment**, for any agent outside this session (Codex, agy, a fresh CLI):
   working directory, startup command, which credentials exist. It does not share your
   shell, your paths, or your open browser.
 

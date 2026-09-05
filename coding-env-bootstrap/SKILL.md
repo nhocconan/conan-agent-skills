@@ -10,7 +10,7 @@ install it without the operator narrating each step.
 
 ## Use it
 
-On the new machine, in a shell with a coding agent (Claude Code, Codex, Gemini CLI):
+On the new machine, in a shell with a coding agent (Claude Code, Codex, agy):
 
 ```
 Read ~/.conan-agent-skills/coding-env-bootstrap/BOOTSTRAP.md and execute it.

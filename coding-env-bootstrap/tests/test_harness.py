@@ -390,10 +390,10 @@ def _fake_npx(home: Path) -> Path:
         """#!/bin/sh
 set -e
 pwd > "$HOME/npx-cwd"
-for target in .claude .agents .gemini; do
-  dir="$HOME/$target/skills/impeccable"
+for target in .claude/skills .agents/skills .gemini/config/skills; do
+  dir="$HOME/$target/impeccable"
   mkdir -p "$dir"
-  printf '%s\\n' '---' 'name: impeccable' 'description: design. Use when testing.' '---' > "$dir/SKILL.md"
+  printf '%s\n' '---' 'name: impeccable' 'description: design. Use when testing.' '---' > "$dir/SKILL.md"
 done
 echo NPX_OK
 """
