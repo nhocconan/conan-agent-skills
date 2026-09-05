@@ -39,7 +39,7 @@ These come from real reports on this operator's own projects, and they repeat:
 - **Do not "improve" adjacent design** that nobody complained about. Fix the defect.
 
 For the audit procedure, checklist and screenshot mechanics, read
-`~/.shared-ai-skills/design-review/SKILL.md` — its **"When to invoke this skill"**,
+`~/.conan-agent-skills/.vendor/gstack/design-review/SKILL.md` — its **"When to invoke this skill"**,
 **"Phases 1-6: Design Audit Baseline"** and **"Design Critique Format"** sections.
 
 ## Sibling lenses
@@ -48,3 +48,10 @@ For the audit procedure, checklist and screenshot mechanics, read
 `a11y-audit` — contrast, focus, touch targets: correctness, not taste.
 `anti-slop-review` — slop in the *words*; this covers slop in the *layout*.
 `interactive-course-builder` — for course pages, its design system is the authority.
+
+## Where this stops
+
+This is the review lens, not the build tool. Making or reshaping a UI — direction,
+typography, layout, motion, copy — belongs to `impeccable` (23 commands + a
+deterministic detector) with `frontend-design` for aesthetic direction. WCAG failures go
+to `a11y-audit`, slowness to `web-perf-audit`, wrong numbers to `metric-integrity`.

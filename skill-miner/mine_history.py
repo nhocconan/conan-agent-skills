@@ -60,12 +60,40 @@ NOISE_PREFIXES = (
     "[Request interrupted",
     "API Error",
     "This session is being continued from a previous",
+    # Harness plumbing delivered on the user turn. Before this list existed the
+    # digest reported 187 "corrections" of which 36 were human — 81% noise.
+    "<task-notification>",
+    "<recommended_plugins>",
+    "<bash-stdout>",
+    "<bash-stderr>",
+    "<codex_internal_context",
+    "<function_results>",
+    "<attachment",
+    # A re-injected project rulebook, not something the operator typed.
+    "# AGENTS.md instructions for",
+    "# CLAUDE.md instructions for",
+    "--- BEGIN UNTRUSTED EXTERNAL CONTENT",
+    "<in-app-browser-context",
+    # Codex's own approval-reviewer prompt, delivered on the user turn.
+    "The following is the Codex agent history",
 )
+
+# A turn that is only a harness envelope once the payload is stripped.
+ENVELOPE_ONLY = re.compile(r"^\s*<[a-zA-Z_][\w:-]*[^>]*>.*</[a-zA-Z_][\w:-]*>\s*$", re.S)
+
+# Codex wraps a real human objective inside a goal envelope. Recover it rather
+# than dropping the turn — these are genuine operator instructions.
+OBJECTIVE_RE = re.compile(r"<objective>(.*?)</objective>", re.S)
 
 STRIP_BLOCKS = [
     re.compile(r"<system-reminder>.*?</system-reminder>", re.S),
     re.compile(r"<local-command-stdout>.*?</local-command-stdout>", re.S),
     re.compile(r"<environment_context>.*?</environment_context>", re.S),
+    re.compile(r"<task-notification>.*?</task-notification>", re.S),
+    re.compile(r"<recommended_plugins>.*?</recommended_plugins>", re.S),
+    re.compile(r"<bash-stdout>.*?</bash-stdout>", re.S),
+    re.compile(r"<bash-stderr>.*?</bash-stderr>", re.S),
+    re.compile(r"<function_results>.*?</function_results>", re.S),
 ]
 
 SLASH_RE = re.compile(r"<command-name>\s*(/[\w:.-]+)")
@@ -118,7 +146,13 @@ def classify(text: str):
     m = SLASH_RE.search(text)
     if m:
         return "slash", m.group(1)
+    # Recover the operator's words from a goal envelope before rejecting it.
+    obj = OBJECTIVE_RE.search(text)
+    if obj:
+        text = obj.group(1).strip()
     if text.startswith(NOISE_PREFIXES):
+        return "noise", None
+    if ENVELOPE_ONLY.match(text):
         return "noise", None
     if not text or len(text) < 12:
         return "noise", None
@@ -209,6 +243,20 @@ def read_codex_jsonl(path: Path, floor: str):
             yield {"ts": ts, "cwd": cwd, "source": "codex", "kind": kind, "text": tp}
 
 
+def dedupe(turns):
+    """Drop replayed turns: resuming a session re-emits its opening prompt, so
+    one instruction can appear 5-8 times and dominate the digest. Keep the
+    earliest occurrence of each distinct text per project."""
+    seen, out = set(), []
+    for t in sorted(turns, key=lambda x: x["ts"]):
+        key = (project_of(t.get("cwd", "")), " ".join(t["text"].split())[:600])
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(t)
+    return out
+
+
 def collect(floor: str, limit_chars: int):
     turns, files_seen = [], 0
 
@@ -232,7 +280,7 @@ def collect(floor: str, limit_chars: int):
     for t in turns:
         if t["kind"] == "prompt" and len(t["text"]) > limit_chars:
             t["text"] = t["text"][:limit_chars] + " …[truncated]"
-    return turns, files_seen
+    return dedupe(turns), files_seen
 
 
 def collect_memory(floor: str):

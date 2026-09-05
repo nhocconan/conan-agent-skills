@@ -29,14 +29,228 @@ MAX_LESSON_WORDS = 1_900
 PROSE_WALL_WORDS = 450           # max words between two visual/interactive breaks
 
 # Empty-intensifier lexicon (EN + VI). Word-boundary matched, case-insensitive.
-SLOP = [
-    "powerful", "seamless", "seamlessly", "revolutionary", "cutting-edge",
-    "game-changing", "world-class", "state-of-the-art", "unlock the power",
-    "in today's fast-paced", "delve into", "elevate your",
-    "mạnh mẽ", "toàn diện", "tối ưu hoá trải nghiệm", "đột phá",
-    "trong thế giới ngày nay", "trong thời đại số", "chìa khoá thành công",
-    "nâng tầm", "vượt trội",
+SLOP_HARD_EN = [
+    "delve", "delves", "delving", "seamless", "seamlessly", "revolutionary",
+    "cutting-edge", "game-changing", "game changer", "world-class",
+    "best-in-class", "state-of-the-art", "unlock the power", "unlock your",
+    "harness the power", "supercharge", "in today's fast-paced", "elevate your",
+    "ever-evolving", "ever-changing", "paradigm shift", "tapestry",
+    "in the realm of", "in the world of", "it's worth noting",
+    "it is important to note", "it's important to note", "let's dive",
+    "dive deep", "deep dive into", "buckle up", "look no further",
+    "the beauty of", "treasure trove", "synergy", "robust and scalable",
+    "stands as a testament", "a testament to", "plays a vital role",
+    "plays a crucial role", "plays a pivotal role", "navigate the landscape",
+    "in this digital age", "at the end of the day", "meticulously",
+    "boasts a", "diverse array", "underscores the importance",
+    "highlights the importance", "reflects a broader", "in conclusion,",
 ]
+SLOP_HARD_VI = [
+    "trong thế giới ngày nay", "trong thời đại số", "trong bối cảnh hiện nay",
+    "chìa khoá thành công", "chìa khóa thành công", "nâng tầm", "vượt trội",
+    "đột phá", "mạnh mẽ", "toàn diện", "tối ưu hoá trải nghiệm",
+    "tối ưu hóa trải nghiệm", "kỷ nguyên", "làn sóng", "mở khoá sức mạnh",
+    "mở khóa sức mạnh", "tận dụng sức mạnh", "đóng vai trò quan trọng", "đóng vai trò then chốt", "không thể thiếu",
+    "bức tranh toàn cảnh", "một cách hiệu quả", "một cách toàn diện",
+    "một cách đáng kể", "cách mạng", "thay đổi cuộc chơi",
+    "siêu năng lực", "trợ thủ đắc lực", "người bạn đồng hành", "chinh phục",
+    "bí quyết", "tuyệt chiêu", "đỉnh cao", "hàng đầu thế giới",
+    "giúp bạn dễ dàng", "một cách dễ dàng", "nói không ngoa",
+    "hy vọng bài viết", "tóm lại,", "kết luận lại",
+]
+SLOP_SOFT_EN = [
+    "leverage", "robust", "crucial", "pivotal", "landscape", "journey",
+    "navigate", "streamline", "comprehensive", "powerful", "foster",
+    "showcase", "underscore", "intricate", "vibrant", "realm",
+    "it's not just", "isn't just", "not only", "in essence", "ultimately",
+    "furthermore", "moreover", "additionally", "that said,",
+]
+SLOP_SOFT_VI = [
+    "tuyệt vời", "hoàn hảo", "đáng kể", "tinh tế", "sức mạnh của", "cực kỳ", "vô cùng", "hết sức",
+    "không chỉ", "mà còn", "nói cách khác", "có thể nói", "quan trọng hơn",
+    "đặc biệt là", "hiệu quả", "tối ưu", "linh hoạt", "thông minh",
+    "bức tranh", "cột mốc", "điểm nhấn", "chìa khoá", "chìa khóa",
+    "trái tim", "hành trình", "sứ mệnh", "giá trị cốt lõi",
+]
+CALQUE_VI = {  # machine-translation calques: an EN term rendered literally
+    "ngăn xếp": "stack → giữ 'stack'",
+    "công kích": "adversarial attack → 'tấn công' / giữ 'attack'",
+    "chưng cất": "distillation → giữ 'distillation'",
+    "teo kỹ năng": "skill atrophy → 'mai một kỹ năng'",
+    "mã thông báo": "token → giữ 'token'",
+    "đường ống": "pipeline → giữ 'pipeline'",
+    "khung nhìn": "view → giữ 'view'",
+    "học sâu": "deep learning → giữ 'deep learning'",
+    "lái mô hình": "steer → 'điều hướng mô hình'",
+    "lái hành vi": "steer behaviour → 'điều hướng hành vi'",
+    "lái được": "steer → 'điều hướng được'",
+    "kỹ thuật nhắc": "prompt engineering → giữ 'prompt engineering'",
+}
+
+# Em-dash density. Freeburg 2026 ("The Last Fingerprint", arXiv 2603.27006):
+# human control 3.23/1k words; published literary corpus 4.76–6.43/1k;
+# GPT-4.1 10.62/1k; Claude Opus 4.6 9.09/1k. House reference implementation
+# (ai-practical-playbook.html, the client-blessed course) measures 6.4/1k in
+# lesson prose. Courses built by fan-out in 2026-07/08 measure 16–19/1k.
+EMDASH_WARN_PER_1K = 8.0
+EMDASH_ERROR_PER_1K = 13.0
+EMDASH_MULTI_PARA_WARN = 0.15   # share of paragraphs holding >=2 em dashes
+
+NOTJUST_RE = re.compile(
+    r"không chỉ\b[^.;!?]{0,90}\bmà còn\b"
+    r"|không phải\b[^.;!?]{0,60}\bmà là\b"
+    r"|not (?:just|only)\b[^.;!?]{0,70}\bbut\b"
+    r"|isn'?t (?:just|only)\b"
+    r"|it'?s not (?:about|just)\b", re.I)
+NOTJUST_PER_1K = 0.8
+
+DEF_OPENING_RE = re.compile(
+    r"^\s*(?:"
+    r"(?:Trong|Ở)\s+bài\s+(?:này|học\s+này)"
+    r"|Bài\s+(?:này|học\s+này)\s+(?:sẽ|giới thiệu|trình bày|nói về)"
+    r"|Chúng\s+ta\s+sẽ\s+(?:tìm hiểu|cùng|khám phá|học)"
+    r"|Hãy\s+cùng\b"
+    r"|In this (?:lesson|section|module|chapter)"
+    r"|This (?:lesson|section|module|chapter)\s+(?:will|covers|introduces|explains)"
+    r"|We(?:'ll| will)\s+(?:explore|look at|cover|learn)"
+    r"|[\wÀ-ỹ][\w\sÀ-ỹ()/-]{1,45}\s+(?:là|được định nghĩa là|nghĩa là)\s+(?:một|khái niệm|kỹ thuật|quá trình|phương pháp|cách)"
+    r"|[A-Z][\w\s()/-]{1,45}\s+(?:is|are|refers to)\s+(?:a|an|the)\s+"
+    r")", re.I)
+
+STOP_WORDS = set("""the a an of and or to in for with on is are be as by that this these those
+và của là các những một cho với trong khi thì mà nó ta bạn được có không về từ theo""".split())
+
+
+def _strip(h): return re.sub(r"<[^>]+>", " ", h)
+
+
+def _norm(s): return unicodedata.normalize("NFC", s)
+
+
+def _count(term, low):
+    return len(re.findall(r"(?<![\wÀ-ỹ])" + re.escape(term) + r"(?![\wÀ-ỹ])", low))
+
+
+def prose_checks(html, cards, lang, errors, warns):
+    """Stylometric + lexicon checks on LESSON PROSE only.
+
+    Chrome, nav, code and quiz option text are excluded so the numbers describe
+    the author's writing, not the template. Blocks marked data-slop-exempt
+    (the negative examples an anti-slop lesson exists to teach) are dropped
+    first; a file-level <!-- slop-allow: term, term --> does the same per term.
+    """
+    allow = set()
+    for m in re.finditer(r"<!--\s*slop-allow:\s*([^>]+?)-->", html):
+        allow |= {t.strip().lower() for t in m.group(1).split(",") if t.strip()}
+
+    def clean(card):
+        c = re.sub(r"<(\w+)[^>]*\bdata-slop-exempt\b.*?</\1>", " ", card, flags=re.S)
+        c = re.sub(r"<(?:pre|code)\b.*?</(?:pre|code)>", " ", c, flags=re.S)
+        return c
+
+    paras, prose_parts = [], []
+    for card in cards:
+        c = clean(card)
+        ps = re.findall(r"<p\b(?![^>]*class=\"quiz-q\")[^>]*>(.*?)</p>", c, flags=re.S)
+        for p in ps:
+            t = re.sub(r"\s+", " ", _strip(p)).strip()
+            if t:
+                paras.append(t)
+        prose_parts.append(_strip(c))
+    prose = _norm(" ".join(prose_parts))
+    low = prose.lower()
+    words = max(len(prose.split()), 1)
+    pwords = max(sum(len(p.split()) for p in paras), 1)
+
+    # ---- lexicon ----
+    hard = {t: _count(t, low) for t in
+            (SLOP_HARD_EN + (SLOP_HARD_VI if lang.startswith("vi") else []))}
+    hard = {t: n for t, n in hard.items() if n and t not in allow}
+    if hard:
+        top = sorted(hard.items(), key=lambda x: -x[1])
+        errors.append("hard slop lexicon (%d hits): %s — state the mechanism, not the adjective. "
+                      "Quoted negative examples: wrap in data-slop-exempt or <!-- slop-allow: term -->"
+                      % (sum(hard.values()), ", ".join(f"{t}×{n}" for t, n in top[:10])))
+    soft = {t: _count(t, low) for t in
+            (SLOP_SOFT_EN + (SLOP_SOFT_VI if lang.startswith("vi") else []))}
+    soft = {t: n for t, n in soft.items() if n and t not in allow}
+    if soft:
+        dens = 1000 * sum(soft.values()) / words
+        top = sorted(soft.items(), key=lambda x: -x[1])[:8]
+        msg = "soft slop %.1f/1k words: %s" % (dens, ", ".join(f"{t}×{n}" for t, n in top))
+        (errors if dens > 3.0 else warns).append(msg)
+    if lang.startswith("vi"):
+        cal = {t: _count(t, low) for t in CALQUE_VI}
+        cal = {t: n for t, n in cal.items() if n and t not in allow}
+        if cal:
+            warns.append("VI calque check (keep the English term of art): "
+                         + "; ".join(f"{t}×{cal[t]} → {CALQUE_VI[t]}"
+                                     for t in sorted(cal, key=lambda k: -cal[k])[:6]))
+
+    # ---- em-dash density ----
+    dashes = prose.count("—") + prose.count("–")
+    dens = 1000 * dashes / words
+    multi = sum(1 for p in paras if p.count("—") + p.count("–") >= 2)
+    share = multi / max(len(paras), 1)
+    where = f"({dashes} dashes / {words} prose words; {multi}/{len(paras)} paragraphs hold ≥2)"
+    if words < 1500:
+        pass  # too little prose for a density verdict (template / stub)
+    elif dens >= EMDASH_ERROR_PER_1K:
+        errors.append(f"em-dash density {dens:.1f}/1k {where} — human baseline 3.2/1k, "
+                      f"literary max ~6.4, GPT-4.1 10.6 (Freeburg 2026). Convert asides to "
+                      f"commas, colons, or their own sentence.")
+    elif dens >= EMDASH_WARN_PER_1K:
+        warns.append(f"em-dash density {dens:.1f}/1k {where} — above the house reference "
+                     f"course (6.4/1k); reads as unedited model output")
+    elif share > EMDASH_MULTI_PARA_WARN:
+        warns.append(f"{share:.0%} of paragraphs hold ≥2 em dashes — the dash-aside rhythm tell")
+
+    # ---- not-just / negative parallelism ----
+    nj = len(NOTJUST_RE.findall(prose))
+    if nj and 1000 * nj / words > NOTJUST_PER_1K:
+        warns.append(f"'không chỉ…mà còn' / 'not just X but Y' ×{nj} "
+                     f"({1000*nj/words:.1f}/1k) — negative parallelism is a top AI tell; "
+                     f"say the positive claim once")
+    elif nj >= 4:
+        warns.append(f"negative parallelism ('không chỉ…mà còn' / 'not just…but') ×{nj}")
+
+    # ---- puffery adverbs (VI) ----
+    if lang.startswith("vi"):
+        adv = sum(_count(t, low) for t in ("rất", "vô cùng", "cực kỳ", "hết sức", "vượt bậc"))
+        if 1000 * adv / words > 2.0:
+            warns.append(f"empty intensifiers (rất/vô cùng/cực kỳ/hết sức) ×{adv} "
+                         f"({1000*adv/words:.1f}/1k) — replace with the number or the mechanism")
+    return pwords
+
+
+def structural_prose_checks(cards, errors, warns):
+    """Scenario-opening + tagline-under-heading heuristics."""
+    for card in cards:
+        lid = re.search(r'id="([^"]+)"', card).group(1)
+        body = re.sub(r'<div class="lesson-head".*?</div>\s*', "", card, flags=re.S)
+        body = re.sub(r'<(ul|ol|div) class="objectives".*?</\1>', "", body, flags=re.S)
+        m = re.search(r"<p\b[^>]*>(.*?)</p>", body, flags=re.S)
+        if m:
+            first = re.sub(r"\s+", " ", _strip(m.group(1))).strip()
+            if DEF_OPENING_RE.match(first):
+                warns.append(f"{lid}: opens with a definition/announcement — "
+                             f"\"{first[:70]}…\" — rewrite as a scenario the learner recognises "
+                             f"(PLAYBOOK failure table, examples.md §1)")
+        # tagline under a heading
+        for hm in re.finditer(r"<h([2-4])[^>]*>(.*?)</h\1>\s*(?:<p\b[^>]*>(.*?)</p>)?", card, flags=re.S):
+            head, nxt = _strip(hm.group(2)), _strip(hm.group(3) or "")
+            head = re.sub(r"\s+", " ", head).strip()
+            nxt = re.sub(r"\s+", " ", nxt).strip()
+            if not nxt or len(nxt) > 110:
+                continue
+            hw = {w for w in re.findall(r"[\wÀ-ỹ]+", head.lower()) if w not in STOP_WORDS}
+            nw = {w for w in re.findall(r"[\wÀ-ỹ]+", nxt.lower()) if w not in STOP_WORDS}
+            if hw and len(hw & nw) / len(hw) >= 0.5 and not re.search(r"\d", nxt):
+                warns.append(f"{lid}: tagline restates its heading — "
+                             f"{head[:40]!r} → {nxt[:60]!r}; a heading stands alone or is "
+                             f"followed by real information")
+                break
+
 
 # English chrome strings that must be localized when <html lang> is not en.
 EN_CHROME = [
@@ -215,10 +429,6 @@ def main() -> int:
                 if n:
                     errors.append(f"SENSITIVE term in public course ({n}×): {term!r}")
 
-    low = unicodedata.normalize("NFC", strip_tags(body_no_script)).lower()
-    hits = sorted({s for s in SLOP if s.lower() in low})
-    if hits:
-        warns.append(f"slop lexicon hits (run anti-slop pass): {hits}")
 
     if lang != "en":
         leftovers = [s for s in EN_CHROME if s in html_nc]
@@ -227,6 +437,8 @@ def main() -> int:
 
     # ---------- per-lesson mandates ----------
     cards = re.findall(r'(<article class="lesson" id="[^"]+".*?</article>)', html, re.S)
+    prose_checks(html_nc, cards, lang, errors, warns)
+    structural_prose_checks(cards, errors, warns)
     takeaway_texts: dict[str, list[str]] = {}
     quiz_corrects: list[int] = []
     lesson_titles: dict[str, list[str]] = {}

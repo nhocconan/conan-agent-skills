@@ -26,6 +26,11 @@ from __future__ import annotations
 
 import argparse
 import re
+
+try:
+    import yaml
+except ModuleNotFoundError:  # validator must still run on a bare interpreter
+    yaml = None
 import sys
 from pathlib import Path
 
@@ -72,6 +77,24 @@ def check(skill_dir: Path):
     fields, body, opened = parse_frontmatter(text)
     if not opened:
         errors.append("frontmatter does not open with `---` (never parsed → skill cannot trigger)")
+
+    # Claude Code parses this frontmatter leniently; Codex and Gemini CLI parse it as
+    # real YAML. An unquoted scalar containing ": " (very easy to write in a
+    # description full of trigger phrases) is valid to one and a syntax error to the
+    # others — the skill then silently fails to register outside Claude. Fix by making
+    # the value a block scalar (`description: >-`) or quoting it.
+    if opened and yaml is not None:
+        raw = text.split("---", 2)[1] if text.count("---") >= 2 else ""
+        try:
+            parsed = yaml.safe_load(raw)
+        except Exception as e:
+            errors.append(
+                "frontmatter is not valid YAML — Codex/Gemini will reject it "
+                f"({str(e).splitlines()[0]}); use `description: >-` or quote the value"
+            )
+        else:
+            if not isinstance(parsed, dict):
+                errors.append("frontmatter does not parse to a mapping")
 
     name = fields.get("name", "")
     desc = " ".join(fields.get("description", "").split())

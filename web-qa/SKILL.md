@@ -12,8 +12,8 @@ procedure; this file owns which mode to pick and what counts as evidence.
 
 | The user said | Mode | Read |
 | --- | --- | --- |
-| "test này", "check xem chạy không", "find bugs", "qa" | **report-only** | `~/.shared-ai-skills/qa-only/SKILL.md` |
-| "test and fix", "sửa luôn đi", "fix what's broken" | **fix** | `~/.shared-ai-skills/qa/SKILL.md` |
+| "test này", "check xem chạy không", "find bugs", "qa" | **report-only** | `~/.conan-agent-skills/.vendor/gstack/qa-only/SKILL.md` |
+| "test and fix", "sửa luôn đi", "fix what's broken" | **fix** | `~/.conan-agent-skills/.vendor/gstack/qa/SKILL.md` |
 
 **Default to report-only.** Fixing is a bigger action than testing, and a QA pass that
 silently rewrites source is not a QA pass. If the request is ambiguous, report first and

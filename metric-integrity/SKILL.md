@@ -28,6 +28,14 @@ metric bugs; check every one when touching any surface that renders numbers.
   not render as "not selling this product" — hide the column when the input dataset is
   empty instead of asserting a false negative.
 
+- **A raw identifier on screen is a failure, not a fallback.** When a name lookup misses,
+  a numeric/opaque key rendered in the name column (`1731968774454020009` as a product
+  name) reads to the user as corrupted data, and it hides the real defect upstream: the
+  ingest created rows whose foreign key resolves to nothing. Render the unresolved state
+  explicitly (`— (unmapped: 1731…)`), surface a count of unresolved rows on the surface
+  that owns the import, and fail or quarantine the ingest that produced them rather than
+  letting each report re-discover the gap.
+
 ## 2. One source of truth per formula
 
 - Before implementing any domain metric, **read the canonical formula document** (PRD,

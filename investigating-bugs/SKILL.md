@@ -34,7 +34,7 @@ fix. If you cannot reproduce it, say so plainly and state what you would need to
 6. **Label known vs guessed** in the write-up. Anything unverified is marked unverified.
 
 For the search mechanics — log/trace navigation, bisecting, tooling — read
-`~/.shared-ai-skills/investigate/SKILL.md`, particularly its **"Phase 1: Root Cause
+`~/.conan-agent-skills/.vendor/gstack/investigate/SKILL.md`, particularly its **"Phase 1: Root Cause
 Investigation"**, **"Phase 2: Pattern Analysis"** and **"Confusion Protocol"** sections.
 
 ## Fixing

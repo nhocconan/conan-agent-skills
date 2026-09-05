@@ -12,11 +12,15 @@ bug-class-audits
 coding-env-bootstrap
 delegate-run
 demo-data-craft
+dev-env-lifecycle
 docs-sync
 interactive-course-builder
 metric-integrity
+mobile-app-playbook
+reference-parity
+remote-host-access
 resilient-data-harvest
 secure-code-audit
 senior-operator
+tenant-scope-integrity
 web-perf-audit
-mobile-app-playbook

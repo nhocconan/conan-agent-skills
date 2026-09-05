@@ -295,6 +295,13 @@ before/after over hand-waving.
 
 ## 5 · Accessibility (WCAG 2.2 AA — non-negotiable)
 
+> WCAG 2.2 (republished 2024-12-12) adds six A/AA criteria on top of 2.1: **2.4.11
+> Focus Not Obscured** (the sticky topbar must not cover the focused element —
+> the template sets `scroll-padding-top` on `html`), **2.5.7 Dragging Movements**,
+> **2.5.8 Target Size (Minimum, 24px; house rule stays 44px)**, **3.2.6 Consistent
+> Help**, **3.3.7 Redundant Entry**, **3.3.8 Accessible Authentication**. 2.4.13
+> Focus Appearance is AAA — nice to have, not the bar.
+
 - Skip-link first in `<body>`; `#main` target present.
 - Landmarks: `<aside aria-label>`, `<main id="main">`, `<nav aria-label>`.
 - **Contrast** ≥ 4.5:1 body, ≥ 3:1 large text & UI — tokens are pre-checked;

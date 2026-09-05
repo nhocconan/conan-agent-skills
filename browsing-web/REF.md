@@ -1,7 +1,7 @@
 ---
 mode: wrap
 upstream: gstack
-source: local:~/.shared-ai-skills/browse/SKILL.md
+source: github:garrytan/gstack@main:browse/SKILL.md
 version: 1.60.1.0
 fingerprint: sha256:88fc9376988d8d1bd5e2b913a36d0b4f7ba536de6a7c19984b535b7428ffe199
 reviewed: 2026-08-28

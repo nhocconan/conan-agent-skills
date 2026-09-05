@@ -29,7 +29,11 @@ END = "<!-- conan-agent-harness:end -->"
 
 
 def targets(value: str) -> list[str]:
-    return ["claude", "codex"] if value == "both" else [value]
+    if value == "both":
+        return ["claude", "codex"]
+    if value == "all":
+        return ["claude", "codex", "gemini"]
+    return [value]
 
 
 def run(command: list[str], *, check: bool = False) -> subprocess.CompletedProcess[str]:
@@ -150,6 +154,17 @@ def install_skills(target: str, profile: str) -> None:
         raise RuntimeError(f"skill installation failed for {target}/{profile}")
 
 
+def ensure_upstreams(target: str, profile: str) -> None:
+    if profile == "core":
+        return
+    command = [
+        sys.executable, str(REFSYNC), "ensure",
+        "--target", target, "--profile", profile,
+    ]
+    if run(command).returncode:
+        raise RuntimeError(f"upstream install failed for {target}/{profile}")
+
+
 def mcp_names(cli: str | None) -> str:
     if not cli:
         return ""
@@ -202,20 +217,32 @@ def desired_names(profile: str) -> list[str]:
     return names
 
 
+def active_dir(target: str) -> Path:
+    return {
+        "claude": HOME / ".claude" / "skills",
+        "codex": HOME / ".agents" / "skills",
+        "gemini": HOME / ".gemini" / "skills",
+    }[target]
+
+
 def verify_target(target: str, profile: str) -> list[str]:
     errors = []
-    active = HOME / (".claude/skills" if target == "claude" else ".agents/skills")
+    active = active_dir(target)
     for name in desired_names(profile):
+        repo_skill = REPO / name / "SKILL.md"
         path = active / name
-        if not path.is_dir() or not (path / "SKILL.md").exists():
-            errors.append(f"{target}: missing or invalid skill {path}")
-        elif profile in {"core", "codex-dev"}:
-            expected = (REPO / name).resolve()
-            if path.resolve() != expected:
-                errors.append(
-                    f"{target}: skill collision at {path} "
-                    f"(resolved {path.resolve()}, expected {expected})"
-                )
+        if repo_skill.is_file():
+            if not path.is_dir() or not (path / "SKILL.md").exists():
+                errors.append(f"{target}: missing or invalid skill {path}")
+            elif profile in {"core", "codex-dev"}:
+                expected = (REPO / name).resolve()
+                if path.resolve() != expected:
+                    errors.append(
+                        f"{target}: skill collision at {path} "
+                        f"(resolved {path.resolve()}, expected {expected})"
+                    )
+        elif path.exists() and not (path / "SKILL.md").exists():
+            errors.append(f"{target}: invalid skill {path}")
 
     if target == "claude":
         settings = HOME / ".claude" / "settings.json"
@@ -226,11 +253,13 @@ def verify_target(target: str, profile: str) -> list[str]:
         except Exception as exc:
             errors.append(f"claude: invalid settings.json: {exc}")
         instructions = HOME / ".claude" / "CLAUDE.md"
-    else:
+    elif target == "codex":
         profile_path = HOME / ".codex" / "production.config.toml"
         if not profile_path.is_file():
             errors.append(f"codex: missing profile {profile_path}")
         instructions = HOME / ".codex" / "AGENTS.md"
+    else:
+        return errors
 
     if not instructions.is_file() or START not in instructions.read_text(
         encoding="utf-8"
@@ -258,14 +287,15 @@ def audit(args) -> int:
 
 
 def apply(args) -> int:
+    profile = args.profile or "core"
+    ensure_upstreams(args.target, profile)
     for target in targets(args.target):
-        profile = args.profile or "core"
         install_skills(target, profile)
         if target == "claude":
             install_claude_config()
-        else:
+        elif target == "codex":
             install_codex_config()
-        if args.with_mcp:
+        if args.with_mcp and target in {"claude", "codex"}:
             install_context7(target)
     return audit(args)
 
@@ -273,10 +303,15 @@ def apply(args) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["audit", "apply", "verify"])
-    parser.add_argument("--target", choices=["claude", "codex", "both"], default="both")
+    parser.add_argument(
+        "--target",
+        choices=["claude", "codex", "gemini", "both", "all"],
+        default="both",
+    )
     parser.add_argument(
         "--profile",
-        help="explicit load-out profile; defaults to core on every target (use claude-dev/codex-dev only on a workstation)",
+        help="explicit load-out profile; defaults to core (production-safe). "
+             "Use --profile auto on a workstation — that fetches wrap sources + impeccable first.",
     )
     parser.add_argument(
         "--with-mcp",
