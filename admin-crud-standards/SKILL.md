@@ -49,6 +49,12 @@ The moment an operation is needed a **second** time, it stops being a script and
 - **Large datasets**: server-side pagination/sort/filter for the source of truth; **virtualize** rendered rows (TanStack Virtual / react-window) — never put 10k+ DOM rows on screen. For the big-file uploads above, stream/queue server-side and show progress; the preview table virtualizes too.
 - **Pickers**: combobox/tree built on an accessible primitive (Radix, React Aria, shadcn/ui) — you get keyboard nav and ARIA for free instead of hand-rolling a broken dropdown.
 
+## Fleet orchestration for admin suites
+When building or updating multiple admin screens, list views, or upload flows, use `agent-orchestration`:
+- **Orchestrator tier**: A higher-level model (**Claude Fable, OpenAI Sol/Astra; Gemini 3.8 Flash in agy**) defines the shared table/filter contracts, schema types, destructive confirm flows, and site-wide consistency.
+- **Worker tier**: Subagents running lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash, etc.**) implement individual list screens, forms, and preview tables when suitable (in `agy`, use **Gemini 3.8 Flash** throughout).
+- **Difficult work exception**: For difficult subtasks (complex streaming uploads, multi-tenant bulk mutations, high-risk cascade deletions), using the higher-level model for that worker node is still completely appropriate.
+
 ## Accessibility floor (non-negotiable, every management screen)
 These ship broken constantly on admin UIs — bake them in, don't bolt on later:
 - Tables use real `<table>` semantics (or grid roles); sortable headers are `<button>`s announcing sort state (`aria-sort`).

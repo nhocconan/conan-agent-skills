@@ -1,27 +1,32 @@
 ---
 name: delegate-run
 description: >-
-  Operating contract for a fully-delegated single-agent run: the operator
-  states intent once and touches the work at exactly three points — intent,
-  plan approval when the work is risky, acceptance. The agent writes
-  acceptance checks and a plan file BEFORE editing, runs without mid-run
-  questions, grounds every claim in a tool result, and returns one fixed-format
-  exit report plus a trust-ledger line so autonomy can widen by track record.
-  Use when the operator hands over a whole task and walks away: "giao việc",
-  "làm trọn gói", "tự làm đi", "đừng hỏi giữa chừng", "delegate this",
-  "run this autonomously", "làm đi đừng để tao babysit", "chạy xong báo".
+  Operating contract for a fully-delegated run: the operator states intent once
+  and touches the work at exactly three points — intent, plan approval when risky,
+  and acceptance. In software development, always uses agent orchestration (higher-level
+  models Fable, Sol/Astra orchestrating (or Gemini 3.8 Flash in agy); lower-level models Opus, Sonnet, Terra, Luna,
+  Flash as workers when suitable; higher-level model for difficult work). Writes acceptance
+  checks and a plan file BEFORE editing, runs without mid-run questions, grounds every
+  claim in a tool result, and returns one fixed-format exit report plus a trust ledger.
+  Use when the operator hands over a task: "giao việc", "làm trọn gói", "tự làm đi",
+  "đừng hỏi giữa chừng", "delegate this", "run this autonomously", "làm đi đừng để tao babysit", "chạy xong báo".
 ---
 
-# Delegate-run — the three-touchpoint contract for one agent
+# Delegate-run — the three-touchpoint contract for delegated runs
 
 Babysitting has four causes: sessions stalling on permission prompts, green
 claims nobody verified, mid-run questions, and state only readable by
-scrolling a transcript. This contract removes all four for the common case —
-**one agent, one delegated task**. A fleet is a different problem
-(`agent-orchestration` §0); a recurring job is a different problem
-(`autonomous-loops`); report language is governed by `senior-operator` §7 and
-its ban-list. Read the per-repo map (`senior-operator/projects/<slug>.md`)
-first when one exists — machine facts live there.
+scrolling a transcript. This contract removes all four: the operator hands over
+a task once and touches the work at exactly three points.
+
+### Development rule: Always use agent orchestration
+For any **software development task** (features, refactoring, building modules, multi-file codebases, test suites):
+- **Orchestrator tier**: The lead agent executes under **`agent-orchestration`** (§0) as the orchestrator / control tower using a higher-level model (**Claude Fable, OpenAI Sol/Astra**; in Google `agy`, use **Gemini 3.8 Flash** across the board since 3.1 Pro is outdated). It decomposes the task into an independent DAG, writes unambiguous acceptance checks, and manages execution.
+- **Worker tier**: Subagents run lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash, etc.**) when suitable for implementation, testing, and surveys (in `agy`, use **Gemini 3.8 Flash** throughout).
+- **Difficult work exception**: When a worker node faces genuinely difficult work (deep ambiguity, subtle concurrency/state machines, critical money-math/tenancy invariants, or adversarial verification), using the higher-level model for that worker node is still completely appropriate.
+- Non-development or trivial sequential tasks (<20 min) may execute solo.
+
+A recurring job is a different problem (`autonomous-loops`); report language is governed by `senior-operator` §7 and its ban-list. Read the per-repo map (`senior-operator/projects/<slug>.md`) first when one exists — machine facts live there.
 
 ## Kickoff — before any edit
 

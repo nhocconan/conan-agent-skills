@@ -43,6 +43,13 @@ singleton resource, the steps are inherently sequential, or the spec is still mo
 **Fleet** only for ≥2 nodes with disjoint file ownership and independent acceptance
 checks — default ceiling 3–5 workers per wave. Say which rule decided it.
 
+**Development rule:** Software development (features, multi-file codebases, modules, test
+suites, refactoring) **always uses agent orchestration**. A higher-level model (**Fable,
+Sol/Astra**; in `agy`, **Gemini 3.8 Flash** across the board since 3.1 Pro is outdated) acts as the orchestrator / control tower, while worker subagents use lower-level
+models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash, etc.**) when suitable for implementation,
+tests, and surveys. If a worker task is genuinely difficult (deep ambiguity, subtle invariants,
+tricky 10%), using the higher-level model is still completely appropriate.
+
 The operator has exactly three touchpoints: **set the task → approve the plan (required
 when it touches schema, money, tenancy, production, anything irreversible, or grows the
 fleet past the ceiling; silence = wait) → accept against a real demo.** Everything else is

@@ -49,7 +49,8 @@ Parameters that matter for orchestration (verified against the tool schema, 2026
   designs; `general-purpose` does everything; plugin-provided types (reviewers, validators)
   come from `.claude/agents/*.md` or the SDK.
 - `model` — `opus | fable | sonnet | haiku`. Overrides the agent definition. Omit to
-  inherit the session model. Route per `SKILL.md` §3.
+  inherit the session model. Route per `SKILL.md` §3 (Claude Fable as orchestrator; Opus/Sonnet
+  as workers when suitable; Fable for difficult/high-risk work).
 - `run_in_background` — default true; you are notified on completion. Set `false` only
   when your very next action depends on the result and nothing else could usefully happen.
 - `isolation: "worktree"` — a fresh git worktree per agent. Use only when agents mutate
@@ -135,11 +136,11 @@ For independence (`SKILL.md` §3), not for capacity. Verified installed on this 
 `codex` 0.153.0, `agy` 1.1.27 — re-check before relying on flags, CLI surfaces move.
 
 ```bash
-# Codex
-codex exec --skip-git-repo-check -m "$MODEL" -c 'model_reasoning_effort="high"' "$PROMPT"
+# Codex (OpenAI): Sol / Astra (GPT-6 Astra) as orchestrator; GPT Terra / Luna as workers when suitable (Sol/Astra for difficult work)
+codex exec --skip-git-repo-check -m "gpt-terra" -c 'model_reasoning_effort="medium"' "$PROMPT"
 
-# Antigravity CLI (agy)
-agy -p "$PROMPT" --effort high
+# Antigravity CLI (agy): Use Gemini 3.8 Flash (gemini-3.8-flash-high) across the board (3.1 Pro is outdated/several generations behind; use 3.8 Flash with high effort for orchestrator, medium/low for workers)
+agy -p "$PROMPT" --model gemini-3.8-flash-high --effort medium
 ```
 
 - Give the full environment in the prompt: absolute working directory, the exact startup
