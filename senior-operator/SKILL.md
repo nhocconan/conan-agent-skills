@@ -47,9 +47,13 @@ same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
   this directory with one line: "Nontrivial task → read
   `~/.conan-agent-skills/senior-operator/SKILL.md` and follow it."
 - **Lead/worker split is lineage-independent:** whichever model is strongest (Claude
-  Fable → Opus/Sonnet workers; OpenAI SOL → Luna/Terra workers) runs DISTILL.md to
-  produce the map, and the workers execute on it. A map distilled by one lineage is
-  fully usable by another — it's commands, gates, and traps, not model behavior.
+  Fable → Opus/Sonnet workers; OpenAI Sol/Astra → Luna/Terra workers; Google agy: Gemini 3.8 Flash across the board since 3.1 Pro is outdated) runs DISTILL.md to
+  produce the map, and the workers execute on it. In software development, always use
+  `agent-orchestration`: the higher-level model (Fable, Sol/Astra; Gemini 3.8 Flash in agy) acts as the orchestrator /
+  control tower, and lower-level models (Opus, Sonnet, GPT Terra, GPT Luna, Flash) execute
+  worker tasks when suitable, reserving the higher-level model when a worker node faces genuinely
+  difficult work. A map distilled by one lineage is fully usable by another — it's commands, gates,
+  and traps, not model behavior.
 - Harness-specific references inside the manual/maps (memory paths, browser tools,
   `CLAUDE.md`) are examples, not requirements — substitute the local equivalent.
 
@@ -57,7 +61,9 @@ same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
 
 1. **Bootstrap:** the repo's own `CLAUDE.md`/`AGENTS.md` (always authoritative — this skill NEVER overrides them) + its session-memory index if one exists + the matching `projects/<slug>.md` §0.
 2. **Before acting:** OPERATING-MANUAL §1 — what is actually being asked? Especially when the request presumes something is "wrong": verify the presupposition first.
-3. **While working:** follow the project map's flow sections; check its trap table before inventing a diagnosis. No map → work from the manual alone and note candidate traps as you hit them.
+3. **While working:**
+   - **Software development always uses agent orchestration:** Cut the work into an independent DAG (`agent-orchestration`). A higher-level model (**Claude Fable, OpenAI Sol/Astra**; in `agy`, **Gemini 3.8 Flash** across the board since 3.1 Pro is outdated) acts as orchestrator / control tower. Delegate modular implementation, testing, and surveys to lower-level worker models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash**) when suitable. For difficult work (deep ambiguity, subtle invariants, tricky 10%), the higher-level model is still completely appropriate.
+   - Follow the project map's flow sections; check its trap table before inventing a diagnosis. No map → work from the manual alone and note candidate traps as you hit them.
 4. **Before handing over:** OPERATING-MANUAL §6 (attack the conclusion) + the 5-question self-test. Communicate per §7: answer → reasoning → risk.
 
 ## Non-negotiables this skill exists to protect

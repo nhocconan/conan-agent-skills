@@ -24,8 +24,12 @@ from memory; never hand-edit the assembled file for structure.
 2. Decide the build mode:
    - **Solo** (one author, one sitting): course ≤ ~8 lessons.
    - **Fan-out** (parallel builders + assembler): > 8 lessons, or multiple
-     source documents, or multiple authors/models. When in doubt, fan out —
-     the fragment protocol costs little and removes merge risk.
+     source documents, or multiple authors/models. When in doubt, fan out via
+     `agent-orchestration`: a higher-level model (**Claude Fable, OpenAI Sol/Astra; Gemini 3.8 Flash in agy**)
+     acts as lead orchestrator for digests, curriculum contracts, assembly, and validation;
+     lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash**) draft individual
+     lesson fragments in parallel when suitable (in `agy`, use **Gemini 3.8 Flash** throughout). For difficult conceptual modules or complex
+     interactive SVG diagrams, using the higher-level model is still completely appropriate.
 3. Check for sibling courses in the target folder. A new course must NOT
    re-teach an existing one — write one "if you want X in depth, see course Y"
    pointer instead, and keep the new course standalone (reference.md §11).

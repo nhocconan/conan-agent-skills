@@ -114,7 +114,7 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | Skill | Fires when |
 | --- | --- |
 | `senior-operator` | Hard or ambiguous task. Read **before** acting |
-| `agent-orchestration` | Delegating, fanning out sub-agents in parallel across model tiers, verifying + merging their work, multi-hour runs |
+| `agent-orchestration` | Software development orchestration: higher-level model (Fable, Sol/Astra; Gemini 3.8 Flash in agy) orchestrates, lower-level models (Opus, Sonnet, Terra, Luna, Flash) execute suitable worker tasks (higher tier for difficult work), verifying + merging, multi-hour runs |
 | `delegate-run` | Giao việc trọn gói cho MỘT agent: 3 điểm chạm (đề bài → duyệt plan nếu rủi ro → nghiệm thu), không hỏi giữa chừng, exit report format cứng + trust ledger |
 | `investigating-bugs` | Something is broken — reproduce before editing |
 | `shipping-changes` | Commit + push (main only, your identity, hooks must pass) |
@@ -165,6 +165,11 @@ reporting → report honestly, including what was skipped.
 
 This is deliberately **not** a skill. A skill has to be triggered, so it would stay silent
 exactly when you are chatting casually — which is when you said you most want it applied.
+
+**Development orchestration rule:** All non-trivial software development tasks (features, multi-file codebases, modules, refactoring, test suites) must use **`agent-orchestration`**:
+- **Orchestrator tier:** Higher-level models (**Claude Fable, OpenAI Sol/Astra**; in `agy`, **Gemini 3.8 Flash** across the board since 3.1 Pro is outdated) act as the orchestrator / control tower (architecture decomposition, contracts, diff review, gates).
+- **Worker tier:** Subagents use lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash, etc.**) when suitable for implementation, testing, and surveys (in `agy`, use **Gemini 3.8 Flash** throughout).
+- **Difficult work exception:** If a worker subtask is genuinely difficult (deep ambiguity, subtle invariants, tricky 10%, complex state machines), using the higher-level model remains fully appropriate.
 
 ---
 

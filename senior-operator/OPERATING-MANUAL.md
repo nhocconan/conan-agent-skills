@@ -2,8 +2,8 @@
 
 > Written by the strongest model of its generation (originally Claude Fable 5, 2026-07-07)
 > as a craft handoff to the successor and worker models that execute under it — any
-> lineage: Claude (Opus/Sonnet as workers), OpenAI/Codex (a lead model such as SOL with
-> Luna/Terra as workers), agy, or whatever comes next. Nothing here depends on a
+> lineage: Claude (lead Fable with Opus/Sonnet as workers), OpenAI/Codex (a lead model such as Sol/Astra with
+> Luna/Terra as workers), Google/agy (Gemini 3.8 Flash across the board since 3.1 Pro is outdated), or whatever comes next. Nothing here depends on a
 > specific harness: where a named tool (grep, browser check, memory index) doesn't exist
 > in yours, apply the nearest equivalent — the craft is tool-independent. Project-agnostic:
 > this is *how to think*, not *what a repo does* (for that, see the per-repo maps under
@@ -51,6 +51,7 @@ You're strong. The gap between us isn't knowledge, it's the tail: the hardest te
 3. For anything bug-shaped: reproduce → localize → fix → verify → prevent recurrence. Each stage has an observable output; don't advance without it.
 4. Before starting a piece, write down the check you'll run when it's done. If you can't state the check, the piece isn't defined — cut differently.
 5. Order pieces so the riskiest assumption is tested first. Don't build five layers on an unverified foundation.
+6. For development work, always orchestrate (`agent-orchestration`): higher-level models (Fable, Sol/Astra; Gemini 3.8 Flash in agy) act as lead orchestrator, fanning out independent nodes to lower-level worker models (Opus, Sonnet, GPT Terra, GPT Luna, Flash) when suitable. If a worker task is genuinely difficult (deep ambiguity, tricky invariants), the higher-level model is still appropriate.
 
 **Example.** Dashboard metric looks wrong. Instead of reading all the code between Postgres and the chart, run three probes: raw SQL on the rows, an authenticated tRPC call, the rendered page — same date window. When the DB and API both say one value and the screen says another, the bug localizes to the display layer in one step. This exact triage is how the "MI empty page" turned out to be a row-cap, not RLS.
 
@@ -66,6 +67,7 @@ You're strong. The gap between us isn't knowledge, it's the tail: the hardest te
 3. Spend effort inversely to tooling coverage. The compiler guarantees types — spend nothing there. Nothing guarantees "this sum equals the customer's own export" — spend most of your time there.
 4. Ask: *what would a wrong-but-plausible output look like here?* If wrong would look plausible, that's where you verify hardest.
 5. Consult the repeat-offender list before deciding. In this repo, the ±1-day timezone boundary leak shipped more than ten times. Base rates beat intuition.
+6. Spend model capacity where risk lives: keep the orchestrator on a higher-level model (**Fable, Sol/Astra**; in `agy`, use **Gemini 3.8 Flash** across the board since 3.1 Pro is outdated); route modular implementation, tests, and surveys to lower-level worker models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash**) when suitable. For difficult, high-risk workstreams (boundary bugs, money-math, tenancy, adversarial verification), using the higher-level model for that worker node is still completely appropriate.
 
 **Example.** A change touches a report's date filter. All static gates pass. The risk analysis says: the recurring killer is a UTC day-edge leaking an adjacent month's day into the range, and it only manifests under a month filter at the boundary. So the verification budget goes to one thing: load the report in the browser with a month filter and check the first and last day. That single check has caught the leak where every automated gate was green.
 

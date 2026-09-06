@@ -78,6 +78,19 @@ checklist; where it is data, diff the values, not the impressions.
 The reference is the oracle. Verifying the rebuild against your own re-derivation of what
 the reference "should" say proves only that the rebuild agrees with itself.
 
+## Orchestration for parity rebuilds
+
+Rebuilding a complex target (multi-tab apps, dashboards, large component libraries) is a
+development task that **always uses agent orchestration** (`agent-orchestration`):
+- **Orchestrator tier**: A higher-level model (**Claude Fable, OpenAI Sol/Astra; Gemini 3.8 Flash in agy**)
+  extracts the complete inventory, establishes the parity checklist, defines interface
+  seams, reviews the merged diff, and verifies against the reference.
+- **Worker tier**: Subagents run lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna,
+  Flash, etc.**) to implement individual tabs, views, or mock data loaders in parallel (in `agy`, use **Gemini 3.8 Flash** throughout).
+- **Difficult work exception**: For difficult subtasks (complex data normalization, intricate
+  canvas/SVG rendering, subtle real-time state synchronization), using the higher-level
+  model for that worker is still completely appropriate.
+
 ## Output
 
 Deliver the parity table with every row resolved: done with evidence, deliberately

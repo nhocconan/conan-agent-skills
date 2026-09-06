@@ -17,6 +17,10 @@ dashboard incidents into a system where ~35 rules are enforced automatically.
    (Real examples: `toFixed(` for display → 38 sites; a global filter missing from SQL
    blocks → 8 sites across 3 routers; `× 0.N` fabricated KPI coefficients → 6 sites.)
 2. **Fix every site now**, not just the reported one. The report was a sample, not the bug.
+    For multi-module or wide call-site fixes, use `agent-orchestration`: a higher-level model
+    (**Fable, Sol/Astra; Gemini 3.8 Flash in agy**) orchestrates the fix plan and audit gate, fanning out disjoint site
+    fixes to lower-level worker models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash**) when suitable,
+    reserving the higher-level model for call sites with difficult contract changes.
 3. **Write the rule down** as a numbered entry in the project's anti-pattern list
    (CLAUDE.md / AGENTS.md "Anti-patterns to avoid"): what the pattern is, why it's wrong,
    what to do instead. Numbered rules are citable ("§33") and become the project's
