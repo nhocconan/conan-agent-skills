@@ -651,6 +651,38 @@ def cmd_ensure(args) -> int:
     return ensure_upstreams(set(profiles.values()))
 
 
+MANAGED_BROWSER_GLOBS = (
+    # Playwright (its own cache, and the layout npm installs beside a project)
+    ".cache/ms-playwright/chromium-*/chrome-linux/chrome",
+    ".cache/ms-playwright/chromium-*/chrome-linux64/chrome",
+    ".cache/ms-playwright/chromium_headless_shell-*/chrome-linux/headless_shell",
+    "Library/Caches/ms-playwright/chromium-*/chrome-mac/Chromium.app/Contents/MacOS/Chromium",
+    # Puppeteer
+    ".cache/puppeteer/chrome/*/chrome-linux64/chrome",
+    ".cache/puppeteer/chrome/*/chrome-mac*/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+)
+
+
+def managed_browser_path() -> Path | None:
+    """The first driver-managed browser binary on this host, or None.
+
+    Checked before PATH because these never land on PATH: Playwright and
+    Puppeteer keep their browsers in a per-user cache and launch them by
+    absolute path. `PLAYWRIGHT_BROWSERS_PATH` relocates that cache, so it is
+    honoured too.
+    """
+    roots = [HOME]
+    relocated = os.environ.get("PLAYWRIGHT_BROWSERS_PATH", "").strip()
+    if relocated and relocated != "0":
+        roots.insert(0, Path(relocated))
+    for root in roots:
+        for pattern in MANAGED_BROWSER_GLOBS:
+            for candidate in sorted(root.glob(pattern), reverse=True):
+                if candidate.is_file() and os.access(candidate, os.X_OK):
+                    return candidate
+    return None
+
+
 def real_browser_available() -> bool:
     """Return whether this host has a usable interactive browser runtime.
 
@@ -668,12 +700,25 @@ def real_browser_available() -> bool:
     }:
         return False
 
+    # A DRIVER-MANAGED browser counts, and counts WITHOUT a display server.
+    # Playwright and Puppeteer install their own Chromium outside PATH and run
+    # it headless; that is how visual QA is actually done on a Linux server in
+    # 2026, and it is exactly what the design/browser skills drive. Requiring
+    # $DISPLAY for it was the bug: a host driving headless Chromium against
+    # production all day was classified "no real browser" and silently lost 37
+    # workstation skills, `design-qa` among them (2026-09-09).
+    if managed_browser_path() is not None:
+        return True
+
     executable = any(shutil.which(command) for command in BROWSER_COMMANDS)
     app_bundle = any(path.is_file() for path in BROWSER_APP_PATHS)
     if not (executable or app_bundle):
         return False
     if sys.platform == "darwin":
         return True
+    # A browser ON PATH still needs somewhere to draw: without a driver to run
+    # it headless, a bare executable on a Linux box with no display is not a
+    # browser session anyone can use.
     return bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"))
 
 
