@@ -1,5 +1,18 @@
 # Course Authoring Playbook — the model-agnostic pipeline
 
+## Contents
+
+- The one-line method
+- Phase 0 · Orient (10 minutes, saves hours)
+- Phase 1 · Source digests — never author from memory
+- Phase 2 · Curriculum contract — before any prose
+- Phase 3 · Build lessons
+- Phase 4 · Assemble — by script, never by hand
+- Phase 5 · Validate — script first, then the human pass
+- Failure modes — the tells (check yourself against this table)
+- Reviewing & retrofitting an existing course
+- Writing so ANYONE understands (the "dễ hiểu" rules)
+
 > `reference.md` defines WHAT a house-standard course is. This file defines
 > **HOW to build one so the result is the same no matter which model (or
 > human) does the work.** The trick is never taste — it's sequence + artifacts
@@ -24,12 +37,9 @@ from memory; never hand-edit the assembled file for structure.
 2. Decide the build mode:
    - **Solo** (one author, one sitting): course ≤ ~8 lessons.
    - **Fan-out** (parallel builders + assembler): > 8 lessons, or multiple
-     source documents, or multiple authors/models. When in doubt, fan out via
-     `agent-orchestration`: a higher-level model (**Claude Fable, OpenAI Sol/Astra; Gemini 3.8 Flash in agy**)
-     acts as lead orchestrator for digests, curriculum contracts, assembly, and validation;
-     lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash**) draft individual
-     lesson fragments in parallel when suitable (in `agy`, use **Gemini 3.8 Flash** throughout). For difficult conceptual modules or complex
-     interactive SVG diagrams, using the higher-level model is still completely appropriate.
+     source documents, or multiple authors/models, when lesson contracts are independent.
+     Use [agent-orchestration](../agent-orchestration/SKILL.md): Astra owns curriculum,
+     assembly, and final quality; Terra drafts lessons and Luna handles checked content.
 3. Check for sibling courses in the target folder. A new course must NOT
    re-teach an existing one — write one "if you want X in depth, see course Y"
    pointer instead, and keep the new course standalone (reference.md §11).

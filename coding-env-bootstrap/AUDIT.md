@@ -1,5 +1,14 @@
 # AUDIT — source-machine config scan, 2026-07-25
 
+## Contents
+
+- Follow-up portability check, 2026-07-27
+- Remediation status (source machine, 2026-07-25)
+- Scanned
+- Findings
+- Recommended changes, ordered
+- Follow-up portability check, 2026-08-13
+
 What was actually found, and what to change. Read this before treating the source
 machine's config as the target state — `BOOTSTRAP.md` already encodes these decisions.
 

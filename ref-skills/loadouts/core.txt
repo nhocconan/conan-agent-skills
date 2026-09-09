@@ -1,26 +1,18 @@
-# Headless production load-out.
+# Minimal general-development load-out for headless hosts.
 # Every entry is self-contained in this repository: no desktop browser, gstack
 # binary, workstation session history, or locally installed third-party suite.
+# Specialist mobile, course, quant, UI, and demo skills remain in the repository
+# and workstation profile; add them to a project only when its work needs them.
 
-a11y-audit
-admin-crud-standards
 agent-orchestration
-anti-slop-review
-appstore-review-guard
-backtest-integrity
 bug-class-audits
 coding-env-bootstrap
 delegate-run
-demo-data-craft
 dev-env-lifecycle
 docs-sync
-interactive-course-builder
 metric-integrity
-mobile-app-playbook
-reference-parity
 remote-host-access
 resilient-data-harvest
 secure-code-audit
 senior-operator
 tenant-scope-integrity
-web-perf-audit

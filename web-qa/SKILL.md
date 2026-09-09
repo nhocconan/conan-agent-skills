@@ -12,15 +12,15 @@ procedure; this file owns which mode to pick and what counts as evidence.
 
 | The user said | Mode | Read |
 | --- | --- | --- |
-| "test này", "check xem chạy không", "find bugs", "qa" | **report-only** | `~/.conan-agent-skills/.vendor/gstack/qa-only/SKILL.md` |
-| "test and fix", "sửa luôn đi", "fix what's broken" | **fix** | `~/.conan-agent-skills/.vendor/gstack/qa/SKILL.md` |
+| "test này", "check xem chạy không", "find bugs", "qa" | **report-only** | `../.vendor/gstack/qa-only/SKILL.md` |
+| "test and fix", "sửa luôn đi", "fix what's broken" | **fix** | `../.vendor/gstack/qa/SKILL.md` |
 
 **Default to report-only.** Fixing is a bigger action than testing, and a QA pass that
 silently rewrites source is not a QA pass. If the request is ambiguous, report first and
 offer to fix — that costs one message; an unwanted commit costs trust.
 
-In fix mode the `shipping-changes` house rules apply in full: main only, operator's commit
-identity, hooks must pass, one atomic commit per fix with re-verification after each.
+In fix mode, implement and re-verify scoped repairs. Commit/push only when authorized,
+following repository controls and `shipping-changes` if shipping was requested.
 
 ## Evidence, or it didn't happen
 
@@ -41,14 +41,14 @@ actually ran.
 ## Sibling lenses — different jobs, don't substitute
 
 - **Visual/aesthetic defects** (spacing, hierarchy, heading wrap, chart overlap, layout
-  slop) → `design-review`. Functional QA does not catch "it works but looks broken".
+  slop) → `design-qa`. Functional QA does not catch "it works but looks broken".
 - **Accessibility correctness** → `a11y-audit`.
 - **Displayed numbers being wrong** → `metric-integrity`. A page that renders perfectly
   while showing a fabricated KPI passes web QA and is still badly broken.
-- **Writing reusable automation** rather than running a pass → `playwright-skill`.
+- **Writing reusable automation** rather than running a pass → the available browser automation tooling.
 - **Driving the browser directly** for a one-off check → `browsing-web`.
 
 ## Browser stack
 
-One stack only: gstack's `browse`. Never the Chrome MCP, and not `agent-browser` — a
-second browser stack is a second thing to debug for no gain.
+Use the user-selected or project-approved available browser. Follow its current tool
+instructions; `browsing-web` describes session and evidence discipline.

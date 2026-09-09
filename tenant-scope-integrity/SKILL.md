@@ -1,6 +1,6 @@
 ---
 name: tenant-scope-integrity
-description: Make the active scope — organisation, tenant, workspace, brand, project, store — a hard precondition of every write, a persisted piece of UI state, and a visible fact on screen. Catches the class where data uploaded or connected while "inside" one scope lands in, overwrites, or deletes another's; where a scope picker silently resets to a default after navigation; and where "no scope selected" quietly means "all" on a destructive path. Use when building or reviewing any multi-tenant / multi-workspace / multi-brand feature, especially imports, connectors, bulk actions and deletes, or when the user says "sai brand", "nhầm org", "data của khách khác", "wrong tenant", "it reset to default", "scope".
+description: Make active scope — organisation, tenant, workspace, brand, project, store — a hard precondition for every write, persisted UI state, and visible on screen. Prevents cross-scope uploads/connectors/bulk deletes, silent picker resets, and treating no selection as "all" on destructive paths. Use for multi-tenant/workspace/brand features, especially imports, connectors, bulk actions/deletes, or "sai brand", "nhầm org", "data của khách khác", "wrong tenant", "it reset to default", "scope".
 ---
 
 # Tenant-Scope Integrity
@@ -65,6 +65,11 @@ scope on the **write** path and as **UI state** — the two places both of those
   scope in it serves one tenant's numbers to another. Same rule as uniqueness keys.
 
 ## Reviewing an existing surface
+
+Check authorization of the requested scope server-side; a client-supplied tenant ID
+is not proof of access. Test forged scope IDs and cross-tenant resource IDs, including
+background jobs, object-storage keys, caches, and privileged/RLS-bypass paths.
+
 
 Enumerate every write path into the scoped tables (route handlers, jobs, scripts,
 migrations, seeds, admin tools) and check each for: scope required, scope in the WHERE

@@ -47,4 +47,6 @@ Investigation"**, **"Phase 2: Pattern Analysis"** and **"Confusion Protocol"** s
 
 ## Related
 
-`agent-orchestration` — when a defect spans multiple subsystems or requires parallel audits, orchestrate: a higher-level model (**Fable, Sol/Astra; Gemini 3.8 Flash in agy**) acts as lead to verify root causes and diffs, while delegating broad call-site surveys or mechanical patches to lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash**), keeping difficult root-cause investigations on the higher-level model. `senior-operator` — how to reason under ambiguity. `bug-class-audits` — turning a confirmed class into a mechanical audit. `metric-integrity` — when the "bug" is a wrong number on a dashboard.
+[agent-orchestration](../agent-orchestration/SKILL.md) — independent subsystem work:
+Astra owns diagnosis and final quality; Terra/Luna handle scoped surveys and fixes.
+`senior-operator` — how to reason under ambiguity. `bug-class-audits` — turning a confirmed class into a mechanical audit. `metric-integrity` — when the "bug" is a wrong number on a dashboard.

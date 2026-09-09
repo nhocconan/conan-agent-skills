@@ -24,7 +24,7 @@ Group by guideline area. ☐ = must verify every submission.
 
 ### 2.1 — App completeness
 - ☐ No placeholder/lorem/"coming soon" content, no dead buttons, no broken links.
-- ☐ **Every URL in the listing returns HTTP 200 anonymously** — Support, Privacy, Marketing, any URL in review notes (e.g. a takedown contact). Run the [URL-live recipe](sections/verification-recipes.md) against the **repo listing files** to collect every URL, then curl each as an anonymous visitor (no auth cookie). A 404/redirect-to-login/private-repo URL is an automatic 2.1/5.1.1 reject. **Don't trust the repo's copy as the source of truth** — cross-check against the live App Store Connect value; they drift apart after manual edits. (See ledger #3.)
+- ☐ **Every public listing/review-notes URL works for an anonymous visitor** — Support, Privacy, Marketing, and any review-note link. Run the [URL-live recipe](verification-recipes.md) against the repo listing files, then open every final URL in a fresh private browser session and confirm the expected public page, not a login wall, generic landing page, private repo, or API response. Transport success alone is not enough. **Don't trust the repo's copy as the source of truth** — cross-check the live App Store Connect values; they can drift after manual edits. (See ledger #3.)
 - ☐ App doesn't crash on launch on the **reviewer's device class** (they test iPad too — see 4.0).
 - ☐ Demo account / reviewer notes provided if any gating exists.
 - ☐ Every advertised feature actually works on this platform build.
@@ -39,15 +39,14 @@ Group by guideline area. ☐ = must verify every submission.
 
 ### 5.1 — Privacy
 - ☐ **Privacy policy URL is set** in App Store Connect (required for any app with an account or IAP; safe to always provide).
-- ☐ App Privacy "nutrition label" matches reality. If "Data Not Collected" is claimed in-app, there must be **no network/analytics/tracking SDK** in the binary.
+- ☐ App Privacy answers match the app's and every integrated third party's actual data practices. For a "Data Not Collected" answer, inventory every data flow and apply Apple's definition of collection; a network call or SDK is a review signal, not proof by itself. Check vendor documentation and privacy manifests as well as runtime behavior.
 - ☐ `Info.plist` contains **only the permission usage strings the app actually uses.** A stray `NS*UsageDescription` invites "why do you need this?" questions. No `NSUserTrackingUsageDescription` unless ATT is actually used.
 
 ### 4.3 — Spam / "apps that do not add value" (Design)
-> Top single reason for rejection (~28%). Apple **tightened 4.3 on June 9 2026** —
-> see [researched refinements](sections/research-notes.md).
-> Once flagged, a note sticks to the developer's file; subsequent submissions get
-> harder. Hardest on **saturated categories** (video players, timers, calculators,
-> matchstick puzzles, notes).
+> Apple’s current 4.3 rule rejects established app categories that do not offer a
+> meaningfully different or improved experience, and identifies low-effort apps that
+> do not add value to the App Store. Re-read the current guideline before submission;
+> there is no official rejection-frequency ranking. See [policy notes](research-notes.md).
 - ☐ The app has a **clear, demonstrable differentiator** vs. the obvious alternatives — and that USP is **shown** in screenshots/preview, not just claimed in copy. If a reviewer can name two apps that do the same thing, you're at risk.
 - ☐ Not a reskin/template/cookie-cutter of another app under the same account (shared source, shared assets, near-identical UI). **Own every visual asset** (icon, screenshots, preview video); don't lift stock/copyrighted art into metadata (separate **IP.6.1** metadata reject — fixable without a new build, but still a reject).
 - ☐ For a **new** account/app in a saturated category, the app clears a genuine usefulness bar, not just "it works". Reviewer notes should spell out *why this exists*, not just *how to test it*.

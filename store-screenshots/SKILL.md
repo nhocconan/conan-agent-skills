@@ -75,19 +75,16 @@ gradient, alternating tilt) and call `render_slides(SLIDES, raw_dir, out_dir, W,
 
 Canvas sizes (the renderer scales its layout to any of these):
 - **Google Play:** 1080×1920 (9:16 — required for promotion placements)
-- **Apple App Store iPhone:** App Store Connect has two iPhone slots and does
-  **NOT** auto-convert between them — a file must exactly match the slot it's
-  uploaded into, or you get *"The dimensions of one or more screenshots are
-  wrong."*
-  - **6.9" slot:** 1320×2868 or 1290×2796 (portrait), or the rotated landscape.
-  - **6.5" slot:** 1284×2778 or 1242×2688 (portrait), or rotated.
-  - You only need to fill **one** iPhone slot. **Default to the 6.5" size
-    `1284×2778`** — it's accepted on its own and is the most broadly compatible.
-    (Capturing on iPhone 17 Pro Max gives a native 1320×2868 raw, but the
-    renderer reframes to whatever W×H you pass, so the raw size doesn't matter.)
-- **Apple App Store iPad:** the 13"/12.9" slot. Use **`2048×2732`** (12.9",
-  universally accepted). Native 13" captures are 2064×2752 — reframe to
-  2048×2732 to avoid the same "wrong dimensions" rejection.
+- **Apple App Store iPhone:** use the current 6.9-inch screenshot set by default:
+  **1260×2736, 1290×2796, or 1320×2868** portrait (and the rotated landscape
+  equivalents). Choose the exact accepted size matching the source device and the
+  App Store Connect slot. The older **6.5-inch** sizes, **1284×2778** and
+  **1242×2688**, remain supported fallback assets; Apple uses scaled 6.9-inch
+  screenshots when that primary set is supplied. Re-check the official size table
+  immediately before rendering/uploading because device slots change.
+- **Apple App Store iPad:** for the current 13-inch set use **2064×2752** or
+  **2048×2732** portrait (and rotated landscape). Choose the target slot rather
+  than assuming one size is universally required.
 
 Per slide the renderer draws: vertical brand-gradient background + soft glow →
 rotated white "sticker" headline boxes (heavy font, ink text, drop shadow) →

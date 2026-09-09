@@ -18,6 +18,7 @@ where a reviewer sees it.
   python3 context_budget.py --no-ratchet   # grade only, never write
 """
 import argparse
+import copy
 import json
 import re
 import sys
@@ -52,8 +53,12 @@ def main() -> int:
 
     root = Path(args.root).expanduser()
     ceilings = json.loads(CEILINGS.read_text()) if CEILINGS.exists() else {}
+    # Keep the committed values separate from the candidate ratchet. Reporting and
+    # --no-ratchet must be able to inspect proposals without mutating the source map.
+    proposed_ceilings = copy.deepcopy(ceilings)
+    read_only = args.report or args.no_ratchet
 
-    rows, over, lowered, new = [], [], [], []
+    rows, over, lowered, new, added = [], [], [], [], []
     for d in sorted(p for p in root.iterdir() if p.is_dir() and not p.name.startswith(".")):
         got = measure(d)
         if got is None:
@@ -61,18 +66,20 @@ def main() -> int:
         rows.append((d.name, got))
         have = ceilings.get(d.name)
         if have is None:
-            ceilings[d.name] = {k: cap(v) for k, v in got.items()}
+            proposed_ceilings[d.name] = {k: cap(v) for k, v in got.items()}
             new.append(d.name)
             continue
+        candidate = proposed_ceilings[d.name]
         for k, v in got.items():
             ceiling = have.get(k)
             if ceiling is None or v > ceiling:
                 if ceiling is None:
-                    have[k] = cap(v)
+                    candidate[k] = cap(v)
+                    added.append((d.name, k, cap(v)))
                 else:
                     over.append((d.name, k, v, ceiling))
             elif cap(v) < ceiling:
-                have[k] = cap(v)
+                candidate[k] = cap(v)
                 lowered.append((d.name, k, ceiling, cap(v)))
 
     if args.report:
@@ -86,22 +93,30 @@ def main() -> int:
         print(f"\n{len(rows)} skills · always-on {ta} B (~{ta//4} tok) · "
               f"eager if all fired {te} B (~{te//4} tok)")
 
+    if read_only and (new or added or lowered):
+        print("\nproposals (read-only; not written):")
+    prefix = "would capture" if read_only else "captured"
     for name in new:
-        print(f"  captured  {name} (first ceiling)")
+        print(f"  {prefix} {name} (first ceiling)")
+    for name, k, now in added:
+        action = "would add" if read_only else "added"
+        print(f"  {action} {name}.{k}: {now}")
+    prefix = "would ratchet" if read_only else "ratcheted"
     for name, k, was, now in lowered:
-        print(f"  ratcheted {name}.{k}: {was} → {now}")
+        print(f"  {prefix} {name}.{k}: {was} → {now}")
     for name, k, v, ceiling in over:
         print(f"  OVER      {name}.{k}: {v} B > ceiling {ceiling} B (+{v - ceiling})")
 
-    if (new or lowered) and not args.no_ratchet:
-        CEILINGS.write_text(json.dumps(ceilings, indent=2, sort_keys=True) + "\n")
+    if (new or added or lowered) and not read_only:
+        CEILINGS.write_text(json.dumps(proposed_ceilings, indent=2, sort_keys=True) + "\n")
 
     if over:
         print(f"\n{len(over)} skill(s) over budget. Carve the growth into "
               f"sections/ (loaded on demand), or raise the ceiling in "
               f"{CEILINGS.name} deliberately, in the same diff.")
         return 1
-    print(f"\ncontext budget: {len(rows)} skills within ceilings")
+    suffix = " (read-only)" if read_only else ""
+    print(f"\ncontext budget: {len(rows)} skills within ceilings{suffix}")
     return 0
 
 

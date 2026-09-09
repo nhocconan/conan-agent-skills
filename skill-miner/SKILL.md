@@ -1,6 +1,6 @@
 ---
 name: skill-miner
-description: Mine local coding-agent conversation history (Claude Code, Claude Cowork, Codex) for recurring pain that deserves to become a reusable agent skill — then write the skill. Runs incrementally with a stored watermark, so each run only reads sessions since the last one; a full re-scan is available on request. Use when the user says "scan my conversations for skills", "quét lịch sử tìm skill", "mine my history", "what should become a skill", "review my skills", or on a recurring schedule to keep ~/.conan-agent-skills current.
+description: Mine local coding-agent conversation history (Claude Code, Claude Cowork, Codex) for recurring pain that deserves to become a reusable agent skill — then write the skill. Runs incrementally with a stored watermark, so each run only reads sessions since the last one; a full re-scan is available on request. Use when the user says "scan my conversations for skills", "quét lịch sử tìm skill", "mine my history", "what should become a skill", or on a recurring schedule to keep ~/.conan-agent-skills current.
 ---
 
 # Skill Miner
@@ -8,6 +8,11 @@ description: Mine local coding-agent conversation history (Claude Code, Claude C
 Work history is the only honest record of what actually goes wrong repeatedly. This skill
 turns that record into skills — and, just as importantly, **refuses** to turn most of it
 into skills. The default outcome of a mining run is "nothing new cleared the bar."
+
+A repository skill review does not authorize reading private conversation history.
+Use this workflow only when history mining is requested. The scanner emits raw excerpts;
+keep output in the ignored local state directory with restricted permissions, review and
+redact before sharing, and delete the digest when no longer needed. It is not a secret scrubber.
 
 ## Run modes
 
@@ -54,7 +59,8 @@ agent-authored prompts, not human intent.
    wrong" and "the KPI drifted between pages" are one cluster.
 4. **Apply the bar** (below) to each cluster.
 5. **Implement** what passes; **record why** for what doesn't.
-6. `--commit` the watermark, update `README.md` + `PROPOSALS.md`, symlink, commit.
+6. Advance the watermark after reviewing the digest. Update relevant documentation;
+   install symlinks or commit only when requested.
 
 ## Validate before and after
 
@@ -64,18 +70,17 @@ python3 validate_skills.py ~/.claude/skills   # everything installed on this mac
 python3 validate_skills.py --errors-only
 ```
 
-Encodes Anthropic's published authoring spec. **Errors are silent killers** — a skill that
-fails one of these does not trigger, and nothing tells you:
+Checks portable frontmatter and local conventions. Harness rejection behavior varies:
 
 - frontmatter must open with `---` on line 1 (otherwise it is never parsed and the literal
   string `name: x` becomes the description);
-- `name` ≤64 chars, `[a-z0-9-]` only, **must equal the directory name**, and must not
+- `name` ≤64 chars, `[a-z0-9-]` only, matches the directory name (local convention), and must not
   contain the reserved words `anthropic` or `claude`;
 - `description` non-empty, ≤1024 chars, no XML tags — note that a literal `<slug>` in a
   description counts as a tag.
 
 Warnings cover the quality rules: body ≤500 lines, description states *when* not just
-*what*, third person, references exist and stay one level deep, reference files >100 lines
+*what*, third person, references resolve from their source file, reference files >100 lines
 carry a table of contents.
 
 Run it on `~/.claude/skills` too — third-party and generated skills fail these constantly,
@@ -113,8 +118,7 @@ the rules below are the ones it cannot check.
 **The description is a routing rule, not a summary.** It is the only part loaded at
 startup, competing with ~90 other skills for the model's attention. Write it third
 person, state **what it does and when to fire**, and include the exact phrasings the
-operator types — Vietnamese included. Claude *undertriggers* skills, so lean pushy.
-A perfect skill that never fires is worth nothing.
+operator types — Vietnamese included. Keep triggers discriminating; do not pull unrelated tasks into this workflow.
 
 **Be concise; assume the model is already smart.** Only add context it doesn't have.
 Challenge every paragraph: does this justify its token cost? Explaining what a PDF is
@@ -131,10 +135,10 @@ results. Scripts must *solve* rather than defer — handle the error, don't hand
 and every constant needs a comment justifying its value.
 
 **Progressive disclosure past ~500 lines.** SKILL.md becomes a table of contents pointing
-at `reference/*.md`; keep links **one level deep** (nested references get partially read),
+at `reference/*.md`; make routing explicit and avoid unnecessary reference chains,
 and give any reference over 100 lines its own contents list.
 
-**Build the evaluation before the documentation.** Run the task without the skill, note
+**Build the evaluation alongside the documentation.** Run the task without the skill, note
 where it actually fails, and write only enough to close that gap. Then test with the
 models that will run it — what Opus infers, Haiku needs spelled out.
 

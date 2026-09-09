@@ -5,11 +5,8 @@ description: Rebuild something to match an existing artifact — a competitor's 
 
 # Reference Parity
 
-When the target is an artifact that already exists, "done" is not a judgement — it is a
-count. The failure this prevents is the one that repeats: work proceeds from a *description*
-of the reference rather than the reference itself, ships, and the reviewer opens the
-original and finds three tabs, two states and a whole content type that were never
-enumerated. The rebuild then restarts, and the reviewer's trust does not.
+For reference-driven work, enumerate the agreed surfaces and states before building.
+A description or landing screenshot rarely captures the complete target.
 
 ## Inventory the reference before writing anything
 
@@ -75,21 +72,13 @@ zoom. Most "the numbers don't match" reports are a window mismatch and cost an h
 discover. Where the surface renders, put the two side by side and go row by row through the
 checklist; where it is data, diff the values, not the impressions.
 
-The reference is the oracle. Verifying the rebuild against your own re-derivation of what
+The reference is the oracle for agreed parity dimensions, not permission to copy private data or protected assets. Record deliberate differences required by accessibility, security, or correctness. Verifying the rebuild against your own re-derivation of what
 the reference "should" say proves only that the rebuild agrees with itself.
 
 ## Orchestration for parity rebuilds
-
-Rebuilding a complex target (multi-tab apps, dashboards, large component libraries) is a
-development task that **always uses agent orchestration** (`agent-orchestration`):
-- **Orchestrator tier**: A higher-level model (**Claude Fable, OpenAI Sol/Astra; Gemini 3.8 Flash in agy**)
-  extracts the complete inventory, establishes the parity checklist, defines interface
-  seams, reviews the merged diff, and verifies against the reference.
-- **Worker tier**: Subagents run lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna,
-  Flash, etc.**) to implement individual tabs, views, or mock data loaders in parallel (in `agy`, use **Gemini 3.8 Flash** throughout).
-- **Difficult work exception**: For difficult subtasks (complex data normalization, intricate
-  canvas/SVG rendering, subtle real-time state synchronization), using the higher-level
-  model for that worker is still completely appropriate.
+Use [agent-orchestration](../agent-orchestration/SKILL.md) for independent surfaces.
+Astra owns inventory, seam contracts, and final parity review; Terra builds scoped
+views and Luna handles simple checked content. Keep shared state changes serialized.
 
 ## Output
 

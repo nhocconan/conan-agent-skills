@@ -24,7 +24,7 @@ four parts — missing any one, it is either a habit or a runaway:
 | **Trigger** | your hand, a session event, a repo event, a clock | "I'll remember to run it" |
 | **Prompt file** | the task, frozen in the repo, diffable, reviewed like code | a prompt that drifts a little each time |
 | **Gate** | a command whose exit code decides pass/fail; the loop's green is *not* success | "the run finished" |
-| **Stop condition** | max iterations, wall-clock, token budget, no-progress detector | a $275k overnight token bill (reported, order-of-magnitude) |
+| **Stop condition** | max iterations, wall-clock, token budget, no-progress detector | unbounded spend and repeated work |
 
 **Green ≠ done.** A scheduled run's "success" means the run completed; only the gate
 says the task succeeded. Every loop reports the gate's verdict, never the run's status.
@@ -35,7 +35,7 @@ says the task succeeded. Every loop reports the gate's verdict, never the run's 
 | --- | --- | --- | --- |
 | 1 · Skill | a human invokes it | as the session allows | run by hand for ~a week, reading every output |
 | 2 · Hook | a session event (before/after a tool, on stop) — exit code 2 *blocks* the action; this rung enforces, it does not advise | none of its own | the hook has never blocked something it should have allowed |
-| 3 · Headless CI | repo event (push, PR) or CI cron; read-only, comments/reports only | **none** | outputs were correct for N runs and cheap to check |
+| 3 · Headless CI | repo event (push, PR) or CI cron; local artifacts only | **none; posting comments needs write authority** | outputs were correct for N runs and cheap to check |
 | 4 · Scheduled | a clock outside the repo (routines, automations, `/loop`, cron on the box) | still read-only | brakes proven under a forced failure |
 | 5 · Agentic workflow | lives in the repo as code; agent runs read-only, a separate narrowly-scoped job holds the token | **proposes PRs, never merges** | — |
 
@@ -57,8 +57,9 @@ it is a skill (rung 1) and nothing more.
 ## Brakes — the minimum set, no exceptions for "it's read-only"
 
 - **Iteration cap** — a hard number, in the loop's own config, not in the prompt.
-- **No-progress detection** — fingerprint each round's output; two identical rounds
-  means stop and report, not try harder.
+- **No-progress detection** — fingerprint each round's output; repeated identical failures in an improvement loop
+  trigger diagnosis. Unchanged external state is normal in monitoring; continue to its
+  authorized terminal condition or budget.
 - **Budget** — tokens or wall-clock, whichever the harness can enforce; the loop reads
   it and stops early rather than being killed mid-write.
 - **Single writer** — one loop per repo per window; two loops touching one tree is a

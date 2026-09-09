@@ -38,22 +38,17 @@ the row in `projects/INDEX.md`.
 
 ## Any-model use (Claude / Codex / agy)
 
-Everything here is plain Markdown — no harness feature required. A harness without a
-skill loader (Codex CLI, ChatGPT, agy) uses it by reading files directly, in the
+Everything here is plain Markdown — no harness feature required. A harness without an available
+skill loader uses it by reading files directly, in the
 same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
 `projects/<slug>.md` for the repo at hand.
 
 - **Wiring for Codex:** point the repo's `AGENTS.md` (or a `.codex/skills/` wrapper) at
   this directory with one line: "Nontrivial task → read
   `~/.conan-agent-skills/senior-operator/SKILL.md` and follow it."
-- **Lead/worker split is lineage-independent:** whichever model is strongest (Claude
-  Fable → Opus/Sonnet workers; OpenAI Sol/Astra → Luna/Terra workers; Google agy: Gemini 3.8 Flash across the board since 3.1 Pro is outdated) runs DISTILL.md to
-  produce the map, and the workers execute on it. In software development, always use
-  `agent-orchestration`: the higher-level model (Fable, Sol/Astra; Gemini 3.8 Flash in agy) acts as the orchestrator /
-  control tower, and lower-level models (Opus, Sonnet, GPT Terra, GPT Luna, Flash) execute
-  worker tasks when suitable, reserving the higher-level model when a worker node faces genuinely
-  difficult work. A map distilled by one lineage is fully usable by another — it's commands, gates,
-  and traps, not model behavior.
+- **Model policy:** [agent-orchestration](../agent-orchestration/SKILL.md) owns routing.
+  Astra leads and accepts final quality; Terra/Luna execute suitable scoped tasks.
+  Project maps contain commands and invariants usable by any worker.
 - Harness-specific references inside the manual/maps (memory paths, browser tools,
   `CLAUDE.md`) are examples, not requirements — substitute the local equivalent.
 
@@ -62,7 +57,8 @@ same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
 1. **Bootstrap:** the repo's own `CLAUDE.md`/`AGENTS.md` (always authoritative — this skill NEVER overrides them) + its session-memory index if one exists + the matching `projects/<slug>.md` §0.
 2. **Before acting:** OPERATING-MANUAL §1 — what is actually being asked? Especially when the request presumes something is "wrong": verify the presupposition first.
 3. **While working:**
-   - **Software development always uses agent orchestration:** Cut the work into an independent DAG (`agent-orchestration`). A higher-level model (**Claude Fable, OpenAI Sol/Astra**; in `agy`, **Gemini 3.8 Flash** across the board since 3.1 Pro is outdated) acts as orchestrator / control tower. Delegate modular implementation, testing, and surveys to lower-level worker models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash**) when suitable. For difficult work (deep ambiguity, subtle invariants, tricky 10%), the higher-level model is still completely appropriate.
+   - Delegate independent work through `agent-orchestration`; Astra retains final
+     quality. Small or sequential tasks can stay with the lead.
    - Follow the project map's flow sections; check its trap table before inventing a diagnosis. No map → work from the manual alone and note candidate traps as you hit them.
 4. **Before handing over:** OPERATING-MANUAL §6 (attack the conclusion) + the 5-question self-test. Communicate per §7: answer → reasoning → risk.
 
@@ -76,7 +72,7 @@ same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
 ## Maintenance
 
 - Project maps are dated snapshots — the repo's own rulebook wins on conflict; fix the map to match, never the reverse.
-- New paid-for gotcha (cost ≥ one session) → append to that project's trap table. Append-only.
+- New recurring trap → record evidence, date, and review owner in the project map; supersede stale rules explicitly.
 - New repo distilled → new `projects/<slug>.md` + index row in `projects/INDEX.md`.
   `~/.conan-agent-skills` is the source of truth (`~/.claude/skills/` holds symlinks);
-  the repo is PUBLIC, so `projects/` stays local-only — commit/push everything else.
+  the repo is PUBLIC, so `projects/` stays local-only — publish only when requested and after checking for private context.

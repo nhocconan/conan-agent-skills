@@ -114,10 +114,10 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | Skill | Fires when |
 | --- | --- |
 | `senior-operator` | Hard or ambiguous task. Read **before** acting |
-| `agent-orchestration` | Software development orchestration: higher-level model (Fable, Sol/Astra; Gemini 3.8 Flash in agy) orchestrates, lower-level models (Opus, Sonnet, Terra, Luna, Flash) execute suitable worker tasks (higher tier for difficult work), verifying + merging, multi-hour runs |
-| `delegate-run` | Giao việc trọn gói cho MỘT agent: 3 điểm chạm (đề bài → duyệt plan nếu rủi ro → nghiệm thu), không hỏi giữa chừng, exit report format cứng + trust ledger |
+| `agent-orchestration` | Astra lập kế hoạch, phân việc độc lập cho Terra/Luna, kiểm tra kết quả và chịu trách nhiệm chất lượng cuối cùng |
+| `delegate-run` | Giao việc đến kết quả đã kiểm chứng; giữ quyền đã cấp, lưu trạng thái, dùng Terra/Luna khi phù hợp và Astra chịu trách nhiệm cuối cùng |
 | `investigating-bugs` | Something is broken — reproduce before editing |
-| `shipping-changes` | Commit + push (main only, your identity, hooks must pass) |
+| `shipping-changes` | Commit + push (repository branch/review policy, your identity, hooks must pass) |
 | `browsing-web` | Anything involving a browser |
 | `web-qa` | Test a running web app (reports by default; fixes only if you ask) |
 | `design-qa` | "Nhìn xấu / rớt hàng / chữ bị đè" — visual defects, both themes + 375px |
@@ -166,10 +166,12 @@ reporting → report honestly, including what was skipped.
 This is deliberately **not** a skill. A skill has to be triggered, so it would stay silent
 exactly when you are chatting casually — which is when you said you most want it applied.
 
-**Development orchestration rule:** All non-trivial software development tasks (features, multi-file codebases, modules, refactoring, test suites) must use **`agent-orchestration`**:
-- **Orchestrator tier:** Higher-level models (**Claude Fable, OpenAI Sol/Astra**; in `agy`, **Gemini 3.8 Flash** across the board since 3.1 Pro is outdated) act as the orchestrator / control tower (architecture decomposition, contracts, diff review, gates).
-- **Worker tier:** Subagents use lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash, etc.**) when suitable for implementation, testing, and surveys (in `agy`, use **Gemini 3.8 Flash** throughout).
-- **Difficult work exception:** If a worker subtask is genuinely difficult (deep ambiguity, subtle invariants, tricky 10%, complex state machines), using the higher-level model remains fully appropriate.
+**Model policy (2026-09-08):** GPT-6 Astra là orchestrator và chịu trách nhiệm chất lượng
+cuối cùng. GPT-5.6 Terra triển khai phần việc đã có tiêu chí; GPT-5.6 Luna xử lý việc nhỏ
+có thể kiểm tra rõ ràng. Việc nhỏ hoặc tuần tự có thể do Astra làm trực tiếp.
+Claude Fable 5.1 / Opus 5 / Sonnet 5 / Haiku 4.5 là collaborator khi harness hỗ trợ;
+không thay Astra ngầm. Chi tiết và nguồn: [routing](agent-orchestration/sections/routing.md).
+Kết quả rà soát 32 skills: [SKILL-AUDIT.md](SKILL-AUDIT.md).
 
 ---
 

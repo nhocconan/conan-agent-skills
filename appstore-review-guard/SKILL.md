@@ -1,7 +1,7 @@
 ---
 name: appstore-review-guard
 description: >-
-  Pre-submission compliance gate for Apple App Store (and Google Play) that prevents repeat
+  Pre-submission compliance gate for Apple App Store (and Google Play) that helps prevent repeat
   rejections. Run BEFORE every submit/resubmit, and AFTER any rejection to record the cause
   + fix in the rejection ledger. Catches the avoidable "silly" rejections — missing Restore
   Purchases (3.1.1), device frames in preview videos (2.3.4), metadata that promises
@@ -49,7 +49,7 @@ not work from memory. Paths are relative to this skill's directory.
 | the app sells restorable IAP, or the rejection cites 3.1.1 — the full Restore Purchases pattern with code | `sections/restore-purchases.md` |
 | producing or reviewing App Preview video / marketing screenshots, or the rejection cites 2.3.4 | `sections/preview-video.md` |
 | verifying any code- or metadata-level item — the curl/grep recipes that turn a checkbox into a fact | `sections/verification-recipes.md` |
-| you want the researched sharp checks, 2026 rejection-frequency data, and sources | `sections/research-notes.md` |
+| you want the sourced policy notes and submission-time refresh links | `sections/research-notes.md` |
 
 **Append after every rejection**, per `sections/rejection-ledger.md`. A rejection
 that leaves no ledger row will be paid for a second time.

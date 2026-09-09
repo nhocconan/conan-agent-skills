@@ -39,8 +39,8 @@ metric bugs; check every one when touching any surface that renders numbers.
 ## 2. One source of truth per formula
 
 - Before implementing any domain metric, **read the canonical formula document** (PRD,
-  formula reference, the customer's workbook). If none exists, write one and cite the
-  source of each rule — the formula doc is what makes the number auditable later.
+  formula reference, the customer's workbook). If none exists, document a proposed contract and cite the
+  source of each rule; unresolved business definitions need the owner’s decision — the formula doc is what makes the number auditable later.
 - **Shared math lives in ONE module.** When frontend, backend, and reconciliation script
   each reimplement the same period-comparison / label / allocation logic, they WILL
   drift. Extract to a shared package and add a check that compares their outputs.
@@ -93,6 +93,6 @@ condition (see `bug-class-audits`).
 ## Output
 
 Report per finding: metric → page/component → what's wrong (fabrication / drift / filter
-gap / TZ / locale) → root cause → fix. Fix what's safe; anything needing a business
+gap / TZ / locale) → root cause → fix. Fix within an implementation request; report-only audits remain read-only. Anything needing a business
 decision (which formula is canonical, what the empty state should say) goes to the user
 as a short decision list.

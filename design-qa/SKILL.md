@@ -33,13 +33,12 @@ These come from real reports on this operator's own projects, and they repeat:
   Capture a screenshot; that is the evidence and the before/after proof.
 - **Check both themes and the small breakpoint.** Light and dark, and 375px wide. Most
   reported defects here were found on a phone or in the theme nobody tested.
-- **Fixing is in scope for this skill** (unlike `web-qa`, which reports by default) — but
-  the `shipping-changes` house rules still apply: main only, operator identity, hooks pass,
-  atomic commits with a re-render check after each.
+- Review-only requests produce findings. When fixes are requested, repair and re-render
+  the scoped defects. Commit/push require authorization and repository-policy compliance.
 - **Do not "improve" adjacent design** that nobody complained about. Fix the defect.
 
 For the audit procedure, checklist and screenshot mechanics, read
-`~/.conan-agent-skills/.vendor/gstack/design-review/SKILL.md` — its **"When to invoke this skill"**,
+`../.vendor/gstack/design-review/SKILL.md` — its **"When to invoke this skill"**,
 **"Phases 1-6: Design Audit Baseline"** and **"Design Critique Format"** sections.
 
 ## Sibling lenses

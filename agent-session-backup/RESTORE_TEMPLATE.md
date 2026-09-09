@@ -1,7 +1,9 @@
 # How to restore this backup
 
 This folder is a **light backup** of Claude session history, filtered to only
-sessions whose working folder existed on the source machine.
+sessions whose working folder existed on the source machine. Cowork metadata is
+accompanied by its paired transcript directories when they exist; caches and
+other application state are intentionally excluded.
 
 ```
 Claude-Code/          -> restores to  ~/.claude/projects/
@@ -20,7 +22,7 @@ The script lives in the reusable skill at
 # 2. Dry-run to preview (copies nothing):
 python3 ~/.conan-agent-skills/agent-session-backup/scripts/restore.py "<THIS_FOLDER>" --dry-run
 
-# 3. Real restore (safe: never overwrites existing live files):
+# 3. Real restore (safe: never overwrites existing live metadata or transcript files):
 python3 ~/.conan-agent-skills/agent-session-backup/scripts/restore.py "<THIS_FOLDER>"
 
 # Overwrite existing files instead of skipping them:

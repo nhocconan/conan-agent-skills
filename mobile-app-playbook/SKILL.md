@@ -85,15 +85,10 @@ ladder; §6–§8 the launch ladder.
 
 The full fleet discipline (tier routing, parallel DAG, briefs, scored verification,
 integration) lives in **`agent-orchestration`** — that skill is the single source; read
-it when staffing any multi-workstream build. For mobile development, always use agent orchestration:
+it when staffing independent work. Astra owns architecture and final quality;
+Terra implements scoped modules and Luna handles simple checked tasks. Escalate
+critical receipt verification, concurrency, and engine invariants to Astra.
 
-- **Orchestrator vs worker tiers**: A higher-level model (**Claude Fable, OpenAI Sol/Astra; Gemini 3.8 Flash in agy**)
-  acts as orchestrator / control tower (architecture cuts, seam contracts, diff review, final store/build gates).
-  Route modular worker workstreams (screens, UI components, data mappers, test suites, assets) to
-  lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash, etc.**) when suitable (in `agy`, use **Gemini 3.8 Flash** throughout).
-- **Difficulty exception**: For difficult tasks (core engine physics, custom renderers, complex store
-  policy/IAP receipt verification, subtle concurrency/memory bugs), the higher-level model remains fully
-  appropriate for that worker node.
 - **The natural cut** is per module or per layer (engine / UI / backend / assets). Two
   agents editing the same Gradle module is merge hell — one writer per module, worktrees
   when they must overlap.

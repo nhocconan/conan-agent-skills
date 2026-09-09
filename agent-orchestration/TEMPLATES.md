@@ -7,7 +7,7 @@ invented assumption in the executor.
 
 1. Handoff brief (implementation node)
 2. Structured return schema
-3. Verifier prompt (independent, scored)
+3. Verifier prompt (independent, evidence-based)
 4. Plan file
 5. Fleet ledger
 6. Final report shape
@@ -74,7 +74,7 @@ Finding-shaped work (reviews, audits, sweeps):
 ```json
 {
   "severity": "critical|major|minor",
-  "confidence": 9,
+  "status": "confirmed | concern | unavailable",
   "path": "src/a.ts", "line": 42,
   "category": "tenancy",
   "summary": "one sentence — the defect, not the vibe",
@@ -87,7 +87,7 @@ Finding-shaped work (reviews, audits, sweeps):
 
 ---
 
-## 3. Verifier prompt (independent, scored)
+## 3. Verifier prompt (independent, evidence-based)
 
 Fresh context. Give it the location and the rules — **never the previous agent's verdict**,
 or it will confirm it.
@@ -99,20 +99,21 @@ Rules that make something NOT a finding:
   <FP filter rules for this domain — the specific ones, not "use judgment">
 
 Return:
-  score: 1-10 confidence that this is a real defect
-  failure_scenario: concrete inputs/state → wrong output (required if score >= 8)
-  why_not: if score < 8, explain what makes it not real
-Default to a LOW score when uncertain. A plausible mechanism is not a defect.
+  status: confirmed | concern | unavailable
+  failure_scenario: concrete inputs/state → wrong output
+  evidence: relevant lines, reproducible check, or violated invariant
+  uncertainty: what remains unverified
+A plausible mechanism is a concern until supported by evidence.
 ```
 
-Gate: discard below 8 for anything that would cause a code change. Two different lenses
-hitting the same fingerprint raise confidence — say which lenses agreed.
+Astra evaluates the evidence before accepting a finding or authorizing a repair.
+Model agreement and confidence scores do not replace a reproducible mechanism.
 
 ---
 
 ## 4. Plan file
 
-`docs/plans/<topic>-<yyyy-mm>.md` — written before wave 1, updated the moment a node lands.
+`.agents/<topic>-<yyyy-mm>.md` — written before wave 1, updated the moment a node lands.
 
 ```markdown
 # <Topic> — plan (<yyyy-mm-dd>)
@@ -132,8 +133,8 @@ Wave 3 (needs N4,N5): N6 UI · N7 recon assertion
 Lead, wave 1: <the tricky 10%>
 
 ## Status
-- [x] N1 survey — landed <date>, artifact: docs/plans/notes/n1.md
-- [ ] N2 schema — in progress (sonnet, high)
+- [x] N1 survey — landed <date>, artifact: .agents/notes/n1.md
+- [ ] N2 schema — in progress (gpt-5.6-terra, medium)
 - [ ] N3 …
 
 ## Resume
@@ -152,18 +153,17 @@ Lives in the plan file or beside it. One row per node, updated on landing.
 ```markdown
 | Node | Tier/effort | Status | Acceptance check | Artifact | Verdict | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| N1 survey | haiku/low | done | list of call sites | notes/n1.md | accepted | 14 sites |
-| N2 schema | sonnet/med | done | verify:data EXIT=0 | data.log | re-run by lead ✓ | |
-| N4 API | sonnet/med | rework 1/2 | build EXIT=0 | build.log | rejected: no tenancy filter | escalate on next fail |
-| N6 UI | opus/high | running | browser check | — | — | lead reviewing N4 meanwhile |
+| N1 survey | gpt-5.6-luna/low | done | list of call sites | notes/n1.md | accepted | 14 sites |
+| N2 schema | gpt-5.6-terra/medium | done | verify:data EXIT=0 | data.log | re-run by lead ✓ | |
+| N4 API | gpt-5.6-terra/medium | rework 1/2 | build EXIT=0 | build.log | rejected: no tenancy filter | escalate on next fail |
+| N6 UI | gpt-5.6-terra/high | running | browser check | — | — | lead reviewing N4 meanwhile |
 ```
 
 `Verdict` is the lead's, after re-running the check — not the agent's self-report.
 
-Close every run with the four pilot numbers under the table, so fleets are judged by
-data: `wall-clock vs solo: … · tokens: … · defects caught by verification: … · operator
+Record observed metrics where available; unknown values stay unknown: `wall-clock vs solo: … · tokens: … · defects caught by verification: … · operator
 interventions: …`.
-`rework 2/2` means the next failure escalates a tier or comes back to the lead
+`rework 2/2` means two failures have occurred: escalate or re-plan now
 (`SKILL.md` §5.6).
 
 ---
@@ -178,6 +178,6 @@ One change, not N agent reports stapled together (`SKILL.md` §6).
 What landed: <the merged change, by area>
 Verified: <the checks the LEAD ran, with their artifacts>
 Not verified / assumed: <explicitly, in the same breath as the success>
-Dropped: <findings below the gate, capped scope, skipped lenses — with counts>
+Coverage limits: <unverified concerns, capped scope, skipped lenses>
 Next: <what a follow-up run should pick up, or "nothing pending">
 ```

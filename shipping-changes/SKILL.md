@@ -3,24 +3,20 @@ name: shipping-changes
 description: >-
   Ships verified work end to end — run the gates, review the diff, bump version and changelog,
   commit and push. Use when the user says "ship it", "land this", "đẩy lên", "commit và push",
-  "merge về main", or when a change is finished and needs to land. Enforces the house rules
-  that upstream tooling gets wrong: main only with no feature branches, commits under the
-  operator's own identity with no assistant attribution, and pre-commit/pre-push hooks that
-  must actually pass.
+  "merge về main". Follow repository branch/review controls, preserve the operator's
+  commit identity, and require passing hooks. Completion alone does not authorize shipping.
 ---
 
 # Shipping changes
 
 Thin wrapper over gstack's `ship`. Upstream owns the mechanics; this file owns the rules
-that upstream gets wrong for this operator, and they win on every conflict.
+for this operator. User instructions and repository controls take precedence.
 
 ## House rules — non-negotiable
 
-1. **main only.** Never create a feature branch. Never leave a stray branch behind. If
-   upstream's flow proposes a branch + PR, skip that and commit to main directly.
-   Other agents work this machine concurrently — main is the shared surface.
-   *(Standing instruction, re-asserted repeatedly: "TẤT CẢ PHẢI ĐƯỢC Ở TRÊN MAIN VÀ
-   XOÁ HẾT ĐÁM BRANCH RÁC".)*
+1. **Follow the repository's branch and review policy.** Direct-to-main is appropriate
+   only when authorized and compatible with branch protections. Preserve existing
+   branches and user work; do not delete branches as automatic cleanup.
 2. **Commit identity is the operator's.** No assistant co-author trailer, no assistant
    name anywhere in the message. *("Đảm bảo mọi thứ dưới tên tao, đừng có dính gì Claude.")*
 3. **Hooks must pass, not be skipped.** A `--no-verify` is a failed ship, not a fast one.
@@ -38,11 +34,11 @@ that upstream gets wrong for this operator, and they win on every conflict.
 2. Run the project's real gate — tests, typecheck, lint — per rule 4.
 3. Review the diff hunk by hunk. Delegation moves the typing, not the accountability.
 4. For the mechanics beyond this point (version bump, changelog, commit message
-   composition, push), read `~/.conan-agent-skills/.vendor/gstack/ship/SKILL.md` — specifically its
+   composition, push), read `../.vendor/gstack/ship/SKILL.md` — specifically its
    **"Section index — Read each section when its situation applies"** and
    **"Completeness Principle — Boil the Ocean"** sections — then read the on-demand
    section that index names for the step you are on — they live under
-   `~/.conan-agent-skills/.vendor/gstack/ship/sections/` (changelog wording in `changelog.md`,
+   `../.vendor/gstack/ship/sections/` (changelog wording in `changelog.md`,
    PR body in `pr-body.md`) and since v1.71 no longer load with the skill body —
    and follow it with the house rules above applied. `refsync.py ensure` fetches these.
 5. Verify after: `git log --oneline -1`, `git status` clean, and the remote actually

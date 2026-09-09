@@ -1,6 +1,6 @@
 ---
 name: agent-session-backup
-description: Light backup & restore of Claude Cowork + Claude Code session histories on macOS, filtered to only sessions whose working folder still exists on THIS machine (drops sessions mixed in from other machines / deleted worktrees). Copies just the history files (.jsonl / local_*.json) — no caches, VM images, or binaries. Trigger when the user asks to "backup Claude sessions", "backup Cowork", "backup Claude Code history", "restore my Claude sessions", "sao lưu session Claude", "backup light", or wants to move Claude session history between machines.
+description: Light backup & restore of Cowork + Claude Code session histories on macOS, filtered to only sessions whose working folder still exists on THIS machine (drops sessions mixed in from other machines / deleted worktrees). Copies session metadata and paired Cowork transcripts, but no caches, VM images, or binaries. Trigger when the user asks to "backup Claude sessions", "backup Cowork", "backup Claude Code history", "restore my Claude sessions", "sao lưu session Claude", "backup light", or wants to move Claude session history between machines.
 ---
 
 # Claude Cowork / Claude Code — light backup & restore
@@ -12,7 +12,7 @@ the folders separate and **filtering to only sessions that belong to this machin
 
 | App | Path | History file |
 |---|---|---|
-| **Claude Cowork** (local agent mode in Claude Desktop) | `~/Library/Application Support/Claude/claude-code-sessions/<account-uuid>/<space-uuid>/` **and** `~/Library/Application Support/Claude/local-agent-mode-sessions/<account-uuid>/<space-uuid>/` — Cowork uses BOTH trees; back up both or you lose half the history | `local_*.json` |
+| **Claude Cowork** (local agent mode in Claude Desktop) | `~/Library/Application Support/Claude/claude-code-sessions/<account-uuid>/<space-uuid>/` **and** `~/Library/Application Support/Claude/local-agent-mode-sessions/<account-uuid>/<space-uuid>/` — Cowork uses BOTH trees; back up both or you lose half the history | `local_*.json`, plus its paired `local_<uuid>/` transcript directory when present |
 | **Claude Code** (CLI) | `~/.claude/projects/<slug>/` | `*.jsonl` |
 
 Each history file records the session's `cwd` (working directory). That field is
@@ -29,8 +29,11 @@ stale `.claude/worktrees/…` dirs that were already deleted. Filtering by
 box. Cowork reads `cwd`/`originCwd` from each JSON; Claude Code reads `cwd` from
 the first line of each `.jsonl`.
 
-"Light" = copy only the history files. No `~/Library/Caches`, no `claude-code-vm`,
-no `Session Storage`, no binaries.
+"Light" = copy session metadata and paired transcript files only. No
+`~/Library/Caches`, `claude-code-vm`, `Session Storage`, or binaries. The cwd
+filter is deliberately lossy: it excludes sessions whose original working folder
+was renamed or deleted; see “When NOT to just trust it” before relying on it as a
+complete archive.
 
 ## Backup
 
@@ -45,7 +48,8 @@ Produces:
 DEST_DIR/
   Claude-Code/          <slug>/*.jsonl                    (kept projects only)
   Claude-Cowork/        <acct>/<space>/local_*.json       (claude-code-sessions tree)
-  Claude-Cowork-Local/  <acct>/<space>/local_*.json       (local-agent-mode-sessions tree)
+  Claude-Cowork-Local/  <acct>/<space>/local_*.json + local_<uuid>/ transcript dirs
+                                                        (local-agent-mode-sessions tree)
   MANIFEST.txt          full kept/skipped list + sizes
   RESTORE.md            restore instructions (copied from RESTORE_TEMPLATE.md)
 ```

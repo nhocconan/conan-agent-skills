@@ -1,6 +1,6 @@
 ---
 name: ref-skills
-description: Keeps the skill setup current and under control — upgrades gstack and other upstream suites, re-checks every wrapper against its upstream for drift, 3-way merges forked skills, re-applies the curated load-out that upstream installers overwrite, and validates the result. Use when the user says "upgrade skills", "update gstack", "nâng cấp skill", "upgrade đám skill", "check skill drift", when adding a new skill derived from an upstream one, or on a periodic maintenance pass. Run this INSTEAD of calling an upstream installer directly.
+description: Maintain this skill setup by reviewing drift, upgrading upstream suites, merging forks, reapplying the curated load-out, and validating. Use for "upgrade skills", "update gstack", "nâng cấp skill", "upgrade đám skill", "check skill drift", adding an upstream-derived skill, or maintenance. Use instead of an upstream installer directly.
 ---
 
 # Ref skills — derive, refine, upgrade
@@ -14,6 +14,15 @@ Skills here that are derived from an upstream suite carry a `REF.md`. Two modes:
   merge surface plus its infrastructure.
 - **`fork`** — upstream is vendored to `.upstream/SKILL.md` as a merge base and 3-way
   merged on upgrade. Only for small, pure-prose upstreams you intend to diverge from.
+
+## Upgrade boundary
+
+Use `status` and loadout dry runs for review-only requests. `upgrade`, `ensure`, and
+`--apply` can fetch remote content, execute installers, and change user-level settings.
+Run them only within an installation/update request. Record resolved versions/commits
+and review upstream diffs; a moving branch or `@latest` is not a reproducible pin.
+On controlled hosts, use an approved pinned toolchain or disable network installation
+with `CONAN_AGENT_ENSURE=0`. Do not claim this installer alone certifies production safety.
 
 ## The one command
 
@@ -59,16 +68,10 @@ writing it to the same disk defeats the purpose. Vendoring these into this repo 
 would make them git-backed automatically, but this repo is public, so that is a licensing
 decision rather than a technical one.
 
-## Why the load-out has to be re-applied, not configured
+## Keep the selected load-out
 
-gstack's `./setup` calls `link_claude_skill_dirs` into `$HOME/.claude/skills` in **both**
-of its install branches. There is no flag or layout that stops it — every upgrade
-repopulates that directory with its ~74 skills. So `loadout.txt` is *enforced after* the
-installer runs, which is why upgrades go through this skill rather than through
-`/gstack-upgrade` directly.
-
-Consequence: if you ever run an upstream installer by hand, run
-`refsync.py loadout --apply` afterwards or the load-out silently reverts.
+Upstream installers may repopulate active skill directories. After an authorized
+install, preview and re-apply the curated profile; preserve unrelated external skills.
 
 ## Upgrading a wrap (never automatic)
 
@@ -111,8 +114,8 @@ fix — "upstream's wording is a bit off" is not a reason.
 `context-budget.json` and runs inside `upgrade`. Shrinks lower the ceiling and lock;
 growth past one fails the run — raise the ceiling deliberately, in the same diff.
 Over ~12KB of SKILL.md, carve the reference bulk into `sections/` behind a
-"Section index" table and leave the doctrine in the skeleton. Never trim a
-`description` to save tokens: that is the always-on cost that buys correct routing.
+"Section index" table and leave the doctrine in the skeleton. Trim redundant description text while preserving precise triggers; avoid giant
+capability lists that compete with unrelated skills.
 See ARCHITECTURE.md → "Context budget".
 
 ## Related

@@ -1,5 +1,11 @@
 ## Step 4 — App Preview video (Apple) / promo video (Play)
 
+## Contents
+
+- Capture and rendering
+- Submission checks
+- Voiceover options
+
 > ⚠️ **The App Preview VIDEO must NOT contain device frames** (Apple Guideline
 > 2.3.4 — *"the app preview includes device images and/or device frames… revise
 > the app preview to only use video screen captures of the app"*). This is the
@@ -99,14 +105,12 @@ caption; the script synths each line, **lets clip length drive scene duration**
 `loudnorm`-normalizes — then stays inside the 15–30s window (warns if narration
 pushes past 30s).
 
-**Default to voiced — don't ship a silent "preview".** Have the per-platform
-config `os.environ.setdefault("VO_BACKEND", "kokoro")` so a bare
-`python gen_*_preview.py` run still narrates; a forgotten `VO_BACKEND` is the
-#1 way a mute video reaches the store. To deliberately ship a silent stereo
-track (still spec-valid for Apple), pass `VO_BACKEND=none`. After encoding, the
-renderer **self-verifies the audio**: if a voiced run comes out under −50 dB it
-`raise`s `VOICEOVER MISSING` instead of writing a mute file — so a silent
-result fails the build rather than slipping into the listing.
+**Voiceover is opt-in.** The current renderer defaults to a silent stereo track
+when `VO_BACKEND` is unset; that remains valid for Apple when the required audio
+track is present. To request narration, set `VO_BACKEND=kokoro` (or another
+listed backend) explicitly; `VO_BACKEND=none` makes the silent choice explicit.
+For a voiced run, the renderer self-verifies that the result is not effectively
+silent and fails if narration is missing.
 
 Pick a voice source (decision order for a free, license-clean, published asset):
 
