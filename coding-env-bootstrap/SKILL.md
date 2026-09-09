@@ -1,12 +1,11 @@
 ---
 name: coding-env-bootstrap
-description: Reproduce this operator's coding-agent environment on a new or remote machine — the skills, plugins, MCP servers, model/effort settings, CLI toolchain and secrets protocol that make Claude Code and Codex perform here. Point an agent at BOOTSTRAP.md on the target machine and it installs and verifies everything itself. Use when setting up a new laptop/server/container, onboarding a remote production box, moving to a different machine, or when the user says "bring my setup over", "cài lại máy mới", "setup remote", "config snapshot", "what do I need to install".
+description: Reproduce this operator's coding-agent environment on a new/remote machine — skills, plugins, MCP servers, model settings, CLI toolchain, and secrets protocol. Point an agent at BOOTSTRAP.md to install and verify it. Use for a new laptop/server/container, remote setup, or "bring my setup over", "cài lại máy mới", "setup remote", "config snapshot", "what do I need to install".
 ---
 
 # Coding Environment Bootstrap
 
-The portable half of this workstation, written so an agent on the target machine can
-install it without the operator narrating each step.
+Portable setup instructions for an agent on the target machine.
 
 ## Use it
 
@@ -27,10 +26,17 @@ first, then re-issue the instruction.
 | `BOOTSTRAP.md` | The agent-executable install + verification runbook. This is the artifact. |
 | `AUDIT.md` | Findings from the source-machine scan and what to change — read before trusting the current config as ideal. |
 | `harness.py` | Idempotent `audit` / `apply` / `verify` entry point for Claude, Codex, or both. |
+| `PROJECT-RULES.md` | Single-source project rules, native adapters, and drift checks. |
 | `templates/` | Secret-free Claude settings, Codex production profile, and shared global quality bar. |
 | `local/` | Gitignored. Machine-specific values and anything sensitive. Never committed. |
 
 ## Ground rules
+
+- A setup question or audit stays read-only. Install/apply only within an authorized
+  setup or upgrade. Review downloaded installers and resolved versions; moving
+  branches and `@latest` do not provide reproducibility. Use an approved pinned
+  toolchain on controlled hosts; `CONAN_AGENT_ENSURE=0` disables automatic network installs.
+
 
 - **This repo is public.** No API keys, tokens, account identifiers, internal hostnames,
   or employer project names in `BOOTSTRAP.md` or `AUDIT.md`. Secrets are named and

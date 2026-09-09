@@ -5,10 +5,10 @@ description: Portable application-security audit using open-source tooling — O
 
 # Secure Code Audit
 
-A repeatable, vendor-neutral security pass any repo can run locally. Four layers: **secrets**, **dependencies**, **static analysis (SAST)**, and a **manual OWASP review**. Prefer tools already installed; otherwise note the one-line install. Never exfiltrate code to a third-party service without the user's explicit OK — all default tools here run locally.
+A repeatable, vendor-neutral security pass any repo can run locally. Four layers: **secrets**, **dependencies**, **static analysis (SAST)**, and a **manual OWASP review**. Prefer tools already installed; otherwise note the one-line install. Never exfiltrate code to a third-party service without the user's explicit OK — local execution does not imply zero network access. Inspect scanner telemetry, rule downloads, and credential-verification behavior. Keep secret values redacted.
 
 ## 1. Secret scanning (run first — leaked creds are the highest-severity, fastest win)
-- Working tree AND full history: `gitleaks detect --no-banner` or `trufflehog git file://. --only-verified`.
+- Working tree AND full history: a redacted gitleaks scan or TruffleHog with credential verification disabled (check installed flags).
 - Look for: API keys, tokens, JWTs, private keys, DB/LDAP passwords, cloud creds, `.env` committed by accident.
 - If a real secret is found in history: say plainly it must be **rotated** (history rewrite does not unleak it from clones/caches), then offer to scrub history. Add the path to `.gitignore` and commit a `.env.example` instead.
 
@@ -47,4 +47,4 @@ Classic SAST misses these; review manually wherever the app calls a model (OWASP
 - Multi-tenant: every query is scoped by tenant/org id server-side; no way to read another tenant's rows by changing an id.
 
 ## Output
-Findings table: **severity (Critical/High/Medium/Low) → OWASP/CWE → file:line → impact → fix**. Lead with anything exploitable now (exposed secret, missing authz, injection). Apply the safe fixes; list the ones needing the user's decision. End with the exact commands you ran so the audit is reproducible.
+Findings table: **severity (Critical/High/Medium/Low) → OWASP/CWE → file:line → impact → fix**. Lead with anything exploitable now (exposed secret, missing authz, injection). For audit-only requests, report findings without edits. Apply scoped fixes only when requested; credential rotation and history rewriting need explicit authority. End with the exact commands you ran so the audit is reproducible.

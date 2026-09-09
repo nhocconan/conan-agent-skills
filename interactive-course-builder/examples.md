@@ -1,5 +1,16 @@
 # Examples — the few-shot pack (annotated GOLD vs FAIL)
 
+## Contents
+
+- 1 · Felt-problem opening (the first paragraph of every lesson)
+- 2 · Quiz — distractors are misconceptions, not filler
+- 3 · Takeaway — quotable, load-bearing, specific
+- 4 · The coherence triangle (felt problem ↔ takeaway ↔ quiz)
+- 5 · Analogy (the `insight` callout) — map the mechanism, state the break
+- 6 · SVG diagram — relationship, not decoration
+- 7 · Formula ⇒ worked number ⇒ plain words (never notation alone)
+- 8 · First-use rule in practice
+
 > Rules tell a strong model what to do; **examples are what weaker models
 > actually imitate.** Every builder prompt must include this file. Each pair
 > below is GOLD (shipped house output or equivalent) vs FAIL (the pattern

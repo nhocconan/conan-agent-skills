@@ -17,8 +17,9 @@ runs turn sequential:
 - "It's cleaner to finish A first" — taste, not a dependency.
 - "B might need to know what A decided" — then the *lead* decides it up front (§6 seam
   contract) and both start now.
-- "I want to review A before B starts" — review happens off the critical path, in parallel
-  with B; if A turns out wrong, B's rework is usually cheaper than the serialized wait.
+- Review of A need not block unrelated B. If B depends on A's validated contract
+  or a safety precondition, keep the dependency; do not assume speculative rework
+  is cheaper than waiting.
 
 **Waves.** A wave is every node whose dependencies are satisfied. Launch the whole wave at
 once. When a stage-2 node depends only on *its own* stage-1 node, do not wait for the whole

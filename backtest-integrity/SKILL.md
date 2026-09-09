@@ -17,9 +17,10 @@ survive this whole checklist and reproduce from a clean re-run.
 
 ## Bug classes that inflate results (audit each)
 
-1. **Annualization**: derive periods-per-year from the actual rebalance cadence
-   (`ppy = 252 / rebalance_days`) or the real calendar span — never a hardcoded 52/252 that
-   doesn't match the loop. Wrong ppy inflates BOTH CAGR and Sharpe multiplicatively.
+1. **Annualization**: use the frequency of the sampled return series and its market
+   calendar, not the trading/rebalance frequency. Daily marked-to-market returns
+   remain daily even with monthly rebalances. Compute CAGR from elapsed years;
+   document the assumptions behind Sharpe scaling, especially serial correlation.
 2. **Look-ahead via truncated features**: never date-filter the raw price/fundamental data
    *before* computing features — a momentum/ADTV feature computed on truncated history ranks
    differently and flatters OOS probes. Build features on FULL history, then **slice the
@@ -29,8 +30,8 @@ survive this whole checklist and reproduce from a clean re-run.
    "current" attributes (today's sector, today's shares outstanding) is quiet look-ahead.
 4. **Survivorship**: a current-listings universe biases results — but don't just *assert*
    doom either way: **test it empirically** by adding real delisted/blown-up names and
-   re-running WITH vs WITHOUT. (Finding from VN large/mid-caps: with a stop-loss the damage
-   is bounded and the bias was negligible — the experiment, not the textbook, settles it.)
+   re-running WITH vs WITHOUT. Include delisting returns and point-in-time membership;
+   a stop-loss does not guarantee executable exits or remove survivorship bias.
    Delisted names auto-exclude from LIVE signals; they exist for honest history only.
 5. **Costs & capacity**: realistic fees + slippage per market; position sizes capped by
    liquidity (e.g. % of ADTV); no fills at prices the size couldn't get. An edge that dies

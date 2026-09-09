@@ -1,5 +1,18 @@
 # BOOTSTRAP — reproduce the coding-agent environment
 
+## Contents
+
+- 0. [CORE] Preconditions
+- 1. [CORE] Toolchain
+- 2. [CORE] Agent CLIs
+- 3. [CORE] Apply the portable harness
+- 4. [CORE] Settings and global instructions
+- 5. Plugins, commands, and marketplaces
+- 6. MCP servers
+- 7. Secrets and identity — operator-only, never automated
+- 8. [CORE] Per-project rulebook
+- 9. Final verification
+
 **Audience: an AI coding agent running on the target machine.** Execute top to bottom.
 After each step run its verification and report `done` / `skipped (reason)` /
 `failed (output)`. Do not silently skip a failing step; do not invent versions.
@@ -135,6 +148,10 @@ This one command:
 - writes `~/.codex/production.config.toml` instead of copying the source machine's
   path-specific base config; and
 - configures `context7` for both CLIs and the official OpenAI docs MCP for Codex.
+
+The profile selects `gpt-6-astra` at high effort for the lead; workers use the
+canonical routing policy. Confirm availability on the target host. This source
+update does not change an already-running session or apply global configuration.
 
 Run Codex production jobs with the bounded profile:
 
@@ -296,14 +313,18 @@ configuration key names when auditing; never print a whole settings file to a sh
 
 ## 8. [CORE] Per-project rulebook
 
-Each repo carries its own `CLAUDE.md` / `AGENTS.md` — that's project-local and arrives
-with the clone. Two machine-level rules the operator applies everywhere:
+Use one canonical `AGENTS.md`; Claude and Gemini CLI get native import adapters,
+not independently maintained copies. Save shared rules in the canonical file.
+Follow [the project-rule convention](PROJECT-RULES.md) for migration, scoped rules,
+platform limits, and verification. Do not automatically overwrite existing rules.
 
-- A rulebook that grows past the char limit stops being loaded. Keep it to invariants
-  and traps; link out the reference material.
-- The behavioural baseline (think before coding, simplicity, surgical changes,
-  goal-driven verification) lives in the project `CLAUDE.md`, matching the
-  `karpathy-skills` plugin.
+```bash
+python3 coding-env-bootstrap/project_rules.py check --root /path/to/project
+# Within an authorized project setup, create missing adapters:
+python3 coding-env-bootstrap/project_rules.py apply --root /path/to/project
+```
+
+Keep startup rules concise; loading limits and hierarchy differ by platform.
 
 ---
 

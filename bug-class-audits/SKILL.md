@@ -13,21 +13,19 @@ dashboard incidents into a system where ~35 rules are enforced automatically.
 ## The loop
 
 1. **Detect the class.** After fixing a bug, grep the codebase for the same pattern.
-   More than one hit — or the second time this shape of bug appears — makes it a class.
+   Multiple hits are candidates: confirm the same violated invariant before grouping them.
    (Real examples: `toFixed(` for display → 38 sites; a global filter missing from SQL
    blocks → 8 sites across 3 routers; `× 0.N` fabricated KPI coefficients → 6 sites.)
-2. **Fix every site now**, not just the reported one. The report was a sample, not the bug.
-    For multi-module or wide call-site fixes, use `agent-orchestration`: a higher-level model
-    (**Fable, Sol/Astra; Gemini 3.8 Flash in agy**) orchestrates the fix plan and audit gate, fanning out disjoint site
-    fixes to lower-level worker models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash**) when suitable,
-    reserving the higher-level model for call sites with difficult contract changes.
+2. **Fix confirmed sites within the authorized scope.** Report unrelated sites for follow-up.
+   For independent modules, use [agent-orchestration](../agent-orchestration/SKILL.md):
+   Astra defines the invariant and final gate; Terra/Luna handle scoped fixes.
 3. **Write the rule down** as a numbered entry in the project's anti-pattern list
-   (CLAUDE.md / AGENTS.md "Anti-patterns to avoid"): what the pattern is, why it's wrong,
+   (canonical AGENTS.md, not adapters): the pattern, why it's wrong,
    what to do instead. Numbered rules are citable ("§33") and become the project's
    institutional memory across context resets and sessions.
 4. **Write a mechanical audit** when the rule is grep-able/parse-able: a small script in
    `scripts/audit/` that scans the relevant code and exits non-zero on violations.
-   Deterministic, fast, zero-dependency (stdlib + regex/AST is fine).
+   Use AST/type-aware checks when syntax alone is ambiguous. Test the audit with a failing example and a legitimate counterexample.
 5. **Wire it into the gate** — pre-push hook and/or CI — so the rule enforces itself.
    A rule that relies on someone remembering it is a suggestion.
 6. **Keep an index**: a table of concern → rule § → audit script → where it's wired.

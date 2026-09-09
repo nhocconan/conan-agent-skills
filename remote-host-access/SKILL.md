@@ -7,8 +7,7 @@ description: Diagnose and fix "the port is open but it still won't connect" on a
 
 The reported symptom is almost always "I opened the port and it still doesn't work." That
 sentence contains an unverified presupposition — that the rule which was added is the rule
-that is being consulted. It usually is not. Guessing costs a session; descending the layers
-costs five minutes and terminates.
+that is being consulted. It usually is not. Use observed evidence to narrow the failing layer.
 
 ## Read the failure before touching anything
 
@@ -18,15 +17,16 @@ The client's error already names the layer, and the two common ones mean opposit
   group, or a wrong address. Nothing is listening *or* nothing is allowed to reach it.
 - **Connection refused** — the packet arrived and the host actively rejected it. The
   network path works; nothing is bound on that port, or it is bound to the wrong interface.
-  Firewall rules are almost never the cause of a refusal.
+  A firewall REJECT can also cause refusal; inspect counters and packet evidence.
 - **Authentication / handshake failure** — the network is fine. Stop debugging the network.
 
-Never edit a firewall rule in response to `connection refused`.
+Diagnose before changing rules. For authorized bind/firewall changes, preserve a working
+management session, identify a recovery route, narrow source CIDRs, and prepare rollback.
 
 ## The ladder — descend, do not skip
 
-Run each rung, record the result, and only continue while the answer is "fine". The first
-rung that fails is the bug; rungs below it are not evidence.
+Run each rung, record the result, and only continue while the answer is "fine". A failing rung narrows the cause; host-side listener checks and packet captures
+can still help distinguish a service failure from a network policy.
 
 1. **Name → address.** Resolve the host and confirm the address is the one you think.
    A stale DNS record, a CDN/proxy in front, or an IPv6 AAAA record answering first is a

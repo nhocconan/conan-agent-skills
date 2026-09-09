@@ -11,7 +11,7 @@ These are the recurring gaps that turn a "finished" management UI into a pile of
 - **Pagination** (consistent items-per-page across the whole site — pick one, e.g. 20, use it everywhere), **search**, and **filters** (by category/status/department/whatever the domain has). Filters must affect every component on the page.
 - Consistent table style site-wide: same table component, same pagination control, same export/filter affordance placement.
 - Counts/aggregates shown on a row (e.g. "Enrolled: 12") must be clickable, drilling into the underlying list.
-- No useless rows: hide zero/empty entries; no dead columns; no debug/AI-explanation footers.
+- Preserve meaningful zero/empty records; hide them only under an explicit, visible filter. Remove dead columns and debug footers.
 
 ## Forms & pickers
 - Add/Edit forms open on demand (modal/route) — never permanently expanded eating the list screen.
@@ -36,24 +36,23 @@ These are the recurring gaps that turn a "finished" management UI into a pile of
 Every feature must be reachable by clicking from a menu — if it exists only as a URL or API, it doesn't exist. New admin pages get menu entries, gated to the right roles.
 
 ## Operational actions belong in the admin UI, not in a growing pile of scripts
-The moment an operation is needed a **second** time, it stops being a script and becomes a screen. Backfills, re-syncs, backup/restore, reindex, cache purge, data export/import — an operator should not have to remember which script in which directory with which flags, on a machine they may not even be on.
+Choose an admin screen for recurring operations only when operators need self-service and its access controls can be maintained. A documented, audited CLI may be the right interface for rare or privileged operations.
 - **Self-service parameters.** The screen exposes what the script took as argv: which org/tenant, which connector/data type, which period (from → to). "Re-run the whole thing" is not an option, it is a fallback.
-- **One command for environment-level ops.** Deploying or bringing the stack up must be a single documented command, and **migrations run automatically** on startup — never a checklist the operator is expected to walk. *"admin có rảnh đâu mà đi check từng cái."*
+- **One command for environment-level ops.** Deploying or bringing the stack up must be a single documented command, and migrations follow the project’s release procedure with locking, compatibility checks, and recovery. Do not introduce automatic production migrations merely for convenience. *"admin có rảnh đâu mà đi check từng cái."*
 - **Configuration lives in the product, not in files.** Anything a tenant/customer sets (credentials, connector config, thresholds) belongs in a form with a **Test connection** button and a save — not in `.env`, which cannot scale past one customer and cannot be edited by the person who owns the value.
 - **Long jobs are jobs**: queued, with visible status, progress, and history — not a request that hangs. Failures name the failing unit and are re-runnable for that unit alone.
 - **Dry-run / preview before commit** for anything that writes at scale, and an audit trail of who ran what with which parameters.
 - Health/status pages must reflect reality: a connector shown green must have actually succeeded recently, and a stored error is rendered as human copy, never a raw stack trace or validation dump.
 
 ## Implementation patterns (modern stack)
-- **Tables/grids**: use a headless data-grid (e.g. TanStack Table — v9 stable since 2026-08: tree-shakable feature imports, TanStack Store state; v8 knowledge mostly carries over) so sorting/filtering/column-visibility/row-selection are state you control, not bespoke per page. One shared table component site-wide (see consistency rule above).
+- **Tables/grids**: use a headless data-grid (e.g. TanStack Table, using the project’s installed version and current official docs) so sorting/filtering/column-visibility/row-selection are state you control, not bespoke per page. One shared table component site-wide (see consistency rule above).
 - **Large datasets**: server-side pagination/sort/filter for the source of truth; **virtualize** rendered rows (TanStack Virtual / react-window) — never put 10k+ DOM rows on screen. For the big-file uploads above, stream/queue server-side and show progress; the preview table virtualizes too.
-- **Pickers**: combobox/tree built on an accessible primitive (Radix, React Aria, shadcn/ui) — you get keyboard nav and ARIA for free instead of hand-rolling a broken dropdown.
+- **Pickers**: combobox/tree built on an accessible primitive (Radix, React Aria, shadcn/ui) — verify the resulting keyboard behavior and ARIA; primitives do not guarantee accessibility.
 
 ## Fleet orchestration for admin suites
-When building or updating multiple admin screens, list views, or upload flows, use `agent-orchestration`:
-- **Orchestrator tier**: A higher-level model (**Claude Fable, OpenAI Sol/Astra; Gemini 3.8 Flash in agy**) defines the shared table/filter contracts, schema types, destructive confirm flows, and site-wide consistency.
-- **Worker tier**: Subagents running lower-level models (**Opus, Sonnet, GPT Terra, GPT Luna, Flash, etc.**) implement individual list screens, forms, and preview tables when suitable (in `agy`, use **Gemini 3.8 Flash** throughout).
-- **Difficult work exception**: For difficult subtasks (complex streaming uploads, multi-tenant bulk mutations, high-risk cascade deletions), using the higher-level model for that worker node is still completely appropriate.
+For independent screen work, use [agent-orchestration](../agent-orchestration/SKILL.md)
+and its canonical routing: Astra defines shared contracts and verifies the combined
+result; Terra builds scoped screens; Luna handles simple checked edits.
 
 ## Accessibility floor (non-negotiable, every management screen)
 These ship broken constantly on admin UIs — bake them in, don't bolt on later:

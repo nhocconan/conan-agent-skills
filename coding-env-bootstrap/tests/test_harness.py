@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -24,11 +25,28 @@ def invoke(
 ) -> subprocess.CompletedProcess[str]:
     env = dict(os.environ)
     env["HOME"] = str(home)
+    run_repo = REPO
+    # Upgrade writes fingerprints/previews and ratchets budgets. A temporary HOME
+    # alone does not isolate those repository writes from the developer checkout.
+    if str(REFSYNC) in args and "upgrade" in args:
+        run_repo = home / "fixture-repo"
+        shutil.copytree(
+            REPO, run_repo,
+            ignore=shutil.ignore_patterns(
+                ".git", ".vendor", ".agents", ".codex", ".claude", ".gemini",
+                "__pycache__", "projects", "local", "state", "PROPOSALS.md",
+            ),
+        )
+        args = tuple(
+            str(run_repo / "ref-skills/refsync.py") if arg == str(REFSYNC) else arg
+            for arg in args
+        )
+        env["CONAN_AGENT_ENSURE"] = "0"
     if env_updates:
         env.update(env_updates)
     return subprocess.run(
         [sys.executable, *args],
-        cwd=REPO,
+        cwd=run_repo,
         env=env,
         text=True,
         capture_output=True,
@@ -121,6 +139,8 @@ class HarnessTests(unittest.TestCase):
             self.assertTrue(all(path.is_symlink() for path in active.iterdir()))
 
     def test_upgrade_skips_unavailable_inactive_refs_on_headless_host(self):
+        budget_path = REPO / "skill-miner/context-budget.json"
+        budget_before = budget_path.read_bytes()
         with tempfile.TemporaryDirectory() as raw_home:
             home = Path(raw_home)
             result = invoke(
@@ -137,6 +157,7 @@ class HarnessTests(unittest.TestCase):
                 len(list((home / ".claude/skills").iterdir())),
                 CORE_COUNT,
             )
+        self.assertEqual(budget_path.read_bytes(), budget_before)
 
     def test_named_upgrade_remains_strict_when_auto_omits_it(self):
         with tempfile.TemporaryDirectory() as raw_home:
@@ -240,10 +261,10 @@ class HarnessTests(unittest.TestCase):
     def test_codex_refuses_same_name_external_skill_collision(self):
         with tempfile.TemporaryDirectory() as raw_home:
             home = Path(raw_home)
-            collision = home / ".agents/skills/a11y-audit"
+            collision = home / ".agents/skills/agent-orchestration"
             collision.mkdir(parents=True)
             (collision / "SKILL.md").write_text(
-                "---\nname: a11y-audit\ndescription: collision\n---\n"
+                "---\nname: agent-orchestration\ndescription: collision\n---\n"
             )
 
             result = invoke(

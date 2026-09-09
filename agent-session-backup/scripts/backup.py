@@ -9,12 +9,14 @@ Usage:
     python3 backup.py [DEST_DIR]
     # DEST_DIR defaults to ~/Claude_Light_Backup_<YYYYMMDD>
 
-What it copies (light = history files only, no caches / VM / binaries):
+What it copies (light = session metadata + transcript files only, no caches / VM / binaries):
     Cowork : ~/Library/Application Support/Claude/claude-code-sessions/<acct>/<space>/local_*.json
              ~/Library/Application Support/Claude/local-agent-mode-sessions/<acct>/<space>/local_*.json
     Code   : ~/.claude/projects/<slug>/*.jsonl
 Cowork keeps history in BOTH trees — backing up only claude-code-sessions
-silently loses the local-agent-mode half. Structure is preserved verbatim so
+silently loses the local-agent-mode half. In local-agent-mode-sessions, a
+`local_<uuid>.json` metadata file may have a paired `local_<uuid>/` transcript
+directory; copy that pair together. Structure is preserved verbatim so
 restore.py can mirror it straight back.
 """
 import json, os, glob, shutil, collections, sys, time
@@ -43,6 +45,45 @@ def first_cwd_from_jsonl(path):
         pass
     return None
 
+
+def copy_paired_transcript(metadata_path, cowork_src, cowork_dest):
+    """Copy the `local_<uuid>/` transcript dir paired with metadata, if present.
+
+    Only a directory with the exact metadata stem is session content. This avoids
+    copying neighbouring local-agent-mode caches/configuration while preserving the
+    transcript that makes the metadata-backed session readable after restore. Symlinks
+    are deliberately skipped: following one could pull arbitrary machine data into a
+    backup or recurse through a cycle.
+    """
+    transcript_src = os.path.splitext(metadata_path)[0]
+    if not os.path.isdir(transcript_src):
+        return False, 0, 0
+    if os.path.islink(transcript_src):
+        return False, 0, 1
+    rel = os.path.relpath(transcript_src, cowork_src)
+    transcript_dst = os.path.join(cowork_dest, rel)
+    copied_bytes = skipped_links = 0
+    for root, dirnames, filenames in os.walk(transcript_src, followlinks=False):
+        linked_dirs = [name for name in dirnames if os.path.islink(os.path.join(root, name))]
+        skipped_links += len(linked_dirs)
+        dirnames[:] = [name for name in dirnames if name not in linked_dirs]
+
+        relative_root = os.path.relpath(root, transcript_src)
+        destination_root = (transcript_dst if relative_root == "." else
+                            os.path.join(transcript_dst, relative_root))
+        os.makedirs(destination_root, exist_ok=True)
+        for filename in filenames:
+            source = os.path.join(root, filename)
+            if os.path.islink(source):
+                skipped_links += 1
+                continue
+            if not os.path.isfile(source):
+                continue
+            destination = os.path.join(destination_root, filename)
+            shutil.copy2(source, destination)
+            copied_bytes += os.path.getsize(source)
+    return True, copied_bytes, skipped_links
+
 def main():
     dest = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
         HOME, "Claude_Light_Backup_" + time.strftime("%Y%m%d"))
@@ -57,11 +98,12 @@ def main():
     for cowork_src, sub in COWORK_TREES:
         cowork_dest = os.path.join(dest, sub)
         os.makedirs(cowork_dest, exist_ok=True)
-        cw_keep = cw_skip = 0
+        cw_keep = cw_skip = cw_transcripts = cw_skipped_links = 0
         kept = collections.Counter(); skipped = collections.Counter()
         for f in glob.glob(os.path.join(cowork_src, "*", "*", "local_*.json")):
             try:
-                d = json.load(open(f))
+                with open(f, encoding="utf-8") as handle:
+                    d = json.load(handle)
                 cwd = d.get("cwd") or d.get("originCwd") or ""
             except Exception:
                 continue
@@ -70,11 +112,20 @@ def main():
                 dst = os.path.join(cowork_dest, rel)
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
                 shutil.copy2(f, dst)
+                has_transcript, transcript_bytes, skipped_links = copy_paired_transcript(
+                    f, cowork_src, cowork_dest
+                )
+                if has_transcript:
+                    cw_transcripts += 1
+                cw_skipped_links += skipped_links
                 cw_keep += 1; cw_bytes += os.path.getsize(f); kept[cwd] += 1
+                cw_bytes += transcript_bytes
             else:
                 cw_skip += 1; skipped[cwd or "(no cwd)"] += 1
         man += ["=" * 60,
-                f"CLAUDE COWORK [{os.path.basename(cowork_src)}] — kept {cw_keep} sessions, skipped {cw_skip}",
+                f"CLAUDE COWORK [{os.path.basename(cowork_src)}] — kept {cw_keep} sessions "
+                f"({cw_transcripts} paired transcript dirs), skipped {cw_skip}; "
+                f"ignored {cw_skipped_links} transcript symlink(s)",
                 "=" * 60, "\n[KEPT] cwd -> #sessions:"]
         man += [f"  {n:3d}  {c}" for c, n in sorted(kept.items())]
         man += ["\n[SKIPPED] cwd not on this machine:"]
@@ -112,7 +163,8 @@ def main():
             f"TOTAL DATA: Cowork {cw_bytes/1048576:.1f} MB | Code {cc_bytes/1048576:.1f} MB",
             "=" * 60]
 
-    open(os.path.join(dest, "MANIFEST.txt"), "w").write("\n".join(man))
+    with open(os.path.join(dest, "MANIFEST.txt"), "w", encoding="utf-8") as handle:
+        handle.write("\n".join(man))
     # drop the restore guide next to the data
     guide = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "RESTORE_TEMPLATE.md")
     if os.path.exists(guide):

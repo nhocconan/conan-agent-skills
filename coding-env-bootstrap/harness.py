@@ -94,11 +94,22 @@ def write_if_changed(path: Path, content: str) -> bool:
     return True
 
 
-def install_managed_instructions(path: Path) -> bool:
+def managed_instructions_block() -> str:
     body = (TEMPLATES / "global-instructions.md").read_text(encoding="utf-8").rstrip()
-    block = f"{START}\n{body}\n{END}"
+    return f"{START}\n{body}\n{END}"
+
+
+def valid_managed_markers(current: str) -> bool:
+    return (current.count(START) == current.count(END) == 1
+            and current.index(START) < current.index(END))
+
+
+def install_managed_instructions(path: Path) -> bool:
+    block = managed_instructions_block()
     current = path.read_text(encoding="utf-8") if path.exists() else ""
-    if START in current and END in current:
+    if START in current or END in current:
+        if not valid_managed_markers(current):
+            raise ValueError(f"Malformed managed instruction markers: {path}")
         before, rest = current.split(START, 1)
         _, after = rest.split(END, 1)
         updated = f"{before}{block}{after}"
@@ -261,10 +272,9 @@ def verify_target(target: str, profile: str) -> list[str]:
     else:
         return errors
 
-    if not instructions.is_file() or START not in instructions.read_text(
-        encoding="utf-8"
-    ):
-        errors.append(f"{target}: managed global instructions are missing")
+    current = instructions.read_text(encoding="utf-8") if instructions.is_file() else ""
+    if not valid_managed_markers(current) or managed_instructions_block() not in current:
+        errors.append(f"{target}: managed global instructions are missing, malformed, or stale")
     return errors
 
 

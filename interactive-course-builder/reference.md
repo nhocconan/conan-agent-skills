@@ -1,5 +1,22 @@
 # Interactive Course Standard — Reference Spec
 
+## Contents
+
+- The owner's style contract (applies to EVERY course, always)
+- 0 · Provenance & non-goals
+- 1 · Anatomy of a course
+- 2 · Design tokens (the contract)
+- 3 · Component vocabulary
+- 4 · Pedagogy — levels, structure, rigor
+- 5 · Accessibility (WCAG 2.2 AA — non-negotiable)
+- 6 · Interactivity engine & LMS contract
+- 7 · Content voice & anti-slop
+- 8 · Authoring workflow
+- 9 · The quality bar (what this standard is held to)
+- 10 · Ship checklist (run every time)
+- 11 · Splitting & course families
+- 12 · Pipeline & mechanical gates (model-agnostic builds)
+
 > The complete, authoritative spec for **every** interactive HTML training
 > course the owner ships (LMS-embedded or standalone). `template.html` is the
 > executable embodiment of everything here; `SKILL.md` is the short loader.

@@ -5,11 +5,15 @@ description: Framework-agnostic runtime performance audit against Core Web Vital
 
 # Web Performance Audit (Core Web Vitals)
 
-`vercel-react-best-practices` covers what to write. This skill measures what actually *renders* and finds the bottleneck in a running page. Optimize against the three Core Web Vitals; never guess — profile, fix the biggest contributor, re-measure.
+`vercel-react-best-practices` covers what to write. This skill measures what actually *renders* and finds the bottleneck in a running page. Optimize against the three Core Web Vitals; never guess — profile, report findings, and when fixes are requested, repair and re-measure.
 
 ## Targets (field "good" thresholds)
+
+Evaluate these at the 75th percentile, separately for mobile and desktop. Record
+the population and reporting window (CrUX uses a rolling 28-day window); a lab
+snapshot does not establish a field pass. See [Web Vitals](https://web.dev/articles/vitals).
 - **LCP** (Largest Contentful Paint) ≤ **2.5s** — load speed of the main content.
-- **INP** (Interaction to Next Paint) ≤ **200ms** — responsiveness; replaced FID as a Core Web Vital in 2024. This is usually the one that's bad on interactive dashboards.
+- **INP** (Interaction to Next Paint) ≤ **200ms** — responsiveness; replaced FID as a Core Web Vital in 2024. Check it on real dashboard interactions.
 - **CLS** (Cumulative Layout Shift) ≤ **0.1** — visual stability.
 - Supporting: TTFB < 0.8s, total JS transferred, main-thread long tasks (>50ms).
 

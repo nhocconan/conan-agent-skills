@@ -11,7 +11,8 @@ descending realism — pick per goal, and obey the shared rules at the bottom.
 
 ## Tier 1 — Masked clone of a real tenant (highest realism; for sales/demo servers)
 
-Clone → mask → export → restore. Never touch the source.
+Prefer synthetic data unless a real-data clone is authorized. Inventory sensitive fields,
+restrict export access and retention, then clone → mask → verify → restore. Never mutate the source.
 
 - **Never mutate the source DB.** Clone into a scratch database (`pg_dump | psql`), mask on
   the scratch, export the artifact, drop the scratch.
@@ -29,8 +30,8 @@ Clone → mask → export → restore. Never touch the source.
   entirely (not rendered, full of raw text, and it shrinks the artifact).
 - **Secrets**: NULL real credentials in the export; on restore, write FAKE blobs encrypted
   with the demo environment's own key so the UI shows "configured/active" without any real
-  secret in the artifact. Purge audit logs, tokens, DSAR/PII tables. Verify **zero residue**
-  of the real names with a final grep over every text column.
+  secret in the artifact. Purge audit logs, tokens, DSAR/PII tables. Scan text and structured fields for known identifiers; a clean grep alone does not prove
+  anonymization or prevent re-identification.
 - **Demo users**: fixed roles (owner/operator/viewer) with a documented password; drop real
   accounts from the export.
 
@@ -64,12 +65,13 @@ reports permissions as granted so no permission banners pollute captures. Detail
   demo worker can't throttle production APIs.
 - **Self-bootstrapping bring-up**: the canonical start is ONE command (`docker compose up
   -d` / one seed script) that is safe to re-run — first boot seeds, later boots skip.
-  Reset = documented one-liner (`down -v && up -d`, or delete the store file).
+  Reset must name exact demo-owned volumes/files and require authority for data deletion;
+  never use a broad volume reset on shared infrastructure.
 - **Write the runbook**: bring-up, login creds, demo period, reset, known gaps — the demo
   will be run by someone else (or by you, months later).
 
 ## Output
 
-Deliver: the seeding/masking script(s) committed where they belong, the runbook, and a
+Deliver: the seeding/masking script(s) in the agreed project location, the runbook, and a
 verification pass — walk the actual demo path in a browser/device and confirm every screen
 in the story is populated and consistent. An unverified demo environment is not done.

@@ -5,7 +5,8 @@ validate_skills.py — check SKILL.md files against Anthropic's published author
 Rules encoded (platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices):
 
   ERROR   frontmatter must open with `---` on line 1
-  ERROR   `name` required; <=64 chars; [a-z0-9-] only; must equal the directory name
+  ERROR   `name` required; <=64 chars; [a-z0-9-] only
+  ERROR   local convention: `name` must equal the directory name
   ERROR   `name` must not contain the reserved words "anthropic" or "claude"
   ERROR   `description` required, non-empty, <=1024 chars
   ERROR   no XML tags in `name` or `description`
@@ -37,7 +38,13 @@ from pathlib import Path
 NAME_RE = re.compile(r"^[a-z0-9-]+$")
 XML_RE = re.compile(r"<[a-zA-Z/][^>]*>")
 RESERVED = ("anthropic", "claude")
-LINK_RE = re.compile(r"\[[^\]]+\]\(([^)#]+\.md)\)")
+PRIVATE_PARTS = {".git", ".vendor", "history", "project-private", "private", "local", "state"}
+LINK_RE = re.compile(
+    r"\[[^\]]+\]\(\s*(?:<([^>]+)>|([^\s)#]+(?:#[^\s)]*)?))"
+)
+CODE_PATH_RE = re.compile(
+    r"(?<![\w./-])((?:\.\.?/)?(?:[\w.-]+/)*[\w.-]+\.md(?:#[\w.-]+)?)"
+)
 WHEN_HINTS = ("use when", "use this", "use for", "use it", "use proactively",
               "trigger", "apply when", "apply proactively", "invoke when", "run before",
               "run after", "when the user", "when working", "when building",
@@ -47,21 +54,78 @@ FIRST_PERSON = ("i can ", "i will ", "you can use this", "we ")
 
 def parse_frontmatter(text: str):
     """Return (fields, body, opened_ok)."""
-    if not text.startswith("---"):
+    lines = text.splitlines()
+    if not lines or lines[0] != "---":
         return {}, text, False
-    end = text.find("\n---", 3)
-    if end == -1:
+    end = next((i for i, line in enumerate(lines[1:], 1) if line == "---"), None)
+    if end is None:
         return {}, text, False
-    raw, body = text[3:end], text[end + 4:]
+    raw, body = "\n".join(lines[1:end]), "\n".join(lines[end + 1:])
     fields, key = {}, None
     for line in raw.split("\n"):
         m = re.match(r"^([a-zA-Z][\w-]*):\s*(.*)$", line)
         if m:
             key = m.group(1)
-            fields[key] = m.group(2).strip()
+            value = m.group(2).strip()
+            if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+                value = value[1:-1]
+            fields[key] = value
         elif key and line.strip():
             fields[key] += " " + line.strip()
+    # YAML is the source of truth when available: this correctly unwraps quoted
+    # scalars and block descriptions. The line parser above remains the fallback
+    # for bare interpreters where PyYAML is intentionally unavailable.
+    if yaml is not None:
+        try:
+            parsed = yaml.safe_load(raw)
+        except Exception:
+            pass
+        else:
+            if isinstance(parsed, dict):
+                fields = parsed
     return fields, body, True
+
+
+def _reference_target(raw: str) -> str | None:
+    """Return a local relative .md path, or None for non-local/placeholder text."""
+    target = raw.strip().split("#", 1)[0].split("?", 1)[0]
+    if not target or target.startswith(("#", "~", "$", "/")):
+        return None
+    if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", target):
+        return None
+    if re.match(r"^[A-Za-z]:[\\/]", target) or any(c in target for c in "<>*?{}"):
+        return None
+    return target
+
+
+def _references(text: str):
+    """Yield (path, is_markdown_link) references from one document."""
+    for match in LINK_RE.finditer(text):
+        target = match.group(1) or match.group(2)
+        target = _reference_target(target)
+        if target and target.lower().endswith(".md"):
+            yield target, True
+    for code in re.findall(r"`([^`\n]+)`", text):
+        # Angle-bracket placeholders are examples, not repository references.
+        if "<" in code or ">" in code:
+            continue
+        for match in CODE_PATH_RE.finditer(code):
+            target = _reference_target(match.group(1))
+            if target and target.lower().endswith(".md"):
+                yield target, False
+
+
+def _inside(root: Path, target: Path) -> bool:
+    """Keep validation inside the skill; never read sibling/private trees."""
+    try:
+        relative = target.relative_to(root)
+    except ValueError:
+        return False
+    # senior-operator/projects is explicitly gitignored and can contain employer
+    # context. Do not recurse into it even when a local path happens to resolve.
+    if root.name == "senior-operator" and relative.parts[:1] == ("projects",):
+        return False
+    return not any(part in PRIVATE_PARTS for part in relative.parts)
 
 
 def check(skill_dir: Path):
@@ -84,7 +148,9 @@ def check(skill_dir: Path):
     # others — the skill then silently fails to register outside Claude. Fix by making
     # the value a block scalar (`description: >-`) or quoting it.
     if opened and yaml is not None:
-        raw = text.split("---", 2)[1] if text.count("---") >= 2 else ""
+        lines = text.splitlines()
+        end = next((i for i, line in enumerate(lines[1:], 1) if line == "---"), None)
+        raw = "\n".join(lines[1:end]) if end is not None else ""
         try:
             parsed = yaml.safe_load(raw)
         except Exception as e:
@@ -96,8 +162,14 @@ def check(skill_dir: Path):
             if not isinstance(parsed, dict):
                 errors.append("frontmatter does not parse to a mapping")
 
-    name = fields.get("name", "")
-    desc = " ".join(fields.get("description", "").split())
+    raw_name = fields.get("name", "")
+    name = raw_name if isinstance(raw_name, str) else str(raw_name) if raw_name is not None else ""
+    if raw_name not in ("", None) and not isinstance(raw_name, str):
+        errors.append("`name` must be a string")
+    raw_desc = fields.get("description", "")
+    desc = " ".join(raw_desc.split()) if isinstance(raw_desc, str) else ""
+    if raw_desc not in ("", None) and not isinstance(raw_desc, str):
+        errors.append("`description` must be a string")
 
     if not name:
         errors.append("missing `name`")
@@ -107,7 +179,9 @@ def check(skill_dir: Path):
         if not NAME_RE.match(name):
             errors.append(f"`name` '{name}' must be lowercase letters/numbers/hyphens only")
         if name != skill_dir.name:
-            errors.append(f"`name` '{name}' != directory '{skill_dir.name}'")
+            errors.append(
+                f"local convention: `name` '{name}' != directory '{skill_dir.name}'"
+            )
         for w in RESERVED:
             if w in name.lower():
                 errors.append(f"`name` contains reserved word '{w}'")
@@ -137,30 +211,46 @@ def check(skill_dir: Path):
     if re.search(r"[A-Za-z0-9_]\\(?![ntr0\\dswbAZ.*+?()\[\]{}|^$'\"])[A-Za-z0-9_]", body):
         warns.append("possible Windows-style path (use forward slashes)")
 
-    # referenced files: must exist, and their own links must not go a further level deep
-    for rel in set(LINK_RE.findall(body)):
-        if rel.startswith(("http://", "https://")):
-            continue
-        target = (skill_dir / rel).resolve()
-        if not target.exists():
-            warns.append(f"referenced file missing: {rel}")
-            continue
-        try:
-            sub = target.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-        sub_lines = len(sub.split("\n"))
-        head = "\n".join(sub.split("\n")[:40]).lower()
-        if sub_lines > 100 and not any(k in head for k in ("## contents", "## table of contents",
-                                                           "# contents", "toc")):
-            warns.append(f"{rel} is {sub_lines} lines with no table of contents")
-        for nested in set(LINK_RE.findall(sub)):
-            # a back-link to SKILL.md is navigation, not a deeper level
-            if Path(nested).name == "SKILL.md" or nested.startswith(("http://", "https://")):
+    # Follow local references recursively. Progressive-disclosure routers may
+    # intentionally route to another sibling; report only an actually missing
+    # source-relative path, never the depth of an existing reference.
+    root = skill_dir.resolve()
+    queue = [(sk.resolve(), body)]
+    seen = {sk.resolve()}
+    while queue:
+        source, source_body = queue.pop(0)
+        for rel, is_link in sorted(set(_references(source_body))):
+            candidates = [source.parent / rel]
+            # Backtick paths are often commands documented from the skill root;
+            # retain that convention after trying the source-relative location.
+            if not is_link:
+                candidates.append(skill_dir / rel)
+            target = next((candidate.resolve() for candidate in candidates
+                           if candidate.exists()), None)
+            if target is None:
+                # Code spans commonly document paths in the target project (for
+                # example `CLAUDE.md`) and are not links from this skill. Validate
+                # them when they resolve locally, but do not turn examples into
+                # false missing-file warnings.
+                if not is_link:
+                    continue
+                missing = (source.parent / rel).resolve()
+                if _inside(root, missing):
+                    warns.append(f"{source.relative_to(root)}: referenced file missing: {rel}")
                 continue
-            if (target.parent / nested).exists():
-                warns.append(f"nested reference {rel} → {nested} (keep links one level deep)")
-                break
+            if not _inside(root, target) or not target.is_file() or target in seen:
+                continue
+            seen.add(target)
+            try:
+                sub = target.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            sub_lines = len(sub.split("\n"))
+            head = "\n".join(sub.split("\n")[:40]).lower()
+            if sub_lines > 100 and not any(k in head for k in ("## contents", "## table of contents",
+                                                               "# contents", "toc")):
+                warns.append(f"{target.relative_to(root)} is {sub_lines} lines with no table of contents")
+            queue.append((target, sub))
     return errors, warns
 
 
@@ -171,7 +261,10 @@ def main():
     args = ap.parse_args()
 
     root = Path(args.root).expanduser()
-    dirs = sorted(p for p in root.iterdir() if p.is_dir() and not p.name.startswith("."))
+    # Only directories that actually define a skill are skills. This lets the
+    # repository grow test/docs/support folders without false "no SKILL.md" errors.
+    dirs = sorted(p for p in root.iterdir()
+                  if p.is_dir() and not p.name.startswith(".") and (p / "SKILL.md").is_file())
 
     n_err = n_warn = 0
     for d in dirs:

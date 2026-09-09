@@ -1,6 +1,6 @@
 ---
 name: resilient-data-harvest
-description: Build data-collection runs that survive contact with reality — browser scraping, paged API pulls, and system-to-system migrations. Covers human-paced request rhythm and block/CAPTCHA avoidance, write-as-you-go checkpointing so a dropped connection costs one item not the whole run, resume-from-partial, endpoint/schema drift detection, data-quality gates before ingest, and the rule that the harvester script or skill gets updated the moment reality changes. Use when scraping a logged-in site, pulling a paginated API, backfilling or re-syncing a connector, migrating tickets/records between systems, or when the user says "lấy data", "scrape", "crawl", "backfill", "bị block", "CloudFlare", "chạy lại từ đầu".
+description: Build data-collection runs that survive contact with reality — browser scraping, paged API pulls, and system-to-system migrations. Covers rate-limit-aware pacing and challenge handling, write-as-you-go checkpointing so a dropped connection costs one item not the whole run, resume-from-partial, endpoint/schema drift detection, data-quality gates before ingest, and the rule that the harvester script or skill gets updated the moment reality changes. Use when scraping a logged-in site, pulling a paginated API, backfilling or re-syncing a connector, migrating tickets/records between systems, or when the user says "lấy data", "scrape", "crawl", "backfill", "bị block", "CloudFlare", "chạy lại từ đầu".
 ---
 
 # Resilient Data Harvest
@@ -20,17 +20,16 @@ ticket — whatever the unit is. Then keep a manifest of what is done.
 - Never hold the whole result set in memory to write at the end. A crash at 95% then
   costs 95%. *"Xong cái nào thì write ra file lưu cho chắc chứ."*
 
-## 2. Move at human speed
+## 2. Respect source limits
 
-Sources that notice a bot escalate: rate-limit → CAPTCHA → CloudFlare challenge → ban.
-Getting banned costs far more than going slow.
+Use authorized sources and respect published access terms and rate limits. Prefer a supported export/API when available.
 
 - **Pace deliberately** and state the pacing in the run log so it can be checked. If the
   plan says 4–8s per page, the log must show 4–8s per page — a claimed pace that the
   timestamps contradict is the bug.
 - **Serialize.** Do not fan out concurrent requests at one source to "go faster". One
   worker, steady rhythm. *"đừng có flood quá nhiều request vô cùng lúc nó chặn."*
-- **Jitter** the interval; a metronome is itself a signature.
+- Honor `Retry-After`; jitter retries to avoid synchronized retry bursts, not to evade detection.
 - **Back off on the first warning sign** (429, a challenge page, a sudden empty result),
   don't push through it.
 - Slow is the point. There is no deadline that beats losing the account.
@@ -46,7 +45,7 @@ re-implementing auth or re-solving login. Two consequences that have both bitten
 - **Don't stop to ask for what you already have.** If the operator has said the browser
   is open and logged in, proceed. Halting to re-confirm burns their time and tokens.
 
-When a challenge does appear, solve it in that live session rather than aborting the run.
+When a CAPTCHA or access challenge appears, preserve progress and let the user complete it manually. Do not bypass access controls.
 
 ## 4. Detect drift, don't paper over it
 
@@ -57,7 +56,7 @@ The source will change shape without telling you.
   it looks like success and poisons everything downstream.
 - **Compare against the last run.** A field that was 100% populated and is now 0% is
   drift, not data. Volume that halves is drift, not a slow week.
-- **Fail loudly, with the payload.** Log the raw response that broke the parse. A drift
+- **Fail with a redacted sample.** Remove secrets and personal data from diagnostic output. A drift
   failure you can't reproduce from the log is a second run wasted.
 - **Range-check the boundaries.** If the pull claims a date range, verify the returned
   data actually covers it — a truncated window that quietly returns stale rows reads as
@@ -73,7 +72,7 @@ Harvested data lands in a staging area first. Promote only after:
 - units that failed are listed explicitly — a partial harvest must **announce** it is
   partial, never present itself as complete.
 
-Store the raw payload alongside the parsed output. Re-parsing beats re-harvesting.
+Retain raw payloads only when necessary and authorized, with restricted access and a retention period. Write checkpoints atomically and lock concurrent resumes; never mark an item complete before its output is durable.
 
 ## 6. The harvester is a living artifact
 

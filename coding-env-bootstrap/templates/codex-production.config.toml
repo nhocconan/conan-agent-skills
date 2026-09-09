@@ -1,8 +1,9 @@
 # Portable production profile. Invoke with: codex --profile production
-# Authentication, model selection, provider URLs, notifications, plugins, and
-# machine trust belong in the user's base config and are deliberately absent.
+# Astra is the lead under the shared routing policy. Worker model overrides are
+# selected per task; authentication, provider URLs, and machine trust remain local.
 
-model_reasoning_effort = "medium"
+model = "gpt-6-astra"
+model_reasoning_effort = "high"
 approval_policy = "never"
 sandbox_mode = "workspace-write"
 web_search = "cached"
