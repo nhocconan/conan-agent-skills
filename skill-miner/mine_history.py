@@ -44,6 +44,7 @@ CLAUDE_PROJECTS = HOME / ".claude" / "projects"
 COWORK_ROOT = HOME / "Library" / "Application Support" / "Claude"
 COWORK_DIRS = [COWORK_ROOT / "claude-code-sessions", COWORK_ROOT / "local-agent-mode-sessions"]
 CODEX_SESSIONS = HOME / ".codex" / "sessions"
+CODEX_ARCHIVED = HOME / ".codex" / "archived_sessions"
 
 # ---------------------------------------------------------------- filters
 
@@ -70,8 +71,8 @@ NOISE_PREFIXES = (
     "<function_results>",
     "<attachment",
     # A re-injected project rulebook, not something the operator typed.
-    "# AGENTS.md instructions for",
-    "# CLAUDE.md instructions for",
+    "# AGENTS.md instructions",
+    "# CLAUDE.md instructions",
     "--- BEGIN UNTRUSTED EXTERNAL CONTENT",
     "<in-app-browser-context",
     # Codex's own approval-reviewer prompt, delivered on the user turn.
@@ -154,7 +155,7 @@ def classify(text: str):
         return "noise", None
     if ENVELOPE_ONLY.match(text):
         return "noise", None
-    if not text or len(text) < 12:
+    if not text:
         return "noise", None
     return "prompt", text
 
@@ -176,27 +177,38 @@ def file_mtime_iso(path: Path) -> str:
         return ""
 
 
-def read_claude_jsonl(path: Path, floor: str):
+def read_claude_jsonl(path: Path, floor: str, errors=None):
     """Yield turn dicts from a Claude Code/Cowork session file."""
     try:
         fh = path.open(encoding="utf-8", errors="replace")
     except OSError:
+        if errors is not None:
+            errors["unreadable_files"] += 1
         return
     fallback_ts = file_mtime_iso(path)
     with fh:
-        for line in fh:
-            if '"type":"user"' not in line and '"type": "user"' not in line:
-                continue
+        for line_no, line in enumerate(fh, 1):
             try:
                 d = json.loads(line)
             except Exception:
+                if errors is not None:
+                    errors["malformed_records"] += 1
+                continue
+            if not isinstance(d, dict):
+                if errors is not None:
+                    errors["malformed_records"] += 1
                 continue
             if d.get("type") != "user" or d.get("isMeta") or d.get("isSidechain"):
                 continue
             ts = parse_ts(d.get("timestamp")) or fallback_ts
             if floor and ts <= floor:
                 continue
-            text = norm_text((d.get("message") or {}).get("content"))
+            message = d.get("message") or {}
+            if not isinstance(message, dict):
+                if errors is not None:
+                    errors["malformed_records"] += 1
+                continue
+            text = norm_text(message.get("content"))
             if not text:
                 continue
             kind, payload = classify(text)
@@ -208,25 +220,42 @@ def read_claude_jsonl(path: Path, floor: str):
                 "source": "claude",
                 "kind": kind,
                 "text": payload,
+                "path": str(path), "line": line_no, "session": path.stem,
             }
 
 
-def read_codex_jsonl(path: Path, floor: str):
+def read_codex_jsonl(path: Path, floor: str, errors=None):
     try:
         fh = path.open(encoding="utf-8", errors="replace")
     except OSError:
+        if errors is not None:
+            errors["unreadable_files"] += 1
         return
     cwd = ""
     fallback_ts = file_mtime_iso(path)
     with fh:
-        for line in fh:
+        for line_no, line in enumerate(fh, 1):
             try:
                 d = json.loads(line)
             except Exception:
+                if errors is not None:
+                    errors["malformed_records"] += 1
+                continue
+            if not isinstance(d, dict):
+                if errors is not None:
+                    errors["malformed_records"] += 1
                 continue
             t = d.get("type")
             payload = d.get("payload") or {}
+            if not isinstance(payload, dict):
+                if errors is not None:
+                    errors["malformed_records"] += 1
+                continue
             if t == "session_meta":
+                # Worker briefs are not independent human requests.
+                origin = payload.get("source")
+                if origin == "subagent" or (isinstance(origin, dict) and "subagent" in origin):
+                    return
                 cwd = payload.get("cwd", "") or cwd
                 continue
             if t != "response_item" or payload.get("role") != "user":
@@ -240,24 +269,28 @@ def read_codex_jsonl(path: Path, floor: str):
             kind, tp = classify(text)
             if kind == "noise":
                 continue
-            yield {"ts": ts, "cwd": cwd, "source": "codex", "kind": kind, "text": tp}
+            yield {"ts": ts, "cwd": cwd, "source": "codex", "kind": kind, "text": tp,
+                   "path": str(path), "line": line_no, "session": path.stem}
 
 
 def dedupe(turns):
     """Drop replayed turns: resuming a session re-emits its opening prompt, so
     one instruction can appear 5-8 times and dominate the digest. Keep the
     earliest occurrence of each distinct text per project."""
-    seen, out = set(), []
+    seen, out = {}, []
     for t in sorted(turns, key=lambda x: x["ts"]):
-        key = (project_of(t.get("cwd", "")), " ".join(t["text"].split())[:600])
+        key = (t.get("cwd") or t.get("path", ""), " ".join(t["text"].split()))
+        occurrence = {k: t[k] for k in ("path", "line", "session", "ts") if k in t}
         if key in seen:
+            seen[key]["occurrences"].append(occurrence)
             continue
-        seen.add(key)
-        out.append(t)
+        entry = dict(t, occurrences=[occurrence])
+        seen[key] = entry
+        out.append(entry)
     return out
 
 
-def collect(floor: str, limit_chars: int):
+def collect(floor: str, limit_chars: int, errors=None):
     turns, files_seen = [], 0
 
     claude_files = []
@@ -265,37 +298,41 @@ def collect(floor: str, limit_chars: int):
         claude_files += sorted(CLAUDE_PROJECTS.glob("*/*.jsonl"))
     for d in COWORK_DIRS:
         if d.is_dir():
-            claude_files += sorted(d.rglob("*.jsonl"))
+            claude_files += sorted(p for p in d.rglob("*.jsonl") if "subagents" not in p.parts)
 
     for p in claude_files:
         files_seen += 1
-        turns.extend(read_claude_jsonl(p, floor))
+        turns.extend(read_claude_jsonl(p, floor, errors))
 
-    if CODEX_SESSIONS.is_dir():
-        for p in sorted(CODEX_SESSIONS.rglob("rollout-*.jsonl")):
+    for root in (CODEX_SESSIONS, CODEX_ARCHIVED):
+        for p in sorted(root.rglob("*.jsonl")) if root.is_dir() else []:
             files_seen += 1
-            turns.extend(read_codex_jsonl(p, floor))
+            turns.extend(read_codex_jsonl(p, floor, errors))
 
-    turns.sort(key=lambda t: t["ts"])
+    turns = dedupe(turns)
     for t in turns:
         if t["kind"] == "prompt" and len(t["text"]) > limit_chars:
             t["text"] = t["text"][:limit_chars] + " …[truncated]"
-    return dedupe(turns), files_seen
+    return turns, files_seen
 
 
-def collect_memory(floor: str):
+def collect_memory(floor: str, errors=None):
     """Per-project auto-memory files — already-distilled recurring feedback."""
     out = []
     for md in CLAUDE_PROJECTS.glob("*/memory/*.md"):
         try:
             mtime = datetime.fromtimestamp(md.stat().st_mtime, timezone.utc).isoformat()
         except OSError:
+            if errors is not None:
+                errors["unreadable_memory_files"] += 1
             continue
         if floor and mtime <= floor:
             continue
         try:
             body = md.read_text(encoding="utf-8", errors="replace")
         except OSError:
+            if errors is not None:
+                errors["unreadable_memory_files"] += 1
             continue
         out.append({"path": str(md), "mtime": mtime, "body": body[:2500]})
     out.sort(key=lambda m: m["mtime"])
@@ -305,7 +342,7 @@ def collect_memory(floor: str):
 # ---------------------------------------------------------------- digest
 
 def project_of(cwd: str) -> str:
-    return Path(cwd).name if cwd else "(unknown)"
+    return cwd if cwd else "(unknown)"
 
 
 def has_marker(text: str, markers) -> bool:
@@ -329,8 +366,12 @@ def build_digest(turns, memories, floor, files_seen, args) -> str:
     A("# History digest for skill mining")
     A("")
     A(f"- Generated: {datetime.now(timezone.utc).isoformat(timespec='seconds')}")
-    A(f"- Window: {'FULL HISTORY' if not floor else 'since ' + floor}")
+    A(f"- Window: {'all discovered history (no date floor)' if not floor else 'since ' + floor}")
     A(f"- Session files scanned: {files_seen}")
+    A("- Coverage: automated scan; excerpts below are capped samples, not full semantic review.")
+    A(f"- Read/parse gaps: {dict(getattr(args, 'scan_errors', {}))}")
+    for root, present in getattr(args, "stores", []):
+        A(f"- Store: {root} · {'present' if present else 'absent'}")
     A(f"- Human prompts: {len(prompts)} | slash-command invocations: {len(slashes)}")
     A(f"- Correction-flavoured prompts: {len(corrections)} | procedure-flavoured: {len(procedures)}")
     A(f"- Projects touched: {len(by_project)}")
@@ -359,6 +400,7 @@ def build_digest(turns, memories, floor, files_seen, args) -> str:
     A("")
     for t in corrections[-args.max_corrections:]:
         A(f"### {t['ts'][:16]} · {project_of(t['cwd'])} · {t['source']}")
+        A(f"Source: {t.get('path', '?')}:{t.get('line', '?')} · occurrences: {len(t.get('occurrences', []))}")
         A("")
         A("```")
         A(t["text"][:args.excerpt])
@@ -369,6 +411,7 @@ def build_digest(turns, memories, floor, files_seen, args) -> str:
     A("")
     for t in procedures[-args.max_procedures:]:
         A(f"### {t['ts'][:16]} · {project_of(t['cwd'])} · {t['source']}")
+        A(f"Source: {t.get('path', '?')}:{t.get('line', '?')} · occurrences: {len(t.get('occurrences', []))}")
         A("")
         A("```")
         A(t["text"][:args.excerpt])
@@ -434,15 +477,25 @@ def main():
         floor = state.get("watermark", "")
 
     started = datetime.now(timezone.utc).isoformat()
-    turns, files_seen = collect(floor, args.limit_chars)
-    memories = collect_memory(floor)
+    args.stores = [(str(root), root.is_dir()) for root in
+                   (CLAUDE_PROJECTS, CODEX_SESSIONS, CODEX_ARCHIVED, *COWORK_DIRS)]
+    args.scan_errors = Counter()
+    turns, files_seen = collect(floor, args.limit_chars, args.scan_errors)
+    memories = collect_memory(floor, args.scan_errors)
     digest = build_digest(turns, memories, floor, files_seen, args)
 
-    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    STATE_FILE.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     out = Path(args.out) if args.out else STATE_FILE.parent / (
-        "digest-" + started.replace(":", "").replace("-", "")[:15] + ".md")
-    out.write_text(digest, encoding="utf-8")
+        "digest-" + started.replace(":", "").replace("-", "") + ".md")
+    # Private histories must not inherit a permissive shell umask. Exclusive create
+    # also refuses symlinks and accidental replacement of earlier evidence.
+    fd = os.open(out, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as stream:
+        stream.write(digest)
 
+    if args.commit and args.scan_errors:
+        print("Refusing watermark advance: read/parse gaps remain.", file=sys.stderr)
+        return 1
     if args.commit:
         state["watermark"] = started
         state.setdefault("runs", []).append({
@@ -453,13 +506,24 @@ def main():
             "digest": str(out),
         })
         state["runs"] = state["runs"][-30:]
-        STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+        if STATE_FILE.is_symlink():
+            raise RuntimeError(f"refusing to write symlinked state file: {STATE_FILE}")
+        nofollow = getattr(os, "O_NOFOLLOW", 0)
+        fd = os.open(STATE_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | nofollow, 0o600)
+        try:
+            os.fchmod(fd, 0o600)
+        except OSError:
+            os.close(fd)
+            raise
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            stream.write(json.dumps(state, indent=2))
 
     print(json.dumps({
         "digest": str(out),
         "bytes": out.stat().st_size,
         "window": floor or "FULL",
         "files_scanned": files_seen,
+        "scan_errors": dict(args.scan_errors),
         "prompts": sum(1 for t in turns if t["kind"] == "prompt"),
         "corrections": sum(1 for t in turns if t["kind"] == "prompt"
                            and has_marker(t["text"], CORRECTION_MARKERS)),
@@ -467,7 +531,8 @@ def main():
         "watermark_committed": bool(args.commit),
         "previous_watermark": state.get("watermark", "") if not args.commit else started,
     }, indent=2))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -5,7 +5,7 @@ description: Keep project documentation in sync with shipped reality — PRD, us
 
 # Docs Sync
 
-Every project drifts: the PRD describes the old version, the user manual misses new screens, decisions live only in chat. Produce the same dependable doc shape without being asked.
+Update the requested documents against current code and the reader's actual workflow.
 
 ## Document set (per project)
 - **PRD** — describes the CURRENT shipped product. No changelogs inside the PRD (that's git's job). Diagrams over walls of text.
@@ -34,7 +34,10 @@ Every project drifts: the PRD describes the old version, the user manual misses 
   applies, it is a property of the folder, not of the mood of the session.
 
 ## Process
-1. Diff docs against shipped reality (routes, menus, features, rules) — list every stale claim.
-2. Update; if docs are served in-app, verify the route renders the new version.
+1. Trace claims about capabilities, counts and architecture to current code/config or
+   a dated source. Distinguish implemented behavior from design direction.
+2. Update the user's path through the product, including setup, permissions and where
+   each action lives. For served docs, verify the deployed version, links, TOC, scrolling
+   and diagram layout at desktop and narrow widths; a Markdown render alone is insufficient.
 3. Run `anti-slop-review` on the result — docs are content too.
 4. Save shared rules in canonical AGENTS.md; keep platform adapters import-only.

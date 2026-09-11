@@ -9,22 +9,23 @@ description: >-
 
 # Shipping changes
 
-Thin wrapper over gstack's `ship`. Upstream owns the mechanics; this file owns the rules
-for this operator. User instructions and repository controls take precedence.
+Wraps gstack's `ship`; user instructions and repository controls take precedence.
+Track commit, push and deploy authority separately: permission to deploy/test does not
+grant commit/push, and a commit request does not grant deployment. Continue authorized
+steps; report missing authority without re-asking for existing authority.
 
 ## House rules — non-negotiable
 
 1. **Follow the repository's branch and review policy.** Direct-to-main is appropriate
    only when authorized and compatible with branch protections. Preserve existing
    branches and user work; do not delete branches as automatic cleanup.
-2. **Commit identity is the operator's.** No assistant co-author trailer, no assistant
-   name anywhere in the message. *("Đảm bảo mọi thứ dưới tên tao, đừng có dính gì Claude.")*
+2. **Commit identity is the operator's.** No assistant author or co-author attribution.
 3. **Hooks must pass, not be skipped.** A `--no-verify` is a failed ship, not a fast one.
-   If a hook fails, fix the cause. *("tại sao không tuân thủ definition of done là phải
-   check các hook commit, push?")*
-4. **Never pipe the gate through `tail`/`head`/`grep`** — the exit code becomes the pipe's
-   and a broken build reads as green. Redirect and check both signals:
-   `cmd > run.log 2>&1; echo "EXIT=$?"`, then grep the log for a positive marker.
+   If a hook fails, fix the cause.
+4. **Capture each gate's exit status before filtering its output.** A display filter
+   can hide failure; a no-match `grep` before `&&` can silently skip the next required
+   step. Run required phases separately, record their statuses, and inspect the saved
+   log. A phase that never ran is skipped, never passed.
 5. **Push only what was asked.** Uncommitted work from another agent's session is not
    yours to sweep in — check `git status` and confirm anything unexpected.
 
@@ -41,8 +42,9 @@ for this operator. User instructions and repository controls take precedence.
    `../.vendor/gstack/ship/sections/` (changelog wording in `changelog.md`,
    PR body in `pr-body.md`) and since v1.71 no longer load with the skill body —
    and follow it with the house rules above applied. `refsync.py ensure` fetches these.
-5. Verify after: `git log --oneline -1`, `git status` clean, and the remote actually
-   advanced.
+5. Verify the authorized outcome: inspect the local diff/status for a handoff; check
+   commit identity after committing, remote revision after pushing, or deployed build
+   and user journey after deployment. Preserve unrelated uncommitted work.
 
 ## When NOT to use this
 

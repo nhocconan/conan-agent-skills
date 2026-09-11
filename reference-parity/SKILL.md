@@ -10,11 +10,9 @@ A description or landing screenshot rarely captures the complete target.
 
 ## Inventory the reference before writing anything
 
-The inventory comes from the artifact, not from someone's summary of it, not from a
-screenshot of its landing view, and not from memory of having seen it. Get the real thing:
-the file, the live surface, the export, the recording. If it cannot be obtained, say so
-before starting — building from a description is a different, riskier job and the operator
-must know they are buying it.
+Inspect the actual file, live surface, export or recording. A summary or landing
+screenshot is incomplete evidence. If the reference is unavailable, report the gap
+before building and distinguish agreed assumptions from verified parity.
 
 Enumerate exhaustively and mechanically. Depth is where the misses live:
 
@@ -23,9 +21,9 @@ Enumerate exhaustively and mechanically. Depth is where the misses live:
 - Every distinct **content type**, listed separately from where it appears: metric tile,
   time series, ranked table, cohort grid, map, narrative commentary, footnote,
   methodology note, glossary, legend, filter bar, date-range control, export button.
-- Every **state** of each surface: populated, empty, partial, loading, error,
-  permission-denied, and any "no data for this period" copy. States are the most-missed
-  category and the cheapest to enumerate.
+- Every **state** by intended role: populated, empty, partial, loading, error and
+  permission-denied. Exercise controls, keyboard actions, feedback and persistence
+  after reload; visible content alone does not establish interaction parity.
 - Every **input** that changes the output: filters, date ranges, comparison periods,
   segments, currency/locale, and which of them persist.
 - Every **number**, with its label, unit, precision, and the period it covers — these are
@@ -67,10 +65,11 @@ Do not report progress in terms of effort spent. Report it as the checklist frac
 
 ## Verify against the reference, side by side
 
-Compare like against like: same filters, same date range, same locale, same scope, same
-zoom. Most "the numbers don't match" reports are a window mismatch and cost an hour to
-discover. Where the surface renders, put the two side by side and go row by row through the
-checklist; where it is data, diff the values, not the impressions.
+Compare the intended target URL/build as the same role, filters, date range, locale,
+scope and zoom. Establish the served build/version before diagnosing stale output.
+Go row by row: compare rendered states and exercise interactions;
+for data, diff values. When delivery includes deployment, verify that deployed build,
+not just localhost. Record unavailable roles or targets as unverified.
 
 The reference is the oracle for agreed parity dimensions, not permission to copy private data or protected assets. Record deliberate differences required by accessibility, security, or correctness. Verifying the rebuild against your own re-derivation of what
 the reference "should" say proves only that the rebuild agrees with itself.

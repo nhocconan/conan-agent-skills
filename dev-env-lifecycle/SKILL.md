@@ -5,21 +5,25 @@ description: Own the full lifecycle of everything a run starts — dev servers, 
 
 # Dev-Environment Lifecycle
 
-Anything a run starts, the run owns. The failure this prevents is not dramatic — it is a
-second `pnpm dev` that dies on `EADDRINUSE`, a worker from three tasks ago still consuming
-a queue, a 4 GB backup nobody deleted, a container holding a volume the next migration
-needs. Each is cheap alone; together they make a machine untrustworthy, and the operator
-pays for the diagnosis every time.
+Anything a run starts, the run owns. Inventory existing resources before claiming
+ownership; stale workers, occupied ports and abandoned files all survive a shell exit.
+
+## Use the declared runtime
+
+Read the repo's start/deploy entrypoint and identify the host or container, service,
+working directory, Compose files and project name before running commands. Run imports,
+migrations and load-bearing verification in that target runtime; a host-shell test does
+not prove the deployed service uses the same dependencies, config or mounted files.
+Preserve the requested delivery mechanism (such as a mounted config override); do not
+substitute an image rebuild or service restart without checking scope and necessity.
 
 ## The contract
 
 1. **Inventory before you start.** Record what is already running on the ports and paths
    you are about to use. You are responsible for what *you* start, and you must not kill
    what you did not. If a port is already bound, find out by whom before taking it.
-2. **Up and down are one artifact each.** The stack gets a single documented entry point
-   for start, one for stop, one for status — a script, a compose file, a make target,
-   whatever the repo already uses. Two commands that must be run in the right order is a
-   design that will be run in the wrong order.
+2. **One entrypoint each for up, down and status.** Use the repo's script, Compose or
+   Make target; encode required ordering there.
 3. **Down means all of it.** Stop covers every process the up path created, not the
    foreground one: background workers, schedulers, queue consumers, watchers, tunnels,
    sidecar containers, port-forwards. The test is mechanical — after `down`, the inventory
@@ -35,9 +39,8 @@ pays for the diagnosis every time.
    deleted and its size. "I removed the old backups" after the fact is not a confirmation.
    Once confirmed, delete the *files*, not just the index entry that pointed at them —
    a retention policy that unlinks a record and leaves 40 GB on disk is a leak.
-7. **Hand the machine back clean.** When the task ends, state which processes are still
-   running and why, or state that none are. Silence reads as "nothing is running" and is
-   the most expensive thing to be wrong about.
+7. **Hand the machine back clean.** State which run-owned processes remain and why,
+   or verify that none remain.
 
 ## Writing the up/down artifact
 

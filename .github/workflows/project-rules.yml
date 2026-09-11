@@ -11,3 +11,6 @@ jobs:
           persist-credentials: false
       - run: python3 coding-env-bootstrap/project_rules.py check --root .
       - run: python3 -m unittest discover -s coding-env-bootstrap/tests -p 'test_project_rules.py' -v
+      - run: python3 skill-miner/validate_skills.py
+      - run: python3 skill-miner/context_budget.py --no-ratchet
+      - run: python3 -m unittest discover -s skill-miner/tests -v
