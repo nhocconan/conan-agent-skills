@@ -5,14 +5,8 @@ description: Make active scope — organisation, tenant, workspace, brand, proje
 
 # Tenant-Scope Integrity
 
-In a multi-tenant product, scope is not a filter — it is an argument. Treating it as a
-filter produces the worst bug this class has: an import performed "inside" brand A that
-replaces brand B's data, discovered by the customer. Reads that leak across scope are a
-privacy incident; writes that leak are unrecoverable without a restore.
-
-`metric-integrity` covers whether a scope filter reaches every read query.
-`secure-code-audit` covers isolation as an authorisation vulnerability. This skill covers
-scope on the **write** path and as **UI state** — the two places both of those miss.
+Scope constrains writes, visible state and available capabilities. `metric-integrity`
+covers read-query filters; `secure-code-audit` covers authorization vulnerabilities.
 
 ## The five invariants
 
@@ -65,6 +59,12 @@ scope on the **write** path and as **UI state** — the two places both of those
   scope in it serves one tenant's numbers to another. Same rule as uniqueness keys.
 
 ## Reviewing an existing surface
+
+For products with organisation types, plans or feature flags, derive navigation,
+connector choices and metric catalogues from the same server-enforced capability
+policy as execution. Hidden menus alone do not block direct requests or background
+jobs. Test an allowed and a denied role/type, then switch scope and reload to catch
+stale menus, caches and permissions. Unknown capabilities must not enable features.
 
 Check authorization of the requested scope server-side; a client-supplied tenant ID
 is not proof of access. Test forged scope IDs and cross-tenant resource IDs, including

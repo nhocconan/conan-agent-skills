@@ -11,6 +11,10 @@ user journey. Match evidence to the claim.
 Re-run load-bearing checks on the integrated tree. Workers' checks help localize
 failures but do not replace integration verification.
 
+For corpus audits, require separate counts for enumerated, parsed and actually
+content-reviewed artifacts. A generated queue or truncated tool output is not a
+completed semantic review. Resume unread portions before claiming exhaustive coverage.
+
 ### Independent review
 
 Use a fresh reviewer for complex or consequential changes. Give it the criteria

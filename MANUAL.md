@@ -171,7 +171,7 @@ cuối cùng. GPT-5.6 Terra triển khai phần việc đã có tiêu chí; GPT-
 có thể kiểm tra rõ ràng. Việc nhỏ hoặc tuần tự có thể do Astra làm trực tiếp.
 Claude Fable 5.1 / Opus 5 / Sonnet 5 / Haiku 4.5 là collaborator khi harness hỗ trợ;
 không thay Astra ngầm. Chi tiết và nguồn: [routing](agent-orchestration/sections/routing.md).
-Kết quả rà soát 32 skills: [SKILL-AUDIT.md](SKILL-AUDIT.md).
+Kết quả rà soát 32 skills ngày 2026-09-08: [SKILL-AUDIT.md](SKILL-AUDIT.md).
 
 ---
 
