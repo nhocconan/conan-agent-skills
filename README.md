@@ -79,10 +79,16 @@ Five things can claim a UI task; they are layered deliberately so they do not co
 | Correctness gates | [`a11y-audit`](a11y-audit/SKILL.md), [`web-perf-audit`](web-perf-audit/SKILL.md) | WCAG 2.2 AA; LCP/INP/CLS. Neither is negotiable by taste |
 | Feature floor | [`admin-crud-standards`](admin-crud-standards/SKILL.md) | any admin/list/CRUD screen — pagination, filters, confirms |
 
-impeccable installs its own per-harness trees (`.claude/`, `.agents/`, `.gemini/`, and a
+impeccable installs its own per-harness trees (`.claude/`, `.agents/`, `.agent/`, and a
 dozen more) and is therefore listed in [`ref-skills/loadouts/keep.txt`](ref-skills/loadouts/keep.txt),
 which the load-out neither creates nor removes. `refsync.py upgrade` / `ensure` is what
-runs `npx impeccable install --yes --global` — do not run that installer by hand.
+runs it — do not run that installer by hand.
+
+Its `install` names the harnesses explicitly (`--providers=claude,codex,cursor,antigravity`).
+Auto-detection finds the first three and silently skips agy, whose skills live under
+`~/.gemini/config/skills` — impeccable calls that harness `antigravity` and writes it only
+when asked by name. `ensure` now fails when a `keep` skill is still missing from a target
+after the installer exits 0, so that gap cannot pass as green again.
 
 The `~/.shared-ai-skills/frontend-design` copy was retired on 2026-09-05: a 2026-01
 Codex-era port that shadowed the current official plugin under the same `name:`. See the

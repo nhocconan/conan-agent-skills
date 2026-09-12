@@ -28,15 +28,17 @@ upstream files or binary are unavailable, use the active harness's documented br
 
 ## Getting the commands
 
-Read `../.vendor/gstack/browse/SKILL.md` — its **"SETUP (run this check BEFORE any
-browse command)"** section first, then **"Most-Used Commands"**. Skip the binary setup
-check when using another documented browser surface.
+Read `../.vendor/gstack/browse/SKILL.md` — its **"BROWSER SETUP"** probe, then the driver
+it selects. `READY` (macOS, Aside open) → **"Rules for driving a real browser"** and the
+**"Cookbook"** script shapes. `NEEDS_ASIDE` / `ASIDE_NOT_RUNNING` → **"Browser fallback:
+gstack's own headless browser"** and **"Translate the Aside scripts step by step"**, which
+maps every cookbook step onto a `$B` command — the normal path on Linux. Headless means no
+user cookies, so standing rule 2 does not apply there: an authenticated page needs a
+cookie import or `$B handoff "<why>"`.
 
 For any command or snapshot flag beyond that table, read
-`../.vendor/gstack/browse/sections/command-list.md`. Upstream carved the full
-command reference out of SKILL.md (v1.71), so it no longer arrives with the skill body —
-read it rather than working from memory of the old inline list. `refsync.py ensure`
-fetches both files.
+`../.vendor/gstack/browse/sections/command-list.md` — the full generated reference, carved
+out of SKILL.md upstream. `refsync.py ensure` fetches both files.
 
 ## When the task is bulk data collection
 

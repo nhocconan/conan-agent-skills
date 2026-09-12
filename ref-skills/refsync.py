@@ -583,9 +583,18 @@ def ensure_npx(spec: Upstream) -> int:
         print(f"{spec.name}: missing on {', '.join(missing)}")
     # Run from $HOME so a project-scoped installer cannot drop .claude/.codex
     # trees into this repo.
+    verb = "install" if missing else "update"
     result = _run_logged(shlex.split(cmdline), cwd=expand_home("~"))
     if result.returncode:
-        print(f"{spec.name}: {'install' if missing else 'update'} failed")
+        print(f"{spec.name}: {verb} failed")
+        return 1
+    # Exit 0 is not proof the skill landed: the installer picks its own harness
+    # list, so a target it does not know stays empty while the command succeeds.
+    unreached = _keep_missing_targets(spec.name) if spec.keep else []
+    if unreached:
+        print(f"{spec.name}: {verb} reported success but the skill is still "
+              f"missing on {', '.join(unreached)} — name that harness in the "
+              f"`install` providers in upstreams.ini")
         return 1
     print(f"{spec.name}: {'installed' if missing else 'updated'}")
     return 0

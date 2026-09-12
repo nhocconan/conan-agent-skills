@@ -2,18 +2,18 @@
 mode: wrap
 upstream: gstack
 source: github:garrytan/gstack@main:qa-only/SKILL.md
-version: 1.60.1.0
-fingerprint: sha256:4d121738148e0d9334b0f84563e39857d77663d7589d6340930433c61a3835da
-reviewed: 2026-08-28
+version: 1.0.0
+fingerprint: sha256:6d45bac600c696e55ca7e73ca0048a1f97550b18e4d741ea8e3be97a8195fcfa
+reviewed: 2026-09-12
 secondary_source: github:garrytan/gstack@main:qa/SKILL.md
-secondary_fingerprint: sha256:f80573f4bf3a9bf72e548589092d6ac75b083c06fb98367019f91222f13d5717
+secondary_fingerprint: sha256:dd68e0d4d65e51f319199d2c4c1ef15624a2e9d13d7cb45ffca5a5837e727779
 ---
 
 # Provenance
 
 Wraps **two** upstream skills that are one skill with a mode switch:
-`qa-only` (1256 lines, report) and
-`qa` (1684 lines, fix).
+`qa-only` (983 lines, report) and
+`qa` (959 lines, fix).
 Neither is vendored — this skill routes to them by path.
 
 `refsync.py` fingerprints the primary (`qa-only`) only. The secondary is recorded here for
