@@ -2,14 +2,14 @@
 mode: wrap
 upstream: gstack
 source: github:garrytan/gstack@main:design-review/SKILL.md
-version: 1.60.1.0
-fingerprint: sha256:8a74c2068bea907e66f4d08facb5648e3cde52f2488b11b9037f40c97b4c2c37
-reviewed: 2026-08-28
+version: 2.0.0
+fingerprint: sha256:440a7c79dcafc9d01336e2b68ef1e645b9100fb102bdbb11f2657971b2afa474
+reviewed: 2026-09-12
 ---
 
 # Provenance
 
-Wraps gstack's `design-review` (1994 lines,
+Wraps gstack's `design-review` (1897 lines,
 binary-backed). Not vendored — routed to by path.
 
 ## Why this exists

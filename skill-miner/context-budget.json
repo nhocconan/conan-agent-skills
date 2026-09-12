@@ -33,7 +33,7 @@
   },
   "browsing-web": {
     "always_on": 300,
-    "eager": 2800
+    "eager": 3100
   },
   "bug-class-audits": {
     "always_on": 600,

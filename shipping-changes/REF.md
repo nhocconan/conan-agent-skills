@@ -2,14 +2,14 @@
 mode: wrap
 upstream: gstack
 source: github:garrytan/gstack@main:ship/SKILL.md
-version: 1.60.1.0
-fingerprint: sha256:fad896a79f2b4e527fb0a908de90d2fceed3bd0351d2d1a035b8450006ff262f
-reviewed: 2026-08-28
+version: 1.0.0
+fingerprint: sha256:c357e51351d21639a6d368a87acf4b721a9c7aeda2abe7692b74a0dd699f641e
+reviewed: 2026-09-12
 ---
 
 # Provenance
 
-Wraps gstack's `ship` (1417 lines, binary-backed).
+Wraps gstack's `ship` (1122 lines, binary-backed).
 Upstream is **not** vendored — this skill points at it by path, so its bulk loads only
 when the skill actually fires.
 
@@ -26,9 +26,10 @@ Upstream's description is 31 chars ("Pre-landing PR review."-class) and cannot r
 
 ## Upstream sections this depends on
 
-- "Section index — Read each section when its situation applies"
+- "Section index"
 - "Completeness Principle"
-- carved files: `ship/sections/changelog.md`, `ship/sections/pr-body.md` (v1.71)
+- "sections/changelog.md"
+- "sections/pr-body.md"
 
 If `refsync.py status` reports one of these has vanished, the wrapper's routing
 instructions are stale and must be re-pointed before the skill is trusted again.
