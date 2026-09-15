@@ -79,7 +79,8 @@ pedagogy** those plug into.
   is what makes it transfer.
 
 **Accessibility (WCAG 2.2 AA)**
-- Skip-link, landmarks, visible focus, 44px targets, keyboard-operable quizzes/
+- Skip-link, landmarks, visible focus, touch targets (24px WCAG 2.2 AA minimum per 2.5.8
+  Target Size (Minimum); 44px house rule), keyboard-operable quizzes/
   accordions, reduced-motion, never color-only signaling. Details in `reference.md §5`.
 
 **Content**

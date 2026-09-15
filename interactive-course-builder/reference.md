@@ -198,12 +198,12 @@ the standard.
      Rule of thumb: give every connector an approach run of at least
      `refX × stroke-width`, and turn *earlier* rather than shrinking the head.
 
-     Fixing 2 by adding a tiny jog is what causes 3. Both were shipped from
-     this file: an earlier revision held up `M238 65 H246 V127 H250` as the
-     model answer, and that exact path rendered the blob a reader reported in
-     `ai-agent-operational-training` Hình 2.3 (07/2026). The correct shape for
-     that step is a plain elbow with a real runway — exit the source box, turn
-     once, and run into the target edge:
+     Fixing 2 by adding a tiny jog is what causes 3 — and this file itself
+     shipped that mistake: a path of the form `M238 65 H246 V127 H250` was
+     once given here as the model answer, and its 8-unit final approach puts
+     a 14-unit arrowhead across the corner. The correct shape for that step is
+     a plain elbow with a real runway — exit the source box, turn once, and
+     run into the target edge:
      `M238 65 H270 V96` (target box spans x 254–466, top edge y=96 → a 31-unit
      final approach for a 14-unit head).
   Sanity check when drawing: for every arrow, name the box it enters, confirm
@@ -331,7 +331,8 @@ before/after over hand-waving.
   Padding alone does **not** get you there — measure. `.mobile-toggle` and
   `.mode-toggle` both need explicit `min-width:44px;min-height:44px`; a
   `padding:9px` hamburger renders 40×43 and a `min-height:34px` mode toggle
-  renders 44×34. Audited 2026-07-25: 12 of 14 shipped courses were failing this.
+  renders 44×34. Assume every course fails this until measured — padded-only
+  toggles are the single most common finding in this checklist.
 - **Keyboard-only affordances are hidden on touch widths.** The `← → chuyển bài`
   hint carries `class="mono kbd-hint"`, and the `max-width:1024px` block carries
   `.kbd-hint{display:none}` — arrow keys don't exist on a phone, and leaving the

@@ -76,8 +76,9 @@ the reference "should" say proves only that the rebuild agrees with itself.
 
 ## Orchestration for parity rebuilds
 Use [agent-orchestration](../agent-orchestration/SKILL.md) for independent surfaces.
-Astra owns inventory, seam contracts, and final parity review; Terra builds scoped
-views and Luna handles simple checked content. Keep shared state changes serialized.
+The harness lead owns inventory, seam contracts, and final parity review; the default
+builder takes scoped views and the cheapest checked tier takes simple content. Keep
+shared state changes serialized.
 
 ## Output
 

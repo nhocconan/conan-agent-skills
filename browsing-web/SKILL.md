@@ -19,9 +19,8 @@ upstream files or binary are unavailable, use the active harness's documented br
    purpose-built connector for data tasks; follow the active tool's instructions.
 2. **The operator's browser is usually already open and logged in.** When they say so,
    proceed — do not stop to re-confirm or ask for credentials. Halting mid-run to ask for
-   something already provided wastes their time and tokens.
-   *("tao mở sẵn browser cài sẵn chrome extension và mở sẵn kalodata rồi như mọi lần sao
-   mày lại cứ dừng rồi hỏi làm tốn token tao.")*
+   something already provided wastes their time and tokens. A stop to re-confirm a state
+   the operator has already declared is a defect, not caution.
 3. **Session/profile matters.** If a task needs a specific browser profile, say so up
    front rather than failing ten minutes in.
 4. Handle dialogs through supported browser APIs. Do not inject unnecessary blocking dialogs.

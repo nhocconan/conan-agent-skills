@@ -12,10 +12,13 @@ description: >-
 
 # App Store Review Guard
 
-Most App Store rejections are not subtle judgement calls — they're the same
-short list of **avoidable, mechanical mistakes** that a checklist catches in
-minutes. This skill is that checklist, plus a **rejection ledger** you append to
-after every real rejection so the same mistake never ships twice.
+Apple doesn't publish rejection-frequency data, so no claim about the "most
+common" rejection is verifiable — but every rejection logged in this skill's own
+ledger was an **avoidable, mechanical mistake**, not a subtle judgement call: a
+required thing that existed in the code but wasn't reachable in the state the
+reviewer was in. This skill is a checklist built to catch that failure mode,
+plus a **rejection ledger** you append to after every real rejection so the same
+mistake never ships twice.
 
 **Golden rule:** the reviewer is a busy human on one device looking for reasons
 to bounce you. Every required affordance must be **obvious, reachable in the

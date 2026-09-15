@@ -9,7 +9,7 @@ Group by guideline area. ☐ = must verify every submission.
 - ☐ Restore actually calls the platform restore (`AppStore.sync()` on StoreKit 2 / `restorePurchases()` on Play Billing) and gives user feedback on success/failure.
 - ☐ Purchase failures show user-facing feedback (no dead button).
 - ☐ Nothing is **sold that isn't implemented** (paywall feature list == shipped features). "Planned" features only as clearly-labelled future notes, never in the buy list.
-- ☐ No mention of external/web purchasing or other payment methods for digital goods.
+- ☐ **Scope the external-purchase-link rule by storefront, not blanket.** On the **United States storefront**, Guideline 3.1.1(a) does **not** prohibit buttons, external links, or other calls-to-action to non-IAP purchase methods, and no entitlement is required there. Outside the US storefront, such buttons/links/CTAs are prohibited **unless** the app holds a StoreKit External Purchase Link Entitlement or Music Streaming Services Entitlement for that specific storefront (those entitlements only cover the storefronts Apple lists for them). Check the current entitlement-covered storefront list before submitting — don't assume the US rule travels with the build.
 - ☐ Non-consumable: don't use "free trial" wording that implies an auto-renewing subscription. An app-managed trial is fine if described as one-time.
 
 ### 3.1.2 — Auto-renewable subscription disclosure
@@ -38,9 +38,10 @@ Group by guideline area. ☐ = must verify every submission.
 - ☐ App name/subtitle/keywords aren't spammy or trademark-infringing (2.3.7).
 
 ### 5.1 — Privacy
-- ☐ **Privacy policy URL is set** in App Store Connect (required for any app with an account or IAP; safe to always provide).
+- ☐ **Privacy policy URL is set in App Store Connect metadata AND linked within the app itself in an easily accessible manner** — Guideline 5.1.1(i) requires both placements for **every app**, regardless of whether it has an account or IAP.
 - ☐ App Privacy answers match the app's and every integrated third party's actual data practices. For a "Data Not Collected" answer, inventory every data flow and apply Apple's definition of collection; a network call or SDK is a review signal, not proof by itself. Check vendor documentation and privacy manifests as well as runtime behavior.
 - ☐ `Info.plist` contains **only the permission usage strings the app actually uses.** A stray `NS*UsageDescription` invites "why do you need this?" questions. No `NSUserTrackingUsageDescription` unless ATT is actually used.
+- ☐ **If the app supports account creation, account deletion is offered *inside the app*** — Guideline 5.1.1(v): "If your app supports account creation, you must also offer account deletion within the app." A support email, a web-only form, or a "deactivate" toggle does not satisfy it; the path must be reachable from within the binary the reviewer runs. Walk it end to end on the submitted build. Play requires an equivalent in-app path plus a publicly reachable web deletion URL declared in the Play Console data-safety form, so ship both.
 
 ### 4.3 — Spam / "apps that do not add value" (Design)
 > Apple’s current 4.3 rule rejects established app categories that do not offer a

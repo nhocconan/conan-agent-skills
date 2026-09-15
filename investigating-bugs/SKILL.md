@@ -21,7 +21,7 @@ fix. If you cannot reproduce it, say so plainly and state what you would need to
 2. **Reproduce it** — a failing test, a command with its output, a screenshot. This
    artifact is what proves the fix later. Without it, "fixed" is unfalsifiable.
 3. **Read the actual error.** Full output, not the last line. The pipe-swallows-exit-code
-   trap applies here too: `cmd > run.log 2>&1; echo "EXIT=$?"`.
+   trap applies: `cmd > run.log 2>&1; echo "EXIT=$?"`.
 
 ## Diagnosing
 
@@ -34,7 +34,7 @@ fix. If you cannot reproduce it, say so plainly and state what you would need to
 6. **Label known vs guessed** in the write-up. Anything unverified is marked unverified.
 
 For the search mechanics — log/trace navigation, bisecting, tooling — read
-`~/.conan-agent-skills/.vendor/gstack/investigate/SKILL.md`, particularly its **"Phase 1: Root Cause
+`../.vendor/gstack/investigate/SKILL.md`, particularly its **"Phase 1: Root Cause
 Investigation"**, **"Phase 2: Pattern Analysis"** and **"Confusion Protocol"** sections.
 
 ## Fixing
@@ -47,6 +47,7 @@ Investigation"**, **"Phase 2: Pattern Analysis"** and **"Confusion Protocol"** s
 
 ## Related
 
-[agent-orchestration](../agent-orchestration/SKILL.md) — independent subsystem work:
-Astra owns diagnosis and final quality; Terra/Luna handle scoped surveys and fixes.
+[agent-orchestration](../agent-orchestration/SKILL.md) — subsystem work: the harness lead
+owns diagnosis and quality; workers survey and fix
+([routing](../agent-orchestration/sections/routing.md)).
 `senior-operator` — how to reason under ambiguity. `bug-class-audits` — turning a confirmed class into a mechanical audit. `metric-integrity` — when the "bug" is a wrong number on a dashboard.

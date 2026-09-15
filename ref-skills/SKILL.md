@@ -9,9 +9,10 @@ Skills here that are derived from an upstream suite carry a `REF.md`. Two modes:
 
 - **`wrap`** — you own a short skill that fixes upstream's triggering and carries your
   house rules, then points at the full upstream by path. Upstream is not copied.
-  **Default for anything large or binary-backed** — every gstack skill is 1,000–2,000
-  lines and shells out to `gstack-*` binaries, so forking one means owning a 1,500-line
-  merge surface plus its infrastructure.
+  **Default for anything large or binary-backed** — a gstack skill runs up to roughly
+  1,900 lines and shells out to `gstack-*` binaries (`wc -l .vendor/gstack/*/SKILL.md`,
+  2026-09-15: 443 to 1,897), so forking one means owning that merge surface plus its
+  infrastructure.
 - **`fork`** — upstream is vendored to `.upstream/SKILL.md` as a merge base and 3-way
   merged on upgrade. Only for small, pure-prose upstreams you intend to diverge from.
 
@@ -58,10 +59,10 @@ python3 refsync.py rescue --out <dir>        # tarball them, excluding vendored 
 
 ## `rescue` — the unversioned-tree problem
 
-`~/.shared-ai-skills` has no git remote, so anything living only there exists on exactly
-one machine. `rescue` lists those skills with their true content size (skipping
-`node_modules`, `.git`, `dist`, `build`, `__pycache__`, `.venv` — which is most of the
-bytes: one skill measures 279 MB on disk and 64 KB of actual content).
+A skills tree with no git remote holds anything living only there on exactly one machine.
+`rescue` lists those skills with their true content size, skipping `node_modules`, `.git`,
+`dist`, `build`, `__pycache__`, `.venv` — for a skill with an installed dependency tree
+those are nearly all the bytes, so `du` overstates the loss. Read `rescue`'s number.
 
 Run it before wiping or migrating any machine. The tarball belongs **off** the machine —
 writing it to the same disk defeats the purpose. Vendoring these into this repo instead
@@ -71,7 +72,7 @@ decision rather than a technical one.
 ## Keep the selected load-out
 
 Upstream installers may repopulate active skill directories. After an authorized
-install, preview and re-apply the curated profile; preserve unrelated external skills.
+install, preview and re-apply the curated profile; keep unrelated external skills.
 
 ## Upgrading a wrap (never automatic)
 
@@ -88,17 +89,10 @@ writes the new upstream to `.upstream-preview.md` and stops. Then:
 
 ## Adding a new ref skill
 
-1. **Decide the mode.** Large, binary-backed, or you only disagree with *how it triggers*
-   → `wrap`. Small, pure prose, and you intend to change its *content* → `fork`.
-2. Write your `SKILL.md`. For a wrap keep it ~40–60 lines: a description that actually
-   routes, the overrides, and an explicit pointer to the upstream file and the sections
-   to read. Do not restate upstream's procedure — that is the merge tax you are avoiding.
-3. Write `REF.md`: `mode`, `source`, `version`, `fingerprint`, `reviewed`, why it exists,
-   the overrides that must survive, and the upstream sections you depend on.
-4. For a fork, snapshot the base: `mkdir .upstream && cp <upstream> .upstream/SKILL.md`.
-5. Add the name to the relevant `loadouts/*.txt` profile (and `loadout.txt` for the
-   Claude workstation), run `refsync.py loadout --target ... --profile ... --apply`, then
-   `validate_skills.py`.
+Read `sections/adding-a-ref-skill.md` — the wrap-vs-fork decision, the five steps, and
+**"REF.md fields"**, which states what each `REF.md` key means. Most-misread field:
+`version:` is the wrapper's own revision, **not** the upstream's — the upstream is
+identified only by `source` + `fingerprint`.
 
 ## The cost, stated plainly
 
@@ -111,7 +105,7 @@ fix — "upstream's wording is a bit off" is not a reason.
 ## Context budget
 
 `skill-miner/context_budget.py` grades every skill against committed ceilings in
-`context-budget.json` and runs inside `upgrade`. Shrinks lower the ceiling and lock;
+`skill-miner/context-budget.json` and runs inside `upgrade`. Shrinks lower the ceiling and lock;
 growth past one fails the run — raise the ceiling deliberately, in the same diff.
 Over ~12KB of SKILL.md, carve the reference bulk into `sections/` behind a
 "Section index" table and leave the doctrine in the skeleton. Trim redundant description text while preserving precise triggers; avoid giant

@@ -92,7 +92,8 @@ def synth_line(text, wav_path, out_dir, stem, index):
         import urllib.request
         key = os.environ["OPENAI_API_KEY"]
         body = json.dumps({
-            "model": "gpt-4o-mini-tts", "voice": VO_VOICE or "alloy",
+            # TTS API model, not an orchestration routing tier
+            "model": "gpt-4o-mini-tts", "voice": VO_VOICE or "alloy",  # model-id-allow
             "input": text, "response_format": "wav"}).encode()
         req = urllib.request.Request(
             "https://api.openai.com/v1/audio/speech", data=body,

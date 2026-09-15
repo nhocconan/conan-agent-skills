@@ -36,8 +36,9 @@ ACCEPTANCE CHECKS (exact commands + what green looks like)
      → EXIT=0 and the new assertion for <metric> appears in the output
   Never pipe a gate through tail/head/grep — the exit code becomes the pipe's.
 
-KNOWN TRAPS HERE
-  §41 UTC day-edge leak on month filters; §35 no fabricated multipliers.
+KNOWN TRAPS HERE                        (cite the PROJECT's own rule numbers here)
+  project rule 41: UTC day-edge leak on month filters
+  project rule 35: no fabricated multipliers
   <past incident in this area, one line>
 
 BOUNDARIES
@@ -106,7 +107,7 @@ Return:
 A plausible mechanism is a concern until supported by evidence.
 ```
 
-Astra evaluates the evidence before accepting a finding or authorizing a repair.
+The lead evaluates the evidence before accepting a finding or authorizing a repair.
 Model agreement and confidence scores do not replace a reproducible mechanism.
 
 ---
@@ -134,7 +135,7 @@ Lead, wave 1: <the tricky 10%>
 
 ## Status
 - [x] N1 survey — landed <date>, artifact: .agents/notes/n1.md
-- [ ] N2 schema — in progress (gpt-5.6-terra, medium)
+- [ ] N2 schema — in progress (builder tier, medium effort)
 - [ ] N3 …
 
 ## Resume
@@ -151,12 +152,15 @@ Next session: read this file, continue at the first unchecked box. No re-derivat
 Lives in the plan file or beside it. One row per node, updated on landing.
 
 ```markdown
+Record the actual model ID the harness returned; the tiers come from
+`sections/routing.md`, which is the only place model IDs are maintained.
+
 | Node | Tier/effort | Status | Acceptance check | Artifact | Verdict | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| N1 survey | gpt-5.6-luna/low | done | list of call sites | notes/n1.md | accepted | 14 sites |
-| N2 schema | gpt-5.6-terra/medium | done | verify:data EXIT=0 | data.log | re-run by lead ✓ | |
-| N4 API | gpt-5.6-terra/medium | rework 1/2 | build EXIT=0 | build.log | rejected: no tenancy filter | escalate on next fail |
-| N6 UI | gpt-5.6-terra/high | running | browser check | — | — | lead reviewing N4 meanwhile |
+| N1 survey | simple/low | done | list of call sites | notes/n1.md | accepted | 14 sites |
+| N2 schema | builder/medium | done | verify:data EXIT=0 | data.log | accepted, re-run by lead | |
+| N4 API | builder/medium | rework 1/2 | build EXIT=0 | build.log | rejected: no tenancy filter | escalate on next fail |
+| N6 UI | builder/high | running | browser check | — | — | lead reviewing N4 meanwhile |
 ```
 
 `Verdict` is the lead's, after re-running the check — not the agent's self-report.
@@ -164,13 +168,13 @@ Lives in the plan file or beside it. One row per node, updated on landing.
 Record observed metrics where available; unknown values stay unknown: `wall-clock vs solo: … · tokens: … · defects caught by verification: … · operator
 interventions: …`.
 `rework 2/2` means two failures have occurred: escalate or re-plan now
-(`SKILL.md` §5.6).
+(`sections/quality-gate.md`, "Bounded review and repair").
 
 ---
 
 ## 6. Final report shape
 
-One change, not N agent reports stapled together (`SKILL.md` §6).
+One change, not N agent reports stapled together (`sections/integrate.md`).
 
 ```markdown
 <Answer first: what is now true, in one or two sentences.>

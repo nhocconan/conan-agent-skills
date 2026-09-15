@@ -38,8 +38,10 @@ from memory; never hand-edit the assembled file for structure.
    - **Solo** (one author, one sitting): course ≤ ~8 lessons.
    - **Fan-out** (parallel builders + assembler): > 8 lessons, or multiple
      source documents, or multiple authors/models, when lesson contracts are independent.
-     Use [agent-orchestration](../agent-orchestration/SKILL.md): Astra owns curriculum,
-     assembly, and final quality; Terra drafts lessons and Luna handles checked content.
+     Use [agent-orchestration](../agent-orchestration/SKILL.md): the harness lead owns
+     curriculum, assembly, and final quality; scoped workers draft individual lessons.
+     Role-to-model assignment lives only in
+     [agent-orchestration/sections/routing.md](../agent-orchestration/sections/routing.md).
 3. Check for sibling courses in the target folder. A new course must NOT
    re-teach an existing one — write one "if you want X in depth, see course Y"
    pointer instead, and keep the new course standalone (reference.md §11).

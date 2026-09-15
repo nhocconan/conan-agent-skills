@@ -11,7 +11,8 @@ actually used to report a visual defect.
 
 ## The recurring defects — check these every time
 
-These come from real reports on this operator's own projects, and they repeat:
+These six account for most visual-defect reports and they repeat across projects.
+Examples below are illustrative shapes, not one project's log:
 
 1. **Text that wraps or drops a line** — headings breaking to 4 lines, a subtitle wrapping
    mid-phrase, a card title clipped mid-glyph. Check at the real breakpoints, not just the
@@ -51,6 +52,6 @@ For the audit procedure, checklist and screenshot mechanics, read
 ## Where this stops
 
 This is the review lens, not the build tool. Making or reshaping a UI — direction,
-typography, layout, motion, copy — belongs to `impeccable` (23 commands + a
-deterministic detector) with `frontend-design` for aesthetic direction. WCAG failures go
+typography, layout, motion, copy — belongs to `impeccable` (run `impeccable` itself for
+its current command list) with `frontend-design` for aesthetic direction. WCAG failures go
 to `a11y-audit`, slowness to `web-perf-audit`, wrong numbers to `metric-integrity`.

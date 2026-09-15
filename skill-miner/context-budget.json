@@ -1,130 +1,162 @@
 {
   "a11y-audit": {
     "always_on": 500,
-    "eager": 5000
+    "eager": 5000,
+    "on_demand": 0
   },
   "admin-crud-standards": {
     "always_on": 400,
-    "eager": 6500
+    "eager": 6500,
+    "on_demand": 0
   },
   "agent-orchestration": {
     "always_on": 400,
-    "eager": 3900
+    "eager": 3900,
+    "on_demand": 44900
   },
   "agent-session-backup": {
     "always_on": 600,
-    "eager": 7500
+    "eager": 7500,
+    "on_demand": 0
   },
   "anti-slop-review": {
     "always_on": 300,
-    "eager": 2800
+    "eager": 2800,
+    "on_demand": 0
   },
   "appstore-review-guard": {
     "always_on": 700,
-    "eager": 3700
+    "eager": 3700,
+    "on_demand": 29500
   },
   "autonomous-loops": {
     "always_on": 1000,
-    "eager": 6100
+    "eager": 6100,
+    "on_demand": 3000
   },
   "backtest-integrity": {
     "always_on": 700,
-    "eager": 5400
+    "eager": 5400,
+    "on_demand": 0
   },
   "browsing-web": {
     "always_on": 300,
-    "eager": 3100
+    "eager": 3000,
+    "on_demand": 0
   },
   "bug-class-audits": {
     "always_on": 600,
-    "eager": 4500
+    "eager": 4500,
+    "on_demand": 0
   },
   "coding-env-bootstrap": {
     "always_on": 500,
-    "eager": 3000
+    "eager": 3000,
+    "on_demand": 35000
   },
   "delegate-run": {
     "always_on": 400,
-    "eager": 4400
+    "eager": 2400,
+    "on_demand": 0
   },
   "demo-data-craft": {
     "always_on": 600,
-    "eager": 5400
+    "eager": 5400,
+    "on_demand": 0
   },
   "design-qa": {
     "always_on": 700,
-    "eager": 3700
+    "eager": 3700,
+    "on_demand": 0
   },
   "dev-env-lifecycle": {
     "always_on": 700,
-    "eager": 5400
+    "eager": 5400,
+    "on_demand": 0
   },
   "docs-sync": {
     "always_on": 300,
-    "eager": 3500
+    "eager": 3500,
+    "on_demand": 0
   },
   "interactive-course-builder": {
     "always_on": 900,
-    "eager": 8600
+    "eager": 8600,
+    "on_demand": 59700
   },
   "investigating-bugs": {
     "always_on": 600,
-    "eager": 3100
+    "eager": 3100,
+    "on_demand": 0
   },
   "metric-integrity": {
     "always_on": 700,
-    "eager": 6500
+    "eager": 6500,
+    "on_demand": 0
   },
   "mobile-app-playbook": {
-    "always_on": 1100,
-    "eager": 7200
+    "always_on": 1000,
+    "eager": 7200,
+    "on_demand": 28400
   },
   "ref-skills": {
     "always_on": 400,
-    "eager": 7000
+    "eager": 6900,
+    "on_demand": 2200
   },
   "reference-parity": {
     "always_on": 800,
-    "eager": 5700
+    "eager": 5700,
+    "on_demand": 0
   },
   "remote-host-access": {
     "always_on": 800,
-    "eager": 7200
+    "eager": 7200,
+    "on_demand": 0
   },
   "resilient-data-harvest": {
     "always_on": 800,
-    "eager": 7800
+    "eager": 7800,
+    "on_demand": 0
   },
   "secure-code-audit": {
     "always_on": 500,
-    "eager": 7000
+    "eager": 6400,
+    "on_demand": 3600
   },
   "senior-operator": {
-    "always_on": 1100,
-    "eager": 5400
+    "always_on": 600,
+    "eager": 4800,
+    "on_demand": 23300
   },
   "shipping-changes": {
     "always_on": 400,
-    "eager": 3100
+    "eager": 3100,
+    "on_demand": 0
   },
   "skill-miner": {
     "always_on": 600,
-    "eager": 9700
+    "eager": 9700,
+    "on_demand": 0
   },
   "store-screenshots": {
     "always_on": 600,
-    "eager": 7900
+    "eager": 7900,
+    "on_demand": 9500
   },
   "tenant-scope-integrity": {
     "always_on": 600,
-    "eager": 6700
+    "eager": 6700,
+    "on_demand": 0
   },
   "web-perf-audit": {
     "always_on": 500,
-    "eager": 4100
+    "eager": 4100,
+    "on_demand": 0
   },
   "web-qa": {
     "always_on": 600,
-    "eager": 3200
+    "eager": 3200,
+    "on_demand": 0
   }
 }

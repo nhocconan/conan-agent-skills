@@ -1,0 +1,17 @@
+# Manual OWASP Top 10 review — the 2025 list
+
+Loaded on demand by `secure-code-audit` step 4. This is the half of an audit tools do
+not cover.
+
+Numbering per [OWASP Top 10:2025](https://top10.owasp.org/2025), verified 2026-09-15. OWASP renumbers each release — confirm the list before quoting a category id.
+- **A01 Broken Access Control**: every endpoint/server action/route checks authn AND authz server-side; object-level checks (can THIS user touch THIS record — IDOR); admin-only routes gated by role, not just hidden in the UI.
+- **A02 Security Misconfiguration**: debug off in prod; security headers (CSP, HSTS, X-Content-Type-Options, Referrer-Policy); CORS not `*` with credentials; default/admin creds removed; stack traces not shown to users.
+- **A03 Software Supply Chain Failures** (new in 2025; absorbs the old "Vulnerable and Outdated Components"): lockfile committed and CI installing *from* it (`npm ci`, `pip install --require-hashes`, `go mod verify`), not re-resolving a floating range; provenance/attestation verified where the publisher offers it (npm provenance, Sigstore); an SBOM (CycloneDX/SPDX) per release, kept with the artifact; CI trust boundaries — third-party actions pinned to a commit SHA not a tag, secrets unreachable from fork PRs, release credentials not writable by ordinary contributors; unmaintained/typosquat-adjacent packages flagged. Step 2 is the automated half of this category, not all of it.
+- **A04 Cryptographic Failures**: secrets in env/secret-manager not code; passwords hashed with bcrypt/argon2 (never MD5/SHA1/plain); TLS enforced; no sensitive data in logs/URLs/error messages.
+- **A05 Injection**: parameterized queries / ORM (no string-built SQL); no `eval`/shell interpolation of user input; output encoding to stop XSS; `dangerouslySetInnerHTML`/`v-html` only on sanitized content (DOMPurify).
+- **A06 Insecure Design**: rate-limiting on auth/expensive endpoints; server-side validation of every input (client validation is UX, not security); sane file-upload limits & type checks.
+- **A07 Authentication Failures**: session/JWT expiry & rotation; secure+httpOnly+sameSite cookies; no user-enumeration in login/reset; MFA where it matters; OAuth `state` checked.
+- **A08 Software or Data Integrity Failures**: third-party scripts carry SRI; build artifacts signed and their signatures verified before deploy; auto-update channels verify signatures; no deserialization of untrusted data.
+- **A09 Security Logging and Alerting Failures**: security events (auth, access denials, privilege changes) logged WITHOUT secrets/PII; logs tamper-evident; an *alert* actually fires — a log nobody is paged on is not detection.
+- **A10 Mishandling of Exceptional Conditions** (new in 2025): error paths fail **closed** — an exception inside an authz/permission/signature check denies, never falls through to allow; no empty or blanket `catch` around a security decision (handle or rethrow); no stack traces, SQL, internal paths or PII in a user-visible response; timeouts, partial failures and retries have a defined outcome, and a failed dependency (auth service, flag store, policy store) must not degrade to unauthenticated or unfiltered behaviour.
+- **SSRF is no longer a standalone 2025 category** — OWASP rolled it into A01 Broken Access Control; keep the check there: server-side fetches of user-supplied URLs allow-listed, internal/metadata addresses blocked (169.254.169.254, localhost, RFC1918).

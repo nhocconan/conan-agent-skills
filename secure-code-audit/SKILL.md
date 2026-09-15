@@ -13,25 +13,21 @@ A repeatable, vendor-neutral security pass any repo can run locally. Four layers
 - If a real secret is found in history: say plainly it must be **rotated** (history rewrite does not unleak it from clones/caches), then offer to scrub history. Add the path to `.gitignore` and commit a `.env.example` instead.
 
 ## 2. Dependency / CVE audit
-- JS/TS: `npm audit --omit=dev` / `pnpm audit`. Python: `pip-audit`. Go: `govulncheck ./...`. Multi-ecosystem: `osv-scanner -r .`. Containers/images: `trivy fs .` or `trivy image <img>`.
+- JS/TS: `npm audit --omit=dev` / `pnpm audit`. Python: `pip-audit`. Go: `govulncheck ./...`. Multi-ecosystem: `osv-scanner scan -r .` (v2 form; v2's migration guide makes `osv-scanner <dir>` a shortcut for `osv-scanner scan source <dir>` and does not document whether the bare v1 `-r` form still parses — use the subcommand). Containers/images: `trivy fs .` or `trivy image <img>`.
 - Triage by reachability and severity — a critical CVE in a transitive, unused path is lower priority than a high in your request path. Pin/upgrade; record anything intentionally deferred with the reason.
 
 ## 3. Static analysis (SAST)
-- General: `semgrep --config auto` (or `p/owasp-top-ten`, `p/secrets`, framework packs like `p/react`, `p/nextjs`, `p/django`). Semgrep's registry rules carry the restrictive Semgrep Rules License (since 2024-12); when that matters — commercial/SaaS reuse — the LGPL fork **`opengrep`** is a drop-in (same rule format + SARIF output, 30+ languages).
+- General: `semgrep --config auto` (or `p/owasp-top-ten`, `p/secrets`, framework packs like `p/react`, `p/nextjs`, `p/django`). Semgrep's registry rules moved to the Semgrep Rules License v1.0 in December 2024 — not open source: internal use allowed, reuse in a competing product or SaaS is not. **`opengrep`** is a fork of Semgrep CE v1.100.0 under LGPL 2.1 (same rule syntax, SARIF out). Both claims read 2026-09-15 from [docs.semgrep.dev/faq/comparisons/opengrep](https://docs.semgrep.dev/faq/comparisons/opengrep); re-verify there before relying on either.
 - Language linters: `bandit -r .` (Python), `eslint` with `eslint-plugin-security` / `eslint-plugin-no-unsanitized` (JS), `gosec ./...` (Go).
 - Tune out false positives with inline ignores + a short justification; don't silence a whole rule globally without saying why.
 
-## 4. Manual OWASP Top 10 review (what tools miss — focus here)
-- **A01 Broken Access Control**: every endpoint/server action/route checks authn AND authz server-side; object-level checks (can THIS user touch THIS record — IDOR); admin-only routes gated by role, not just hidden in the UI.
-- **A02 Cryptographic Failures**: secrets in env/secret-manager not code; passwords hashed with bcrypt/argon2 (never MD5/SHA1/plain); TLS enforced; no sensitive data in logs/URLs/error messages.
-- **A03 Injection**: parameterized queries / ORM (no string-built SQL); no `eval`/shell interpolation of user input; output encoding to stop XSS; `dangerouslySetInnerHTML`/`v-html` only on sanitized content (DOMPurify).
-- **A04 Insecure Design**: rate-limiting on auth/expensive endpoints; server-side validation of every input (client validation is UX, not security); sane file-upload limits & type checks.
-- **A05 Security Misconfiguration**: debug off in prod; security headers (CSP, HSTS, X-Content-Type-Options, Referrer-Policy); CORS not `*` with credentials; default/admin creds removed; stack traces not shown to users.
-- **A06 Vulnerable Components**: covered by step 2 — keep deps current, drop unmaintained ones.
-- **A07 Auth Failures**: session/JWT expiry & rotation; secure+httpOnly+sameSite cookies; no user-enumeration in login/reset; MFA where it matters; OAuth `state` checked.
-- **A08 Integrity Failures**: verify integrity of CI/build artifacts & third-party scripts (SRI); no untrusted deserialization.
-- **A09 Logging/Monitoring**: security events (auth, access denials) logged WITHOUT logging secrets/PII; logs tamper-evident.
-- **A10 SSRF**: server-side fetches of user-supplied URLs are allow-listed and blocked from internal/metadata addresses (169.254.169.254, localhost, RFC1918).
+## 4. Manual OWASP Top 10 review — **the 2025 list** (what tools miss — focus here)
+Read `sections/owasp-top-10-2025.md` for the ten categories and what to check in each.
+Numbering follows [OWASP Top 10:2025](https://top10.owasp.org/2025), verified 2026-09-15;
+OWASP renumbers each release, so confirm the list before quoting a category id in a
+report. Two categories are new in 2025 and are the ones most often skipped: **A03 Software
+Supply Chain Failures** and **A10 Mishandling of Exceptional Conditions**. SSRF is no
+longer standalone — OWASP rolled it into A01; check it there.
 
 ## 5. LLM / AI features (chatbots, RAG, agents, AI dashboards — check explicitly)
 Classic SAST misses these; review manually wherever the app calls a model (OWASP LLM Top 10):

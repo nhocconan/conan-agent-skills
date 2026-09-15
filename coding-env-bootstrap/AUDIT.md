@@ -99,7 +99,7 @@ portable subset by hand for exactly this reason.
 
 Reasonable on a personal laptop with the operator watching. On an unattended production
 box it removes the last confirmation before destructive commands, and a remote agent has
-no one to notice. `BOOTSTRAP.md` §4b replaces it with an explicit `permissions.allow`
+no one to notice. `BOOTSTRAP.md` §4 replaces it with an explicit `permissions.allow`
 list, which gives the same "stop prompting me" outcome with a bounded blast radius.
 
 ### 3. `~/.shared-ai-skills` is not under version control

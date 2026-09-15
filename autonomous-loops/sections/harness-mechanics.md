@@ -15,8 +15,9 @@ implementing a loop. Historical commands are not portable APIs.
    Use only the authority supplied for this recurring job; successful earlier
    read-only runs do not grant permission to merge, message, or deploy.
 
-For Codex model routing, use `agent-orchestration/sections/routing.md`: Astra
-owns orchestration and final quality, Terra/Luna perform suitable scoped work.
+For model routing, use `agent-orchestration/sections/routing.md`: the lead of the
+harness running the loop owns orchestration and final quality, and workers come from
+that harness's row.
 For a local cron/launchd job, record owner, schedule, logs, environment, overlap
 lock, and the exact removal command. Disabling a trigger may not stop a running
 job; verify both when asked to stop.

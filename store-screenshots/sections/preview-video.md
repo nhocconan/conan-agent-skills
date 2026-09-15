@@ -119,7 +119,7 @@ Pick a voice source (decision order for a free, license-clean, published asset):
 | `kokoro` | Excellent | see below; ~350MB model | Yes | **Apache-2.0 → safe for commercial listings.** Best free pick. `VO_VOICE=af_heart`/`af_bella`/`am_michael` etc. |
 | `piper` | Good | Piper binary + a `.onnx` voice (`VO_VOICE=<path>`) | Yes | Lighter than Kokoro; MIT voices available |
 | `say` | OK | zero install; **download a Premium voice** in System Settings (defaults sound robotic) | Yes | `VO_VOICE="Ava (Premium)"`. Fine for a draft |
-| `openai` | Excellent | `OPENAI_API_KEY`, model `gpt-4o-mini-tts` (~1¢) | No | **NOT covered by the "free shared-traffic" token tier** — that tier is text models only; TTS bills at standard rates |
+| `openai` | Excellent | `OPENAI_API_KEY`, model `gpt-4o-mini-tts` (~1¢) <!-- model-id-allow: TTS API model, not an orchestration routing tier --> | No | **NOT covered by the "free shared-traffic" token tier** — that tier is text models only; TTS bills at standard rates |
 | `file` | — | drop `vo/<stem>-<i>.wav` per scene | Yes | Use your own recorded voice — most authentic |
 
 **Installing Kokoro (use kokoro-onnx — `pip install kokoro` breaks on Python

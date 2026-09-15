@@ -1,7 +1,7 @@
-## §6. Integrate — the merge is the lead's job
+## Integrate
 
 Parallel work is not done when the agents return. It is done when the combined change is
-coherent, and nobody but the lead can judge that.
+coherent, and only the lead sees the whole of it.
 
 - **Decide the seams before fan-out.** Shared types, interfaces, table columns, route
   names, i18n keys, file paths — the lead fixes these in the briefs. Contracts invented

@@ -1,6 +1,11 @@
 ---
 name: admin-crud-standards
-description: Non-negotiable baseline for every admin/list/CRUD/upload page. Use when building or reviewing any management screen, list view, form, or data-upload flow — pagination, filters, search, type-ahead pickers, destructive-action confirms, consistent tables. Apply proactively; the user should never have to ask for these again.
+description: >-
+  Baseline for admin, back-office and CRUD surfaces. Use when building or
+  reviewing a management screen, admin list view, record add/edit form, bulk
+  data-upload flow, or an ops console — pagination, filters, search, type-ahead
+  pickers, destructive-action confirms, upload preview, consistent tables.
+  Scope is the admin surface, not end-user or marketing UI.
 ---
 
 # Admin / CRUD Page Standards
@@ -38,7 +43,7 @@ Every feature must be reachable by clicking from a menu — if it exists only as
 ## Operational actions belong in the admin UI, not in a growing pile of scripts
 Choose an admin screen for recurring operations only when operators need self-service and its access controls can be maintained. A documented, audited CLI may be the right interface for rare or privileged operations.
 - **Self-service parameters.** The screen exposes what the script took as argv: which org/tenant, which connector/data type, which period (from → to). "Re-run the whole thing" is not an option, it is a fallback.
-- **One command for environment-level ops.** Deploying or bringing the stack up must be a single documented command, and migrations follow the project’s release procedure with locking, compatibility checks, and recovery. Do not introduce automatic production migrations merely for convenience. *"admin có rảnh đâu mà đi check từng cái."*
+- **One command for environment-level ops.** Deploying or bringing the stack up must be a single documented command, and migrations follow the project’s release procedure with locking, compatibility checks, and recovery. Do not introduce automatic production migrations merely for convenience. An operation that requires an admin to inspect each record by hand has not been automated, it has been moved.
 - **Configuration lives in the product, not in files.** Anything a tenant/customer sets (credentials, connector config, thresholds) belongs in a form with a **Test connection** button and a save — not in `.env`, which cannot scale past one customer and cannot be edited by the person who owns the value.
 - **Long jobs are jobs**: queued, with visible status, progress, and history — not a request that hangs. Failures name the failing unit and are re-runnable for that unit alone.
 - **Dry-run / preview before commit** for anything that writes at scale, and an audit trail of who ran what with which parameters.
@@ -50,14 +55,14 @@ Choose an admin screen for recurring operations only when operators need self-se
 - **Pickers**: combobox/tree built on an accessible primitive (Radix, React Aria, shadcn/ui) — verify the resulting keyboard behavior and ARIA; primitives do not guarantee accessibility.
 
 ## Fleet orchestration for admin suites
-For independent screen work, use [agent-orchestration](../agent-orchestration/SKILL.md)
-and its canonical routing: Astra defines shared contracts and verifies the combined
-result; Terra builds scoped screens; Luna handles simple checked edits.
+For independent screen work, use [agent-orchestration](../agent-orchestration/SKILL.md).
+The harness lead defines the shared contracts (table component, pagination, filter
+semantics) and verifies the combined result; scoped implementers build individual
+screens. Role-to-model assignment lives only in
+[agent-orchestration/sections/routing.md](../agent-orchestration/sections/routing.md).
 
 ## Accessibility floor (non-negotiable, every management screen)
-These ship broken constantly on admin UIs — bake them in, don't bolt on later:
-- Tables use real `<table>` semantics (or grid roles); sortable headers are `<button>`s announcing sort state (`aria-sort`).
-- Every form input has an associated `<label>`; validation errors are visible, tied to the field, and say how to fix.
-- Full keyboard operability: tab order is logical, focus is always visible, modals trap focus and restore it on close, `Esc` closes overlays.
-- Status/required/selection never conveyed by color alone; contrast holds in both light and dark themes.
-- Run `a11y-audit` before calling any management screen done.
+`a11y-audit` owns the checklist and is the gate: run it before calling any management
+screen done. The one rule admin surfaces add: a sortable column header is a `<button>`
+inside the `<th>`, and the `<th>` carries `aria-sort` (`ascending`/`descending`/`none`)
+reflecting current state. A plain `<div>` with a chevron announces nothing.
