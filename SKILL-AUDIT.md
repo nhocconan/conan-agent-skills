@@ -1,95 +1,95 @@
-# Skill audit — 2026-09-08
+# Skill audit — 2026-09-15
 
-Reviewed all 32 first-party skill entrypoints and the supporting resources involved
-in the findings below. The collection is useful as a library, not as a requirement
-to load every skill for every task. This is a source and behavior review, not a
-certification of universal “SOTA” performance or production safety.
+Supersedes the 2026-09-08 audit. Scope: all 32 first-party skill entrypoints, the
+orchestration suite's supporting sections, and the validators. This is a source, fact,
+and behavior review. It is not a certification of universal performance, nor proof that
+any skill works against a live third-party service.
 
-## Model and operating policy
+## What changed structurally
 
-GPT-6 Astra owns planning, architecture, integration, and final output quality.
-GPT-5.6 Terra implements scoped work; GPT-5.6 Luna handles simple checked work.
-Claude Fable 5.1, Opus 5, Sonnet 5, and Haiku 4.5 can collaborate where supported.
-Exact IDs, official sources, freshness checks, and unavailable-model behavior live
-in [routing](agent-orchestration/sections/routing.md). Skills do not switch the
-current runtime model. A non-Astra session must leave final Astra review pending
-unless the user explicitly chooses another lead.
+**Routing became harness-conditional.** The previous policy named one model as the global
+lead. That was wrong for an operator who runs the same library from three CLIs: it told a
+Claude or agy session to defer final approval to a model it could not reach. The lead slot
+now belongs to whichever provider's harness is running, leads are never substituted across
+harnesses, and a session that cannot reach its own lead reports final review as pending.
+Per-harness tables, model IDs, prices, retirement dates, effort parameters and subagent
+mechanics live only in [routing](agent-orchestration/sections/routing.md).
 
-The updated bootstrap template selects Astra for future applications of the profile.
-No global configuration, active load-out, or running session was changed by this audit.
+Files asserting lead ownership fell from 10 to 7
+(`git grep -l "final quality" -- '*.md'`, excluding vendored copies); the survivors are the
+two routing-relevant frontmatter descriptions and five pointers, not five separate policies. `delegate-run` dropped from 76
+to 43 lines by deleting text that restated `agent-orchestration` rather than adding to it.
+`agent-orchestration` dropped `§` section numbering entirely; references now use filenames
+and heading text, which survive insertion.
 
-## Necessity and boundaries
+## Model facts, verified 2026-09-15
 
-Core means useful for the general development profile, not automatically invoked.
-Conditional skills remain available for their domain. Maintenance skills are used
-for explicit setup or maintenance work. No skill was deleted. The headless `core`
-profile now contains 12 skills; workstation profiles retain their broader selection.
+Every ID, price, context limit and retirement date in the routing tables was read from the
+vendor's own model or deprecation page on this date, and the three claims that changed a
+decision were re-checked independently:
 
-| Skill | Use | Review result |
+- **No generally available Gemini 3.x Pro reasoning model exists.** Gemini 3.1 Pro has
+  been in Preview since 2026-02-19. Every agy role therefore runs a Flash-family model,
+  with the lead and builder separated by `thinking_level` rather than by model tier.
+- **Claude Code's subagent model precedence changed at CLI 2.1.251** —
+  `CLAUDE_CODE_SUBAGENT_MODEL` no longer overrides the per-invocation parameter and
+  frontmatter. A configuration written against an older build routes differently than its
+  author intended.
+- **`spawn_agent` and `fork_turns` are not in OpenAI's published Codex CLI reference.**
+  They are attested in the issue tracker and in the installed binary's own tool text. The
+  skill now labels them observed behavior rather than documented API.
+
+Concurrency and depth limits, resume primitives, and lane-enforcement keys were read from
+the installed Claude Code 2.1.272 and Codex CLI 0.154.0 binaries, not from memory. The
+previous claim that the concurrency ceiling "includes the lead slot" was false on both.
+The agy definition format comes from published documentation; the installed agy 1.2.3 was
+probed only for `agy models`, `agy --help` and one `--model` call during final review, and
+no subagent definition was run.
+
+## Corrections to shipped content
+
+| Skill | Defect | Correction |
 | --- | --- | --- |
-| agent-orchestration | Core | Canonical Astra ownership, tiered workers, bounded review, actual harness semantics |
-| delegate-run | Core | Existing authority persists; proportional delegation and evidence-based handoff |
-| senior-operator | Core | Retain evidence and project maps; remove competing model tables and append-only folklore |
-| bug-class-audits | Core | Confirm common invariant before broad fixes; scope repairs and test enforcement |
-| metric-integrity | Core | Retain formula/filter/timezone checks; proposed business definitions need owner input |
-| tenant-scope-integrity | Core | Preserve write scope; check server authorization and forged/cross-tenant IDs |
-| dev-env-lifecycle | Core | Track actual owned resources; preserve files when ownership is unclear |
-| remote-host-access | Core | Retain layered diagnosis; allow firewall REJECT as a refusal cause; protect management access |
-| resilient-data-harvest | Core | Respect access limits, durable checkpoints, manual challenges, restricted payload retention |
-| secure-code-audit | Core | Report-only scope; redacted secrets; local scanners can still use the network |
-| docs-sync | Core | Follow existing doc format; preserve required historical evidence |
-| coding-env-bootstrap | Core / maintenance | Future Astra default; explain install authority and moving-dependency limitations |
-| a11y-audit | Conditional UI | Distinguish WCAG requirements, AAA extras, and house conventions; scoped conformance claims |
-| admin-crud-standards | Conditional admin UI | Preserve legitimate zero rows; avoid automatic privileged screens/migrations; remove stale version claim |
-| anti-slop-review | Conditional prose | Evidence and clarity; style heuristics do not prove truth or AI authorship |
-| appstore-review-guard | Conditional mobile release | Correct policy/URL checks, privacy interpretation, and local links; no rejection-rate predictions |
-| backtest-integrity | Conditional quant | Annualize sampled returns, not rebalance cadence; remove unsupported survivorship reassurance |
-| browsing-web | Conditional browser | User-selected/project-approved available browser; portable optional upstream paths |
-| demo-data-craft | Conditional demo | Synthetic-first option; authorization for real clones; no “clean grep proves anonymity” claim |
-| design-qa | Conditional visual review | Review-only stays read-only; fixes do not imply commits |
-| interactive-course-builder | Conditional education | Keep tested template workflow; centralized model routing; course-specific design conventions |
-| investigating-bugs | Conditional diagnosis | Retain evidence-first investigation and scoped delegation |
-| mobile-app-playbook | Conditional mobile/game | Retain domain references; centralized Astra ownership; game/stack targets are project-specific |
-| reference-parity | Conditional rebuild | Inventory and evidence; agreed parity does not override security, accessibility, or rights |
-| shipping-changes | Conditional shipping | Respect repository branches/protections and explicit shipping authority |
-| store-screenshots | Conditional store assets | Current Apple slot guidance, supported fallback sizes, honest silent-preview default |
-| web-perf-audit | Conditional performance | Distinguish lab evidence from percentile-based field outcomes |
-| web-qa | Conditional functional QA | Keep report-only default; remove automatic commits and rigid browser prohibition |
-| agent-session-backup | Maintenance | Fix paired transcript export; preserve safe merge; skip transcript symlinks; disclose lossy cwd filter |
-| autonomous-loops | Maintenance / recurring work | Discover actual scheduling APIs; monitoring stability differs from failed improvement loops |
-| ref-skills | Maintenance | Review/apply distinction, source/version evidence, curated load-out preservation |
-| skill-miner | Maintenance | Repo review does not authorize private history mining; raw digests need restricted handling |
+| secure-code-audit | OWASP Top 10 numbered against the 2021 list | Renumbered to Top 10:2025; added the two new categories (A03 Software Supply Chain Failures, A10 Mishandling of Exceptional Conditions); SSRF kept as a check under A01, into which OWASP rolled it |
+| appstore-review-guard | Blanket ban on external purchase links | Scoped to storefront: Guideline 3.1.1(a) does not prohibit them on the United States storefront, and entitlements cover specific others |
+| appstore-review-guard | Privacy policy scoped to apps with accounts or IAP | 5.1.1(i) requires it for every app, in App Store Connect metadata and within the app |
+| appstore-review-guard | No account-deletion coverage anywhere | Added 5.1.1(v): an app supporting account creation must offer deletion inside the app; a support email or web-only form does not satisfy it |
+| interactive-course-builder | "44px targets" filed under WCAG 2.2 AA | 24×24 is the 2.5.8 AA minimum; 44px is a house rule, now labelled as one |
+| secure-code-audit | `osv-scanner -r .` (v1 form) | v2 subcommand form; the docs do not say whether the bare form still parses, and the skill says so rather than guessing |
+
+Stale counts, uncitable statistics and machine-specific facts were removed or replaced with
+measured values carrying their measurement date. Private operator transcripts and dated
+project rejections were converted into the rules they illustrate; the rejection ledger keeps
+every lesson and drops the identifiers.
+
+## Enforcement
+
+Three rules that existed only as prose are now checked mechanically by
+`skill-miner/validate_skills.py`: section citations must resolve to a real heading, model
+IDs outside the routing policy must be justified, and house-style banned terms are reported.
+`context_budget.py` previously measured only `SKILL.md`, so growth moved into `sections/`
+was invisible; on-demand references are now budgeted too. CI gained the two test suites
+`AGENTS.md` requires but the workflow never ran.
 
 ## Verification and limitations
 
-Local validation covers frontmatter, resolvable public references, and unchanged
-context ceilings. Isolated tests cover installer/load-out behavior, read-only
-budget reporting, frontmatter/reference validation, and backup/restore transcript
-round trips, no-overwrite, dry-run, and symlink boundaries. Final command results
-for this tree: 35 tests pass (7 backup, 12 skill validation/budget, 16 bootstrap),
-32 skills validate with zero errors/warnings, all unchanged context ceilings pass,
-and the skill-creator validator accepts all 32 entrypoints. `git diff --check`
-passes. A separate Astra reviewer approved the scoped changes after reproducing
-and rechecking the restore-path defect. These results are not permanent proof of
-future runs. Restore guards cover static selected-root/descendant checks, not
-adversarial filesystem races or symlink aliases above the selected roots.
+Structural validation covers frontmatter, reference resolution, cross-reference targets and
+context ceilings. It does not establish that a skill produces good output.
 
-No live store submission, production deployment, browser journey, private-history
-mining, or real-account restoration was executed. Claude collaborator availability
-was documented from official sources, not tested through this OpenAI-only surface.
-Historical author attributions and the specialized TTS model remain unchanged.
+Not done: no live store submission, no production deployment, no browser journey, no private
+history mining, no real-account restore. `osv-scanner`, `semgrep` and `opengrep` claims are
+documentation-verified, not executed. Apple and Google policy pages are living documents —
+re-check them at submission rather than trusting this date. Upstream installers still pin a
+moving branch (`ref = main`), so this is not a fully pinned supply chain; `refsync.py` still
+rewrites `version:` as the wrapper's own revision, and recording the upstream commit remains
+an open code change rather than a documentation fix.
 
-Upstream installers still include moving branches and `@latest` dependencies;
-this audit does not turn them into a fully pinned supply chain. Controlled hosts
-should use approved pinned dependencies and disable automatic network installation.
-Mobile growth targets, writing conventions, and course layouts are domain guidance,
-not universal standards. Refresh vendor policies before each actual submission.
+The CI additions pass on macOS and have not been observed on ubuntu-latest.
 
 ## Maintenance bar
 
-Keep a skill only when it changes useful decisions beyond the base agent and has a
-distinct task boundary. Prefer updating an existing skill over adding a near-duplicate.
-On model or tool changes, verify official documentation and the active schema, then
-exercise representative success, failure, and unavailable-tool scenarios. Structural
-validation alone cannot establish output quality. Revisit conditional skills based on
-observed project use; do not claim every specialty is necessary for every developer.
+Keep a skill only when it changes a decision the base agent would otherwise get wrong, and
+has a distinct trigger boundary. Prefer updating an existing skill to adding a near-duplicate.
+On a model release, deprecation, rejected ID, or a retirement date within 90 days, re-verify
+against vendor pages and the active schema. Re-read harness concurrency, depth and resume
+mechanics after any CLI upgrade — they are build-specific and this audit dates them.

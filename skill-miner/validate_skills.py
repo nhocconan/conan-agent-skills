@@ -17,6 +17,23 @@ Rules encoded (platform.claude.com/docs/en/agents-and-tools/agent-skills/best-pr
   WARN    reference files >100 lines should start with a table of contents
   WARN    no Windows-style backslash paths
 
+Local, repo-specific rules (AGENTS.md) added on top of the platform spec:
+
+  ERROR   `§N` / `SKILL.md §x` cross-references resolve to a real heading
+          (bare `§N` — anywhere in the skill; `SKILL.md §x` — in SKILL.md
+          itself). Fenced code blocks (``` ... ```) are not scanned: they
+          are examples, not live citations. If a skill has no `§` headings
+          at all, any `§` citation inside it is an error.
+  ERROR   (repo-wide, not per-skill) a `gpt-N`/`claude-{opus,sonnet,haiku,
+          fable,mythos}-`/`gemini-N` model-ID literal outside
+          agent-orchestration/sections/routing.md — the canonical routing
+          policy. A line containing the marker `model-id-allow` is exempt.
+  WARN    house-style slop ban-list (senior-operator/OPERATING-MANUAL.md,
+          "Self-praise" rule) — read dynamically from that file at import
+          time so it tracks edits there; quoted spans (`"…"`/`"…"`) are
+          skipped since frontmatter `description` fields quote user
+          trigger phrases on purpose.
+
 Usage:
   python3 validate_skills.py                 # the conan skills repo
   python3 validate_skills.py ~/.claude/skills  # everything installed
@@ -50,6 +67,89 @@ WHEN_HINTS = ("use when", "use this", "use for", "use it", "use proactively",
               "run after", "when the user", "when working", "when building",
               "when reviewing", "when creating", "when asked", "before ", "after ")
 FIRST_PERSON = ("i can ", "i will ", "you can use this", "we ")
+
+# --- cross-reference (§) check -------------------------------------------------
+# A heading line that opens a numbered section. Two spellings are both live in
+# this repo: the "§" glyph form ("## §5. Astra's quality gate", "## §OP.") and
+# a plain numbered form with no glyph at all ("## 0. [CORE] Preconditions",
+# "### 3b. [DEV] ...", "## 4 · Pedagogy — ..." with a middle-dot separator).
+# The glyph form allows a pure-letter token (§OP); the plain form requires at
+# least one digit, an optional single letter, then one of ". ) ·  :" — else
+# "## 2026 Report" would look like a numbered heading.
+HEADING_RE = re.compile(
+    r"^#{1,6}\s*(?:§(?P<glyph>[A-Za-z0-9]+)\b"
+    r"|(?P<plain>\d+[A-Za-z]?)\s*[.)·:])"
+)
+# A citation in prose: an optional local filename immediately before the "§"
+# (backticks/whitespace allowed in between — "`SKILL.md` §5.6",
+# "BOOTSTRAP.md §4b", "reference.md §9") resolves against THAT file's own
+# headings; a bare "§N" resolves against the whole skill's headings. The
+# filename may be a real ".md" path, or a bare ALL-CAPS document stem used
+# without its extension ("OPERATING-MANUAL §4" for OPERATING-MANUAL.md) —
+# common when the file is named a line earlier and the reference wraps.
+CITE_RE = re.compile(
+    r"(?:(?P<file>[\w./<>-]*\.md|[A-Z][A-Z-]{2,})[`\s]*)?§(?P<token>[A-Za-z0-9]+)"
+)
+FENCE_RE = re.compile(r"^\s*`{3,}")
+# "§N" used as a literal fill-in-the-number placeholder in documentation about
+# the citation convention itself (senior-operator/DISTILL.md, PLAYBOOK.md) —
+# never a real section number, so never worth resolving.
+CITE_PLACEHOLDER_TOKENS = {"N"}
+LINT_ALLOW_MARKER = "lint-allow"
+
+# --- model-ID containment check -------------------------------------------------
+MODEL_ID_RE = re.compile(
+    r"\b(?:gpt-[0-9][A-Za-z0-9_.-]*"
+    r"|claude-(?:opus|sonnet|haiku|fable|mythos)-[A-Za-z0-9_.-]*"
+    r"|gemini-[0-9][A-Za-z0-9_.-]*)"
+)
+MODEL_ID_ALLOW_MARKER = "model-id-allow"
+ROUTING_POLICY_REL = Path("agent-orchestration") / "sections" / "routing.md"
+MODEL_ID_SKIP_DIRS = {".git", "__pycache__", ".vendor", "node_modules", ".agents"} | PRIVATE_PARTS
+MODEL_ID_SKIP_SUFFIXES = {
+    ".png", ".jpg", ".jpeg", ".gif", ".ico", ".pdf", ".woff", ".woff2",
+    ".zip", ".mp4", ".mov", ".gz", ".pyc",
+}
+# This checker's own test fixtures synthesize model-ID-shaped strings as
+# isolated test data (AGENTS.md: tests use isolated fixtures) — that is not
+# real documentation duplicating routing.md, so it is not a repo violation to
+# route to anyone. Skip this one directory, by exact
+# relative path, rather than every "tests/" directory in the repo (a skill's
+# own tests/ folder with real duplicated content should still be caught).
+MODEL_ID_SELF_TEST_DIR = ("skill-miner", "tests")
+
+# --- banned-word (house-style slop) check ---------------------------------------
+# Read from senior-operator/OPERATING-MANUAL.md's "Self-praise" ban-list line so
+# this tracks that file instead of duplicating a hand-typed word list that can
+# drift out of sync with it. Falls back to a fixed snapshot if that file is
+# unreadable (bare-interpreter installs, or ~/.claude/skills without it).
+DEFAULT_BANNED_TERMS = ("successfully", "comprehensive", "robust", "seamless",
+                         "hoàn thành xuất sắc")
+QUOTED_SPAN_RE = re.compile(r'"[^"]*"|“[^”]*”')
+
+
+def load_banned_terms(manual_path: "Path | None" = None) -> tuple[str, ...]:
+    """Parse the quoted self-praise terms out of OPERATING-MANUAL.md.
+
+    Looks for the bullet starting "**Self-praise.**" and pulls every
+    double-quoted span out of it. Never raises: any read/parse failure falls
+    back to DEFAULT_BANNED_TERMS so the check still runs.
+    """
+    path = manual_path or (
+        Path(__file__).resolve().parent.parent / "senior-operator" / "OPERATING-MANUAL.md"
+    )
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return DEFAULT_BANNED_TERMS
+    line = next((l for l in text.splitlines() if "Self-praise" in l), None)
+    if not line:
+        return DEFAULT_BANNED_TERMS
+    terms = tuple(m.group(0)[1:-1] for m in QUOTED_SPAN_RE.finditer(line))
+    return terms or DEFAULT_BANNED_TERMS
+
+
+BANNED_TERMS = load_banned_terms()
 
 
 def parse_frontmatter(text: str):
@@ -126,6 +226,277 @@ def _inside(root: Path, target: Path) -> bool:
     if root.name == "senior-operator" and relative.parts[:1] == ("projects",):
         return False
     return not any(part in PRIVATE_PARTS for part in relative.parts)
+
+
+def _skill_markdown_files(skill_dir: Path):
+    """Every authored .md file in this skill (private/gitignored trees, and
+    hidden dotfiles like `.upstream-preview.md` — a vendored snapshot of an
+    upstream skill kept for diffing, not this repo's own content — excluded)."""
+    root = skill_dir.resolve()
+    return sorted(
+        p.resolve() for p in skill_dir.rglob("*.md")
+        if p.is_file() and not p.name.startswith(".") and _inside(root, p.resolve())
+    )
+
+
+def _non_fenced_lines(text: str):
+    """Yield (1-based lineno, line) skipping anything inside ``` fences.
+
+    Template/example blocks routinely show placeholder `§N` citations for a
+    hypothetical *other* project (see agent-orchestration/TEMPLATES.md's brief
+    template) — those are documentation of a convention, not a live citation
+    into this skill, so they must not be scanned.
+    """
+    in_fence = False
+    for lineno, line in enumerate(text.splitlines(), start=1):
+        if FENCE_RE.match(line):
+            in_fence = not in_fence
+            continue
+        if not in_fence:
+            yield lineno, line
+
+
+def _non_fenced_paragraphs(text: str):
+    """Yield (first-lineno, joined text) for citation scanning.
+
+    Markdown hard-wraps prose ("...see `senior-operator`\\nOPERATING-MANUAL
+    §4.") — a citation split across that soft line break would never be seen
+    as one unit by a plain per-line scan. Consecutive non-blank, non-heading
+    lines (already fence-filtered) are joined with a space; a blank line or a
+    heading starts a new paragraph.
+    """
+    paragraphs = []
+    buf: list[str] = []
+    start = None
+    for lineno, line in _non_fenced_lines(text):
+        if not line.strip() or HEADING_RE.match(line):
+            if buf:
+                paragraphs.append((start, " ".join(buf)))
+                buf = []
+            continue
+        if not buf:
+            start = lineno
+        buf.append(line.strip())
+    if buf:
+        paragraphs.append((start, " ".join(buf)))
+    return paragraphs
+
+
+def _resolve_named_file(skill_dir: Path, raw: str) -> "Path | None":
+    """Resolve a citation's named `.md` file to a real path inside this skill.
+
+    Tries the path as given (relative to the skill root — "SKILL.md",
+    "reference/launch-and-growth.md"), then falls back to a same-name search
+    anywhere in the skill (a citation naming just "reference.md" without its
+    real subdirectory). Returns None — meaning "skip, unverifiable" — for a
+    templated placeholder ("projects/<slug>.md"), a name that isn't actually
+    in this skill (a different skill, or an external project's own file), or
+    anything outside the skill boundary.
+    """
+    if "<" in raw or ">" in raw:
+        return None  # "projects/<slug>.md" — a template placeholder, not a path
+    if not raw.lower().endswith(".md"):
+        raw = raw + ".md"  # bare stem, e.g. "OPERATING-MANUAL" for OPERATING-MANUAL.md
+    root = skill_dir.resolve()
+    direct = (skill_dir / raw).resolve()
+    if direct.is_file() and _inside(root, direct):
+        return direct
+    basename = Path(raw).name
+    for candidate in skill_dir.rglob(basename):
+        resolved = candidate.resolve()
+        if resolved.is_file() and _inside(root, resolved):
+            return resolved
+    return None
+
+
+def _names_a_document(skill_dir: Path, raw: str) -> bool:
+    """Is a citation's prefix a document name (so a miss means "outside this
+    skill, unverifiable") or just a capitalised word before a "§"?
+
+    A ".md" path or a templated placeholder always is. A bare ALL-CAPS stem
+    ("OPERATING-MANUAL") is only if some `<STEM>.md` exists in a sibling skill;
+    otherwise "MUST §5" / "EVERY §5.2" would be silently skipped as a file miss
+    instead of resolved as the bare citation it is.
+    """
+    if raw.lower().endswith(".md") or "<" in raw or ">" in raw:
+        return True
+    name = raw + ".md"
+    repo = skill_dir.resolve().parent
+    for pattern in (f"*/{name}", f"*/*/{name}", f"*/*/*/{name}"):
+        for hit in repo.glob(pattern):
+            parents = hit.relative_to(repo).parts[:-1]
+            if hit.is_file() and not any(
+                part in PRIVATE_PARTS or part.startswith(".") for part in parents
+            ):
+                return True
+    return False
+
+
+def check_cross_references(skill_dir: Path):
+    """§-citations must resolve to a real heading (see module docstring).
+
+    - "`<file>.md` §x" resolves against THAT file's own headings if the named
+      file exists in this skill; if it names a file this skill doesn't have
+      (another skill, an external project's own file, a templated
+      placeholder), it is unverifiable from here and is skipped, never
+      errored — verifying another skill's or another repo's content is out
+      of scope for a per-skill check. A bare ALL-CAPS prefix counts as a
+      filename only when `<PREFIX>.md` exists in some sibling skill; else it
+      is an ordinary word ("MUST §5") and the citation is treated as bare.
+    - a bare "§N" (no filename on the same citation) resolves against every
+      heading in the whole skill.
+    Both skip citations inside fenced code blocks (examples, not live
+    citations) and inside quoted spans (`"§33"` as a written-out example of
+    the citation convention itself), and the literal placeholder token "N".
+    A line containing the marker `lint-allow` is a deliberate, documented
+    exception and is skipped entirely.
+    """
+    root = skill_dir.resolve()
+    errors = []
+    md_files = _skill_markdown_files(skill_dir)
+    texts = {}
+    for f in md_files:
+        try:
+            texts[f] = f.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+
+    skill_headings: set[str] = set()
+    file_headings: dict[Path, set[str]] = {}
+    for f, text in texts.items():
+        headings = file_headings.setdefault(f.resolve(), set())
+        for _, line in _non_fenced_lines(text):
+            m = HEADING_RE.match(line)
+            if m:
+                token = m.group("glyph") or m.group("plain")
+                headings.add(token)
+                skill_headings.add(token)
+
+    for f, text in texts.items():
+        rel = f.relative_to(root)
+        for lineno, raw_para in _non_fenced_paragraphs(text):
+            if LINT_ALLOW_MARKER in raw_para:
+                continue
+            line = QUOTED_SPAN_RE.sub("", raw_para)
+            for m in CITE_RE.finditer(line):
+                token = m.group("token")
+                if token in CITE_PLACEHOLDER_TOKENS:
+                    continue
+                file_ref = m.group("file")
+                target = _resolve_named_file(skill_dir, file_ref) if file_ref else None
+                if file_ref and target is None:
+                    if _names_a_document(skill_dir, file_ref):
+                        continue  # names a file outside this skill — unverifiable
+                    file_ref = None  # "MUST §5": a capitalised word, not a file — bare citation
+                if target is not None:
+                    if token not in file_headings.get(target, set()):
+                        target_rel = target.relative_to(root)
+                        errors.append(
+                            f"{rel}:{lineno}: `{file_ref} §{token}` has no matching "
+                            f"heading in {target_rel}"
+                            + (f" ({target_rel} has no numbered headings at all)"
+                               if not file_headings.get(target) else "")
+                        )
+                elif token not in skill_headings:
+                    errors.append(
+                        f"{rel}:{lineno}: `§{token}` has no matching heading "
+                        f"anywhere in this skill"
+                        + (" (this skill has no § headings at all)" if not skill_headings else "")
+                    )
+    return errors
+
+
+def check_banned_words(skill_dir: Path, banned_terms=BANNED_TERMS):
+    """House-style slop ban-list, warning-only (senior-operator's ban is an error
+    there; here it is advisory so a false positive can never block validation)."""
+    warns = []
+    for f in _skill_markdown_files(skill_dir):
+        try:
+            text = f.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        rel = f.relative_to(skill_dir.resolve())
+        for lineno, raw_line in enumerate(text.splitlines(), start=1):
+            if LINT_ALLOW_MARKER in raw_line:
+                continue
+            # Quoted spans are frequently a user's own trigger phrase quoted
+            # deliberately (frontmatter `description` fields do this constantly)
+            # rather than the author praising their own work — skip them.
+            line = QUOTED_SPAN_RE.sub("", raw_line)
+            low = line.lower()
+            for term in banned_terms:
+                if not term:
+                    continue
+                if re.search(r"[a-z]", term, re.IGNORECASE) and " " not in term.strip() and term.isascii():
+                    hit = re.search(rf"\b{re.escape(term.lower())}\b", low)
+                else:
+                    hit = term.lower() in low
+                if hit:
+                    warns.append(f"{rel}:{lineno}: banned term '{term}' — {raw_line.strip()[:80]}")
+    return warns
+
+
+def check_model_id_containment(root: Path):
+    """Repo-wide: model-ID literals must live only in the canonical routing policy.
+
+    AGENTS.md: "Keep model IDs in the canonical routing policy instead of
+    duplicating tables across skills." Any gpt-/claude-.../gemini- literal
+    found outside agent-orchestration/sections/routing.md is an error —
+    whether it duplicates a real routing.md entry (the banned duplication) or
+    names an ID routing.md doesn't even know about (worse: undocumented/stale).
+    A line containing the literal marker `model-id-allow` (or the shared
+    `lint-allow`) is a deliberate, documented exception and is skipped.
+    Hidden dotfiles (vendored upstream previews, e.g. `.upstream-preview.md`)
+    are skipped: that content isn't authored here and isn't governed by this
+    repo's AGENTS.md.
+    """
+    routing_path = (root / ROUTING_POLICY_REL).resolve()
+    if not routing_path.is_file():
+        return []  # canonical file doesn't exist under this root; nothing to enforce
+    try:
+        routing_text = routing_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return []
+
+    errors = []
+    root = root.resolve()
+    for p in sorted(root.rglob("*")):
+        if not p.is_file():
+            continue
+        resolved = p.resolve()
+        if resolved == routing_path:
+            continue
+        rel = resolved.relative_to(root)
+        if any(part in MODEL_ID_SKIP_DIRS for part in rel.parts[:-1]):
+            continue
+        if rel.parts[:2] == MODEL_ID_SELF_TEST_DIR:
+            continue
+        if rel.parts[:2] == ("senior-operator", "projects"):
+            continue  # gitignored per-project maps — same carve-out as _inside()
+        if resolved.name.startswith("."):
+            continue  # vendored upstream preview snapshot, not authored here
+        if resolved.suffix.lower() in MODEL_ID_SKIP_SUFFIXES:
+            continue
+        try:
+            text = p.read_text(encoding="utf-8", errors="strict")
+        except (OSError, UnicodeDecodeError):
+            continue  # binary or unreadable — not a text duplication risk
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            if MODEL_ID_ALLOW_MARKER in line or LINT_ALLOW_MARKER in line:
+                continue
+            for m in MODEL_ID_RE.finditer(line):
+                model_id = m.group(0)
+                if model_id in routing_text:
+                    errors.append(
+                        f"{rel}:{lineno}: model ID '{model_id}' duplicates "
+                        f"{ROUTING_POLICY_REL} — reference it by role instead"
+                    )
+                else:
+                    errors.append(
+                        f"{rel}:{lineno}: model ID '{model_id}' is not in "
+                        f"{ROUTING_POLICY_REL} — undocumented/stale ID, or add it there"
+                    )
+    return errors
 
 
 def check(skill_dir: Path):
@@ -251,6 +622,9 @@ def check(skill_dir: Path):
                                                                "# contents", "toc")):
                 warns.append(f"{target.relative_to(root)} is {sub_lines} lines with no table of contents")
             queue.append((target, sub))
+
+    errors.extend(check_cross_references(skill_dir))
+    warns.extend(check_banned_words(skill_dir))
     return errors, warns
 
 
@@ -279,6 +653,13 @@ def main():
         if not args.errors_only:
             for w in warns:
                 print(f"  warn   {w}")
+
+    model_id_errors = check_model_id_containment(root)
+    if model_id_errors:
+        n_err += len(model_id_errors)
+        print("\n[repo-wide] model-ID containment")
+        for e in model_id_errors:
+            print(f"  ERROR  {e}")
 
     print(f"\n{'='*60}\n{len(dirs)} skills · {n_err} errors · {n_warn} warnings")
     return 1 if n_err else 0

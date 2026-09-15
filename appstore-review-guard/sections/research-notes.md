@@ -3,6 +3,7 @@
 These notes supplement, but never replace, the current official policy. Re-check the
 linked Apple/Google source at submission time; store policies and console surfaces move.
 
+- **3.1.1(a) external purchase links are scoped by storefront.** On the **United States storefront**, the prohibition on buttons/external links/calls-to-action to non-IAP purchase does not apply, and no entitlement is required there — a 2025 change made to comply with a U.S. court order (Epic v. Apple). Everywhere else, the StoreKit External Purchase Link Entitlement or the Music Streaming Services Entitlement permits such a link, but each entitlement is valid only in the specific storefronts Apple lists for it; outside the US storefront and outside entitlement-covered storefronts, no such buttons/links/CTAs are allowed. Re-check the current storefront list before submission — it can change independently of the guideline text.
 - **4.3 value bar.** Apple’s current guideline names established categories that need a meaningfully different or improved experience and says low-effort apps that do not add value may be removed. Show the actual differentiator in the binary and marketing assets; do not rely on a rejection-frequency ranking, because Apple does not publish one.
 - **3.1.2 disclosure must live in the binary, "clearly and conspicuously."** Apple reproduces the subscription terms from the **app**, not App Store Connect. The minimum inline set on the paywall: title, period, price/period, the "auto-renews unless cancelled ≥24h before period end" sentence, trial length + conversion sentence (where a trial exists), and tappable Terms + Privacy links. Hiding any of these only inside a Terms sheet is the common miss. A subscription whose "ongoing value" isn't demonstrable (a one-time content drop sold as a sub) is a separate, harder 3.1.2 reject — use a non-consumable for those.
 - **Verify links as an anonymous visitor.** A Support/Privacy URL that errors, hits a login wall, points to a private repo, or resolves to the wrong public page is a release blocker. Use the fail-closed [URL-live recipe](verification-recipes.md), then inspect every reported final URL in a private browser session. **Check the live App Store Connect value, not only the repo copy** — manual edits can make them differ.
@@ -16,7 +17,7 @@ linked Apple/Google source at submission time; store policies and console surfac
 
 ## Sources
 
-- App Store Review Guidelines (revised Nov 13 2025) — https://developer.apple.com/app-store/review/guidelines/
+- App Store Review Guidelines (the page carries no revision date; Apple presents it as a living document — re-read at submission time) — https://developer.apple.com/app-store/review/guidelines/
 - App Previews — stay within the app, no device frames/hands — https://developer.apple.com/app-store/app-previews/
 - Screenshot specifications — App Store Connect Help — https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/
 - Manage app privacy (privacy policy URL and app/third-party disclosure responsibility) — https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy/
@@ -28,4 +29,5 @@ linked Apple/Google source at submission time; store policies and console surfac
 ### Policy-update reading (refresh at submission)
 
 - Auto-renewable Subscriptions (in-app presentation requirements) — https://developer.apple.com/app-store/subscriptions/
-- App Review Guideline updates (news feed, incl. 3.1.2(a) changes) — https://developer.apple.com/news/?id=xqk627qu
+- Updated guidelines now available — 3.1.1/3.1.1(a)/3.1.3/3.1.3(a) external-purchase-link changes for the US storefront, May 1 2025 — https://developer.apple.com/news/?id=9txfddzf
+- Updated Apple Developer Program License Agreement and App Review Guidelines now available — most recent guideline revision (1.2, 4.3(a)/(b), 4.5.3), June 8 2026 — https://developer.apple.com/news/?id=a233fmpw

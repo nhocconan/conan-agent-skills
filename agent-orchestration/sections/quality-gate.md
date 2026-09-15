@@ -1,8 +1,8 @@
-## §5. Astra's quality gate
+## The lead's quality gate
 
 ### Evidence before acceptance
 
-Astra owns the final decision after reading the combined diff and relevant
+The lead owns the final decision after reading the combined diff and relevant
 artifacts. Capture the actual command exit status and output; avoid pipelines
 that hide failures (or explicitly preserve status). A screenshot proves visible
 state, an HTTP status proves reachability, and neither alone proves a complete
@@ -33,13 +33,13 @@ supporting evidence, not independent proof when they share assumptions.
 
 ### Bounded review and repair
 
-Route fixes to the original builder when useful; Astra may fix them directly
+Route fixes to the original builder when useful; the lead may fix them directly
 when that is simpler or the worker has failed. Reviewers remain read-only.
-After two failed attempts on one check, Astra diagnoses the failure and changes
+After two failed attempts on one check, the lead diagnoses the failure and changes
 the approach. Limit review cycles to three before re-planning; do not silently
 accept outstanding material defects.
 
-Astra resolves technical disagreements from evidence. Ask the user for a missing
+The lead resolves technical disagreements from evidence. Ask the user for a missing
 preference or authority, not to arbitrate routine builder/reviewer disputes.
 
 ### Stop condition
@@ -49,6 +49,7 @@ reported as limitations. Expand review only for new evidence, missing coverage,
 or explicit exhaustive-audit scope. Do not require repeated empty waves, fixed
 reviewer counts, or additional tests based only on diff line count.
 
-Before reporting completion, Astra checks scope alignment, integration behavior,
-evidence, remaining risks, and that the actual lead model is known.
-If Astra review is unavailable, mark it pending rather than claiming approval.
+Before reporting completion, the lead checks scope alignment, integration behavior,
+evidence, remaining risks, and that the actual lead model is known. If the harness's
+lead is unavailable ([routing](routing.md)), mark final review pending rather than
+claiming approval; there is no cross-harness substitute.

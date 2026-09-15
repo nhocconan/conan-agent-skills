@@ -114,8 +114,8 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | Skill | Fires when |
 | --- | --- |
 | `senior-operator` | Hard or ambiguous task. Read **before** acting |
-| `agent-orchestration` | Astra lập kế hoạch, phân việc độc lập cho Terra/Luna, kiểm tra kết quả và chịu trách nhiệm chất lượng cuối cùng |
-| `delegate-run` | Giao việc đến kết quả đã kiểm chứng; giữ quyền đã cấp, lưu trạng thái, dùng Terra/Luna khi phù hợp và Astra chịu trách nhiệm cuối cùng |
+| `agent-orchestration` | Lead của harness đang chạy lập kế hoạch, phân việc độc lập cho worker, kiểm tra evidence và chịu trách nhiệm chất lượng cuối cùng |
+| `delegate-run` | Giao việc đến kết quả đã kiểm chứng; giữ quyền đã cấp, lưu trạng thái, dùng worker khi phù hợp, lead của harness chịu trách nhiệm cuối cùng |
 | `investigating-bugs` | Something is broken — reproduce before editing |
 | `shipping-changes` | Commit + push (repository branch/review policy, your identity, hooks must pass) |
 | `browsing-web` | Anything involving a browser |
@@ -166,12 +166,14 @@ reporting → report honestly, including what was skipped.
 This is deliberately **not** a skill. A skill has to be triggered, so it would stay silent
 exactly when you are chatting casually — which is when you said you most want it applied.
 
-**Model policy (2026-09-08):** GPT-6 Astra là orchestrator và chịu trách nhiệm chất lượng
-cuối cùng. GPT-5.6 Terra triển khai phần việc đã có tiêu chí; GPT-5.6 Luna xử lý việc nhỏ
-có thể kiểm tra rõ ràng. Việc nhỏ hoặc tuần tự có thể do Astra làm trực tiếp.
-Claude Fable 5.1 / Opus 5 / Sonnet 5 / Haiku 4.5 là collaborator khi harness hỗ trợ;
-không thay Astra ngầm. Chi tiết và nguồn: [routing](agent-orchestration/sections/routing.md).
-Kết quả rà soát 32 skills ngày 2026-09-08: [SKILL-AUDIT.md](SKILL-AUDIT.md).
+**Model policy (2026-09-15):** lead slot thuộc về harness đang chạy — Claude harness thì
+Fable lead, Codex harness thì Astra lead, agy harness thì Gemini lead. Lead chịu trách
+nhiệm chất lượng cuối cùng; worker làm phần việc đã có tiêu chí và không bao giờ tự
+accept. Không thay lead giữa các harness: nếu không gọi được lead của harness hiện tại,
+báo final review là pending thay vì tự duyệt. Việc nhỏ hoặc tuần tự lead làm trực tiếp.
+Bảng model ID, giá, ngày retirement và harness mechanics chỉ nằm ở một chỗ:
+[routing](agent-orchestration/sections/routing.md).
+Kết quả rà soát 32 skills ngày 2026-09-15: [SKILL-AUDIT.md](SKILL-AUDIT.md).
 
 ---
 

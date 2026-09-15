@@ -14,10 +14,12 @@ more than should be competing for the model's attention.
 Skills use Markdown entrypoints; optional scripts and harness-specific references have
 platform requirements. Check the active tools before executing a referenced recipe.
 
-Model policy: **GPT-6 Astra leads and owns final quality; GPT-5.6 Terra implements;
-GPT-5.6 Luna handles simple checked work.** Current Claude collaborator IDs and fallback
-rules live in [model routing](agent-orchestration/sections/routing.md).
-See [the audit dated 2026-09-08](SKILL-AUDIT.md) for the then-current 32 skills and validation limits.
+Model policy: **the lead slot belongs to the active harness, and the harness lead owns
+final quality; workers implement scoped work and never grant final acceptance.** Leads are
+not substituted across harnesses. Per-harness tables, model IDs, pricing, retirement dates
+and harness mechanics live in [model routing](agent-orchestration/sections/routing.md),
+verified 2026-09-15.
+See [the audit dated 2026-09-15](SKILL-AUDIT.md) for the 32 skills and validation limits.
 
 Project rules use one source: `AGENTS.md`, with native Claude/Gemini import adapters.
 See [the shared-rule convention](coding-env-bootstrap/PROJECT-RULES.md) for safe
@@ -128,7 +130,7 @@ wrap by default, fork only when you mean to diverge.
 | 14 | [senior-operator](senior-operator/SKILL.md) | Cross-project craft handoff: operating manual, per-repo execution maps, and a distill recipe. The canonical `AGENTS.md` wins; `CLAUDE.md` and `GEMINI.md` remain import-only adapters. |
 | 15 | [agent-session-backup](agent-session-backup/SKILL.md) | Light backup & restore of Claude Cowork + Claude Code session histories on macOS, filtered to sessions whose `cwd` still exists on this machine. Covers **all three history trees** (`claude-code-sessions`, `local-agent-mode-sessions`, `~/.claude/projects`) via `backup.py`/`restore.py` (dry-run, safe-merge by default), plus `map_account.py` to merge another account's sessions into the current login's active space (the account/space two-level model, verified on Claude Desktop 2.1.x). |
 | 16 | [mobile-app-playbook](mobile-app-playbook/SKILL.md) | End-to-end playbook for building & shipping top-chart Android+iOS apps/games, written as a strong-model→weaker-model handoff: numeric quality bar (§0) + model-tier orchestration (§OP), KMP/CMP architecture seams & platform traps, game-feel/UX checklists, retention meta-system ladder, store-policy-proof monetization (Families ads, consent stack, money-correctness matrix), fake-green-proof verification discipline with cold-repo `verify.sh` bootstrap, submission rollout ladder + staged-release dwell rules, ASO (listing, review-prompt policy, localization), LiveOps cadence, and a generalized failure catalog. Fact-checked against Apple/Google primary docs; execution-tested on Sonnet and Opus. |
-| 17 | [agent-orchestration](agent-orchestration/SKILL.md) | Astra leads independent workstreams, assigns Terra/Luna workers, reviews evidence, integrates, and owns final quality. Includes scoped briefs, current provider IDs, resumable tracking, bounded escalation, and proportional verification. |
+| 17 | [agent-orchestration](agent-orchestration/SKILL.md) | The harness lead splits independent workstreams, staffs workers from the per-harness routing table, reviews evidence, integrates, and owns final quality. Includes scoped briefs, lane-to-config enforcement, resumable tracking, bounded escalation, and proportional verification. |
 | 18 | [resilient-data-harvest](resilient-data-harvest/SKILL.md) | Data collection that survives reality — per-item checkpointing with a manifest (a dropped connection costs one unit, not the run), human-paced serialized requests with backoff instead of block/CAPTCHA escalation, driving the operator's real logged-in session, schema/volume drift detection against the previous run, a staging quality gate before ingest, and the rule that the harvester updates itself the moment reality changes. Plus migration invariants: preserve identity/timestamps, suppress notifications, dry-run first. |
 | 19 | [coding-env-bootstrap](coding-env-bootstrap/SKILL.md) | Reproduce this coding-agent environment on a new/remote machine: `BOOTSTRAP.md` is an agent-executable runbook (toolchain → agent CLIs → skills repo → portable settings → plugins → MCP → secrets protocol → live verification) tiered `[CORE]`/`[DEV]`/`[MAC]` so a production box gets the useful half, not the workstation clone; `AUDIT.md` records the source-machine scan and the changes to make (secrets out of `settings.json`, allowlist instead of blanket dangerous mode, unversioned skill tree, malformed frontmatter). |
 | 20 | [skill-miner](skill-miner/SKILL.md) | Mine authorized local histories with source references, exact replay tracking, archive coverage and private digests. Separate scans from semantic review; require recurring procedural evidence across ≥2 projects, prefer existing skills, and preserve the watermark on read failures. |

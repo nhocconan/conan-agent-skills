@@ -50,10 +50,9 @@ restrict export access and retention, then clone → mask → verify → restore
 
 ## Tier 3 — Capture-time seeding (screenshots/videos/QA)
 
-A DEBUG-only launch arg (`-uiScreenshots` pattern) that: skips onboarding, seeds realistic
-demo content **valid on the capture day**, selects the seasonally-correct defaults, and
-reports permissions as granted so no permission banners pollute captures. Details live in
-`store-screenshots` (Step 2); e2e-seeded accounts are the same idea for tests.
+The DEBUG-only `-uiScreenshots` launch-arg pattern is fully specified in `store-screenshots`
+Step 2 — read it there rather than from memory. e2e-seeded accounts follow the same idea
+for tests.
 
 ## Shared rules (all tiers)
 

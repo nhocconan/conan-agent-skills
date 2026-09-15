@@ -6,8 +6,8 @@ description: Build data-collection runs that survive contact with reality — br
 # Resilient Data Harvest
 
 A harvest is not code that runs once. It is code that runs again next week, against a
-source that changed, over a connection that will drop. Every rule here comes from a run
-that failed at hour three.
+source that changed, over a connection that will drop. Each rule below is written for the
+failure it prevents; the failure, not an anecdote, is the justification.
 
 ## 1. Checkpoint per item — never per run
 
@@ -18,7 +18,7 @@ ticket — whatever the unit is. Then keep a manifest of what is done.
 - The run is **idempotent and resumable**: on start, read the manifest, skip what's done,
   continue. Re-running a completed harvest is a no-op, not a duplicate.
 - Never hold the whole result set in memory to write at the end. A crash at 95% then
-  costs 95%. *"Xong cái nào thì write ra file lưu cho chắc chứ."*
+  costs 95%. The unit of durability is the item, not the run.
 
 ## 2. Respect source limits
 
@@ -28,7 +28,7 @@ Use authorized sources and respect published access terms and rate limits. Prefe
   plan says 4–8s per page, the log must show 4–8s per page — a claimed pace that the
   timestamps contradict is the bug.
 - **Serialize.** Do not fan out concurrent requests at one source to "go faster". One
-  worker, steady rhythm. *"đừng có flood quá nhiều request vô cùng lúc nó chặn."*
+  worker, steady rhythm. Concurrent bursts at one source are the fastest route to a block.
 - Honor `Retry-After`; jitter retries to avoid synchronized retry bursts, not to evade detection.
 - **Back off on the first warning sign** (429, a challenge page, a sudden empty result),
   don't push through it.
@@ -37,13 +37,12 @@ Use authorized sources and respect published access terms and rate limits. Prefe
 ## 3. Use the real session
 
 For a logged-in source, drive the operator's already-authenticated browser rather than
-re-implementing auth or re-solving login. Two consequences that have both bitten:
+re-implementing auth or re-solving login.
 
-- **State the profile/session requirement up front.** If the harvest needs a specific
-  browser profile, say so before starting — don't fail silently ten minutes in because
-  the operator was browsing in a different profile.
-- **Don't stop to ask for what you already have.** If the operator has said the browser
-  is open and logged in, proceed. Halting to re-confirm burns their time and tokens.
+The two standing rules for driving that session — state the profile/session requirement
+up front, and don't halt to re-ask for a session the operator has already said is open —
+are owned by `browsing-web` (**"Standing rules"**). Follow them from there; they are not
+restated here.
 
 When a CAPTCHA or access challenge appears, preserve progress and let the user complete it manually. Do not bypass access controls.
 
@@ -79,8 +78,8 @@ Retain raw payloads only when necessary and authorized, with restricted access a
 **Whenever reality changes, the script/skill changes in the same session.** New endpoint,
 new pacing, a new challenge type, a new quality trap — it goes into the harvester before
 the run is called done. Otherwise the next run rediscovers it from scratch and the
-operator has to say it again. *"Trong quá trình lấy data có gì lỗi cần sửa thì cần cập
-nhật skill... Đừng để tao nhắc hoài nha."*
+operator has to say it again — and a rule that has to be re-stated every run is a rule
+that was never recorded.
 
 Every harvester ships with:
 
@@ -125,6 +124,7 @@ overwriting the correction someone was asked to make.
 
 ## Companions
 
-`agent-orchestration` §4 — the plan-file/resume discipline this shares.
+`agent-orchestration` — the plan-file/resume discipline this shares: see
+`agent-orchestration/sections/tracking.md`, its **"Track and resume"** section.
 `metric-integrity` — what happens downstream if harvested numbers are wrong.
 `demo-data-craft` — when the requirement is fabricated data, not harvested data.

@@ -18,11 +18,14 @@
 ## Model ownership
 
 - Follow `agent-orchestration/sections/routing.md` in the installed conan skills checkout.
-- GPT-6 Astra owns planning, architecture, integrated review, and final output quality.
-- Use GPT-5.6 Terra for scoped implementation and GPT-5.6 Luna for simple checked work.
+- The lead slot belongs to the active harness. The harness lead owns planning,
+  architecture, integrated review, and final output quality.
+- Staff workers from that harness's row: a default builder for scoped implementation,
+  a cheaper tier for simple checked work.
 - Verify the active harness offers the model; a prompt cannot change the session model.
-  If Astra is unavailable, report final Astra review pending. Do not silently substitute.
-- Delegate independent outcomes; keep small or sequential work with Astra.
+  If the harness lead is unavailable, report final review pending. Never substitute a
+  lead from another harness.
+- Delegate independent outcomes; keep small or sequential work with the lead.
 - User authorization persists. Ask only for missing scope, preferences, or authority.
 
 ## Output hygiene — hard rules (every reply, report, and doc)

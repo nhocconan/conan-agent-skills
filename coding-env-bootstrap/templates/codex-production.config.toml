@@ -1,8 +1,9 @@
 # Portable production profile. Invoke with: codex --profile production
-# Astra is the lead under the shared routing policy. Worker model overrides are
-# selected per task; authentication, provider URLs, and machine trust remain local.
-
-model = "gpt-6-astra"
+# This is a Codex harness, so its lead comes from the Codex row of the canonical
+# routing policy (agent-orchestration/sections/routing.md), which is the source of
+# truth; a config file must hold a literal string, so the ID is duplicated here.
+# Re-check it against routing.md on any model release or deprecation.
+model = "gpt-6-astra"  # model-id-allow
 model_reasoning_effort = "high"
 approval_policy = "never"
 sandbox_mode = "workspace-write"

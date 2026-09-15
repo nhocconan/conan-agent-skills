@@ -9,8 +9,8 @@ when a repo has no `projects/<slug>.md`, or when the existing map's date stamp i
 
 - A map of **execution flows**: how work physically happens — start/stop, verify, seed,
   import, deploy — with the paid-for gotchas attached to each flow.
-- **Not** a copy of the rulebook. Point at authoritative files (`CLAUDE.md §N`, script
-  paths, docs); duplicate nothing that can drift. On conflict the repo wins, always.
+- **Not** a copy of the rulebook. Point at authoritative files (the repo's numbered
+  rulebook, script paths, docs); duplicate nothing that can drift. On conflict the repo wins, always.
 - **Not** generic advice. Every line must be either a command someone will run or a trap
   that already cost a real session. If it would be true of any repo, cut it.
 
@@ -41,7 +41,7 @@ Header first: date stamp, sources scanned, and the sentence
 
 Then flow groups, in lifecycle order (keep only the ones the repo actually has):
 
-| § | Group | Must answer |
+| Section | Group | Must answer |
 | --- | --- | --- |
 | 0 | Session bootstrap | What to read/run at the start of EVERY session; accounts; env traps |
 | 1 | Dev runtime | Start/stop/restart, logs, ports, the ways it breaks |

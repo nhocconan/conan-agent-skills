@@ -5,8 +5,9 @@ description: Turn raw app screenshots into high-converting App Store / Play Stor
 
 # Store screenshots & previews that convert
 
-70% of a store screenshot is copywriting. Raw UI captures with no text — or text
-that lists features — read like patch notes to someone who hasn't bought in yet.
+Copywriting, not the UI capture, is what decides whether a store screenshot converts.
+Raw UI captures with no text — or text that lists features — read like patch notes
+to someone who hasn't bought in yet.
 This skill produces **story-sequenced marketing screenshots** (big outcome
 headline + framed device mockup on a branded background) and a matching
 **App Preview video**.

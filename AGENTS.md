@@ -7,9 +7,11 @@ remain imports only. Platform-only settings belong in platform configuration;
 do not duplicate shared policy there. See `coding-env-bootstrap/PROJECT-RULES.md`.
 
 Model policy: read `agent-orchestration/sections/routing.md` when delegating.
-GPT-6 Astra owns orchestration and final output quality. GPT-5.6 Terra implements
-scoped work; GPT-5.6 Luna handles simple, mechanically checked tasks. Use only
-models exposed by the active harness. Do not claim Astra approval if unavailable.
+The lead slot belongs to the active harness, and the harness lead owns final output
+quality; workers implement scoped work and never grant final acceptance. Leads are
+not substituted across harnesses. Use only models exposed by the active harness, and
+report final review as pending when the harness lead is unavailable. Model IDs and
+the per-harness tables live in that routing file, not here and not in other skills.
 
 Keep skills concise and task-specific. Preserve user intent and existing authority;
 review-only requests do not authorize installs, global configuration, or publication.

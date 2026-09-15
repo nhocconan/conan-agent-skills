@@ -1,25 +1,18 @@
 ---
 name: senior-operator
 description: >-
-  Cross-project senior-operator playbook — a model-to-model craft handoff (a strong model
-  training successor/weaker models) plus per-project execution-flow maps. Three parts —
-  OPERATING-MANUAL.md (how to think on hard tasks — read the real ask, decompose along
-  verification lines, risk = blast radius × silence, verify by re-derivation, label
-  known-vs-guessed, attack your own conclusion, answer-first communication, 5-question
-  self-test), a per-repo map under projects/ (how a specific repo runs — commands, gates, ground truth,
-  trap tables), and DISTILL.md (the recipe for generating a new project map). Use at the
-  START of any nontrivial or ambiguous task in ANY project, when onboarding a new
-  model/agent (Opus, Codex, agy) to a codebase, before diagnosing bugs, touching
-  money-math/dates/tenancy, or shipping, when the user says "làm theo playbook", "đọc
-  operating manual", "check theo self-test", "train Opus", "distill project này", or asks
-  how to hand work to a weaker model.
+  Cross-project operating playbook: how to think on a hard or ambiguous task, plus
+  per-repo execution-flow maps. Use at the start of any nontrivial task in any
+  project, when onboarding a model to a codebase, before diagnosing a bug, touching
+  money-math/dates/tenancy, or shipping — and before sending any hard conclusion.
+  Triggers: "làm theo playbook", "đọc operating manual", "check theo self-test",
+  "train Opus", "distill project này", or any request to hand work to a weaker model.
 ---
 
 # Senior Operator
 
-A capability handoff: the craft of a stronger model, written down so any model can run on
-it. Two layers — **how to think** (universal) and **how this repo runs** (per project) —
-plus the **distill recipe** that lets the strong model keep training the next one.
+Three files: a project-agnostic manual on how to work a hard task, a per-repo map of how
+one codebase actually runs, and the recipe for producing a new map.
 
 | File | What it is | Load when |
 | --- | --- | --- |
@@ -47,20 +40,19 @@ same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
   this directory with one line: "Nontrivial task → read
   `~/.conan-agent-skills/senior-operator/SKILL.md` and follow it."
 - **Model policy:** [agent-orchestration](../agent-orchestration/SKILL.md) owns routing.
-  Astra leads and accepts final quality; Terra/Luna execute suitable scoped tasks.
   Project maps contain commands and invariants usable by any worker.
 - Harness-specific references inside the manual/maps (memory paths, browser tools,
   `CLAUDE.md`) are examples, not requirements — substitute the local equivalent.
 
 ## Order of operations (any project)
 
-1. **Bootstrap:** the repo's own `CLAUDE.md`/`AGENTS.md` (always authoritative — this skill NEVER overrides them) + its session-memory index if one exists + the matching `projects/<slug>.md` §0.
-2. **Before acting:** OPERATING-MANUAL §1 — what is actually being asked? Especially when the request presumes something is "wrong": verify the presupposition first.
+1. **Bootstrap:** the repo's own `CLAUDE.md`/`AGENTS.md` (always authoritative — this skill NEVER overrides them) + its session-memory index if one exists + the matching `projects/<slug>.md` bootstrap section.
+2. **Before acting:** OPERATING-MANUAL section 1 — what is actually being asked? Especially when the request presumes something is "wrong": verify the presupposition first.
 3. **While working:**
-   - Delegate independent work through `agent-orchestration`; Astra retains final
+   - Delegate independent work through `agent-orchestration`; the lead retains final
      quality. Small or sequential tasks can stay with the lead.
    - Follow the project map's flow sections; check its trap table before inventing a diagnosis. No map → work from the manual alone and note candidate traps as you hit them.
-4. **Before handing over:** OPERATING-MANUAL §6 (attack the conclusion) + the 5-question self-test. Communicate per §7: answer → reasoning → risk.
+4. **Before handing over:** OPERATING-MANUAL section 6 (attack the conclusion) + the 5-question self-test. Communicate per section 7: answer → reasoning → risk.
 
 ## Non-negotiables this skill exists to protect
 

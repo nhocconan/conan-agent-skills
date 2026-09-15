@@ -13,24 +13,18 @@ getting through review, ranking in the store, and operating the app as a service
 ## §6. Store submission
 
 Run the `appstore-review-guard` skill before EVERY submit/resubmit — it holds the live
-checklist and the rejection ledger. Summary of the invariants, roughly ordered by
-rejection risk (missing Restore and dead policy URLs are near-automatic rejects; the
-rest are frequent but reviewer-dependent):
+checklist and the rejection ledger for the review-risk items (Restore Purchases, listing
+URL liveness, debug/QA hooks, data-safety/privacy declarations, preview-video framing).
+Items that sit outside that guard's scope:
 
-- iOS: Restore Purchases reachable in every entitlement state (3.1.1 — near-automatic
-  reject); no placeholder screens; App Preview video full-bleed (no device frames —
-  2.3.4 plus Apple's App Preview specs); TestFlight build actually played to the core
-  loop before submit.
-- Every URL in the listing (privacy policy, terms, support) returns HTTP 200 anonymously —
-  curl them from a clean session, and curl the URL DECLARED IN THE CONSOLE, not the one
-  you think is declared.
-- Store questionnaires (content rating, data safety, target audience, encryption) answered
-  from the BINARY's truth, not from hope — and re-checked after adding any SDK.
-- If the app has accounts: in-app account deletion reachable, plus Play's web deletion
-  URL declared (§4.2) — reviewers check this.
-- Debug/QA hooks (capture harness, autopilot, test menus) compiled out of release.
-- Version/versionCode strictly increasing; release keystore/cert custody documented;
-  R8/minify ON with tested proguard rules; app size sanity-checked against last release.
+- The TestFlight / internal-testing build is actually played through the core loop on a
+  real device before submit — a build that installs is not a build that was tested.
+- Store questionnaires (content rating, target audience, data safety, export/encryption)
+  are answered from the BINARY's truth, not from hope — and re-answered after adding any
+  SDK, because the SDK changes the truthful answer.
+- Version/versionCode strictly increasing across every release track; release
+  keystore/cert custody documented; R8/minify ON with tested proguard rules; app size
+  sanity-checked against the last release.
 - Never write store-console navigation paths from memory in docs/guides — consoles
   re-organize yearly. Verify against current official docs, link the deep URL, and add
   "type the page name into the console search box" as fallback.

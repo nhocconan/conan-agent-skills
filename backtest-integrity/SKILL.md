@@ -5,9 +5,11 @@ description: Honesty checklist for quantitative strategy research — backtests,
 
 # Backtest Integrity
 
-Every celebrated backtest number deserves the null hypothesis: **it's a bug.** In one real
-project, two quiet bugs inflated every result ~3× for weeks ("Sharpe 1.82 / CAGR 24%" was
-really Sharpe 0.8 / 14%). The discipline below is what caught them.
+Every celebrated backtest number deserves the null hypothesis: **it's a bug.** The failure
+mode this exists for: two quiet bugs (a wrong annualization factor plus a look-ahead
+feature) inflate every headline metric and survive review because the equity curve looks
+plausible — e.g. a Sharpe reported near 1.8 that is really under 1.0. Only the checks
+below catch that; a second opinion on the idea does not.
 
 ## The prime heuristic
 
@@ -49,7 +51,9 @@ survive this whole checklist and reproduce from a clean re-run.
   it OOS (not in-sample) before promotion. Keep a decay monitor — factors rot; retire what
   decayed instead of re-tuning it back to life.
 - **Headline must reproduce**: a number that can't be regenerated from config + data does
-  not exist. If the "11.1% confluence" doesn't reproduce, it's gone from the story.
+  not exist. Any quoted figure (an edge percentage, a hit rate, a confluence number) that
+  does not come back byte-for-byte from a clean re-run is deleted from the write-up — not
+  rounded, not caveated.
 - **Report full-period AND a recent window** side by side — a bubble sub-period must not
   flatter the headline (a strategy that made everything 2020–2022 and nothing since is
   flat, not "14% CAGR").

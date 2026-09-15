@@ -149,9 +149,11 @@ This one command:
   path-specific base config; and
 - configures `context7` for both CLIs and the official OpenAI docs MCP for Codex.
 
-The profile selects `gpt-6-astra` at high effort for the lead; workers use the
-canonical routing policy. Confirm availability on the target host. This source
-update does not change an already-running session or apply global configuration.
+The profile selects the Codex harness lead at high effort; workers come from the
+canonical routing policy, which is harness-conditional — a Claude or agy install
+takes its lead and workers from that same table. Confirm availability on the target
+host. This source update does not change an already-running session or apply global
+configuration.
 
 Run Codex production jobs with the bounded profile:
 

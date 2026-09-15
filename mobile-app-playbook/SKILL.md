@@ -1,23 +1,22 @@
 ---
 name: mobile-app-playbook
 description: >-
-  End-to-end operating playbook for building and shipping a top-chart-quality
-  Android + iOS app or game — the full thinking process of a senior orchestrator model,
-  written so worker-tier models can execute it. Covers: defining the
-  quality bar with numbers, architecture choice (KMP/Compose Multiplatform seams, platform
-  traps), game-feel/UX standards, retention meta-systems, monetization that survives store
-  policy, the verification discipline (fake-green traps, per-stage gates, bot-verified
-  difficulty), store submission, ASO, and post-launch LiveOps. Trigger when: building a new
-  mobile app/game, upgrading one to "top of market" quality, planning a mobile release,
-  auditing a mobile app for quality/retention/ASO, or when the user says "world-class app",
-  "SOTA mobile", "top chart", "lên top chart", "build app chuẩn thế giới", "chuẩn bị release
-  app", "làm game mobile", "submit app", "improve retention", "tăng rating", "ASO",
-  "monetization plan".
+  End-to-end operating playbook for building and shipping an Android + iOS app or game
+  through store submission. Covers: defining the quality bar with numbers, architecture
+  choice (KMP/Compose Multiplatform seams, platform traps), game-feel/UX standards,
+  retention meta-systems, monetization that survives store policy, the verification
+  discipline (fake-green traps, per-stage gates, bot-verified difficulty), store
+  submission, ASO, and post-launch LiveOps. Trigger when: building a new mobile app/game,
+  upgrading one to "top of market" quality, planning a mobile release, auditing a mobile
+  app for quality/retention/ASO, or when the user says "world-class app", "SOTA mobile",
+  "top chart", "lên top chart", "build app chuẩn thế giới", "chuẩn bị release app", "làm
+  game mobile", "submit app", "improve retention", "tăng rating", "ASO", "monetization
+  plan".
 ---
 
 # Mobile App Playbook — build through store, top-chart bar
 
-> Written by Claude Fable 5 (2026-07) as a capability handoff: the complete thinking
+> Written by the harness lead (2026-07) as a capability handoff: the complete thinking
 > process for taking a mobile app/game from "works" to "top of market", distilled from
 > real shipped projects (a cross-platform arcade game that went through Play closed
 > testing, a real Play rejection, a working IAP + ads stack, and an iOS CMP port).
@@ -85,9 +84,11 @@ ladder; §6–§8 the launch ladder.
 
 The full fleet discipline (tier routing, parallel DAG, briefs, scored verification,
 integration) lives in **`agent-orchestration`** — that skill is the single source; read
-it when staffing independent work. Astra owns architecture and final quality;
-Terra implements scoped modules and Luna handles simple checked tasks. Escalate
-critical receipt verification, concurrency, and engine invariants to Astra.
+it when staffing independent work. The lead slot belongs to whichever harness is active
+(model IDs and the lead table live only in `agent-orchestration/sections/routing.md`):
+the harness lead owns architecture and final quality, its default builder implements
+scoped modules, and its simple-checked-work tier handles mechanical tasks. Escalate
+critical receipt verification, concurrency, and engine invariants to the harness lead.
 
 - **The natural cut** is per module or per layer (engine / UI / backend / assets). Two
   agents editing the same Gradle module is merge hell — one writer per module, worktrees
@@ -98,8 +99,6 @@ critical receipt verification, concurrency, and engine invariants to Astra.
   build/test itself, on device/emulator where the check is behavioral, and reviews the
   diff hunk by hunk before committing atomically.
 - Anything learned mid-workstream goes into the spec of the next one.
-
----
 
 ---
 

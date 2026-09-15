@@ -1,6 +1,12 @@
 ---
 name: a11y-audit
-description: Audit and fix web UI for accessibility against WCAG 2.2 AA — keyboard navigation, visible focus, ARIA correctness, color contrast, labeled inputs, touch-target size, reduced-motion, semantic HTML, heading order. Use when building or reviewing any web component, page, form, table, modal, or dashboard, when the user says "accessibility", "a11y", "WCAG", "screen reader", "keyboard", or before shipping any UI.
+description: >-
+  Audit and fix web UI against WCAG 2.2 AA — keyboard, visible focus, ARIA,
+  color contrast, labeled inputs, target size, reduced-motion, semantic HTML,
+  heading order. Use when accessibility is the explicit ask ("accessibility",
+  "a11y", "WCAG", "screen reader", "keyboard navigation", "focus ring",
+  "contrast", "axe", "ARIA", "alt text"), or when another skill hands off to
+  the accessibility gate before a UI ships.
 ---
 
 # Accessibility Audit (WCAG 2.2 AA)
