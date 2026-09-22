@@ -41,8 +41,8 @@
   },
   "browsing-web": {
     "always_on": 300,
-    "eager": 3000,
-    "on_demand": 0
+    "eager": 3400,
+    "on_demand": 11000
   },
   "bug-class-audits": {
     "always_on": 600,

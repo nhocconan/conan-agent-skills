@@ -24,6 +24,18 @@ Binary-backed (compiled browse + daemon) so it can only ever be wrapped, never f
 3. never trigger a modal dialog
 4. bulk collection goes to resilient-data-harvest
 
+## Locally owned, not upstream
+
+`sections/headless-server.md` is this checkout's own content — upstream `browse`
+covers driving a browser, not verifying a page from a desktop-less host. It must
+survive any upgrade untouched. Its load-bearing facts, verified 2026-09-22 against
+a `playwright run-server` on 1.62.1: the `connect()` rule is **major.minor must
+match, patch may skew** (clients 1.62.0 and 1.62.1 accepted; 1.61.0 and 1.63.0
+refused with `428 Precondition Required`), matching the documented "1.2.3 → is
+compatible with 1.2.x"; and a headless launch on a host with no `DISPLAY`, no X
+socket and a non-root user renders a full page with no `xvfb`. Re-check the version
+rule at <https://playwright.dev/docs/api/class-browsertype> when Playwright moves.
+
 ## Upstream sections this depends on
 
 - "BROWSER SETUP"
