@@ -131,12 +131,15 @@ published Codex CLI reference; they are attested in the openai/codex source tree
 Treat them as observed behaviour, not documented API, and re-check the active schema.
 
 **agy (Antigravity CLI).** Subagents are spawned by the `invoke_subagent` tool. Agent
-definitions are Markdown with YAML frontmatter carrying `subagent: true` (its default).
-**A definition's `model:` takes a tier — `inherit`, `flash` or `pro` — not a model ID**, so
-the Gemini IDs above apply to the `/model` picker and `--model` flag, while a subagent
-definition selects only a tier and `inherit` carries the parent's model. **`model: pro` is
-off-policy**: on the installed agy 1.2.3 the only Pro entries in the picker are
-`gemini-3.1-pro-high` / `-low` (Preview), so a subagent definition uses `flash` or
+definitions can be declared dynamically via `define_subagent` (configuring write, subagent,
+and MCP tool permissions) or loaded from `.md` files with YAML frontmatter `subagent: true`.
+Built-in types include `self` (inherits parent configuration, tools, and model) and
+`research` (read-only codebase exploration and search). **A subagent invocation's `Model`
+parameter takes a tier — `inherit`, `flash_lite`, `flash` or `pro` — not a model ID.**
+`flash_lite` maps to `gemini-3.5-flash-lite` for simple checked work; `flash` maps to
+`gemini-3.7-flash` / `gemini-3.8-flash` for builders; `inherit` carries the parent's model.
+**`model: pro` is off-policy**: on the installed agy 1.2.3 the only Pro entries in the picker
+are `gemini-3.1-pro-high` / `-low` (Preview), so subagents use `flash`, `flash_lite`, or
 `inherit`. The CLI accepts the bare API ID only with an effort — `agy --model
 gemini-3.8-flash` fails with `--model gemini-3.8-flash requires --effort (available: low,
 medium, high)` — and `agy models` lists the suffixed form (`gemini-3.8-flash-high`) next to
@@ -145,8 +148,9 @@ discovered from `.agents/agents/<name>.md` or `.agents/agents/<name>/agent.md` i
 workspace, `~/.gemini/config/agents/` globally, and `plugins/<plugin>/agents/`. The older
 `gemini` CLI is superseded and stopped serving consumer tiers on 2026-06-18. The Claude and
 Codex mechanics above were read off the installed binaries; the agy definition format comes
-from published documentation, and the installed agy 1.2.3 was probed only for `agy models`,
-`agy --help` and the `--model` call above — no subagent definition was run.
+from published documentation and active tool schemas, and the installed agy 1.2.3 was probed
+only for `agy models`, `agy --help` and the `--model` call above — no subagent definition was
+run.
 
 ### Freshness and evidence
 
