@@ -12,7 +12,7 @@
   "agent-orchestration": {
     "always_on": 400,
     "eager": 3900,
-    "on_demand": 44900
+    "on_demand": 49500
   },
   "agent-session-backup": {
     "always_on": 600,

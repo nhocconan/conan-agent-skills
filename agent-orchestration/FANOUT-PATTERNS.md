@@ -14,7 +14,8 @@ schema before relying on anything below.
 5. Progress cadence
 6. Codex collaboration
 7. Claude collaborators
-8. Worktrees and integration
+8. Antigravity (agy) collaboration
+9. Worktrees and integration
 
 ## Choose a shape
 
@@ -58,13 +59,13 @@ Depth exhaustion returns `Agent depth limit reached. Solve the task yourself.`
 The lanes in [the operating contract](sections/operating-contract.md) are permissions,
 not etiquette. Configure them, so a worker cannot leave its lane by deciding to.
 
-| Lane | Claude Code | Codex |
-| --- | --- | --- |
-| Scout, read-only | `permissionMode: plan`; a `tools` allowlist without Edit/Write | a role whose `config_file` sets a read-only `sandbox_mode` |
-| Builder, owned files | `tools` allowlist, `disallowedTools` for the rest | role `config_file` with a workspace-write `sandbox_mode` |
-| Verifier, read-only | as Scout, in its own definition so it cannot inherit builder tools | a separate read-only role |
-| MCP scoping | `disallowedTools` with `mcp__<server>` patterns; inline `mcpServers` in the definition | `mcp_servers` in the role's `config_file` |
-| No nested fleets | omit `Agent` from `tools` | `agents.max_depth` |
+| Lane | Claude Code | Codex | agy (Antigravity) |
+| --- | --- | --- | --- |
+| Scout, read-only | `permissionMode: plan`; a `tools` allowlist without Edit/Write | a role whose `config_file` sets a read-only `sandbox_mode` | built-in `research` type, or `define_subagent` with `enable_write_tools: false` |
+| Builder, owned files | `tools` allowlist, `disallowedTools` for the rest | role `config_file` with a workspace-write `sandbox_mode` | `self` (or `define_subagent` with `enable_write_tools: true`); `Workspace: "share"` or `"branch"` |
+| Verifier, read-only | as Scout, in its own definition so it cannot inherit builder tools | a separate read-only role | fresh context with `research` or `define_subagent` without write tools |
+| MCP scoping | `disallowedTools` with `mcp__<server>` patterns; inline `mcpServers` in the definition | `mcp_servers` in the role's `config_file` | `define_subagent` with `enable_mcp_tools: false` |
+| No nested fleets | omit `Agent` from `tools` | `agents.max_depth` | `define_subagent` with `enable_subagent_tools: false` |
 
 Claude Code reads these from subagent frontmatter, alongside `model`, `effort`,
 `maxTurns` and `isolation`. Codex declares a role — `description`, `config_file`,
@@ -74,12 +75,14 @@ keys (`model`, `model_reasoning_effort`, `sandbox_mode`, `mcp_servers`). Read th
 overlay's accepted keys from the installed build before relying on any one of them.
 A full-history fork inherits the parent's agent type and refuses an `agent_type` override.
 
-agy (Antigravity CLI 1.2.3): agent definitions are `.md` files with YAML frontmatter
-`subagent: true` and `model:`, discovered from `.agents/agents/<name>.md` or
-`~/.gemini/config/agents/`, and spawned by the `invoke_subagent` tool. `model:` is a tier
-(`inherit` / `flash` / `pro`), and `pro` is off-policy ([routing](sections/routing.md)).
-Recorded from the 2026-09-15 vendor refresh; the installed agy 1.2.3 was probed only for
-`agy models` and a `--model` call, and no subagent definition was run here.
+agy (Antigravity CLI): subagents are configured via `define_subagent` (setting
+`enable_write_tools`, `enable_subagent_tools`, `enable_mcp_tools`) or loaded from `.md`
+definitions with YAML frontmatter `subagent: true` and `model:`. The built-in `research`
+type is read-only; `self` inherits parent capabilities. Spawning uses `invoke_subagent`
+where `Model` selects a tier (`inherit` / `flash_lite` / `flash` / `pro`; `pro` is off-policy,
+[routing](sections/routing.md)) and `Workspace` selects isolation (`inherit` / `branch` / `share`).
+Recorded from the 2026-09-15 vendor refresh; the installed agy 1.2.3 was probed for
+`agy models` and a `--model` call, and subagent schemas match the active harness.
 
 This is what turns "workers cannot spawn further fleets" from a line in a brief into
 something the harness enforces.
@@ -99,6 +102,12 @@ agent with its context intact; a fresh `Agent` call starts over. A run that hits
 **Codex.** `send_input` feeds an open agent, `wait_agent` blocks for completion,
 `list_agents` enumerates, `resume_agent` restarts one, `close_agent` releases its slot.
 
+**agy (Antigravity).** `send_message` with `Recipient=<conversationId>` continues a
+subagent with its context intact. `manage_subagents` with `Action="list"` enumerates
+active subagents and their states (`running`, `idle`, `waiting_for_input`, etc.);
+`Action="kill"` cancels a worker. `manage_task` monitors background commands. The harness
+resumes execution reactively on subagent messages or task completion without polling.
+
 Use the ledger to decide *what* to resume, and the harness primitive to actually resume it.
 
 ## Progress cadence
@@ -109,6 +118,9 @@ user "should not be left without a commentary update for more than 60 seconds du
 ongoing work"; `features.multi_agent_v2.min_wait_timeout_ms` / `max_wait_timeout_ms` /
 `default_wait_timeout_ms` bound each wait. On Claude Code a foreground `sleep` is
 blocked, and background completion notifications are the mechanism instead.
+On agy (Antigravity), execution is event-driven: reactive wakeups notify the lead upon
+subagent returns or background task completion, so do not run busy wait loops or terminal
+`sleep`. For timed reminders or bounds, use the `schedule` tool.
 [Tracking](sections/tracking.md) carries the harness-neutral obligation.
 
 ## Codex collaboration
@@ -147,6 +159,31 @@ execution, or isolation options. Model IDs and collaborator roles are maintained
 A separate provider does not share browser sessions, environment, credentials, or
 filesystem access by default. Supply bounded environment context and approved credential
 mechanisms without copying secrets. Its verdict is evidence for the lead, not acceptance.
+
+## Antigravity (agy) collaboration
+
+Subagents are launched via `invoke_subagent`. The tool accepts an array `Subagents` to
+launch an entire wave concurrently:
+
+```json
+{
+  "Subagents": [
+    {
+      "TypeName": "self",
+      "Role": "Scoped Builder",
+      "Model": "flash",
+      "Workspace": "share",
+      "Prompt": "MODE: build. Working directory: /absolute/repo. Goal: ... Owned files: ... Acceptance: ... Return: ..."
+    }
+  ]
+}
+```
+
+Set `Workspace` to `"share"` to share the repository directory like a git worktree, or
+`"branch"` for an isolated clone. For read-only scout/verifier roles, pass
+`TypeName: "research"`, or register a scoped worker first via `define_subagent` with
+`enable_write_tools: false` and `enable_subagent_tools: false`. `Model` accepts
+`inherit`, `flash_lite`, or `flash` ([routing](sections/routing.md)).
 
 ## Worktrees and integration
 
