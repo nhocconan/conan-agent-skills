@@ -39,6 +39,14 @@ For any command or snapshot flag beyond that table, read
 `../.vendor/gstack/browse/sections/command-list.md` — the full generated reference, carved
 out of SKILL.md upstream. `refsync.py ensure` fetches both files.
 
+## When there is no desktop (server, VPS, CI runner, production host)
+
+Read `sections/headless-server.md`. "No desktop" is not a reason to skip browser
+verification — it is the normal case. That section owns local-launch vs connecting
+to a running browser, the `connect()` version rule behind the classic 428, a
+copy-pasteable capture script, `storageState` auth with no secret written anywhere,
+and what a screenshot does not prove. Standing rule 2 does not apply there.
+
 ## When the task is bulk data collection
 
 Stop and use `resilient-data-harvest` instead. Anything paginated or long-running needs
