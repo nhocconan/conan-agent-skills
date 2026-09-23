@@ -1,6 +1,7 @@
 ## Model routing and quality ownership
 
-Verified 2026-09-15 against the vendor pages listed under Sources. This is the canonical
+Verified 2026-09-15 against the vendor pages listed under Sources; Claude rows re-verified
+2026-09-23 after the Opus 5.5 release. This is the canonical
 model policy; companion skills link here instead of maintaining separate model tables.
 
 ## Contents
@@ -24,7 +25,7 @@ a different lead for a particular run, and that choice wins over this table.
 
 | Harness | Lead | Difficult scoped work | Default builder | Simple checked work |
 | --- | --- | --- | --- | --- |
-| Claude (Claude Code, Agent SDK) | `claude-fable-5-1` | `claude-opus-5` | `claude-sonnet-5` | `claude-haiku-4-5-20251001` |
+| Claude (Claude Code, Agent SDK) | `claude-fable-5-1` | `claude-opus-5-5` | `claude-sonnet-5` | `claude-haiku-4-5-20251001` |
 | Codex (OpenAI) | `gpt-6-astra` | `gpt-5.6-sol` | `gpt-5.6-terra` | `gpt-5.6-luna` |
 | agy (Antigravity CLI) | `gemini-3.8-flash` | `gemini-3.8-flash` | `gemini-3.7-flash` | `gemini-3.5-flash-lite` |
 
@@ -38,19 +39,22 @@ Escalate to the lead on risk or after two failures of the same acceptance check.
 | Model | API ID | Context | Max output | $/MTok in → out | Released | Retirement not before |
 | --- | --- | --- | --- | --- | --- | --- |
 | Fable 5.1 | `claude-fable-5-1` | 1M | 128K | 10 → 50 | 2026-09-01 | 2027-09-01 |
-| Opus 5 | `claude-opus-5` | 1M | 128K | 5 → 25 | 2026-07-24 | 2027-07-24 |
+| Opus 5.5 | `claude-opus-5-5` | 1M | 128K | 4 → 20 | 2026-09-22 | 2027-09-22 |
 | Sonnet 5 | `claude-sonnet-5` | 1M | 128K | 2 → 10 | 2026-06-30 | 2027-06-30 |
 | Haiku 4.5 | `claude-haiku-4-5-20251001` | 200K | 64K | 1 → 5 | 2025-10-15 | 2026-10-15 |
 | Mythos 5.1 | `claude-mythos-5-1` | 1M | 128K | 10 → 50 | 2026-09-01 | 2027-09-01 |
 
 Haiku 4.5 reaches its earliest retirement date on 2026-10-15; re-check before relying on it.
 Mythos 5.1 is invite-only through Project Glasswing and is not a routing default.
-The 1M context window is the default on Fable 5.1, Opus 5, Sonnet 5 and Mythos 5.1 with no
+Opus 5 (`claude-opus-5`, 5 → 25) is now a legacy model, active until at least 2027-07-24;
+Opus 5.5 is cheaper and supersedes it for routing. Opus 5.5 and Fable 5.1 keep adaptive
+thinking always on and reject forced tool use.
+The 1M context window is the default on Fable 5.1, Opus 5.5, Sonnet 5 and Mythos 5.1 with no
 beta header; Haiku 4.5 is fixed at 200K. From the 4.6 generation onward a dateless ID is the
 pinned snapshot itself rather than an alias — Haiku 4.5 is the only current-lineup model
 still on a dated ID (alias `claude-haiku-4-5`; the legacy `claude-opus-4-5-20251101` is
 dated too). Bedrock prefixes with `anthropic.`; Vertex uses `@`-dated forms
-for Haiku 4.5. Opus 5 and Mythos 5.1 are absent from Claude Platform on AWS.
+for Haiku 4.5. Mythos 5.1 is absent from Claude Platform on AWS; Opus 5.5 is available there.
 
 ### OpenAI models
 

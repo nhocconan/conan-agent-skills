@@ -100,7 +100,7 @@ for c in node npm pnpm python3 uv git gh rg jq; do printf "%-8s " "$c"; command 
 ```bash
 npm i -g @openai/codex          # Codex CLI
 curl -fsSL https://antigravity.google/cli/install.sh | bash  # Antigravity CLI (agy)
-# Claude Code: install per https://docs.claude.com/en/docs/claude-code
+# Claude Code: install per https://code.claude.com/docs/en/setup
 ```
 
 Then authenticate each — **interactive, the operator must do this themselves**:

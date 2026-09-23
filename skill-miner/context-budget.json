@@ -42,7 +42,7 @@
   "browsing-web": {
     "always_on": 300,
     "eager": 3400,
-    "on_demand": 11000
+    "on_demand": 12800
   },
   "bug-class-audits": {
     "always_on": 600,

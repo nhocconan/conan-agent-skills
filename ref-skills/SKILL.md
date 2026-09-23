@@ -10,8 +10,8 @@ Skills here that are derived from an upstream suite carry a `REF.md`. Two modes:
 - **`wrap`** — you own a short skill that fixes upstream's triggering and carries your
   house rules, then points at the full upstream by path. Upstream is not copied.
   **Default for anything large or binary-backed** — a gstack skill runs up to roughly
-  1,900 lines and shells out to `gstack-*` binaries (`wc -l .vendor/gstack/*/SKILL.md`,
-  2026-09-15: 443 to 1,897), so forking one means owning that merge surface plus its
+  2,000 lines and shells out to `gstack-*` binaries (`wc -l` of upstream `main`,
+  2026-09-23: 443 to 1,955), so forking one means owning that merge surface plus its
   infrastructure.
 - **`fork`** — upstream is vendored to `.upstream/SKILL.md` as a merge base and 3-way
   merged on upgrade. Only for small, pure-prose upstreams you intend to diverge from.

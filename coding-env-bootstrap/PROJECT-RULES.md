@@ -10,7 +10,7 @@ scope boundary, not a reason to flatten everything into the repository root.
 | File or tool | Contract |
 | --- | --- |
 | `AGENTS.md` | Canonical content. Codex loads project instructions from the current directory and its ancestors, with closer instructions taking precedence. |
-| `CLAUDE.md` | Thin Claude adapter containing exactly `@AGENTS.md` when it is generated here. Claude Code natively reads `CLAUDE.md`; its documented `@...` import resolves relative to the containing file. |
+| `CLAUDE.md` | Thin Claude adapter containing exactly `@AGENTS.md` when it is generated here. Claude Code natively reads `CLAUDE.md`; its documented `@...` import resolves relative to the containing file. Since v2.1.277 Claude Code also reads `AGENTS.md` directly, but by default only when no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists in the working directory or above — a personal `CLAUDE.local.md` silently turns that off. Keep the adapter: the import never double-loads, and some sessions (Bedrock, telemetry disabled, first run after an upgrade) cannot read `AGENTS.md` directly. |
 | `GEMINI.md` | Thin Gemini adapter containing exactly `@AGENTS.md` when it is generated here. Gemini CLI supports `@` imports; its default context filename is `GEMINI.md`, and filename configuration must be checked before relying on another name. |
 | Other agents | No generic import convention is assumed. Add an adapter only after that tool's official documentation and an actual runtime check establish its native behavior. |
 
@@ -80,7 +80,7 @@ harness apply/verify flow. This project-rules contract makes no global setting
 changes and must not be used to edit global auto-memory, account settings, or
 generated blocks.
 
-## Official references (checked 2026-09-08)
+## Official references (checked 2026-09-08; Claude memory re-checked 2026-09-23)
 
 - [Claude Code memory and imports](https://code.claude.com/docs/en/memory): `CLAUDE.md` discovery, `@AGENTS.md` imports, hierarchy, and path-scoped rules.
 - [Gemini CLI `GEMINI.md`](https://geminicli.com/docs/cli/gemini-md/): hierarchy, `@` imports, and configurable context filenames.

@@ -96,8 +96,9 @@ it. Resume the worker itself wherever the harness allows.
 **Claude Code.** `SendMessage` to the agent id returned by the Agent tool continues that
 agent with its context intact; a fresh `Agent` call starts over. A run that hits
 `maxTurns` reports `stopped at its N-turn limit` — a partial result the same
-`SendMessage` continues. Inside a subagent only synchronous subagents are available;
-`run_in_background` is not.
+`SendMessage` continues. The built-in Explore and Plan agents are one-shot and return no
+id, so use `general-purpose` or a custom subagent for work you may need to resume.
+Subagents can themselves launch background subagents, within the depth limit above.
 
 **Codex.** `send_input` feeds an open agent, `wait_agent` blocks for completion,
 `list_agents` enumerates, `resume_agent` restarts one, `close_agent` releases its slot.

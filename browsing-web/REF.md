@@ -19,7 +19,7 @@ Binary-backed (compiled browse + daemon) so it can only ever be wrapped, never f
 
 ## Overrides that MUST survive an upgrade
 
-1. browse is the only browser path — never the Chrome MCP
+1. never the Chrome MCP (Claude in Chrome); on a host without a desktop the Playwright CLI loop in `sections/headless-server.md` is the default, and `browse` covers it where installed
 2. do not stop to re-confirm an already-open logged-in session
 3. never trigger a modal dialog
 4. bulk collection goes to resilient-data-harvest
