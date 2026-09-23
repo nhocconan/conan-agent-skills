@@ -42,7 +42,8 @@ out of SKILL.md upstream. `refsync.py ensure` fetches both files.
 ## When there is no desktop (server, VPS, CI runner, production host)
 
 Read `sections/headless-server.md`. "No desktop" is not a reason to skip browser
-verification — it is the normal case. That section owns local-launch vs connecting
+verification — it is the normal case. That section owns the Playwright CLI loop (the
+fast agent default), local launch vs connecting
 to a running browser, the `connect()` version rule behind the classic 428, a
 copy-pasteable capture script, `storageState` auth with no secret written anywhere,
 and what a screenshot does not prove. Standing rule 2 does not apply there.
