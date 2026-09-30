@@ -51,5 +51,7 @@ reviewer counts, or additional tests based only on diff line count.
 
 Before reporting completion, the lead checks scope alignment, integration behavior,
 evidence, remaining risks, and that the actual lead model is known. If the harness's
-lead is unavailable ([routing](routing.md)), mark final review pending rather than
-claiming approval; there is no cross-harness substitute.
+actual parent lead cannot review, or an explicitly required review is unavailable
+([routing](routing.md)), mark final review pending rather than claiming approval.
+Preferred model recommendations do not disqualify the active lead; there is no
+cross-harness substitute for its acceptance.

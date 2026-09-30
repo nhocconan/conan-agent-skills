@@ -15,12 +15,6 @@ WARNINGS = judgment calls surfaced for review (fix or consciously accept).
 --sensitive terms.txt : for PUBLIC courses. Newline-delimited banned terms
 (client names, internal repos, real figures; '#' comments allowed). Any hit
 anywhere in the file is an ERROR — see reference.md §7 / PLAYBOOK Phase 1.
-
-Exemptions: data-slop-exempt on an element drops it from prose checks;
-<!-- slop-allow: term, check-name --> allows a lexicon term or switches off a
-formatting check (notjust-opener, one-sentence-run, bold-density, emoji,
-label-list, stock-opener, question-opener, tiny-section, title-case,
-emdash-vi, vague-attribution, ing-tail).
 """
 import re
 import subprocess
@@ -50,18 +44,6 @@ SLOP_HARD_EN = [
     "in this digital age", "at the end of the day", "meticulously",
     "boasts a", "diverse array", "underscores the importance",
     "highlights the importance", "reflects a broader", "in conclusion,",
-    # chat leftovers + disclaimers (Wikipedia "Signs of AI writing": collaborative
-    # communication, disclaimers); never legitimate in a course or client document
-    "i hope this helps", "hope this helps", "certainly!", "of course!",
-    "you're absolutely right", "would you like me to", "let me know if you",
-    "here's a breakdown", "as of my last knowledge update",
-    "up to my last training update", "based on available information",
-    "while specific details are limited",
-    # puffery formulas (WP undue emphasis / promotional / outline-like conclusions)
-    "nestled in", "in the heart of", "rich tapestry", "indelible mark",
-    "setting the stage for", "key turning point", "evolving landscape",
-    "faces several challenges", "despite these challenges", "future outlook",
-    "marking a pivotal", "represents a significant shift",
 ]
 SLOP_HARD_VI = [
     "trong thế giới ngày nay", "trong thời đại số", "trong bối cảnh hiện nay",
@@ -70,40 +52,23 @@ SLOP_HARD_VI = [
     "tối ưu hóa trải nghiệm", "kỷ nguyên", "làn sóng", "mở khoá sức mạnh",
     "mở khóa sức mạnh", "tận dụng sức mạnh", "đóng vai trò quan trọng", "đóng vai trò then chốt", "không thể thiếu",
     "bức tranh toàn cảnh", "một cách hiệu quả", "một cách toàn diện",
-    "một cách đáng kể", "thay đổi cuộc chơi",
+    "một cách đáng kể", "cách mạng", "thay đổi cuộc chơi",
     "siêu năng lực", "trợ thủ đắc lực", "người bạn đồng hành", "chinh phục",
     "bí quyết", "tuyệt chiêu", "đỉnh cao", "hàng đầu thế giới",
     "giúp bạn dễ dàng", "một cách dễ dàng", "nói không ngoa",
     "hy vọng bài viết", "tóm lại,", "kết luận lại",
-    # chat leftovers (first seven) + stock framing
-    "hy vọng thông tin này", "hy vọng những", "hy vọng bài này", "chúc bạn thành công",
-    "chúc bạn một ngày", "dưới đây là một số", "bạn có muốn mình", "bạn có muốn tôi",
-    "không thể phủ nhận", "trong kỷ nguyên số", "nhìn chung,",
-    # "kết luận là" left out: mid-sentence it is ordinary VI ("Đừng kết luận là…");
-    # the paragraph-initial form is caught by OPENER_WARN_RE ("Kết luận").
-    "tính đến thời điểm cập nhật",
 ]
 SLOP_SOFT_EN = [
-    "here is a",
     "leverage", "robust", "crucial", "pivotal", "landscape", "journey",
     "navigate", "streamline", "comprehensive", "powerful", "foster",
     "showcase", "underscore", "intricate", "vibrant", "realm",
     "it's not just", "isn't just", "not only", "in essence", "ultimately",
     "furthermore", "moreover", "additionally", "that said,",
-    "align with", "bolster", "bolstered", "emphasizing", "enhance", "enhancing",
-    "garner", "interplay", "highlighting", "showcasing", "testament", "enduring",
-    "valuable insights", "serves as", "stands as", "boasts", "refers to",
-    "experts argue", "industry reports", "observers have", "studies show",
 ]
 SLOP_SOFT_VI = [
     "tuyệt vời", "hoàn hảo", "đáng kể", "tinh tế", "sức mạnh của", "cực kỳ", "vô cùng", "hết sức",
-    "nói cách khác", "có thể nói", "quan trọng hơn",
-    # "không chỉ"/"mà còn" live in NOTJUST_RE only (no double count); "hiệu quả",
-    # "thông minh", "linh hoạt", "đặc biệt là" dropped 2026-09-29: ordinary business VI.
-    "tối ưu", "cách mạng",  # demoted from hard: "Cách mạng công nghiệp 4.0" is legit
-    "hơn nữa", "thêm vào đó", "hơn thế nữa", "thật vậy", "sâu sắc", "khám phá",
-    "giải mã", "tạo giá trị", "các chuyên gia cho rằng", "nhiều nghiên cứu chỉ ra",
-    "góp phần khẳng định", "khẳng định vị thế",
+    "không chỉ", "mà còn", "nói cách khác", "có thể nói", "quan trọng hơn",
+    "đặc biệt là", "hiệu quả", "tối ưu", "linh hoạt", "thông minh",
     "bức tranh", "cột mốc", "điểm nhấn", "chìa khoá", "chìa khóa",
     "trái tim", "hành trình", "sứ mệnh", "giá trị cốt lõi",
 ]
@@ -127,23 +92,16 @@ CALQUE_VI = {  # machine-translation calques: an EN term rendered literally
 # GPT-4.1 10.62/1k; Claude Opus 4.6 9.09/1k. House reference implementation
 # (reference-course.html, the approved course) measures 6.4/1k in
 # lesson prose. Courses built by fan-out in 2026-07/08 measure 16–19/1k.
-# Signs age: Wikipedia "Signs of AI writing" (Sept 2026) marks the em dash as a
-# fading, candidate-historical indicator: ChatGPT output now sits below
-# professional writers, Claude still above. Density stays an edit cue, not proof.
-# AI em dashes usually carry spaces (" — "), so the message reports that count.
-# Vietnamese keyboards do not produce "—"; for lang=vi any dash is flagged
-# per lesson in formatting_checks (check 10), independent of this density.
 EMDASH_WARN_PER_1K = 8.0
 EMDASH_ERROR_PER_1K = 13.0
 EMDASH_MULTI_PARA_WARN = 0.15   # share of paragraphs holding >=2 em dashes
 
 NOTJUST_RE = re.compile(
-    r"không chỉ\b[^.;!?]{0,90}\bmà (?:còn|là|cả|chính là)\b"
-    r"|không (?:phải|đơn thuần|đơn giản)(?: là)?\b[^.;!?]{0,60}\bmà (?:là|chính là)\b"
-    r"|not (?:just|only|merely|simply)\b[^.;!?]{0,70}\bbut\b"
-    r"|isn'?t (?:just|only|merely|simply)\b"
-    r"|it'?s not (?:about|just|merely)\b"
-    r"|rather than (?:just|merely|simply)\b", re.I)
+    r"không chỉ\b[^.;!?]{0,90}\bmà còn\b"
+    r"|không phải\b[^.;!?]{0,60}\bmà là\b"
+    r"|not (?:just|only)\b[^.;!?]{0,70}\bbut\b"
+    r"|isn'?t (?:just|only)\b"
+    r"|it'?s not (?:about|just)\b", re.I)
 NOTJUST_PER_1K = 0.8
 
 DEF_OPENING_RE = re.compile(
@@ -234,9 +192,7 @@ def prose_checks(html, cards, lang, errors, warns):
     dens = 1000 * dashes / words
     multi = sum(1 for p in paras if p.count("—") + p.count("–") >= 2)
     share = multi / max(len(paras), 1)
-    spaced = prose.count(" — ") + prose.count(" – ")
-    where = (f"({dashes} dashes, {spaced} space-flanked / {words} prose words; "
-             f"{multi}/{len(paras)} paragraphs hold ≥2)")
+    where = f"({dashes} dashes / {words} prose words; {multi}/{len(paras)} paragraphs hold ≥2)"
     if words < 1500:
         pass  # too little prose for a density verdict (template / stub)
     elif dens >= EMDASH_ERROR_PER_1K:
@@ -264,237 +220,7 @@ def prose_checks(html, cards, lang, errors, warns):
         if 1000 * adv / words > 2.0:
             warns.append(f"empty intensifiers (rất/vô cùng/cực kỳ/hết sức) ×{adv} "
                          f"({1000*adv/words:.1f}/1k) — replace with the number or the mechanism")
-
-    formatting_checks(cards, lang, allow, clean, errors, warns)
     return pwords
-
-
-# ---- formatting / structure slop (RULES-PROPOSAL 2026-09-29, checks 1-11, 13) ----
-# Run per lesson on clean() output (data-slop-exempt, pre, code dropped) minus SVG.
-# Switch a check off per file with <!-- slop-allow: <check-name> -->; phrase hits
-# are also skipped when the phrase itself is slop-allowed.
-EMOJI_RE = re.compile("[\U0001F300-\U0001FAFF]")  # colour emoji only; ✓ ✗ ▶ → ⚠ are UI glyphs
-OPENER_ERR_RE = re.compile(r"^(?:Hy vọng|Chúc bạn|I hope|Hope this|Would you like)(?![\wÀ-ỹ])")
-OPENER_WARN_RE = re.compile(
-    r"^(?:Tóm lại|Nhìn chung|Kết luận|Dưới đây là|Trong bối cảnh|Trong thế giới|Trong kỷ nguyên"
-    r"|Không thể phủ nhận|Hơn nữa|Thêm vào đó"
-    r"|In conclusion|In summary|Overall,|Here is|Here's|In today's|Certainly|Of course"
-    r"|Furthermore|Moreover|Additionally)(?![\wÀ-ỹ])")
-QUESTION_OPEN_RE = re.compile(r"^(?:Bạn (?:có|đã|từng)|Have you|Are you|Ever wondered|Did you know)\b")
-# Process stamps: traces of the checking workflow left in reader copy (owner rule 29/09/2026).
-PROCESS_STAMP_RE = re.compile(
-    r"kiểm (?:lại )?(?:\d{1,2}[–-])?\d{1,2}/\d{1,2}/\d{4}"
-    r"|đối chiếu lại (?:nguyên văn )?\d{1,2}/\d{1,2}"
-    r"|\((?:quan sát thực tế|in-house observation|dấu hiệu yếu[^)]*|weak sign[^)]*)\)"
-    r"|\b[Cc]hecked (?:on )?(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2}, \d{4}|\d{1,2}/\d{1,2}/\d{4})")
-
-VAGUE_ATTR_RE = re.compile(
-    r"(?:các|nhiều|giới) chuyên gia (?:cho rằng|nhận định|đánh giá|khuyên)"
-    r"|nhiều nghiên cứu (?:cho thấy|chỉ ra)|theo (?:các )?báo cáo ngành"
-    r"|experts (?:say|argue|agree|believe)|studies (?:show|suggest)|industry reports"
-    r"|observers have|it is widely (?:believed|accepted)", re.I)
-ING_TAIL_RE = re.compile(
-    r", (?:ensuring|highlighting|underscoring|reflecting|showcasing|emphasizing|fostering"
-    r"|contributing to)[^.]{0,60}\.|, góp phần [^.]{0,40}\.")
-SOURCE_LINE_RE = re.compile(r"^(?:Nguồn|Source|Sources)\s*:")
-BLOCK_BREAK_RE = re.compile(
-    r"<p\b(?P<attrs>[^>]*)>(?P<body>.*?)</p>"
-    r"|</?(?:ul|ol|li|table|figure|h[1-6]|details|summary|blockquote|div|section|aside|pre)\b[^>]*>",
-    re.S)
-# BOLD_MIN_WORDS: below ~300 paragraph words one bolded exercise list swings the
-# ratio past 25/1k (context-harness m14-l1: 6 bolds / 184 words).
-BOLD_PER_1K_WARN, BOLD_PER_1K_ERR, BOLD_MIN_WORDS = 14.0, 25.0, 300
-ONE_SENT_WARN, ONE_SENT_ERR = 4, 7
-OPENER_PER_1K = 1.5
-ING_TAIL_PER_1K = 1.5
-TEXT_UNIT_RE = re.compile(
-    r"<(p|li|figcaption|td|th|h[2-4]|summary)\b[^>]*>(.*?)</\1>", re.S)
-
-
-def _txt(h): return re.sub(r"\s+", " ", _strip(h)).strip()
-
-
-def _snip(t): return t[:80] + ("…" if len(t) > 80 else "")
-
-
-def _sentences(t):
-    """Split on . ! ? … followed by space and an upper-case / digit / quote start."""
-    parts = re.split(r"(?<=[.!?…])[\"”’)]*\s+(?=[\"“(]?[0-9A-ZĐÀ-ỸÁ-Ỹ])", t)
-    return [x for x in parts if x.strip()]
-
-
-def formatting_checks(cards, lang, allow, clean, errors, warns):
-    vi = lang.startswith("vi")
-
-    def on(name): return name not in allow
-
-    for card in cards:
-        lid = re.search(r'id="([^"]+)"', card).group(1)
-        c = re.sub(r"<svg\b.*?</svg>", " ", clean(card), flags=re.S)
-        body = re.sub(r'<div class="lesson-head".*?<h3\b.*?</h3>', " ", c, count=1, flags=re.S)
-        body = re.sub(r'<(?:div|ul|ol) class="objectives".*?</(?:ul|ol)>', " ", body, count=1, flags=re.S)
-        # prose paragraphs: not quiz stems, not "Nguồn:/Source:" lines
-        paras = []
-        for m in re.finditer(r"<p\b([^>]*)>(.*?)</p>", body, flags=re.S):
-            t = _txt(m.group(2))
-            if t and "quiz-q" not in m.group(1) and not SOURCE_LINE_RE.match(t):
-                paras.append((m.group(2), t))
-        pw = max(sum(len(t.split()) for _, t in paras), 1)
-        lw = max(len(_txt(body).split()), 1)
-        units = [_txt(m.group(2)) for m in TEXT_UNIT_RE.finditer(body)]
-        units = [u for u in units if u]
-
-        # 0. process stamps (dates of the checking workflow, evidence labels) in reader copy
-        if on("process-stamp"):
-            for m in PROCESS_STAMP_RE.finditer(_txt(body)):
-                errors.append(f"{lid}: process stamp in reader copy: \"{m.group(0)}\" "
-                              "(drop the check date / evidence label; keep dates only when the date is the fact)")
-
-        # 1. negative parallelism in the opening paragraph
-        if on("notjust-opener") and paras and NOTJUST_RE.search(paras[0][1]):
-            warns.append(f"{lid}: negative parallelism in the opening paragraph: "
-                         f"\"{_snip(paras[0][1])}\" (state the positive claim once)")
-
-        # 2. consecutive one-sentence paragraphs, no block between them
-        if on("one-sentence-run"):
-            run = best = 0
-            start = best_start = ""
-            for m in BLOCK_BREAK_RE.finditer(body):
-                t = _txt(m.group("body")) if m.group("body") is not None else None
-                if t == "":
-                    continue
-                if (t is None or "quiz-q" in m.group("attrs") or SOURCE_LINE_RE.match(t)
-                        or len(_sentences(t)) > 1):
-                    run = 0
-                    continue
-                run += 1
-                start = t if run == 1 else start
-                if run > best:
-                    best, best_start = run, start
-            if best >= ONE_SENT_WARN:
-                (errors if best >= ONE_SENT_ERR else warns).append(
-                    f"{lid}: {best} one-sentence paragraphs in a row, from \"{_snip(best_start)}\" "
-                    f"(group into 2-3 sentence paragraphs)")
-
-        # 3. bold density inside <p> (<li><b>Term</b>: items are not counted)
-        if on("bold-density"):
-            nb, first_bold, heavy = 0, "", []
-            for raw, t in paras:
-                k = len(re.findall(r"<(?:b|strong)\b", raw))
-                nb += k
-                first_bold = first_bold or (t if k else "")
-                if k >= 3:
-                    heavy.append((k, t))
-            if heavy:  # one message per lesson, not per paragraph (noise)
-                warns.append(f"{lid}: {len(heavy)} paragraph(s) with ≥3 bold phrases (max {max(heavy)[0]}), "
-                             f"first: \"{_snip(heavy[0][1])}\"")
-            dens = 1000 * nb / pw
-            if pw >= BOLD_MIN_WORDS and dens > BOLD_PER_1K_WARN:
-                (errors if dens > BOLD_PER_1K_ERR else warns).append(
-                    f"{lid}: bold density {dens:.1f}/1k paragraph words ({nb} in {pw}; house max ~14), "
-                    f"first: \"{_snip(first_bold)}\"")
-
-        # 4. emoji: heading/summary = error, prose = warning
-        if on("emoji"):
-            for m in re.finditer(r"<(h[2-4]|summary)\b[^>]*>(.*?)</\1>", c, flags=re.S):
-                t = _txt(m.group(2))
-                if EMOJI_RE.search(t):
-                    errors.append(f"{lid}: emoji in <{m.group(1)}>: \"{_snip(t)}\"")
-            rest = _txt(re.sub(r"<(h[2-4]|summary)\b[^>]*>.*?</\1>", " ", body, flags=re.S))
-            hits = list(EMOJI_RE.finditer(rest))
-            if hits:
-                i = hits[0].start()
-                warns.append(f"{lid}: {len(hits)} emoji in prose: \"{_snip(rest[max(i - 40, 0):])}\"")
-
-        # 5. label lists: >=4 items, each <=6 words, no digit
-        if on("label-list"):
-            for m in re.finditer(r"<(ul|ol)\b[^>]*>(.*?)</\1>", body, flags=re.S):
-                items = [_txt(x) for x in re.findall(r"<li\b[^>]*>(.*?)</li>", m.group(2), flags=re.S)]
-                if len(items) >= 4 and all(len(x.split()) <= 6 and not re.search(r"\d", x) for x in items):
-                    warns.append(f"{lid}: list of labels: \"{_snip(' | '.join(items))}\" "
-                                 f"(add the fact to each item or write a sentence)")
-
-        # 6. stock paragraph openers / closers
-        if on("stock-opener"):
-            soft_hits = []
-            for _, t in paras:
-                m = OPENER_ERR_RE.match(t)
-                if m and m.group(0).lower() not in allow:
-                    errors.append(f"{lid}: chat leftover \"{m.group(0)}…\": \"{_snip(t)}\"")
-                    continue
-                m = OPENER_WARN_RE.match(t)
-                if m and m.group(0).lower().rstrip(",") not in allow:
-                    soft_hits.append(t)
-            if soft_hits and (len(soft_hits) >= 2 or 1000 * len(soft_hits) / lw > OPENER_PER_1K):
-                warns.append(f"{lid}: {len(soft_hits)} stock paragraph opener(s) (Tóm lại/Hơn nữa/"
-                             f"In summary/Moreover…): \"{_snip(soft_hits[0])}\"")
-
-        # 7. rhetorical-question opener; question-heavy lesson
-        if on("question-opener") and paras:
-            # judged on the FIRST sentence: a scenario that ends on the boss's
-            # question is fine, and VI "Bạn có 200 ảnh…" is "you have", not a question
-            t = _sentences(paras[0][1])[0]
-            if t.rstrip("”\"' ").endswith("?") and (not re.search(r"\d", t) or QUESTION_OPEN_RE.match(t)):
-                warns.append(f"{lid}: opens with a rhetorical question: \"{_snip(t)}\" "
-                             f"(open with the scenario itself)")
-            q = [x for _, x in paras if x.rstrip("”\"' ").endswith("?")]
-            if len(paras) >= 5 and len(q) / len(paras) > 0.20:
-                warns.append(f"{lid}: {len(q)}/{len(paras)} paragraphs end with '?': \"{_snip(q[0])}\"")
-
-        # 8. <h4> over one short paragraph, then another <h4> or the takeaway
-        if on("tiny-section"):
-            for m in re.finditer(r"<h4\b[^>]*>((?:(?!</?h4\b).)*?)</h4>\s*<p\b[^>]*>((?:(?!</?p\b).)*?)</p>"
-                                 r"\s*(?=<h4\b|<div class=\"takeaway)",
-                                 body, flags=re.S):
-                n = len(_txt(m.group(2)).split())
-                if n < 60:
-                    warns.append(f"{lid}: heading \"{_snip(_txt(m.group(1)))}\" over a {n}-word paragraph "
-                                 f"(merge or drop the heading)")
-
-        # 9. Title Case in Vietnamese headings. Needs >=3 consecutive capitalised
-        # words, >=2 of them with Vietnamese letters, so English terms of art
-        # ("Model Context Protocol") in a VI heading are not flagged.
-        if vi and on("title-case"):
-            for m in re.finditer(r"<(h[2-4]|summary)\b[^>]*>(.*?)</\1>", c, flags=re.S):
-                t = _txt(m.group(2))
-                run = []
-                for w in re.findall(r"[^\s:·,.()/→|–—\-!?\"“”]+", t) + [""]:
-                    if w[:1].isupper() and not (len(w) > 1 and w.isupper()) and not re.search(r"\d", w):
-                        run.append(w)
-                        continue
-                    if len(run) >= 3 and sum(1 for x in run if re.search(r"[^\x00-\x7f]", x)) >= 2:
-                        warns.append(f"{lid}: Title Case in Vietnamese heading: \"{_snip(t)}\" (use sentence case)")
-                        break
-                    run = []
-
-        # 10. em dash (or spaced en dash) in Vietnamese prose
-        if vi and on("emdash-vi"):
-            dash_units = [u for u in units if "—" in u or " – " in u]
-            if dash_units:
-                n = sum(u.count("—") + u.count(" – ") for u in dash_units)
-                u0 = dash_units[0]
-                i = min(x for x in (u0.find("—"), u0.find(" – ")) if x >= 0)
-                warns.append(f"{lid}: {n} em dash(es) in Vietnamese prose ({len(dash_units)} blocks), first: "
-                             f"\"{_snip(u0[max(i - 40, 0):])}\" (use a comma, colon or new sentence)")
-
-        # 11. vague attribution; error when the sentence has no digit and no name
-        if on("vague-attribution"):
-            for u in units:
-                for sent in _sentences(u):
-                    m = VAGUE_ATTR_RE.search(sent)
-                    if not m or m.group(0).lower() in allow:
-                        continue
-                    named = any(w[:1].isupper() and not w.isupper() for w in sent.split()[1:])
-                    (warns if re.search(r"\d", sent) or named else errors).append(
-                        f"{lid}: vague attribution \"{m.group(0)}\": \"{_snip(sent)}\" "
-                        f"(name the source and the number, or cut)")
-
-        # 13. "-ing" analytical tails (EN) / ", góp phần …" (VI)
-        if on("ing-tail"):
-            tails = ING_TAIL_RE.findall(" ".join(units))
-            if tails and 1000 * len(tails) / lw > ING_TAIL_PER_1K:
-                warns.append(f"{lid}: {len(tails)} analytical tail(s) ({1000 * len(tails) / lw:.1f}/1k): "
-                             f"\"{_snip(tails[0])}\" (end the sentence on the fact)")
 
 
 def structural_prose_checks(cards, errors, warns):
@@ -711,7 +437,7 @@ def main() -> int:
 
     # ---------- per-lesson mandates ----------
     cards = re.findall(r'(<article class="lesson" id="[^"]+".*?</article>)', html, re.S)
-    prose_checks(html, cards, lang, errors, warns)  # full html: slop-allow lives in comments
+    prose_checks(html_nc, cards, lang, errors, warns)
     structural_prose_checks(cards, errors, warns)
     takeaway_texts: dict[str, list[str]] = {}
     quiz_corrects: list[int] = []

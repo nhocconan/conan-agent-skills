@@ -11,7 +11,7 @@ description: >-
 
 One lead owns the outcome and final quality; workers hold scoped tasks and never
 final acceptance. Routing is harness-conditional — the lead slot belongs to the
-active harness's own lead model, with no cross-harness substitution. Read the
+active parent session, with no cross-harness substitution. Read the
 [canonical model policy](sections/routing.md) before staffing anything.
 
 ## Start with the task
@@ -25,6 +25,7 @@ active harness's own lead model, with no cross-harness substitution. Read the
 3. Read the relevant project instructions and inspect the active tool schema.
    Respect actual model availability, permissions, budget, and the harness's
    configured concurrency and depth limits.
+   Match model and effort to the checks; confirm the actual worker model.
 4. For a single wave, record a short ledger; for longer runs also keep a plan in
    the repo's declared ignored working directory. Record model, owned files,
    acceptance, status, evidence, and the lead's verdict.

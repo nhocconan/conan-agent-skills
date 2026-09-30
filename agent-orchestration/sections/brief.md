@@ -24,8 +24,9 @@ or a positive count when you are choosing the worker's tier.
 Cap the return size in the brief, per return shape ([worker modes](worker-modes.md)):
 a subagent's return lands in the lead's context verbatim. Bound the run too —
 Claude Code `maxTurns`, Codex `agents.job_max_runtime_seconds` — and treat the
-resulting partial as resumable, not as a failure. A Claude Code subagent can start
-only synchronous subagents, so do not brief one to run background work.
+resulting partial as resumable, not as a failure. Claude Code nested background
+work depends on session mode and version; use the live tool rules and the lead's
+delegation limits ([fan-out patterns](../FANOUT-PATTERNS.md)).
 
 ### Prompt maintenance
 

@@ -9,12 +9,11 @@ description: >-
 
 # Delegate-run
 
-Unattended execution of an already-authorized task. Everything about staffing,
-model routing, worker briefs, quality gates, integration and tracking lives in
+Execute an authorized task unattended. Staffing,
+routing, briefs, gates, integration and tracking live in
 [agent-orchestration](../agent-orchestration/SKILL.md) and its
 [model policy](../agent-orchestration/sections/routing.md) — read those, not a
-second copy here. This skill adds only the rules that are specific to running
-without supervision.
+second copy here. The rules below govern unattended execution.
 
 ## The autonomy contract
 
@@ -31,13 +30,16 @@ without supervision.
   security setting to remove an approval prompt.
 - **Acceptance is stated before editing, from the project's real commands.** Do not
   invent a test command, and do not demand a new test for a trivial prose change.
+- **Staff against the current catalog and acceptance checks.** Use the model policy's
+  cheapest suitable worker and effort; record substitutions and escalate gaps.
+  The active lead retains acceptance and can handle unavailable optional workers.
 - **A dead helper is inspected, not silently relaunched.** Read its partial diff
   and recorded state first; preserve user edits; do not blindly repeat an external
   action that may already have succeeded.
 
 ## Handoff
 
-Outcome first, then changes, then evidence, then material limitations — naming
+Outcome, changes, evidence, then material limitations — naming
 what passed, what failed, and what could not be checked, plus the plan-file path
 for resume. Label unfinished work; do not demand a fixed report format or a demo
 for nonvisual work.

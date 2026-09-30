@@ -951,15 +951,72 @@ def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
     return 0
 
 
+# ------------------------------------------------------------------ dead hooks
+
+def prune_dead_hooks(settings_path: Path | None = None, *, dry_run: bool = False) -> list[str]:
+    """Drop `hooks` entries in ~/.claude/settings.json whose command script no longer exists.
+
+    Why: gstack's installer writes an absolute Stop hook
+    (`~/.claude/skills/gstack/hosts/claude/hooks/timeline-stop-hook`) into the
+    global settings. This load-out keeps gstack OUT of `~/.claude/skills` (wrap
+    mode), so that path is dead by design and every Stop event prints
+    "No such file or directory". Removing the entry is safe: the hook is
+    gstack-only timeline telemetry and fail-open. Returns the removed commands.
+    """
+    import json
+    path = settings_path or (HOME / ".claude" / "settings.json")
+    if not path.is_file():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    hooks = data.get("hooks")
+    if not isinstance(hooks, dict):
+        return []
+    removed: list[str] = []
+    for event, groups in list(hooks.items()):
+        kept_groups = []
+        for group in groups if isinstance(groups, list) else []:
+            entries = group.get("hooks", []) if isinstance(group, dict) else []
+            alive = []
+            for h in entries:
+                cmd = h.get("command", "") if isinstance(h, dict) else ""
+                exe = cmd.split()[0] if cmd else ""
+                if h.get("type") == "command" and exe.startswith("/") and not Path(exe).exists():
+                    removed.append(cmd)
+                else:
+                    alive.append(h)
+            if alive:
+                group["hooks"] = alive
+                kept_groups.append(group)
+        if kept_groups:
+            hooks[event] = kept_groups
+        else:
+            del hooks[event]
+    if removed and not dry_run:
+        if not hooks:
+            data.pop("hooks", None)
+        backup = path.with_name(path.name + ".bak-dead-hooks")
+        backup.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return removed
+
+
 def cmd_loadout(args) -> int:
     profile = args.profile or default_profile(args.target)
     if args.migrate:
         return migrate(args.target, profile)
 
-    return max(
+    rc = max(
         apply_loadout(target, profile, args.apply, args.quiet)
         for target in requested_targets(args.target)
     )
+    dead = prune_dead_hooks(dry_run=not args.apply)
+    if dead and not args.quiet:
+        verb = "removed" if args.apply else "would remove"
+        print(f"{verb} {len(dead)} dead hook(s) from ~/.claude/settings.json: " + ", ".join(dead))
+    return rc
 
 
 # ------------------------------------------------------------------ rescue
