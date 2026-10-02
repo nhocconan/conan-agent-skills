@@ -19,7 +19,7 @@ import subprocess
 from store_frames import INK, INK_TOP
 from preview_clips import render_preview_from_media
 
-os.environ.setdefault("VO_BACKEND", "kokoro")  # never ship a silent "preview"
+os.environ.setdefault("VO_BACKEND", "none")  # silent by default; set kokoro/say/openai for narration
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 MEDIA = os.path.join(ROOT, "appstore", "preview", "segments")

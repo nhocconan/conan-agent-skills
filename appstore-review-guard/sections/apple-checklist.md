@@ -60,7 +60,7 @@ Group by guideline area. ☐ = must verify every submission.
 - ☐ No private API usage.
 
 ### 4.5.4 / background — notifications & background modes
-- ☐ Notifications serve the **core function** (reminders), not marketing/promotion. No promotional pushes without explicit opt-in.
+- ☐ Notifications serve the **core function** (reminders), not marketing/promotion. No promotional pushes without explicit opt-in, and an in-app opt-out (4.5.4). Push must never be required for the app to function.
 - ☐ `interruptionLevel`/time-sensitive usage is justified by the feature.
 - ☐ Every `BGTaskScheduler` identifier used in code is declared in `Info.plist` (`BGTaskSchedulerPermittedIdentifiers`) and the matching `UIBackgroundModes` are present.
 

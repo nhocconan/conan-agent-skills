@@ -42,6 +42,7 @@ Validation after relevant changes:
 - `python3 -m unittest discover -s skill-miner/tests -v`
 - `python3 -m unittest discover -s agent-session-backup/tests -v`
 - `python3 -m unittest discover -s coding-env-bootstrap/tests -q`
+- `python3 -m unittest discover -s ref-skills/tests -q`
 - `git diff --check`
 
 Use isolated temporary fixtures for scripts. A clean validator proves structural

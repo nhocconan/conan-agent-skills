@@ -12,7 +12,6 @@
       "Bash(git log:*)",
       "Bash(rg:*)",
       "Bash(ls:*)",
-      "Bash(cat:*)",
       "Bash(pnpm build:*)",
       "Bash(pnpm test:*)",
       "Bash(pnpm lint:*)"

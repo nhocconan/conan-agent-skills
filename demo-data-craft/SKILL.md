@@ -7,7 +7,7 @@ description: Build convincing, safe demo/seed data for product demos — masked 
 
 A demo lives or dies on its data: empty screens kill the story, fabricated-looking numbers
 kill trust, and a leaked real customer name kills the deal. Three tiers of demo data, in
-descending realism — pick per goal, and obey the shared rules at the bottom.
+descending realism — default to Tier 2; use Tier 1 only when a real-data clone is authorized — and obey the shared rules at the bottom.
 
 ## Tier 1 — Masked clone of a real tenant (highest realism; for sales/demo servers)
 
@@ -22,7 +22,7 @@ restrict export access and retention, then clone → mask → verify → restore
 - **Mask uniformly so joins survive.** Two token classes: DISPLAY columns get the pretty
   replacement ("Brand A", "Org DEMO"); IDENTIFIER-shaped columns (slugs, `%_id`, handles,
   URLs, codes, keys) get the same slug-safe token applied EVERYWHERE, so
-  `oldshop-lzd → branda-lzd` still joins across tables. One scrub pass over all text/jsonb
+  `acme-shop-eu → branda-eu` still joins across tables. One scrub pass over all text/jsonb
   columns; skip secret-shaped columns (ciphertext/iv/hash) and handle them explicitly.
 - **Product/content names too**: token-swapping the brand still leaves googleable product
   titles in payloads, line items, video titles. Rename per-entity ("Brand A {category} NN")
@@ -37,7 +37,7 @@ restrict export access and retention, then clone → mask → verify → restore
 
 ## Tier 2 — Synthetic story data (for products without a rich real tenant)
 
-- **Seed the story, not random rows.** Decide the narrative first ("TikTok is the problem",
+- **Seed the story, not random rows.** Decide the narrative first ("channel B is the problem",
   "anomaly engine fires", "returning customers grew") and shape the data so the screens the
   demo walks through actually show it. Random data produces flat, meaningless charts.
 - **Internally consistent**: attach rates plausible (not 100%), breakdowns sum to totals,
@@ -56,7 +56,7 @@ for tests.
 
 ## Shared rules (all tiers)
 
-- **Env-gated demo forcing, inert by default.** Flags like `DEMO_FORCE_CONNECTORS_HEALTHY`
+- **Env-gated demo forcing, inert by default.** Flags like `DEMO_FORCE_<FEATURE>_HEALTHY`
   short-circuit at read time (list endpoints stamp healthy, ping short-circuits), gated on
   an env var that is unset everywhere except the demo box. Never fake state by writing
   future dates into data — read-time gates survive time passing.

@@ -7,9 +7,11 @@
 # trigger phrases at the end, so truncation eats exactly the part that decides
 # whether a skill fires. A trimmed list beats a truncated one.
 #
-# Measured 2026-09-05: the full 22-skill profile cost 16,213 chars, 3x the cap.
-# The set below is ~7.4k, which fits under the 8,000 fallback alongside the one
-# remaining third-party entry. Everything else is still on disk and reachable by
+# Codex documents the cap as "2% of the model's context window, or 8,000
+# characters when unknown" (learn.chatgpt.com/docs/build-skills, 2026-10-02); the
+# unit of the 2% is not stated, so treat 8,000 chars as the working ceiling.
+# Measured 2026-10-02 from the repo: these 11 names + descriptions total ~5.9k bytes.
+# Everything else is still on disk and reachable by
 # path: read ~/.conan-agent-skills/<name>/SKILL.md and follow it. The load-out
 # governs automatic triggering, not availability.
 #

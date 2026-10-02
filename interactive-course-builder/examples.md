@@ -13,7 +13,7 @@
 
 > Rules tell a strong model what to do; **examples are what weaker models
 > actually imitate.** Every builder prompt must include this file. Each pair
-> below is GOLD (shipped house output or equivalent) vs FAIL (the pattern
+> below is GOLD (house-standard output, synthetic content) vs FAIL (the pattern
 > weak models produce when left to taste), with the load-bearing differences
 > named. Do not copy the GOLD text into a course — copy its *shape*.
 
@@ -21,11 +21,11 @@
 
 ## 1 · Felt-problem opening (the first paragraph of every lesson)
 
-**GOLD (VI, shipped):**
+**GOLD (VI, synthetic):**
 
 > Một sáng, báo cáo **NMV** (net merchandise value — doanh thu thuần sau giảm
 > giá) tháng của một shop mỹ phẩm nhảy vọt gần gấp đôi. Không phải bán chạy:
-> một file marketplace bị giải mã nhầm — công cụ đọc trúng *sheet pivot* ở đầu file
+> một file xuất từ sàn TMĐT bị đọc nhầm — công cụ đọc trúng *sheet pivot* ở đầu file
 > thay vì sheet dữ liệu, nhân đôi vài trăm dòng. Nếu con số đó chạy thẳng lên
 > KPI headline, cả quyết định tuần dựa trên nó đều sai.
 

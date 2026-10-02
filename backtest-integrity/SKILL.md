@@ -8,7 +8,7 @@ description: Honesty checklist for quantitative strategy research — backtests,
 Every celebrated backtest number deserves the null hypothesis: **it's a bug.** The failure
 mode this exists for: two quiet bugs (a wrong annualization factor plus a look-ahead
 feature) inflate every headline metric and survive review because the equity curve looks
-plausible — e.g. a Sharpe reported near 1.8 that is really under 1.0. Only the checks
+plausible — a headline Sharpe that falls below 1.0 once both bugs are fixed. Only the checks
 below catch that; a second opinion on the idea does not.
 
 ## The prime heuristic
@@ -38,7 +38,7 @@ survive this whole checklist and reproduce from a clean re-run.
 5. **Costs & capacity**: realistic fees + slippage per market; position sizes capped by
    liquidity (e.g. % of ADTV); no fills at prices the size couldn't get. An edge that dies
    at 40bps round-trip was never an edge.
-6. **Silent data degradation**: verify the data layer actually loaded (a paid-data package
+6. **Silent data degradation**: verify the data layer actually loaded (a data package
    silently missing degrades to empty frames with no error; a mis-parameterized API call can
    masquerade as "fundamentals are broken"). Add a `doctor`/probe command and run it before
    trusting any research run.
@@ -57,12 +57,12 @@ survive this whole checklist and reproduce from a clean re-run.
 - **Report full-period AND a recent window** side by side — a bubble sub-period must not
   flatter the headline (a strategy that made everything 2020–2022 and nothing since is
   flat, not "14% CAGR").
-- Parameter sweeps: report the neighborhood, not the peak. A config whose CAGR swings 3–42%
+- Parameter sweeps: report the neighborhood, not the peak. A config whose CAGR swings widely
   across nearby params is overfit noise.
 
 ## Provenance ("không bịa" — every published number is auditable)
 
-Every backtest result surfaced to a UI/report carries: config hash, data-lake fingerprint/
+Every backtest result surfaced to a UI/report carries: config hash, data-store fingerprint/
 version, code version, run date, and the full-span ledger (no truncated last-N-rows chart
 that makes 9 years of equity look like 11 months). If any of those are missing, the number
 is a draft, not a result.

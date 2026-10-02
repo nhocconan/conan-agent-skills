@@ -30,12 +30,8 @@ second copy here. The rules below govern unattended execution.
   security setting to remove an approval prompt.
 - **Acceptance is stated before editing, from the project's real commands.** Do not
   invent a test command, and do not demand a new test for a trivial prose change.
-- **Staff against the current catalog and acceptance checks.** Use the model policy's
-  cheapest suitable worker and effort; record substitutions and escalate gaps.
-  The active lead retains acceptance and can handle unavailable optional workers.
-- **A dead helper is inspected, not silently relaunched.** Read its partial diff
-  and recorded state first; preserve user edits; do not blindly repeat an external
-  action that may already have succeeded.
+- Staffing, substitutions and dead-helper handling follow
+  `agent-orchestration/sections/routing.md` and `agent-orchestration/sections/tracking.md`.
 
 ## Handoff
 

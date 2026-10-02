@@ -85,7 +85,12 @@ def copy_paired_transcript(metadata_path, cowork_src, cowork_dest):
     return True, copied_bytes, skipped_links
 
 def main():
-    dest = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
+    args = sys.argv[1:]
+    if args and args[0].startswith("-"):
+        # `backup.py --help` used to create a directory literally named `--help`
+        # and run a full backup into it.
+        print(__doc__); sys.exit(0 if args[0] in ("-h", "--help") else 1)
+    dest = args[0] if args else os.path.join(
         HOME, "Claude_Light_Backup_" + time.strftime("%Y%m%d"))
     code_dest = os.path.join(dest, "Claude-Code")
     os.makedirs(code_dest, exist_ok=True)

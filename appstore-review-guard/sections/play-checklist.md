@@ -16,7 +16,7 @@ wallet/signing symbols were visible in the bytecode.
 ### Listing & policy
 - ☐ **Data safety form matches the binary** (Play's version of the privacy label) — declared collection/sharing = actual SDK behaviour.
 - ☐ Billing: same "distinct Restore purchases button" rule as 3.1.1 (`queryPurchasesAsync()` behind an explicit control).
-- ☐ Promo video is a **YouTube link** (vertical 1080×1920 is fine; Play tolerates device frames and >30s, but keep the same story as the screenshots).
+- ☐ Promo video is a **YouTube link** — public or unlisted, not age-restricted, monetization/ads off (support.google.com/googleplay/android-developer/answer/9866151, read 2026-10-02); keep the same story as the screenshots. Device-frame and length tolerance are unverified.
 - ☐ If rejected/flagged: check Play Console pre-launch report first; `bundletool validate`; appeal false positives with a plain-language description of the legitimate functionality.
 
 ---

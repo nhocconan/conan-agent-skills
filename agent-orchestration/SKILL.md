@@ -3,7 +3,8 @@ name: agent-orchestration
 description: >-
   Coordinate independent agent work with scoped ownership, model routing,
   resumable state, and evidence-based integration. Use for multi-workstream tasks,
-  explicit delegation, parallel audits, or agent handoffs. The lead of the active
+  explicit delegation, parallel audits, agent handoffs, or "chia việc", "fan-out",
+  "chạy song song", "giao worker". The lead of the active
   harness owns final quality; workers hold scoped, checkable tasks.
 ---
 

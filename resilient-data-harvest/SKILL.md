@@ -1,6 +1,6 @@
 ---
 name: resilient-data-harvest
-description: Build data-collection runs that survive contact with reality — browser scraping, paged API pulls, and system-to-system migrations. Covers rate-limit-aware pacing and challenge handling, write-as-you-go checkpointing so a dropped connection costs one item not the whole run, resume-from-partial, endpoint/schema drift detection, data-quality gates before ingest, and the rule that the harvester script or skill gets updated the moment reality changes. Use when scraping a logged-in site, pulling a paginated API, backfilling or re-syncing a connector, migrating tickets/records between systems, or when the user says "lấy data", "scrape", "crawl", "backfill", "bị block", "CloudFlare", "chạy lại từ đầu".
+description: Build data-collection runs that survive contact with reality — browser scraping, paged API pulls, and system-to-system migrations. Covers rate-limit-aware pacing and challenge handling, write-as-you-go checkpointing so a dropped connection costs one item not the whole run, resume-from-partial, endpoint/schema drift detection, data-quality gates before ingest, and the rule that the harvester script or skill gets updated the moment reality changes. Use when scraping a logged-in site, pulling a paginated API, backfilling or re-syncing a connector, migrating tickets/records between systems, when a re-sync must not clobber a manual correction, or when the user says "lấy data", "scrape", "crawl", "backfill", "bị block", "CloudFlare", "chạy lại từ đầu".
 ---
 
 # Resilient Data Harvest
@@ -93,7 +93,7 @@ Moving records between systems (tickets, users, content) has extra invariants:
 
 - **Preserve identity and history** — original author, original timestamps, the original
   id recorded on the target record for traceability.
-- **Timestamps the target overwrites** (a `date_mod` the platform always stamps) need an
+- **Timestamps the target overwrites** (a modified-at column the platform always stamps) need an
   explicit post-pass to restore. Expect this; check it rather than assume it.
 - **Suppress notifications.** A migration that emails thousands of users is unrecoverable.
   Disable notification on every write, verify on one record before the bulk run.

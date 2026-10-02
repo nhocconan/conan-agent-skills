@@ -7,6 +7,10 @@ description: Finds the root cause of a defect before changing anything — repro
 
 Thin wrapper over gstack's `investigate`. Upstream owns the search procedure; this file
 owns the discipline that decides whether the answer is trustworthy.
+Paths below are relative to this skill's real directory in the repo checkout
+(`~/.conan-agent-skills` by default — resolve the symlink first). `refsync.py ensure`
+fetches the vendored upstream files; if one is absent, say so and apply the rules in
+this file instead of guessing upstream's content.
 
 ## The rule that matters most
 

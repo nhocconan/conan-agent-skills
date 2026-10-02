@@ -75,7 +75,7 @@ Edit the `SLIDES` list (raw file, headline lines, subline, background
 gradient, alternating tilt) and call `render_slides(SLIDES, raw_dir, out_dir, W, H)`.
 
 Canvas sizes (the renderer scales its layout to any of these):
-- **Google Play:** 1080×1920 (9:16 — required for promotion placements)
+- **Google Play:** 1080×1920 (9:16 — the recommended minimum for promotion placements)
 - **Apple App Store iPhone:** use the current 6.9-inch screenshot set by default:
   **1260×2736, 1290×2796, or 1320×2868** portrait (and the rotated landscape
   equivalents). Choose the exact accepted size matching the source device and the
@@ -125,5 +125,5 @@ rejection, not a retouch:
 - With voiceover: confirm the track isn't silent —
   `ffmpeg -i out.mp4 -af volumedetect -f null -` should report a mean_volume
   around −16 dB, not −91 dB. Listen that no line is clipped at a scene cut.
-- Play: PNG/JPEG ≤ 8 MB, sides 320–3840 px, 2–8 phone screenshots.
+- Play: JPEG or 24-bit PNG without alpha, sides 320–3840 px, at least 2 phone screenshots (verified 2026-10-02); the 8 MB cap and 8-screenshot maximum are unverified — recheck in Play Console.
 - Don't claim anything the app can't verifiably do (store rejection / trust).

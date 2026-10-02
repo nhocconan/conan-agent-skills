@@ -161,10 +161,15 @@ Sources: `local:<path>` · `github:<owner>/<repo>@<ref>:<path>` · `https:<url>`
 
 ## 5. The load-out problem (this blocks everything else)
 
+> Superseded in part: since 2026-09 gstack is **not** installed at all — the wraps read
+> markdown fetched into `.vendor/gstack/` by `refsync.py ensure`, and the load-out has no
+> `gstack` entry (see `loadout.txt`). The history below explains why the load-out is
+> enforced rather than configured.
+
 `~/.claude/skills` is a **symlink to `~/.shared-ai-skills`**, and gstack's installer owns
 that directory. Consequences today:
 
-- Every one of gstack's ~74 skills is in the model's startup context whether you want it
+- Every one of gstack's skills is in the model's startup context whether you want it
   or not. 123 of the 137 outstanding validator warnings are theirs, and you cannot fix
   them — `gstack-upgrade` regenerates them.
 - You cannot name a wrap `ship`, because gstack's `ship/` already occupies that name in

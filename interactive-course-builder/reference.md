@@ -46,11 +46,10 @@
 
 ## 0 · Provenance & non-goals
 
-- **Provenance.** The system is extracted from `courses/reference-course.html`
-  (the reference implementation approved): navy-led brand, Inter +
+- **Provenance.** The system is extracted from an approved reference course: navy-led brand, Inter +
   IBM Plex Mono, card-based lessons, single-lesson pagination, localStorage +
   `window.storage` LMS bridge, `postMessage` progress reporting.
-- **Reframed as a design system.** Raw hex from the playbook is lifted into
+- **Reframed as a design system.** Raw hex from the reference course is lifted into
   **semantic tokens** so themes and dark mode work without touching components.
 - **Non-goals.** No build step. No framework runtime. No external JS libs
   (no Tailwind CDN, no Mermaid runtime, no chart libs). A course is **one HTML
@@ -179,7 +178,7 @@ the standard.
 - Label nodes in mono; keep to ≤ ~9 nodes; one clear left-to-right or
   top-to-down flow; arrowheads via a `<marker>`.
 - **Arrowheads — two failure modes that render silently wrong** (both shipped
-  to production 2026-07; audit with `scripts/audit-svg-arrows.py`):
+  to production 2026-07; audit script lives in the courses repo, not shipped here):
   1. **One connector per `<path>`.** SVG paints `marker-end` on the LAST vertex
      of the whole path element, so `d="M0 0h20 M0 40h20"` draws exactly ONE
      arrowhead — the other branch silently loses its head. A fan-out to three
@@ -209,7 +208,7 @@ the standard.
   Sanity check when drawing: for every arrow, name the box it enters, confirm
   the last command in `d` moves toward that box, and confirm that last command
   is longer than the head that sits on it. Then **look at the rendered figure** —
-  `scripts/audit-svg-arrows.py` in the courses repo checks all three classes,
+  `scripts/audit-svg-arrows.py` in the courses repo (not shipped with this skill; if absent, check the three classes by hand) checks all three classes,
   but a passing audit only means nothing is provably broken, not that the
   diagram reads right.
 - **Pick the diagram FORM from the relationship** (decision tree + worked
@@ -387,7 +386,7 @@ Courses are content, served in a signed-in iframe. Privacy by construction.
 
 ## 7 · Content voice & anti-slop
 
-- **Bilingual-aware.** Match the course's language (the playbook ships `vi` +
+- **Bilingual-aware.** Match the course's language (the reference course ships `vi` +
   `.en` mirror). Keep technical terms in English where that's the industry norm.
 - **Concrete over generic.** Every claim gets a mechanism, number, or example.
   Ban empty intensifiers ("powerful", "seamless", "revolutionary", "in today's

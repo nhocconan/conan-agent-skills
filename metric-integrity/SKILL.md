@@ -1,6 +1,6 @@
 ---
 name: metric-integrity
-description: Correctness audit for every number a product displays — KPIs, dashboards, reports, charts, exports. Hunts fabricated values (hardcoded multipliers, fake denominators), formula drift between frontend/backend/recon, filters that don't reach every query, timezone-wrong date bucketing, and locale-inconsistent formatting. Use when building or reviewing any dashboard/report/metric, when numbers differ between pages, when the user says "số liệu sai", "fake number", "the KPI looks wrong", or before demoing a BI surface. A dashboard is a promise — a wrong number is worse than no number.
+description: Correctness audit for every number a product displays — KPIs, dashboards, reports, charts, exports. Hunts fabricated values (hardcoded multipliers, fake denominators), formula drift between frontend/backend/recon, filters that don't reach every query, timezone-wrong date bucketing, and locale-inconsistent formatting. Use when building or reviewing any dashboard/report/metric, when numbers differ between pages, when the user says "số liệu sai", "fake number", "the KPI looks wrong", or before demoing a BI surface.
 ---
 
 # Metric Integrity
@@ -29,7 +29,7 @@ metric bugs; check every one when touching any surface that renders numbers.
   empty instead of asserting a false negative.
 
 - **A raw identifier on screen is a failure, not a fallback.** When a name lookup misses,
-  a numeric/opaque key rendered in the name column (`1731968774454020009` as a product
+  a numeric/opaque key rendered in the name column (`1000000000000000001` as a product
   name) reads to the user as corrupted data, and it hides the real defect upstream: the
   ingest created rows whose foreign key resolves to nothing. Render the unresolved state
   explicitly (`— (unmapped: 1731…)`), surface a count of unresolved rows on the surface
@@ -55,7 +55,7 @@ metric bugs; check every one when touching any surface that renders numbers.
 
 A global filter (platform, date range, org, brand) must affect **every query block and
 every component on the page**. The classic failure: the page has 8 SQL blocks, 6 honor
-`?platforms=`, 2 don't — the operator sees a "marketplace" chip over all-platform data.
+`?platforms=`, 2 don't — the operator sees a "Marketplace A" chip over all-platform data.
 When adding any new query to a filtered page, check the filter plumbs through; where the
 codebase allows, write a mechanical audit that lists query blocks missing the filter
 condition (see `bug-class-audits`).

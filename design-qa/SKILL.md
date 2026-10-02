@@ -39,8 +39,13 @@ Examples below are illustrative shapes, not one project's log:
 - **Do not "improve" adjacent design** that nobody complained about. Fix the defect.
 
 For the audit procedure, checklist and screenshot mechanics, read
-`../.vendor/gstack/design-review/SKILL.md` — its **"When to invoke this skill"**,
-**"Phases 1-6: Design Audit Baseline"** and **"Design Critique Format"** sections.
+`../.vendor/gstack/design-review/SKILL.md` (relative to this skill's real directory in the
+repo checkout, `~/.conan-agent-skills` by default — resolve the symlink first; `refsync.py
+ensure` fetches it) — its **"When to invoke this skill"**,
+**"Phases 1-6: Design Audit Baseline"** and **"Design Critique Format"** sections. If that
+file is absent (not fetched yet, or a harness without it), run the six defect checks above
+with the available screenshot tooling and say so; do not stall. `impeccable` and the
+`frontend-design` plugin are optional neighbours, not prerequisites.
 
 ## Sibling lenses
 

@@ -23,6 +23,8 @@ HOME = Path.home()
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
 REFSYNC = REPO / "ref-skills" / "refsync.py"
+sys.path.insert(0, str(REFSYNC.parent))
+import refsync  # noqa: E402  (same checkout; resolves `auto` the way `loadout` does)
 TEMPLATES = HERE / "templates"
 START = "<!-- conan-agent-harness:start -->"
 END = "<!-- conan-agent-harness:end -->"
@@ -216,6 +218,18 @@ def install_context7(target: str) -> None:
                 raise RuntimeError("failed to configure OpenAI developer docs for codex")
 
 
+def resolve_profile(target: str, profile: str) -> str:
+    """Map `auto` to the profile refsync actually applied for this target.
+
+    `apply --profile auto` is the documented workstation command. Linking
+    already went through refsync, which resolves `auto` per target; the audit
+    must grade against that same profile, not look for a `loadouts/auto.txt`.
+    """
+    if profile != refsync.AUTO_PROFILE:
+        return profile
+    return refsync.select_profile(target, profile, announce=False)
+
+
 def desired_names(profile: str) -> list[str]:
     path = REPO / "ref-skills" / "loadouts" / f"{profile}.txt"
     if profile == "claude-dev" and not path.exists():
@@ -283,7 +297,7 @@ def audit(args) -> int:
     print(f"repo: {REPO}")
     failures = []
     for target in targets(args.target):
-        profile = args.profile or "core"
+        profile = resolve_profile(target, args.profile or "core")
         result = run([
             sys.executable, str(REFSYNC), "loadout",
             "--target", target, "--profile", profile,

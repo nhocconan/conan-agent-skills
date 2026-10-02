@@ -6,7 +6,10 @@ implementing a loop. Historical commands are not portable APIs.
 1. Read the active tool definitions or installed CLI help and current official
    documentation for the exact harness.
 2. Establish whether execution survives session closure, where credentials and
-   skills load, and which identity performs writes.
+   skills load, and which identity performs writes. Session-scoped schedulers do
+   not survive it: Claude Code `/loop` tasks fire only while that session runs and
+   recurring ones expire after 7 days; cloud routines run at a 1-hour minimum
+   interval (scheduled-tasks docs, read 2026-10-02).
 3. Configure supported time/iteration/cost limits, overlap protection, error
    reporting, and a kill switch. Test a forced failure in an isolated environment.
 4. Record the actual command/configuration and version in the project loop spec.

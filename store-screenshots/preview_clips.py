@@ -13,7 +13,7 @@ The captured media must already be at the output resolution (e.g. 1320x2868,
 an accepted 6.9" App Preview size) so nothing is letterboxed or framed.
 
 Voiceover reuses preview_core's backends via VO_BACKEND (unset = silent track).
-Requires ffmpeg. Method notes: ~/.claude/skills/store-screenshots.
+Requires ffmpeg. Method notes: the store-screenshots skill (SKILL.md beside this file).
 """
 import math
 import os

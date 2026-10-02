@@ -534,8 +534,29 @@ def pull_self() -> None:
           else "repo: pulled")
 
 
+_SECTION_REF_RE = re.compile(r"(?<![\w/.-])sections/([\w.-]+\.md)")
+
+
+def referenced_sections(rel: str, text: str) -> list[str]:
+    """`sections/<x>.md` files a fetched upstream file tells the agent to read.
+
+    gstack carves each skill's on-demand bodies into `<skill>/sections/*.md` and
+    adds new ones between releases (ship grew from 2 to 11). A wrap that says
+    "read the section the index names" is wrong the moment one of those files is
+    missing from `.vendor/`, so they are fetched by reference, not by hand-list.
+    """
+    skill_dir = rel.split("/", 1)[0]
+    return sorted({f"{skill_dir}/sections/{name}" for name in _SECTION_REF_RE.findall(text)})
+
+
 def ensure_github_files(spec: Upstream) -> int:
-    """Copy listed files from GitHub (or a test mirror) into .vendor/<name>/."""
+    """Copy listed files from GitHub (or a test mirror) into .vendor/<name>/.
+
+    Listed files are required: an unreachable one fails the run. Section files
+    they reference are fetched best-effort: upstream occasionally references a
+    section it has not committed (qa-only/sections/browser-setup.md, 2026-10-02),
+    and that is reported, not fatal.
+    """
     if not spec.repo or not spec.files:
         print(f"{spec.name}: github-files needs repo= and files=")
         return 1
@@ -545,11 +566,29 @@ def ensure_github_files(spec: Upstream) -> int:
     owner, repo = spec.repo.split("/", 1)
     dest = vendor_root() / spec.name
     wrote = skipped = 0
-    for rel in spec.files:
-        text = fetch_github_file(owner, repo, spec.ref, rel, cache=False)
+    queue = list(spec.files)
+    required = set(spec.files)
+    seen: set[str] = set()
+    while queue:
+        rel = queue.pop(0)
+        if rel in seen:
+            continue
+        seen.add(rel)
+        try:
+            text = fetch_github_file(owner, repo, spec.ref, rel, cache=False)
+        except Exception as exc:  # HTTP 404 on a referenced section, network error
+            text = None
+            if rel in required:
+                print(f"  ! {rel}: unreachable ({exc})")
+                return 1
         if text is None:
-            print(f"  ! {rel}: unreachable")
-            return 1
+            if rel in required:
+                print(f"  ! {rel}: unreachable")
+                return 1
+            print(f"  ? {rel}: referenced upstream but not published; skipped")
+            continue
+        if rel.endswith("SKILL.md"):
+            queue.extend(s for s in referenced_sections(rel, text) if s not in seen)
         target = dest / rel
         if target.is_file() and target.read_text(encoding="utf-8", errors="replace") == text:
             skipped += 1
@@ -872,6 +911,11 @@ def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
             actual = None
         if expected is None or actual == expected.resolve():
             continue
+        if actual is None and path.is_symlink():
+            # A dangling link (the checkout moved, or an old clone was deleted)
+            # protects nothing; repoint it instead of refusing the whole apply.
+            relink.append(name)
+            continue
         if installer_owned(path) and same_skill(path, expected):
             relink.append(name)
             continue
@@ -914,7 +958,7 @@ def apply_loadout(target: str, profile: str, apply: bool, quiet: bool) -> int:
         for n in missing:
             print(f"    + {n}")
         for n in relink:
-            print(f"    ~ {n} (installer layout → canonical link)")
+            print(f"    ~ {n} (dangling or installer-layout entry → canonical link)")
         for n in extra:
             print(f"    - {n}")
 

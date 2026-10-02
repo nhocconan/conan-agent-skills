@@ -1,6 +1,6 @@
 ## Guideline 3.1.1 — Restore Purchases (the pattern)
 
-This is the single most common avoidable IAP rejection. Apple's exact bar:
+A frequent avoidable IAP rejection. Guideline 3.1.1 itself says only that you "make sure you have a restore mechanism for any restorable in-app purchases" (read 2026-10-02); App Review's rejection message typically adds:
 
 > Provide a **distinct "Restore" button** and initiate the restore when tapped.
 > **Automatically restoring purchases on launch will not resolve this.**

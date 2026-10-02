@@ -37,10 +37,10 @@ Separate mandatory criteria from additional house conventions.
 ### Forms
 - Every input has a programmatically-associated `<label>` (placeholder is NOT a label) (1.3.1, 3.3.2).
 - Errors are announced and tied to the field (`aria-describedby`, `aria-invalid`), text not color-only, and say how to fix (3.3.1, 3.3.3).
-- Don't force re-entering info already provided in the same flow (**3.3.7 Redundant Entry, new in 2.2**); don't block paste into password/OTP fields (**3.3.8 Accessible Authentication, new in 2.2**).
+- Don't force re-entering info already provided in the same flow (**3.3.7 Redundant Entry, new in 2.2**); no cognitive-function test (memorize, transcribe, solve a puzzle) at login without an alternative — allowing paste and password managers is the usual fix (**3.3.8 Accessible Authentication (Minimum), new in 2.2**).
 
 ### Visual / low-vision
-- Text contrast ≥ 4.5:1 (≥ 3:1 for ≥24px/19px-bold); UI components & focus indicators ≥ 3:1 (1.4.3, 1.4.11). This is the #1 thing aesthetic-only review misses — verify actual computed colors, in BOTH light and dark themes.
+- Text contrast ≥ 4.5:1 (≥ 3:1 for large text: ≥24px, or ≥18.66px bold — 18pt / 14pt bold); UI components & focus indicators ≥ 3:1 (1.4.3, 1.4.11). This is the #1 thing aesthetic-only review misses — verify actual computed colors, in BOTH light and dark themes.
 - Never convey meaning by color alone — add icon/text/pattern (chart series, status, required fields) (1.4.1).
 - Layout survives 200% zoom and 320px width with no loss of content/function (1.4.10); test reflow at 400% browser zoom where applicable (text resize is 200%, 1.4.4).
 

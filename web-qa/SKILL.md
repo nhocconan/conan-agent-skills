@@ -7,6 +7,10 @@ description: Tests a running web application for functional defects — broken f
 
 Wrapper over gstack's `qa` (fix mode) and `qa-only` (report mode). Upstream owns the test
 procedure; this file owns which mode to pick and what counts as evidence.
+Paths below are relative to this skill's real directory in the repo checkout
+(`~/.conan-agent-skills` by default — resolve the symlink first). `refsync.py ensure`
+fetches the vendored upstream files; if one is absent, say so and apply the rules in
+this file instead of guessing upstream's content.
 
 ## Pick the mode first — this is the whole point
 

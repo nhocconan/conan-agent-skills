@@ -15,3 +15,5 @@ jobs:
       - run: python3 skill-miner/context_budget.py --no-ratchet
       - run: python3 -m unittest discover -s skill-miner/tests -v
       - run: python3 -m unittest discover -s agent-session-backup/tests -q
+      - run: python3 -m unittest discover -s ref-skills/tests -q
+      - run: git diff --check

@@ -18,8 +18,8 @@ Model policy: **the lead slot belongs to the active harness, and the harness lea
 final quality; workers implement scoped work and never grant final acceptance.** Leads are
 not substituted across harnesses. Per-harness tables, model IDs, pricing, retirement dates
 and harness mechanics live in [model routing](agent-orchestration/sections/routing.md),
-verified 2026-09-15.
-See [the audit dated 2026-09-15](SKILL-AUDIT.md) for the 32 skills and validation limits.
+OpenAI and Anthropic rows re-verified 2026-09-30, Gemini rows 2026-09-15.
+See [the audit dated 2026-10-02](SKILL-AUDIT.md) for the 32 skills and validation limits.
 
 Project rules use one source: `AGENTS.md`, with native Claude/Gemini import adapters.
 See [the shared-rule convention](coding-env-bootstrap/PROJECT-RULES.md) for safe
@@ -29,7 +29,7 @@ Keep the active set small on purpose: Codex caps the injected skill list at 2% o
 context window (8,000 characters when it cannot tell), shortening descriptions and then
 dropping skills entirely. An over-full directory does not fail loudly — it goes quiet.
 
-👉 **[MANUAL.md](MANUAL.md) — start here** (tiếng Việt): what's here, what fires when,
+**[MANUAL.md](MANUAL.md) — start here** (tiếng Việt): what's here, what fires when,
 how to upgrade, how to roll back.
 
 ## Setup on a new machine
@@ -61,7 +61,7 @@ dirty), fetch wrap sources from GitHub into `.vendor/`, update impeccable when t
 selected profile needs it, re-check wrapper fingerprints, validate, then re-apply the
 load-out. Default target is `all` (Claude + Codex + agy); default profile is `auto`.
 
-Do **not** run gstack's `./setup` or `/gstack-upgrade` — that writes ~74 skills into
+Do **not** run gstack's `./setup` or `/gstack-upgrade` — that writes its entire suite into
 `~/.claude/skills`. This repo only needs the markdown the wrappers point at. See
 [`ref-skills`](ref-skills/SKILL.md).
 
@@ -75,7 +75,7 @@ Five things can claim a UI task; they are layered deliberately so they do not co
 
 | Layer | Owner | Fires when |
 |---|---|---|
-| Build & refine | **impeccable** (upstream, `keep.txt`) | making or reshaping a UI: `shape`, `polish`, `critique`, `typeset`, `layout`, `animate`, `harden`, `adapt` — 23 commands + a deterministic detector binary |
+| Build & refine | **impeccable** (upstream, `keep.txt`) | making or reshaping a UI: `shape`, `polish`, `critique`, `typeset`, `layout`, `animate`, `harden`, `adapt` — 24 commands (impeccable 4.1.0, 2026-10-02) + a deterministic detector binary |
 | Taste & anti-default | `frontend-design` (official Anthropic plugin) | aesthetic direction, typography, avoiding the looks generated pages converge on |
 | Visual defect review | [`design-qa`](design-qa/SKILL.md) | a rendered page that works but looks wrong — wrapping, collisions, imbalance, cross-page inconsistency |
 | Correctness gates | [`a11y-audit`](a11y-audit/SKILL.md), [`web-perf-audit`](web-perf-audit/SKILL.md) | WCAG 2.2 AA; LCP/INP/CLS. Neither is negotiable by taste |
@@ -115,7 +115,7 @@ wrap by default, fork only when you mean to diverge.
 | # | Skill | What it does |
 |---|---|---|
 | 1 | [store-screenshots](store-screenshots/SKILL.md) | Branded store screenshots and App Preview videos from real captures. Current slot guidance, copy and rendering templates; silent preview by default, optional voiceover. Verify current submission requirements. |
-| 2 | [admin-crud-standards](admin-crud-standards/SKILL.md) | Non-negotiable baseline for every admin/list/CRUD/upload page: pagination + search + filters everywhere, type-ahead & tree pickers, destructive-action confirms, preview-before-commit upload flows, menu reachability — plus modern data-grid (TanStack Table v8) + virtualization patterns and a WCAG 2.2 accessibility floor. |
+| 2 | [admin-crud-standards](admin-crud-standards/SKILL.md) | Non-negotiable baseline for every admin/list/CRUD/upload page: pagination + search + filters everywhere, type-ahead & tree pickers, destructive-action confirms, preview-before-commit upload flows, menu reachability — plus modern data-grid (TanStack Table — use the project's installed major; v9 is current as of 2026-10) + virtualization patterns and a WCAG 2.2 accessibility floor. |
 | 3 | [a11y-audit](a11y-audit/SKILL.md) | WCAG 2.2 AA UI-correctness auditor (distinct from aesthetics): automated axe/Lighthouse pass + manual keyboard/screen-reader pass covering focus, ARIA, contrast (both themes), labeled inputs, 24px touch targets, reduced-motion, semantic HTML and the new 2.2 criteria. Report findings; when fixes are requested, repair and re-check. |
 | 4 | [secure-code-audit](secure-code-audit/SKILL.md) | Portable, vendor-neutral app-sec pass: secret scan (gitleaks/trufflehog) → dependency/CVE audit (npm/pip/osv/trivy) → SAST (semgrep/bandit/gosec) → manual OWASP Top 10 review (access control, injection, crypto, SSRF, file-upload, multi-tenant) → LLM/AI feature review (prompt injection, tool-call authz, RAG tenancy, output handling, denial-of-wallet). Severity-ranked findings; fixes when requested. Inspect scanner network behavior. |
 | 5 | [web-perf-audit](web-perf-audit/SKILL.md) | Runtime Core Web Vitals audit (LCP / INP / CLS) — measure with Lighthouse + DevTools traces + bundle analysis, report the bottleneck; when fixes are requested, repair and re-measure. Data-heavy dashboard playbook (virtualize tables, lazy-load charts, debounce filters). Complements vercel-react-best-practices (source-level rules). |
@@ -129,7 +129,7 @@ wrap by default, fork only when you mean to diverge.
 | 13 | [interactive-course-builder](interactive-course-builder/SKILL.md) | House standard for interactive HTML courses (single self-contained file, LMS-embedded or standalone): tested `template.html` + full `reference.md` spec — semantic-token design system with per-course themes, **light-default + persisted dark toggle**, responsive 375px→desktop, component kit (lesson cards, SVG diagrams `dgm-*`, images, callouts, comparisons, takeaways ⭐, scenario quizzes ⭐), L1→L5 leveled pedagogy, WCAG 2.2 AA (aria-current, live regions, focus management), framework-free engine with resume/progress/keyboard nav + optional LMS `postMessage` contract. |
 | 14 | [senior-operator](senior-operator/SKILL.md) | Cross-project craft handoff: operating manual, per-repo execution maps, and a distill recipe. The canonical `AGENTS.md` wins; `CLAUDE.md` and `GEMINI.md` remain import-only adapters. |
 | 15 | [agent-session-backup](agent-session-backup/SKILL.md) | Light backup & restore of Claude Cowork + Claude Code session histories on macOS, filtered to sessions whose `cwd` still exists on this machine. Covers **all three history trees** (`claude-code-sessions`, `local-agent-mode-sessions`, `~/.claude/projects`) via `backup.py`/`restore.py` (dry-run, safe-merge by default), plus `map_account.py` to merge another account's sessions into the current login's active space (the account/space two-level model, verified on Claude Desktop 2.1.x). |
-| 16 | [mobile-app-playbook](mobile-app-playbook/SKILL.md) | End-to-end playbook for building & shipping top-chart Android+iOS apps/games, written as a strong-model→weaker-model handoff: numeric quality bar (§0) + model-tier orchestration (§OP), KMP/CMP architecture seams & platform traps, game-feel/UX checklists, retention meta-system ladder, store-policy-proof monetization (Families ads, consent stack, money-correctness matrix), fake-green-proof verification discipline with cold-repo `verify.sh` bootstrap, submission rollout ladder + staged-release dwell rules, ASO (listing, review-prompt policy, localization), LiveOps cadence, and a generalized failure catalog. Fact-checked against Apple/Google primary docs; execution-tested on Sonnet and Opus. |
+| 16 | [mobile-app-playbook](mobile-app-playbook/SKILL.md) | End-to-end playbook for building & shipping top-chart Android+iOS apps/games, written as a strong-model→weaker-model handoff: numeric quality bar (§0) + model-tier orchestration (§OP), KMP/CMP architecture seams & platform traps, game-feel/UX checklists, retention meta-system ladder, store-policy-proof monetization (Families ads, consent stack, money-correctness matrix), fake-green-proof verification discipline with cold-repo `verify.sh` bootstrap, submission rollout ladder + staged-release dwell rules, ASO (listing, review-prompt policy, localization), LiveOps cadence, and a generalized failure catalog. Fact-checked against Apple/Google primary docs. |
 | 17 | [agent-orchestration](agent-orchestration/SKILL.md) | The harness lead splits independent workstreams, staffs workers from the per-harness routing table, reviews evidence, integrates, and owns final quality. Includes scoped briefs, lane-to-config enforcement, resumable tracking, bounded escalation, and proportional verification. |
 | 18 | [resilient-data-harvest](resilient-data-harvest/SKILL.md) | Data collection that survives reality — per-item checkpointing with a manifest (a dropped connection costs one unit, not the run), human-paced serialized requests with backoff instead of block/CAPTCHA escalation, driving the operator's real logged-in session, schema/volume drift detection against the previous run, a staging quality gate before ingest, and the rule that the harvester updates itself the moment reality changes. Plus migration invariants: preserve identity/timestamps, suppress notifications, dry-run first. |
 | 19 | [coding-env-bootstrap](coding-env-bootstrap/SKILL.md) | Reproduce this coding-agent environment on a new/remote machine: `BOOTSTRAP.md` is an agent-executable runbook (toolchain → agent CLIs → skills repo → portable settings → plugins → MCP → secrets protocol → live verification) tiered `[CORE]`/`[DEV]`/`[MAC]` so a production box gets the useful half, not the workstation clone; `AUDIT.md` records the source-machine scan and the changes to make (secrets out of `settings.json`, allowlist instead of blanket dangerous mode, unversioned skill tree, malformed frontmatter). |
@@ -140,7 +140,7 @@ wrap by default, fork only when you mean to diverge.
 | 24 | [browsing-web](browsing-web/SKILL.md) | Wrap over gstack `browse` (compiled binary — wrap is the only possible mode). Uses the selected, available browser with evidence and session discipline. Don't stop to re-confirm an already-open logged-in session; bulk collection hands off to `resilient-data-harvest`. |
 | 25 | [web-qa](web-qa/SKILL.md) | Wrap over gstack `qa` + `qa-only` — one job with a mode switch, not two skills. **Report-only is the default**; fixing happens only when asked, and then under the `shipping-changes` house rules. Every finding carries an artifact and is reproduced before it is written down; the scope and tier actually covered are stated, not implied. Routes visual defects to `design-qa`, wrong numbers to `metric-integrity`. Uses the project-approved or user-selected available browser. |
 | 26 | [design-qa](design-qa/SKILL.md) | Rendered visual review for text wrapping, collisions, imbalance, inconsistency, and unsupported decoration. Report-only unless fixes are requested; re-render repairs, ship only when authorized. |
-| 27 | [delegate-run](delegate-run/SKILL.md) | Carry authorized work through acceptance checks, verification, and handoff with resumable state and proportional delegation. |
+| 27 | [delegate-run](delegate-run/SKILL.md) | Carry authorized work through acceptance checks, verification, and handoff unattended; staffing and tracking come from agent-orchestration. |
 | 28 | [autonomous-loops](autonomous-loops/SKILL.md) | Design bounded recurring agent jobs with a trigger, reviewed prompt, hard gate, stop condition, and staged write access. |
 | 29 | [dev-env-lifecycle](dev-env-lifecycle/SKILL.md) | Own the lifecycle of everything a run starts. Inventory before starting; one documented `up`/`down`/`status` artifact each; `down` reclaims **all** of it (workers, schedulers, tunnels, sidecars), verified against the port and process tables rather than an exit code; scratch output is ephemeral by default; confirm-with-sizes before deleting anything you did not create, and delete the files, not just the index row. Inverts on a `prod` host: inventory and report only. |
 | 30 | [remote-host-access](remote-host-access/SKILL.md) | Diagnose DNS, routes, firewalls, listening sockets, activation, and auth from evidence. Refusal may be a listener or firewall REJECT. Authorized repairs preserve management access and narrow exposure. |

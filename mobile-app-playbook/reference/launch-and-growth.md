@@ -50,7 +50,7 @@ played end-to-end, including one real sandbox purchase + restore.
 ## §7. ASO — ranking is a product surface, not an afterthought
 
 - **Title/subtitle/keywords:** title = brand + strongest keyword (30 chars);
-  iOS subtitle (30) and keyword field (100, comma-separated, no spaces, no duplicates
+  iOS subtitle (30) and keyword field (100 bytes, comma-separated, no spaces, no duplicates
   of title words); Play short description (80) is both keyword surface and conversion
   copy. Research actual search volume (competitor titles are free research: what words
   do the top 10 in genre share?).

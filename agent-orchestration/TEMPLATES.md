@@ -114,7 +114,7 @@ Model agreement and confidence scores do not replace a reproducible mechanism.
 
 ## 4. Plan file
 
-`.agents/<topic>-<yyyy-mm>.md` — written before wave 1, updated the moment a node lands.
+`.agents/<task>-plan.md` — written before wave 1, updated the moment a node lands.
 
 ```markdown
 # <Topic> — plan (<yyyy-mm-dd>)

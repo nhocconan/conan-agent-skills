@@ -81,7 +81,7 @@ render a vertical 1080×1920 mp4, upload it to YouTube (unlisted is fine), and
 paste the URL in the listing. Play is lenient on length (no 30s cap) and on
 device frames, but keep it tight.
 
-**Apple App Preview spec (verified June 2026 — recheck if rejected):**
+**Apple App Preview spec (re-verified 2026-10-02 against developer.apple.com/help/app-store-connect/reference/app-information/app-preview-specifications — recheck if rejected):**
 - **Render at 886×1920** (portrait) / 1920×886 (landscape) — accepted across the
   6.5"/6.7"/6.9" iPhone App Preview slots. **Do NOT upload 1320×2868** (that's
   the *screenshot* size): the App Preview slot rejects it — *"The app preview
@@ -119,7 +119,7 @@ Pick a voice source (decision order for a free, license-clean, published asset):
 | `kokoro` | Excellent | see below; ~350MB model | Yes | **Apache-2.0 → safe for commercial listings.** Best free pick. `VO_VOICE=af_heart`/`af_bella`/`am_michael` etc. |
 | `piper` | Good | Piper binary + a `.onnx` voice (`VO_VOICE=<path>`) | Yes | Lighter than Kokoro; MIT voices available |
 | `say` | OK | zero install; **download a Premium voice** in System Settings (defaults sound robotic) | Yes | `VO_VOICE="Ava (Premium)"`. Fine for a draft |
-| `openai` | Excellent | `OPENAI_API_KEY`, model `gpt-4o-mini-tts` (~1¢) <!-- model-id-allow: TTS API model, not an orchestration routing tier --> | No | **NOT covered by the "free shared-traffic" token tier** — that tier is text models only; TTS bills at standard rates |
+| `openai` | Excellent | `OPENAI_API_KEY`, model `gpt-4o-mini-tts` ($0.60/1M input + $12/1M audio-output tokens on 2026-10-02; cost per preview unverified) <!-- model-id-allow: TTS API model, not an orchestration routing tier --> | No | Bills at standard API rates; check the account's current pricing page |
 | `file` | — | drop `vo/<stem>-<i>.wav` per scene | Yes | Use your own recorded voice — most authentic |
 
 **Installing Kokoro (use kokoro-onnx — `pip install kokoro` breaks on Python

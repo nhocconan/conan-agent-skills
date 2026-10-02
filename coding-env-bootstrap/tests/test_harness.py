@@ -12,9 +12,20 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 HARNESS = REPO / "coding-env-bootstrap" / "harness.py"
 REFSYNC = REPO / "ref-skills" / "refsync.py"
-CORE_COUNT = len([
-    line for line in (REPO / "ref-skills/loadouts/core.txt").read_text().splitlines()
-    if line.split("#", 1)[0].strip()
+def _count(path: Path) -> int:
+    return len([
+        line for line in path.read_text().splitlines()
+        if line.split("#", 1)[0].strip()
+    ])
+
+
+CORE_COUNT = _count(REPO / "ref-skills/loadouts/core.txt")
+CODEX_DEV_COUNT = _count(REPO / "ref-skills/loadouts/codex-dev.txt")
+AGY_DEV_COUNT = _count(REPO / "ref-skills/loadouts/agy-dev.txt")
+# claude-dev on a fresh clone: repo-owned entries link, third parties are skipped.
+CLAUDE_DEV_REPO_COUNT = len([
+    line for line in (REPO / "ref-skills/loadout.txt").read_text().splitlines()
+    if line.split("#", 1)[0].strip() and (REPO / line.split("#", 1)[0].strip() / "SKILL.md").is_file()
 ])
 
 
@@ -120,6 +131,49 @@ class HarnessTests(unittest.TestCase):
                 "tomllib.loads((pathlib.Path.home()/'.codex/production.config.toml').read_text())",
             )
             self.assertEqual(strict.returncode, 0, strict.stdout + strict.stderr)
+
+    def test_apply_with_auto_profile_audits_the_resolved_profile(self):
+        # `apply --profile auto` is the documented workstation command. Linking
+        # resolved `auto` per target, but the audit used to look for
+        # loadouts/auto.txt and crashed after the links were already written.
+        for browser, expected_claude in (("0", CORE_COUNT), ("1", CLAUDE_DEV_REPO_COUNT)):
+            with self.subTest(browser=browser), tempfile.TemporaryDirectory() as raw_home:
+                home = Path(raw_home)
+                result = invoke(
+                    home, str(HARNESS), "apply", "--target", "all", "--profile", "auto",
+                    env_updates={"CONAN_AGENT_BROWSER": browser, "CONAN_AGENT_ENSURE": "0"},
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertNotIn("auto.txt", result.stdout + result.stderr)
+                self.assertEqual(len(list((home / ".claude/skills").iterdir())), expected_claude)
+                self.assertEqual(len(list((home / ".agents/skills").iterdir())), CODEX_DEV_COUNT)
+                self.assertEqual(
+                    len(list((home / ".gemini/config/skills").iterdir())), AGY_DEV_COUNT
+                )
+                verify = invoke(
+                    home, str(HARNESS), "verify", "--target", "all", "--profile", "auto",
+                    env_updates={"CONAN_AGENT_BROWSER": browser},
+                )
+                self.assertEqual(verify.returncode, 0, verify.stdout + verify.stderr)
+
+    def test_dangling_link_to_a_wanted_skill_is_repointed_not_a_collision(self):
+        # The checkout moved (or an older clone was deleted): every link in the
+        # active directory dangles. Nothing is being protected, so the apply
+        # must repair the link instead of refusing.
+        with tempfile.TemporaryDirectory() as raw_home:
+            home = Path(raw_home)
+            for active in (home / ".claude/skills", home / ".agents/skills"):
+                active.mkdir(parents=True)
+                (active / "metric-integrity").symlink_to("/old/checkout/metric-integrity")
+            result = invoke(
+                home, str(HARNESS), "apply", "--target", "both", "--profile", "core",
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertNotIn("collision", result.stdout)
+            for active in (home / ".claude/skills", home / ".agents/skills"):
+                link = active / "metric-integrity"
+                self.assertTrue(link.is_symlink())
+                self.assertEqual(link.resolve(), (REPO / "metric-integrity").resolve())
 
     def test_default_claude_loadout_uses_core_without_real_browser(self):
         with tempfile.TemporaryDirectory() as raw_home:
@@ -322,6 +376,40 @@ class HarnessTests(unittest.TestCase):
                 Path((home / "npx-cwd").read_text().strip()).resolve(),
                 home.resolve(),
             )
+
+    def test_ensure_follows_sections_referenced_by_upstream_skill_md(self):
+        # gstack carves on-demand bodies into <skill>/sections/*.md and adds new
+        # ones between releases. A wrap that says "read the section the index
+        # names" is wrong the moment one is missing from .vendor/, so sections a
+        # fetched SKILL.md references are fetched too; one upstream forgot to
+        # publish is reported, not fatal.
+        with tempfile.TemporaryDirectory() as raw_home:
+            home = Path(raw_home)
+            mirror = home / "mirror"
+            _write_gstack_mirror(mirror)
+            (mirror / "ship" / "SKILL.md").write_text(
+                "---\nname: ship\ndescription: fixture. Use when testing.\n---\n"
+                "Read sections/changelog.md, then sections/apple-release.md, then\n"
+                "sections/not-published.md.\n"
+            )
+            (mirror / "ship" / "sections" / "apple-release.md").write_text("# apple\n")
+            bin_dir = _fake_npx(home)
+            result = invoke(
+                home, str(REFSYNC), "ensure",
+                "--target", "claude", "--profile", "claude-dev",
+                env_updates={
+                    "PATH": f"{bin_dir}:/usr/bin:/bin",
+                    "CONAN_AGENT_BROWSER": "1",
+                    "CONAN_AGENT_VENDOR": str(home / "vendor"),
+                    "CONAN_AGENT_RAW_MIRROR": str(mirror),
+                },
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            vendor = home / "vendor" / "gstack" / "ship" / "sections"
+            self.assertTrue((vendor / "changelog.md").is_file())
+            self.assertTrue((vendor / "apple-release.md").is_file(), "referenced section not fetched")
+            self.assertFalse((vendor / "not-published.md").exists())
+            self.assertIn("not-published.md: referenced upstream but not published", result.stdout)
 
     def test_loadout_skips_optional_third_parties_without_gstack(self):
         with tempfile.TemporaryDirectory() as raw_home:

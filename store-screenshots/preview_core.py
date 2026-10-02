@@ -5,7 +5,7 @@ captions + brand cards + optional voiceover). Used by gen_app_preview.py
 
 Voiceover backends via VO_BACKEND (unset = silent stereo track, still valid):
   say | kokoro | piper | openai | file   (see store-screenshots SKILL.md)
-Method: ~/.claude/skills/store-screenshots. Requires ffmpeg.
+Method: the store-screenshots skill (SKILL.md beside this file). Requires ffmpeg.
 """
 import json
 import math

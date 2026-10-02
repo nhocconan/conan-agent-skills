@@ -1,95 +1,94 @@
-# Skill audit — 2026-09-15
+# Skill audit — 2026-10-02
 
-Supersedes the 2026-09-08 audit. Scope: all 32 first-party skill entrypoints, the
-orchestration suite's supporting sections, and the validators. This is a source, fact,
-and behavior review. It is not a certification of universal performance, nor proof that
-any skill works against a live third-party service.
+Supersedes the 2026-09-15 audit. Scope: all 32 first-party skill entrypoints and the
+files they reference, the install/update tooling (`harness.py`, `refsync.py`,
+`loadouts/*`), and the validators. Six read-only reviewers covered the skills in parallel;
+the orchestrator verified the install path with isolated fixtures and made the edits.
+This is a source, fact and behavior review, not proof that any skill works against a live
+third-party service.
 
-## What changed structurally
+## Install and update path
 
-**Routing became harness-conditional.** The previous policy named one model as the global
-lead. That was wrong for an operator who runs the same library from three CLIs: it told a
-Claude or agy session to defer final approval to a model it could not reach. The lead slot
-now belongs to whichever provider's harness is running, leads are never substituted across
-harnesses, and a session that cannot reach its own lead reports final review as pending.
-Per-harness tables, model IDs, prices, retirement dates, effort parameters and subagent
-mechanics live only in [routing](agent-orchestration/sections/routing.md).
+Fixtures ran with `HOME=$(mktemp -d)`, `CONAN_AGENT_ENSURE=0`, never against a real
+home: fresh `apply --target all --profile core`, `verify`, a second `apply` (idempotent,
+no new backups), `auto` with and without a browser, every explicit profile on a fresh
+clone, `upgrade` on a copied checkout, dangling and stale links, pre-existing user files,
+a same-name collision, and an agy directory holding unlisted entries. 49 checks pass.
 
-Files asserting lead ownership fell from 10 to 7
-(`git grep -l "final quality" -- '*.md'`, excluding vendored copies); the survivors are the
-two routing-relevant frontmatter descriptions and five pointers, not five separate policies. `delegate-run` dropped from 76
-to 43 lines by deleting text that restated `agent-orchestration` rather than adding to it.
-`agent-orchestration` dropped `§` section numbering entirely; references now use filenames
-and heading text, which survive insertion.
+Two defects were found and fixed, each with a unittest:
 
-## Model facts, verified 2026-09-15
+| Defect | Fix |
+| --- | --- |
+| `harness.py apply --profile auto` (the documented workstation command) linked the skills and then crashed in the audit step looking for `loadouts/auto.txt`; exit 1 on every fresh install | the audit resolves `auto` per target the same way `refsync.py loadout` does |
+| A dangling link to a wanted skill (the checkout moved or an old clone was deleted) was treated as a collision and the whole apply was refused | a broken link protects nothing; it is repointed |
 
-Every ID, price, context limit and retirement date in the routing tables was read from the
-vendor's own model or deprecation page on this date, and the three claims that changed a
-decision were re-checked independently:
+Also fixed: `ref-skills/tests/test_prune_dead_hooks.py` was pytest-style and never ran
+under `unittest discover` (3 tests, now 11 in that suite); the suite is in the `AGENTS.md`
+validation list and CI. `agent-session-backup/scripts/backup.py --help` created a
+directory named `--help` and ran a backup into it. Two `.bak-*` files committed on
+2026-09-30 are removed and the pattern ignored.
 
-- **No generally available Gemini 3.x Pro reasoning model exists.** Gemini 3.1 Pro has
-  been in Preview since 2026-02-19. Every agy role therefore runs a Flash-family model,
-  with the lead and builder separated by `thinking_level` rather than by model tier.
-- **Claude Code's subagent model precedence changed at CLI 2.1.251** —
-  `CLAUDE_CODE_SUBAGENT_MODEL` no longer overrides the per-invocation parameter and
-  frontmatter. A configuration written against an older build routes differently than its
-  author intended.
-- **`spawn_agent` and `fork_turns` are not in OpenAI's published Codex CLI reference.**
-  They are attested in the issue tracker and in the installed binary's own tool text. The
-  skill now labels them observed behavior rather than documented API.
+## Wraps and upstream drift
 
-Concurrency and depth limits, resume primitives, and lane-enforcement keys were read from
-the installed Claude Code 2.1.272 and Codex CLI 0.154.0 binaries, not from memory. The
-previous claim that the concurrency ceiling "includes the lead slot" was false on both.
-The agy definition format comes from published documentation; the installed agy 1.2.3 was
-probed only for `agy models`, `agy --help` and one `--model` call during final review, and
-no subagent definition was run.
+gstack `main` is at 1.91.12.0 (read 2026-10-02). `ship`, `qa` and `qa-only` now carve
+their bodies into `sections/*.md` files that the wraps tell the agent to read, and
+`upstreams.ini` listed only two of them. `refsync.py ensure` now fetches every section a
+fetched `SKILL.md` references; one upstream references but has not published
+(`qa-only/sections/browser-setup.md`) is reported, not fatal. Four of five wrap
+fingerprints no longer match the vendored or the live upstream; `refsync.py upgrade`
+(an authorized update, not run here) re-fetches and asks for `--accept` per wrap.
+
+Every wrap now states that its `../.vendor/...` paths are relative to the skill's real
+directory in the checkout, and what to do when a vendored file is absent. `browsing-web`
+regained the Chrome-MCP ban its `REF.md` lists as a must-survive override.
 
 ## Corrections to shipped content
 
-| Skill | Defect | Correction |
+| Skill | Defect | Correction (source, 2026-10-02) |
 | --- | --- | --- |
-| secure-code-audit | OWASP Top 10 numbered against the 2021 list | Renumbered to Top 10:2025; added the two new categories (A03 Software Supply Chain Failures, A10 Mishandling of Exceptional Conditions); SSRF kept as a check under A01, into which OWASP rolled it |
-| appstore-review-guard | Blanket ban on external purchase links | Scoped to storefront: Guideline 3.1.1(a) does not prohibit them on the United States storefront, and entitlements cover specific others |
-| appstore-review-guard | Privacy policy scoped to apps with accounts or IAP | 5.1.1(i) requires it for every app, in App Store Connect metadata and within the app |
-| appstore-review-guard | No account-deletion coverage anywhere | Added 5.1.1(v): an app supporting account creation must offer deletion inside the app; a support email or web-only form does not satisfy it |
-| interactive-course-builder | "44px targets" filed under WCAG 2.2 AA | 24×24 is the 2.5.8 AA minimum; 44px is a house rule, now labelled as one |
-| secure-code-audit | `osv-scanner -r .` (v1 form) | v2 subcommand form; the docs do not say whether the bare form still parses, and the skill says so rather than guessing |
+| secure-code-audit | step 1 named no secret-scan command; `--config auto` sends metrics by default; LLM Top 10 unversioned | gitleaks `git`/`dir --redact`, trufflehog `--no-verification`; `--metrics=off`; OWASP Top 10 for LLM Applications 2025 ids (genai.owasp.org) |
+| a11y-audit | 3.3.8 described as "don't block paste"; large text "19px bold" | criterion text (no cognitive-function test without alternative); 18.66px bold |
+| web-perf-audit | Next.js `priority` prop | deprecated in Next.js 16 for `preload`; `fetchPriority="high"` (nextjs.org docs) |
+| appstore-review-guard | restore blockquote presented as guideline text; Play promo-video tolerances asserted | 3.1.1 quoted verbatim, rejection wording labelled; Play video requirements from answer/9866151, tolerances marked unverified |
+| store-screenshots | example forced Kokoro voiceover while docs say silent default; example rendered the 6.5" slot; TTS "~1¢" | silent default; 1320×2868 (6.9"); token pricing from the OpenAI model page, per-preview cost unverified |
+| mobile-app-playbook | `Uuid` "stable from Kotlin 2.4"; CMP "fatal-errors" stated as fact; keywords "100" without unit | `Uuid.random()` still Experimental in 2.4.0 (whatsnew24); claim marked unverified; 100 bytes |
+| autonomous-loops | section index promised harness content the file no longer has; hook exit-code 2 stated for all events | index row rewritten; blockable events named; `/loop` 7-day expiry and `CLAUDE_CODE_DISABLE_CRON` added (code.claude.com docs) |
+| routing.md | `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` precedence incomplete | FORCE-alone and both-set behavior from the sub-agents page; no model ID, price or date changed |
+| MANUAL.md | named one model per harness as "the lead" | the active parent session is the lead; model tables live only in routing.md |
+| README / MANUAL / ARCHITECTURE / BOOTSTRAP | "verified 2026-09-15" for routing; "TanStack Table v8"; "~74 skills"; impeccable "23 commands"; toolchain versions from 2026-07; model names in an index row | dates match routing.md; TanStack v9 current; count dropped; 24 commands (impeccable 4.1.0); versions re-read from release feeds; model names removed |
 
-Stale counts, uncitable statistics and machine-specific facts were removed or replaced with
-measured values carrying their measurement date. Private operator transcripts and dated
-project rejections were converted into the rules they illustrate; the rejection ledger keeps
-every lesson and drops the identifiers.
+Synthetic examples replaced product-specific residue in `metric-integrity`,
+`backtest-integrity` and `demo-data-craft`; an employer file name left `AUDIT.md`;
+`bug-class-audits` no longer competes with `investigating-bugs` on the same Vietnamese
+trigger; `delegate-run` dropped bullets that restated `agent-orchestration`.
 
-## Enforcement
+## Context budget
 
-Three rules that existed only as prose are now checked mechanically by
-`skill-miner/validate_skills.py`: section citations must resolve to a real heading, model
-IDs outside the routing policy must be justified, and house-style banned terms are reported.
-`context_budget.py` previously measured only `SKILL.md`, so growth moved into `sections/`
-was invisible; on-demand references are now budgeted too. CI gained the two test suites
-`AGENTS.md` requires but the workflow never ran.
+`anti-slop-review` grew on 2026-09-29 (formatting-slop, negative-parallelism and
+process-stamp rules; a 23 KB sign catalogue as on-demand reference) and failed the
+ratchet. The skeleton was trimmed and the ceilings raised deliberately (eager 4800,
+on-demand 24600). Twelve other skills grew by 20–350 bytes from the corrections above
+and their ceilings were raised to measurement + 5%; three shrank and were ratcheted down.
 
 ## Verification and limitations
 
-Structural validation covers frontmatter, reference resolution, cross-reference targets and
-context ceilings. It does not establish that a skill produces good output.
+Validators: `project_rules.py check`, `validate_skills.py` (32 skills, 0 errors,
+0 warnings), `context_budget.py --no-ratchet`, and the four unittest suites pass;
+`git diff --check` is clean. Facts carry the page they were read from and the date.
 
-Not done: no live store submission, no production deployment, no browser journey, no private
-history mining, no real-account restore. `osv-scanner`, `semgrep` and `opengrep` claims are
-documentation-verified, not executed. Apple and Google policy pages are living documents —
-re-check them at submission rather than trusting this date. Upstream installers still pin a
-moving branch (`ref = main`), so this is not a fully pinned supply chain; `refsync.py` still
-rewrites `version:` as the wrapper's own revision, and recording the upstream commit remains
-an open code change rather than a documentation fix.
-
-The CI additions pass on macOS and have not been observed on ubuntu-latest.
+Not done: no live store submission, deployment, browser journey, history mining or real
+restore. No installer ran; `.vendor/` was not refreshed and no wrap was `--accept`ed.
+Model IDs, prices and dates in routing.md were not re-verified (owner did so 2026-09-30).
+Open: Google's Antigravity docs list `~/.gemini/antigravity-cli/skills` as the CLI's
+global skills directory while the installed agy 1.2.14 binary and this repo use
+`~/.gemini/config/skills`; probe the CLI before changing the target. The Codex "2% of the
+context window" cap does not state its unit. OpenAI's Codex docs now 308-redirect to
+`learn.chatgpt.com`; routing.md keeps the original URLs until the redirect proves stable.
 
 ## Maintenance bar
 
-Keep a skill only when it changes a decision the base agent would otherwise get wrong, and
+Keep a skill only when it changes a decision the base agent would otherwise get wrong and
 has a distinct trigger boundary. Prefer updating an existing skill to adding a near-duplicate.
-On a model release, deprecation, rejected ID, or a retirement date within 90 days, re-verify
-against vendor pages and the active schema. Re-read harness concurrency, depth and resume
-mechanics after any CLI upgrade — they are build-specific and this audit dates them.
+Re-verify vendor facts on a release, deprecation, rejected ID or retirement within 90 days.
+Run `refsync.py upgrade` within an authorized update and review each wrap preview before
+`--accept`; a wrap pointing at a vanished upstream section is wrong, not stale.

@@ -8,7 +8,7 @@
 # Applies to every target. Add a line only when the upstream genuinely owns its
 # own multi-harness install — otherwise register the skill in a load-out.
 
-# Design engine: 23 commands + a deterministic detector binary, installed by
+# Design engine: 24 commands (impeccable 4.1.0) + a deterministic detector binary, installed by
 # `npx impeccable install --global`, which writes the per-harness trees itself —
 # for the harnesses named in upstreams.ini `providers`, agy (`antigravity`) included.
 impeccable

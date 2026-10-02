@@ -10,7 +10,8 @@ reviewed: 2026-09-23
 # Provenance
 
 Wraps gstack's `ship` (1125 lines on 2026-09-23, binary-backed).
-Upstream is **not** vendored — this skill points at it by path, so its bulk loads only
+Upstream markdown is fetched into `.vendor/gstack/` by `refsync.py ensure` (gitignored,
+files only, never a gstack install); the skill reads it by path, so its bulk loads only
 when the skill actually fires.
 
 ## Why this exists

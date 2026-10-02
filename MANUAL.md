@@ -36,7 +36,7 @@ On a **new** machine you need only:
 | --- | --- | --- |
 | `git` | clone the skills repo | `git --version` |
 | `python3` (3.9+) | every tool here is stdlib-only — no pip install, ever | `python3 --version` |
-| Claude Code | the thing that loads skills | `claude --version` |
+| at least one agent CLI (Claude Code, Codex, or agy) | the thing that loads skills | `claude --version` / `codex --version` / `agy --version` |
 
 That is the whole hard requirement. Optional, per what you actually do: `node`/`pnpm`
 (JS projects), `gh` (PRs), `rg` (fast search), `docker` (containerised stacks).
@@ -46,12 +46,12 @@ it installs and verifies itself.
 
 ---
 
-## 2. Four directories, four roles
+## 2. Directories and roles
 
 | Directory | What it is | Who owns it |
 | --- | --- | --- |
 | `~/.conan-agent-skills` | **Source of truth.** Your skills, in git, pushed to GitHub | You |
-| `~/.shared-ai-skills` | gstack + other installed suites — **not all of it is active** | gstack's installer |
+| `~/.shared-ai-skills` | leftover tree from an older gstack install — **not active**; wraps read `.vendor/gstack/` instead | gstack's old installer |
 | `~/.claude/skills` | **Claude, active.** Symlinks built from `loadout.txt` (`claude-dev`) | `refsync.py` |
 | `~/.agents/skills` | **Codex, active** (its documented user scope). Repo-owned links curated; unrelated suites preserved | `refsync.py` + other installers |
 | `~/.gemini/config/skills` | **Antigravity CLI (agy), active.** Its user-skill scope for global skills | `refsync.py` |
@@ -72,11 +72,11 @@ cố tình nhỏ. Skill không nằm trong load-out vẫn dùng được: bảo 
 `~/.conan-agent-skills/<tên>/SKILL.md` rồi làm theo. Load-out chỉ quản việc **tự động
 fire**, không quản việc có sẵn hay không.
 
-The point: **"installed" ≠ "active."** gstack installs ~74 skills; you run 50. Inactive
-skills are invisible to the model but their files stay on disk, and the wrappers still
-read them by path.
+The point: **"installed" ≠ "active."** gstack's installer would write its whole suite; you run 50 (49 in `loadout.txt` +
+`impeccable` from `keep.txt`). Inactive skills are invisible to the model; the wrappers
+read the fetched upstream markdown in `.vendor/gstack/` by path.
 
-For a production server, do not copy the 45-skill workstation set. Apply the self-contained
+For a production server, do not copy the 50-skill workstation set. Apply the self-contained
 `core` profile to both agents:
 
 ```bash
@@ -122,6 +122,7 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | `web-qa` | Test a running web app (reports by default; fixes only if you ask) |
 | `design-qa` | "Nhìn xấu / rớt hàng / chữ bị đè" — visual defects, both themes + 375px |
 | `resilient-data-harvest` | Scraping, backfills, system-to-system migration — và sync lần sau không được đè lên sửa tay |
+| `autonomous-loops` | "Treo lịch", "chạy mỗi đêm", cron, routine: loop phải có trigger, prompt file, gate, stop condition |
 | `dev-env-lifecycle` | Bật/tắt dev stack: `down` phải dọn HẾT, không để rác, hỏi trước khi xoá |
 | `remote-host-access` | "Mở port rồi mà vẫn không connect" — thang bậc từ DNS → firewall nào đang cầm trịch → bind address; + session agent bền trên server |
 | `reference-parity` | Làm lại cho giống một artifact có sẵn — liệt kê đủ tab/state/content trước, checklist parity là định nghĩa của "xong" |
@@ -145,8 +146,10 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | `coding-env-bootstrap` | Set up a new or production machine |
 | `agent-session-backup` | Back up / restore session history |
 
-The rest are third-party kept as-is: `context7` (live library docs — genuinely useful),
-`playwright-skill` (writing reusable test scripts), `graphify`, `spec`.
+The rest (17 entries in `loadout.txt`) are third-party kept as-is, among them `context7`
+(live library docs — genuinely useful), `playwright-skill` (writing reusable test
+scripts), `graphify`, `spec`. They exist only on machines where they were installed;
+a fresh clone skips them.
 
 **Design stack** (2026-09-05): việc *làm* và *sửa* UI thuộc về `impeccable` (upstream;
 `refsync.py upgrade` cài nó, load-out không đụng vì nằm trong `keep.txt`). Gu thẩm mỹ
@@ -166,14 +169,13 @@ reporting → report honestly, including what was skipped.
 This is deliberately **not** a skill. A skill has to be triggered, so it would stay silent
 exactly when you are chatting casually — which is when you said you most want it applied.
 
-**Model policy (2026-09-15):** lead slot thuộc về harness đang chạy — Claude harness thì
-Fable lead, Codex harness thì Astra lead, agy harness thì Gemini lead. Lead chịu trách
-nhiệm chất lượng cuối cùng; worker làm phần việc đã có tiêu chí và không bao giờ tự
-accept. Không thay lead giữa các harness: nếu không gọi được lead của harness hiện tại,
+**Model policy:** lead slot thuộc về harness đang chạy — session cha đang chạy chính là
+lead, bất kể model nào. Lead chịu trách nhiệm chất lượng cuối cùng; worker làm phần
+việc đã có tiêu chí và không bao giờ tự accept. Không thay lead giữa các harness: nếu không gọi được lead của harness hiện tại,
 báo final review là pending thay vì tự duyệt. Việc nhỏ hoặc tuần tự lead làm trực tiếp.
 Bảng model ID, giá, ngày retirement và harness mechanics chỉ nằm ở một chỗ:
 [routing](agent-orchestration/sections/routing.md).
-Kết quả rà soát 32 skills ngày 2026-09-15: [SKILL-AUDIT.md](SKILL-AUDIT.md).
+Kết quả rà soát 32 skills ngày 2026-10-02: [SKILL-AUDIT.md](SKILL-AUDIT.md).
 
 ---
 
@@ -193,7 +195,7 @@ load-out**. Default target is every agent; default profile is `auto`.
 
 On a production box, pin the headless set: `harness.py apply --target both --profile core`.
 
-> ⚠️ **Do not run `/gstack-upgrade` or gstack `./setup`.** They write ~74 skills into
+> **Do not run `/gstack-upgrade` or gstack `./setup`.** They write the whole gstack suite into
 > `~/.claude/skills`. This repo fetches only the markdown the wrappers need. If you
 > already ran one by hand: `python3 refsync.py loadout --apply`.
 
@@ -239,10 +241,10 @@ created because of that).
 
 | Problem | Fix |
 | --- | --- |
-| Load-out wrong / a skill vanished | `python3 refsync.py loadout --apply` |
-| Undo the whole load-out change | `rm -rf ~/.claude/skills && mv ~/.claude/skills.symlink-backup-2026-07-25 ~/.claude/skills` |
-| A wrapper's upstream file is missing | `python3 refsync.py ensure` — fetches into `.vendor/` |
-| Claude Code settings broken | `~/.claude/settings.json.bak-20260725` |
+| Load-out wrong / a skill vanished | `python3 ~/.conan-agent-skills/ref-skills/refsync.py loadout --apply` |
+| Undo the whole load-out change | `mv ~/.claude/skills ~/.claude/skills.pre-rollback && mv ~/.claude/skills.symlink-backup-2026-07-25 ~/.claude/skills` — reverts to the 2026-07-25 gstack-owned layout and drops everything since; prefer `loadout --apply` |
+| A wrapper's upstream file is missing | `python3 ~/.conan-agent-skills/ref-skills/refsync.py ensure` — fetches into `.vendor/` |
+| Claude Code settings broken | newest `~/.claude/settings.json.bak-<stamp>` written by `harness.py apply` (the 2026-07-25 backup still holds plaintext tokens, see §8) |
 | Codex broken | `~/.codex/config.toml.bak-20260725` |
 | A skill won't fire | Run `validate_skills.py` first |
 

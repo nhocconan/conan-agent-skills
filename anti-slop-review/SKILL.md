@@ -31,9 +31,8 @@ examples. Preserve legitimate definitions, technical terms, quotations, and the
 author's chosen style.
 
 Repeated em dashes, triads, intensifiers, and formulaic transitions are editing
-signals, not proof of AI authorship or automatic defects. Mechanical prose checks
-in `interactive-course-builder/scripts/validate_course.py` are house-style
-heuristics; interpret them in context and document intentional exceptions.
+signals, not proof of AI authorship or automatic defects; interpret them in context
+and document intentional exceptions.
 
 **Formatting slop.** Check layout, not only words. Signs that a draft is unedited
 model output: a line break after every sentence; bullets for reasoning that should
@@ -48,20 +47,15 @@ each item carries a fact or a term being defined.
 but Y", "it's not X, it's Y": state the positive claim once. Search for the pattern
 explicitly; readers name it as the first AI tell.
 
-**Signs age.** Em dashes, "delve", emoji headings and knowledge-cutoff disclaimers
-were strong tells in 2023-2025 and are fading in 2026 model output (Wikipedia "Signs
-of AI writing" marks em dash as a candidate historical indicator, Sept 2026). Their
-absence proves nothing; their presence is still an edit cue. Judge a text by
-information density first: can each sentence be pointed at a fact?
-
-**Vietnamese phrase lists** ("Trong bối cảnh…", "Hơn nữa", "Tóm lại", "nâng tầm",
-"toàn diện") rest on practitioner observation, not published research. Treat them as
-house style, label them "quan sát thực tế" in any document, and never present them
-as evidence of authorship.
+**Signs age.** Em dashes, "delve", emoji headings and cutoff disclaimers were strong
+tells in 2023-2025 and are fading in 2026 output; absence proves nothing, presence is
+an edit cue. Judge by information density first: can each sentence be pointed at a
+fact? Vietnamese phrase lists are practitioner observation, not research — house
+style, never evidence of authorship.
 
 **Process stamps (owner rule).** Reader copy carries no trace of the checking workflow: no "kiểm 28/09/2026" / "checked Sep 28, 2026" stamps, no "(quan sát thực tế)" or "(weak sign)" labels, no source lines that list everything consulted, no caveat repeated in every table row. Keep a date only when the date is the fact. Cite only the sources the reader can open that carry the claim.
 
-Sign catalogue with verbatim quotes, source status and which signs are fading: `references/sources.md` (Wikipedia "Signs of AI writing", Shaib et al. arXiv 2509.19163, Kommers et al. arXiv 2601.06060, em-dash and vocabulary studies, Vietnamese practitioner lists). Read it before teaching or auditing slop.
+Sign catalogue with verbatim quotes, source status, the Vietnamese phrase lists and which signs are fading: `references/sources.md`. Read it before teaching or auditing slop. Mechanical checks in `interactive-course-builder/scripts/validate_course.py` (if that skill is present) are house heuristics, not proof.
 
 For Vietnamese, proofread diacritics and natural phrasing. Use the audience's
 established technical vocabulary; do not impose one translation on every context.

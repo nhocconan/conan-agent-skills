@@ -1,6 +1,6 @@
 ---
 name: bug-class-audits
-description: Turn any recurring bug into a permanent, mechanically-enforced rule — fix the class, not the instance. When a bug greps to multiple call sites or the same shape of bug appears a second time, fix every site, append a numbered rule to the project's anti-pattern list, write an audit script, and wire it into pre-push/CI with a baseline that only shrinks. Use after fixing any bug that could recur, when the user says "this happened again" / "lại bị nữa", when a review keeps flagging the same pattern, or when setting up quality enforcement for a project.
+description: Turn any recurring bug into a permanent, mechanically-enforced rule — fix the class, not the instance. When a bug greps to multiple call sites or the same shape of bug appears a second time, fix every site, append a numbered rule to the project's anti-pattern list, write an audit script, and wire it into pre-push/CI with a baseline that only shrinks. Use after fixing any bug that could recur, when a bug already diagnosed and fixed once shows up again ("this happened again" / "lại bị nữa" — diagnosis itself belongs to `investigating-bugs`), when a review keeps flagging the same pattern, or when setting up quality enforcement for a project.
 ---
 
 # Bug-Class Audits
@@ -64,4 +64,4 @@ can't see it), and style preferences a formatter handles.
 
 After the loop: all sites fixed, the numbered rule appended, the audit script added and
 wired, the index table updated, and the audit shown green on the current tree. Report
-which of the four artifacts were produced and where.
+which of the artifacts (rule, audit script, gate wiring, index) were produced and where.

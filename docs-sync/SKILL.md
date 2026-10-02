@@ -12,7 +12,7 @@ Update the requested documents against current code and the reader's actual work
 - **USER-MANUAL** — written for the actual end user (often non-technical staff), screen-by-screen with real screenshots, no internal jargon — explain in plain words what the user does and sees. Write it in the users' language, not necessarily English.
 - **Decision log** (`docs/DECISIONS.md` or existing equivalent) — technology/stack/architecture decisions with date and rationale (e.g. SDK vs direct API call). Append, never rewrite history.
 - **Business-rule / formula reference** when the domain has non-obvious rules — cite the source of each rule so it can be re-verified.
-- Audit/review docs (security, performance): mark items ✅ as completed so work can resume after a context reset; mark superseded audits clearly; preserve required history and evidence.
+- Audit/review docs (security, performance): mark items `[x]` as completed so work can resume after a context reset; mark superseded audits clearly; preserve required history and evidence.
 
 ## Delivery format
 - Match the repository's documentation format and intended audience. Add styled HTML
@@ -40,4 +40,3 @@ Update the requested documents against current code and the reader's actual work
    each action lives. For served docs, verify the deployed version, links, TOC, scrolling
    and diagram layout at desktop and narrow widths; a Markdown render alone is insufficient.
 3. Run `anti-slop-review` on the result — docs are content too.
-4. Save shared rules in canonical AGENTS.md; keep platform adapters import-only.

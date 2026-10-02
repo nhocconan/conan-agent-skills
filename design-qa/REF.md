@@ -9,7 +9,7 @@ reviewed: 2026-09-23
 
 # Provenance
 
-Wraps gstack's `design-review` (1955 lines on 2026-09-23,
+Wraps gstack's `design-review` (1897 lines in the 2026-09-05 vendored copy; 1940 upstream on 2026-10-02,
 binary-backed). Not vendored — routed to by path.
 
 ## Why this exists

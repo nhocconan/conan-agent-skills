@@ -125,7 +125,7 @@ CALQUE_VI = {  # machine-translation calques: an EN term rendered literally
 # Em-dash density. Freeburg 2026 ("The Last Fingerprint", arXiv 2603.27006):
 # human control 3.23/1k words; published literary corpus 4.76–6.43/1k;
 # GPT-4.1 10.62/1k; Claude Opus 4.6 9.09/1k. House reference implementation
-# (reference-course.html, the approved course) measures 6.4/1k in
+# (an approved reference course) measures 6.4/1k in
 # lesson prose. Courses built by fan-out in 2026-07/08 measure 16–19/1k.
 # Signs age: Wikipedia "Signs of AI writing" (Sept 2026) marks the em dash as a
 # fading, candidate-historical indicator: ChatGPT output now sits below

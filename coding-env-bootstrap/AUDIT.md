@@ -18,8 +18,8 @@ The source machine now has two distinct runtime surfaces:
 
 | Surface | Source-machine state | Production decision |
 | --- | --- | --- |
-| Claude skills | 45 active under `~/.claude/skills` | Install the 17-skill `core` profile |
-| Codex skills | Plugin/system skills under `~/.codex/skills`; 12 independently installed user skills under `~/.agents/skills` | Link the same 17 `core` skills into `~/.agents/skills`; never edit plugin-managed `~/.codex/skills` |
+| Claude skills | 45 active under `~/.claude/skills` | Install the `core` profile (12 skills as of 2026-10-02) |
+| Codex skills | Plugin/system skills under `~/.codex/skills`; 12 independently installed user skills under `~/.agents/skills` | Link the same `core` skills into `~/.agents/skills`; never edit plugin-managed `~/.codex/skills` |
 | Claude commands/agents | Neither directory exists | Nothing to copy |
 | Codex custom prompts | Nine `speckit.*` prompts | Do not copy; custom prompts are deprecated, convert a used workflow into a skill |
 | Global guidance | Claude has a machine file; Codex `AGENTS.md` was empty | Install one vendor-neutral managed block into both |
@@ -61,7 +61,7 @@ defects → 93 skills, 2 errors** (both upstream-owned).
 - `spec-task-breakdownclear` — byte-identical copy of `interview-spec`; deleted.
 - 11 dead symlinks into `~/.agents/skills` (relative paths that break because
   `~/.claude/skills` is itself a symlink) — removed; sources remain in `~/.agents/skills`.
-- `brand-identity-note.md` — a loose `.md` sitting directly in the skills
+- a brand-identity note from an employer project — a loose `.md` sitting directly in the skills
   directory, never loadable; moved to `coding-env-bootstrap/local/` (gitignored).
 - `excalidraw-diagram-skill`, `frontend-responsive-ui` — `name` didn't match the
   directory (the latter used spaces and capitals, which the spec forbids); corrected.

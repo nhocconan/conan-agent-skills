@@ -3,7 +3,7 @@
 Scope: signs a staff member meets when AI drafts captions, emails, reports, slides. Grouped A Từ ngữ, B Mẫu câu, C Trình bày, D Nội dung. Each sign carries a source status:
 
 - **WP** = quoted verbatim from Wikipedia "Signs of AI writing" (live page, fetched 29/09/2026; quotes re-checked with grep -F and independently re-verified). Page carries `{{update|the most recent models|type=page|date=August 2026}}`, so treat all its signs as "observed 2023-2026, model mix changing".
-- **paper** = arXiv abstract or full text saved under `sources/` (only what was read is quoted).
+- **paper** = arXiv abstract or full text, read live on 29/09/2026 (only what was read is quoted).
 - **BVN** = Brands Vietnam Help Desk "Dấu hiệu nhận biết nội dung được viết bởi AI" (page shows "Cập nhật vào: 23/09/2025"). A Vietnamese trade article, not research.
 - **quan sát thực tế** = owner observation (29/09/2026) plus practitioner patterns. Not research. Every Vietnamese phrase list in this file has this status unless marked BVN.
 
@@ -12,6 +12,15 @@ Detectability: **script** = regex/heuristic catches it with few false positives;
 Baseline caveat (WP, Caveats): "Do not solely rely on [[artificial intelligence content detection]] tools ... these tools have non-trivial error rates." And: "Humans are notoriously bad at distinguishing human and LLM-generated text." A sign is a cue to edit, not proof of authorship.
 
 Definition used in the lesson. Kommers et al., "Why Slop Matters" (arXiv 2601.06060, abstract): prototypical slop shows "superficial competence (its veneer of quality is belied by a deeper lack of substance), asymmetry effort ... and mass producibility". Shaib et al., "Measuring AI 'Slop' in Text" (arXiv 2509.19163v2, Appendix): seven codes, of which the two the lesson leans on are "Density – Many words, little information; filler or fluff." and "Structure – Repetitive or templated sentence / formula pattern." The same paper finds "binary 'slop' judgments are (somewhat) subjective".
+
+## Contents
+
+- [A · Từ ngữ (words)](#a--từ-ngữ-words) — A1 rule of three … A4 copula avoidance
+- [B · Mẫu câu (sentence patterns)](#b--mẫu-câu-sentence-patterns) — B1 negative parallelism … B5 "-ing" tail
+- [C · Trình bày (formatting)](#c--trình-bày-formatting) — C1 one sentence per paragraph … C6 curly quotes
+- [D · Nội dung (content)](#d--nội-dung-content) — D1 no-fact sentence … D5 outline-like ending
+- [Which signs the sources say are fading](#which-signs-the-sources-say-are-fading-do-not-teach-as-certainties)
+- [Sources](#sources-fetched-29092026) · [Independent check](#independent-check-29092026-corrections-to-apply-when-teaching) · [E · Process traces](#e--dấu-vết-quy-trình-trong-bản-gửi-người-đọc-house-rule-owner-29092026)
 
 ---
 
@@ -24,7 +33,7 @@ Definition used in the lesson. Kommers et al., "Why Slop Matters" (arXiv 2601.06
 - Source: WP. Detect: script+human (three consecutive one-word sentences, or "X, Y và Z" adjective lists; humans use triads too).
 
 ### A2. Từ khoa trương / AI vocabulary and puffery
-- VI: "giải pháp toàn diện", "nâng tầm thương hiệu", "đóng vai trò then chốt", "hành trình", "bức tranh toàn cảnh" (quan sát thực tế; Finhay 2026 blog lists the same words, saved at `sources/finhay-chatgpt-van-mau.html`, not research). EN: "delve", "tapestry", "testament", "pivotal", "robust", "vibrant", "showcase", "underscore", "boasts".
+- VI: "giải pháp toàn diện", "nâng tầm thương hiệu", "đóng vai trò then chốt", "hành trình", "bức tranh toàn cảnh" (quan sát thực tế; a Finhay 2026 blog post lists the same words — trade writing, not research). EN: "delve", "tapestry", "testament", "pivotal", "robust", "vibrant", "showcase", "underscore", "boasts".
 - Why AI: WP, AI vocabulary: "Many studies have demonstrated that LLMs overuse specific words ... an edit (post-2022) introducing lots of them, lots of times, is one of the strongest tells for AI use." Word set drifts: "the word delve was famously overused by ChatGPT in 2023 and early 2024, but became less frequent later in 2024, then dropped off sharply in 2025." WP era list: mid-2025 on (GPT-5): "emphasizing, enhance, highlighting, showcasing". Kobak et al. (arXiv 2406.07016, abstract) measured "an abrupt increase in the frequency of certain style words" in 15 million PubMed abstracts. Promotional tone: WP, "LLMs have serious problems keeping a neutral tone" and "older LLMs (e.g., GPT-4) tend to output more blatantly positive text" [ref] "than newer LLMs, which are more subtly positive".
 - Fix: Before: "Giải pháp toàn diện giúp nâng tầm thương hiệu." After: "Gói gồm 3 việc: audit, 2 bài/tuần, báo cáo tháng."
 - Source: WP + paper (EN); quan sát thực tế (VI list). Detect: script (lexicon lists; the validator already has SLOP_HARD/SOFT).
@@ -47,7 +56,7 @@ Definition used in the lesson. Kommers et al., "Why Slop Matters" (arXiv 2601.06
 - VI: "Không chỉ là một chiếc bình, mà là tuyên ngôn phong cách." "Không phải X, mà là Y." EN: "Not just a bottle, but a style statement." "It isn't X, it's Y."
 - Why AI: WP, Negative parallelisms: "While it is common among human writers ... it is stereotypically an 'AI sign.'" and "It is common for LLMs to use parallel constructions involving 'not', 'but', or 'however' such as 'Not only ... but ...' or 'It is not just ..., it's ...'." Also WP "Not X, but Y": "It's not ..., it's ...". BVN: "các chatbot AI cũng thường xuyên sử dụng cấu trúc câu 'không chỉ… mà còn…', 'tưởng chừng… nhưng…'". Owner names "không chỉ là… mà là…" as the pattern staff recognise instantly (quan sát thực tế).
 - Fix: state the positive claim once. Before: "Không chỉ là chiếc bình, mà là tuyên ngôn phong cách." After: "Có 3 màu, khắc tên miễn phí."
-- Source: WP + BVN + quan sát thực tế. Detect: script (regex; the current validator regex misses "không chỉ là … mà là", see RULES-PROPOSAL).
+- Source: WP + BVN + quan sát thực tế. Detect: script (regex; a validator regex must also cover "không chỉ là … mà là").
 
 ### B2. Mở bài rập khuôn / stock opener (rhetorical question, "Trong bối cảnh…")
 - VI: "Bạn đã sẵn sàng cho một trải nghiệm mới?" "Trong bối cảnh ngành X đang phát triển không ngừng…" "Trong thế giới ngày nay…" EN: "Are you ready for…?" "In today's fast-paced world…"
@@ -101,7 +110,7 @@ Definition used in the lesson. Kommers et al., "Why Slop Matters" (arXiv 2601.06
 
 ### C5. Dấu gạch dài (—) / em dash
 - VI: "Bình giữ nhiệt — người bạn đồng hành mỗi ngày — cho mọi hành trình." EN: "An insulated bottle — your everyday companion — for every journey."
-- Why AI: WP: "LLM output uses them more often than nonprofessional human-written text of the same genre, and uses them in places where humans are more likely to use commas, parentheses, colons ... AI-generated em dashes are usually surrounded by spaces". **Now less common**: WP hatnote (September 2026): "If more recent examples of this AI sign can't be found, it should probably be moved to #Historical indicators, as it seems to be less common in current LLM output." and "A July 2026 study found that of contemporary models only Claude used em dashes more than professional writers, and ChatGPT used them less." Freeburg (abstract): "Em dash frequency and suppression resistance vary from 0.0 per 1,000 words (Llama) to 9.1 (GPT-4.1 under suppression)" and "even explicit em dash prohibition fails to eliminate the artifact in some models". BVN: "Nếu bạn thấy dấu gạch ngang này xuất hiện đến 2-3 lần trong một đoạn văn ngắn thì khả năng cao đó là nội dung AI." VnExpress 15/11/2025 reports OpenAI's update so ChatGPT follows a user instruction to avoid em dashes (`sources/vnexpress-chatgpt-em-dash.html`).
+- Why AI: WP: "LLM output uses them more often than nonprofessional human-written text of the same genre, and uses them in places where humans are more likely to use commas, parentheses, colons ... AI-generated em dashes are usually surrounded by spaces". **Now less common**: WP hatnote (September 2026): "If more recent examples of this AI sign can't be found, it should probably be moved to #Historical indicators, as it seems to be less common in current LLM output." and "A July 2026 study found that of contemporary models only Claude used em dashes more than professional writers, and ChatGPT used them less." Freeburg (abstract): "Em dash frequency and suppression resistance vary from 0.0 per 1,000 words (Llama) to 9.1 (GPT-4.1 under suppression)" and "even explicit em dash prohibition fails to eliminate the artifact in some models". BVN: "Nếu bạn thấy dấu gạch ngang này xuất hiện đến 2-3 lần trong một đoạn văn ngắn thì khả năng cao đó là nội dung AI." VnExpress 15/11/2025 reports OpenAI's update so ChatGPT follows a user instruction to avoid em dashes.
 - Fix: comma, colon, or a new sentence. Before: "Bình giữ nhiệt — người bạn đồng hành mỗi ngày." After: "Bình giữ nhiệt dùng mỗi ngày."
 - Source: WP + paper + BVN. Detect: script (count; spaced " — " is the AI-typical form). Keep in the lesson because Vietnamese typing rarely produces "—" at all, so any occurrence in VI staff copy is worth a look; label it "model mới dùng ít hơn".
 

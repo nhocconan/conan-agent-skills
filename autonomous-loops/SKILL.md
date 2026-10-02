@@ -2,21 +2,18 @@
 name: autonomous-loops
 description: >-
   Turns a recurring job into a pre-written loop that runs without anyone typing the
-  prompt — nightly data reconciliation, docs-drift checks, CI-failure summaries, weekly
-  top-ups, post-deploy checks, "keep this PR green", "iterate until the tests pass".
-  Defines what a real loop needs (trigger, prompt file in the repo, hard gate, stop
-  condition), the five-rung ladder from a hand-run skill to a repo-resident agentic
-  workflow, the brakes that keep an unattended agent from burning a night of tokens, and
-  the escalation law (run by hand first, read-only CI next, scheduled with brakes, write
-  access last and PR-only). Use when the user says "treo lịch", "chạy mỗi đêm", "tự chạy
+  prompt — nightly reconciliation, docs-drift checks, CI-failure summaries, post-deploy
+  checks, "keep this PR green", "iterate until the tests pass". Covers the four parts a
+  loop needs (trigger, prompt file, hard gate, stop condition), the ladder from hand-run
+  to repo-resident workflow, brakes, and the escalation law. Use when the user says "treo lịch", "chạy mỗi đêm", "tự chạy
   đi", "loop", "cron", "schedule", "routine", "automation", "babysit", "ralph", "keep
   going until", "đừng để tao phải gõ nữa", or asks which recurring job to automate first.
 ---
 
-# Autonomous loops — design the loop, stop typing the prompt
+# Autonomous loops
 
-"Stop prompting the agent. Design loops that prompt it for you." The idea is right; the
-failure mode is an agent running loose overnight. A loop is only a loop when it has all
+A pre-written loop replaces the human retyping the prompt; the failure mode is an agent
+running loose overnight. A loop is only a loop when it has all
 four parts — missing any one, it is either a habit or a runaway:
 
 | Part | What it is | Missing it looks like |
@@ -34,16 +31,15 @@ says the task succeeded. Every loop reports the gate's verdict, never the run's 
 | Rung | Trigger | Write access | What earns the next rung |
 | --- | --- | --- | --- |
 | 1 · Skill | a human invokes it | as the session allows | run by hand for ~a week, reading every output |
-| 2 · Hook | a session event (before/after a tool, on stop) — exit code 2 *blocks* the action; this rung enforces, it does not advise | none of its own | the hook has never blocked something it should have allowed |
+| 2 · Hook | a session event (before/after a tool, on stop) — on blockable events (PreToolUse, Stop, UserPromptSubmit) exit code 2 *blocks* the action; PostToolUse and notification events cannot block (hooks docs, 2026-10-02). This rung enforces, it does not advise | none of its own | the hook has never blocked something it should have allowed |
 | 3 · Headless CI | repo event (push, PR) or CI cron; local artifacts only | **none; posting comments needs write authority** | outputs were correct for N runs and cheap to check |
 | 4 · Scheduled | a clock outside the repo (routines, automations, `/loop`, cron on the box) | still read-only | brakes proven under a forced failure |
 | 5 · Agentic workflow | lives in the repo as code; agent runs read-only, a separate narrowly-scoped job holds the token | **proposes PRs, never merges** | — |
 
 **Escalation law:** hand → read-only CI → scheduled with brakes → write. Write access is
-the *last* rung, and even there the output is a PR for a human. "Agents don't merge
-code." Skipping a rung is how a loop ships a bad change at 3 a.m.
+the *last* rung, and even there the output is a PR for a human. Agents do not merge code. Skipping a rung is how a loop ships a bad change at 3 a.m.
 
-## Which job first — the ones three vendors independently listed
+## Which job first — the common first candidates
 
 Nightly issue triage · docs-vs-code drift · CI-failure summary · daily/weekly status
 report · post-deploy checks. What they share: **read-only or nearly, an output a human
@@ -67,7 +63,8 @@ it is a skill (rung 1) and nothing more.
 - **Machine limits** — a loop competes with the humans' dev server for the same RAM and
   the same DB; schedule it when they are off (see the project map).
 - **A kill switch** the operator can hit without reading the code: a file, a flag, a
-  cron line to comment out.
+  cron line to comment out. Claude Code's scheduler has one built in
+  (`CLAUDE_CODE_DISABLE_CRON=1`, scheduled-tasks docs 2026-10-02).
 
 ## The completion promise — for "keep going until" loops
 
@@ -81,7 +78,7 @@ timeout: it reports success that did not happen.
 
 | When | Read this section |
 |------|-------------------|
-| you are wiring the loop into a specific harness — Claude Code (`/loop`, wakeups, cron, routines, headless, hooks, GitHub Action, ralph), Codex automations, Cursor, GitHub agentic workflows | `sections/harness-mechanics.md` |
+| you are wiring the loop into a harness: discovering its current scheduling, hook and headless interfaces, setting limits, overlap lock and kill switch | `sections/harness-mechanics.md` |
 | you are writing the loop's spec file (trigger / prompt / gate / stop / brakes / owner) | `sections/loop-spec.md` |
 
 ## Related

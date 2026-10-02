@@ -31,7 +31,7 @@
   Decide 13+ vs Families BEFORE configuring ads, then make console declaration ⇔ code
   config ⇔ rating questionnaire all match. Mismatch = rejection loop.
 - **Restore Purchases (Apple 3.1.1):** any non-consumable needs a reachable Restore
-  button in EVERY entitlement state — missing it is an automatic reject.
+  button in EVERY entitlement state — missing it is a common reject (3.1.1 requires "a restore mechanism for any restorable in-app purchases").
 - **Ads in review:** test ads must be un-shippable (build-type-gated), but real ads
   must show for reviewers — use real units with mediation test devices only on your
   own hardware.

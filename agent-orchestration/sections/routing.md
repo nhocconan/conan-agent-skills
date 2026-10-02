@@ -154,7 +154,9 @@ changes, permission changes or starting another harness.
 **Claude Code.** Model resolution is invocation override → definition frontmatter
 → `CLAUDE_CODE_SUBAGENT_MODEL` → parent. `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`
 (2.1.257+) overrides those sources, with exceptions documented for forks and
-inherited skill subagents. Family aliases can retain the parent's exact version;
+inherited skill subagents; with FORCE alone, subagents run on the parent's model
+(built-in Explore keeps its documented model), and with both variables set,
+`CLAUDE_CODE_SUBAGENT_MODEL` wins (sub-agents docs, read 2026-10-02). Family aliases can retain the parent's exact version;
 allowlists can substitute another model. Use an available full ID for deliberate
 version selection and confirm the actual model in `/tasks`. Do not assume Explore
 or Plan runs on Haiku. Agent SDK definitions and tools may differ; inspect them.

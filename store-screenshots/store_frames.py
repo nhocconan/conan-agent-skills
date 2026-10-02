@@ -5,7 +5,7 @@ render_slides() turns raw app captures into framed marketing screenshots:
 brand-gradient background + rotated sticker headline + tilted device mockup.
 Configs live in gen_store_screenshots.py (Play, 1080x1920) and
 gen_appstore_screenshots.py (App Store, 1320x2868).
-Method: ~/.claude/skills/store-screenshots.
+Method: the store-screenshots skill (SKILL.md beside this file).
 """
 import os
 from PIL import Image, ImageDraw, ImageFilter, ImageFont

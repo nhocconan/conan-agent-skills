@@ -26,6 +26,19 @@ backup = load_script("agent_session_backup_backup", "backup.py")
 restore = load_script("agent_session_backup_restore", "restore.py")
 
 
+class BackupArgvTests(unittest.TestCase):
+    def test_flag_as_first_argument_prints_usage_and_writes_nothing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            with patch.object(backup, "HOME", str(home)), patch.object(
+                sys, "argv", ["backup.py", "--help"]
+            ), self.assertRaises(SystemExit) as stop:
+                backup.main()
+            self.assertEqual(stop.exception.code, 0)
+            self.assertEqual(sorted(p.name for p in home.iterdir()), [])
+            self.assertFalse(Path("--help").exists())
+
+
 class CoworkRoundTripTests(unittest.TestCase):
     def make_source_session(self, root: Path, cwd: Path) -> tuple[Path, Path]:
         space = root / "account" / "space"

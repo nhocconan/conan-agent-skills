@@ -46,6 +46,9 @@ invisible in the descriptions and is now the first decision this skill makes.
 
 ## Decision log
 
+Entries below predate `design-qa` (2026-07-25, later the same day); where they say
+design-review runs unwrapped, `design-qa` supersedes them.
+
 **2026-07-25 — `dogfood` dropped.** It is the same job as `qa-only` (functional QA,
 report-only) but runs on `agent-browser` (homebrew) instead of gstack `browse`. Two
 browser stacks is two things to debug, and the global rulebook already mandates browse.

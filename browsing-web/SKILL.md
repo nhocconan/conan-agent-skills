@@ -16,7 +16,9 @@ upstream files or binary are unavailable, use the active harness's documented br
 ## Standing rules
 
 1. **Use the user-selected browser and project-approved tools.** Prefer an available
-   purpose-built connector for data tasks; follow the active tool's instructions.
+   purpose-built connector for data tasks; follow the active tool's instructions. In this
+   setup never use the Chrome MCP (`mcp__claude-in-chrome__*`): use the selected browser,
+   gstack `browse` (Aside or `$B`) where installed, or the Playwright CLI loop.
 2. **The operator's browser is usually already open and logged in.** When they say so,
    proceed — do not stop to re-confirm or ask for credentials. Halting mid-run to ask for
    something already provided wastes their time and tokens. A stop to re-confirm a state
@@ -33,7 +35,8 @@ it selects. `READY` (macOS, Aside open) → **"Rules for driving a real browser"
 gstack's own headless browser"** and **"Translate the Aside scripts step by step"**, which
 maps every cookbook step onto a `$B` command — the normal path on Linux. Headless means no
 user cookies, so standing rule 2 does not apply there: an authenticated page needs a
-cookie import or `$B handoff "<why>"`.
+cookie import or `$B handoff "<why>"`. If the probe reports `NEEDS_SETUP`, do not run
+gstack's `./setup` (see README); take the headless-server path below.
 
 For any command or snapshot flag beyond that table, read
 `../.vendor/gstack/browse/sections/command-list.md` — the full generated reference, carved

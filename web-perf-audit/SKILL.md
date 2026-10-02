@@ -26,7 +26,7 @@ snapshot does not establish a field pass. See [Web Vitals](https://web.dev/artic
 ## Fix playbook (by metric)
 
 ### LCP too high
-- Identify the LCP element. If an image: serve modern formats (AVIF/WebP), correct dimensions, `priority`/`fetchpriority=high`, preload it; lazy-load everything below the fold.
+- Identify the LCP element. If an image: serve modern formats (AVIF/WebP), correct dimensions, `fetchpriority=high` (Next.js 16+: `<Image fetchPriority="high">`; its `priority` prop is deprecated in favor of `preload`, docs 2026-08-25), preload only when needed; lazy-load everything below the fold.
 - Cut render-blocking CSS/JS; inline critical CSS; defer non-critical scripts.
 - Slow TTFB → cache/CDN, move work server-side, stream HTML, avoid waterfalls of sequential data fetches.
 - Self-host or `preconnect` fonts; `font-display: swap`; subset fonts.

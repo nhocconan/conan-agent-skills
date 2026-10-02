@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Apple App Store marketing screenshots (1284x2778, 6.5" slot — accepted on
+"""Apple App Store marketing screenshots (1320x2868, 6.9" slot — the current default; 1284x2778 (6.5") is accepted on
 its own; App Store Connect does NOT auto-convert between iPhone slots) from
 appstore/screenshots/raw/ (iPhone simulator captures via
 -uiScreenshots -uiSeedHistory -uiTab N; the renderer reframes any raw size).
 
 Story order: pain -> control -> progress -> reliability -> privacy.
-Renderer: store_frames.py; method: ~/.claude/skills/store-screenshots.
+Renderer: store_frames.py; method: the store-screenshots skill (SKILL.md beside this file).
 """
 import os
 from store_frames import AMBER, CORAL, INK, INK_TOP, TEAL, TEAL_DEEP, render_slides
@@ -37,4 +37,4 @@ SLIDES = [
          bg=(AMBER, CORAL), tilt=-2.5),
 ]
 
-render_slides(SLIDES, RAW, OUT, 1284, 2778)
+render_slides(SLIDES, RAW, OUT, 1320, 2868)

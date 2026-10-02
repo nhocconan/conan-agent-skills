@@ -10,6 +10,10 @@ description: >-
 # Shipping changes
 
 Wraps gstack's `ship`; user instructions and repository controls take precedence.
+Paths below are relative to this skill's real directory in the repo checkout
+(`~/.conan-agent-skills` by default — resolve the symlink first). `refsync.py ensure`
+fetches the vendored upstream files; if one is absent, say so and apply the rules in
+this file instead of guessing upstream's content.
 Track commit, push and deploy authority separately: permission to deploy/test does not
 grant commit/push, and a commit request does not grant deployment. Continue authorized
 steps; report missing authority without re-asking for existing authority.
@@ -40,8 +44,10 @@ steps; report missing authority without re-asking for existing authority.
    **"Completeness Principle — Boil the Ocean"** sections — then read the on-demand
    section that index names for the step you are on — they live under
    `../.vendor/gstack/ship/sections/` (changelog wording in `changelog.md`,
-   PR body in `pr-body.md`) and since v1.71 no longer load with the skill body —
-   and follow it with the house rules above applied. `refsync.py ensure` fetches these.
+   PR body in `pr-body.md`, Apple release steps in `apple-release.md`) — `refsync.py ensure`
+   fetches every section the upstream index references — and follow it with the house
+   rules above applied. A section the index names but `.vendor/` lacks is reported, not
+   improvised.
 5. Verify the authorized outcome: inspect the local diff/status for a handoff; check
    commit identity after committing, remote revision after pushing, or deployed build
    and user journey after deployment. Preserve unrelated uncommitted work.

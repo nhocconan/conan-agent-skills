@@ -16,7 +16,7 @@ one codebase actually runs, and the recipe for producing a new map.
 
 | File | What it is | Load when |
 | --- | --- | --- |
-| [OPERATING-MANUAL.md](OPERATING-MANUAL.md) | How to think: 8 craft disciplines (procedure + real example + failure prevented) + the 5-question self-test. Project-agnostic. | Start of any hard/ambiguous task; before sending any conclusion. |
+| [OPERATING-MANUAL.md](OPERATING-MANUAL.md) | How to think: 8 craft disciplines (procedure + synthetic example + failure prevented) + the 5-question self-test. Project-agnostic. | Start of any hard/ambiguous task; before sending any conclusion. |
 | `projects/<slug>.md` | How one repo runs: bootstrap, dev loop, verify gates, ground truth, data lifecycle, trap table. See index below. | Any hands-on work in that repo. |
 | [DISTILL.md](DISTILL.md) | The recipe for producing a new `projects/<slug>.md` from a repo + its session memory. | Entering a repo with no map (or a stale one); "distill project này". |
 
@@ -24,7 +24,7 @@ one codebase actually runs, and the recipe for producing a new map.
 
 The index and the maps themselves live in `projects/` — **local-only,
 gitignored, never committed**: maps describe how real repos run (including
-employer-internal systems), so they must never reach the public skills repo.
+private systems), so they must never reach the public skills repo.
 Start at `projects/INDEX.md`. No map for the repo you're in? Run
 [DISTILL.md](DISTILL.md) — ideally on the strongest model available — then add
 the row in `projects/INDEX.md`.

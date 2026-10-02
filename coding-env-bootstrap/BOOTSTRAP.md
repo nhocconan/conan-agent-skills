@@ -55,21 +55,21 @@ that checkout. Do not reset it or overwrite local work.
 
 ## 1. [CORE] Toolchain
 
-Reference versions from the source machine (2026-07). Newer is fine; note any major
+Reference versions re-checked 2026-10-02 against each project's release feed. Newer is fine; note any major
 version you install that differs, and don't downgrade to match.
 
 | Tool | Source version | Tier | Notes |
 | --- | --- | --- | --- |
 | node | 24.x | CORE | agent CLIs and most projects |
-| npm | 11.x | CORE | ships with node |
-| pnpm | 11.x | CORE | primary package manager for the operator's repos |
+| npm | 11.x (bundled with node 24; 12.x standalone) | CORE | ships with node |
+| pnpm | 12.x (11.x fine) | CORE | primary package manager for the operator's repos; `corepack prepare pnpm@latest` installs 12 |
 | python3 | 3.14 | CORE | skill scripts assume `python3`, stdlib only |
-| uv | 0.9.x | CORE | python env/deps without polluting system python |
+| uv | 0.12.x | CORE | python env/deps without polluting system python |
 | git | 2.47+ | CORE | |
 | gh | 2.95+ | CORE | PR/issue flows |
 | ripgrep (`rg`) | 15.x | CORE | agents lean on this constantly |
 | jq | 1.7+ | CORE | |
-| ffmpeg | 8.x | DEV | media/video/preview pipelines only |
+| ffmpeg | 8.x–9.x | DEV | media/video/preview pipelines only |
 | docker | 29.x | CORE if the project stacks are containerized | |
 | fd | — | optional | not installed on source; `rg --files` covers it |
 
@@ -172,6 +172,7 @@ Load-outs are explicit and version-controlled:
 | `core` | Claude and/or Codex | Repo-owned, headless-safe skills only |
 | `claude-dev` | `~/.claude/skills` | Exact workstation Claude load-out, including installed third parties |
 | `codex-dev` | `~/.agents/skills` | Repo-owned Codex skills; external suites are preserved |
+| `agy-dev` | `~/.gemini/config/skills` | Repo-owned agy skills; unlisted entries are preserved |
 
 Do not edit a shared load-out to prune a server. Select `--profile core`.
 
@@ -321,9 +322,9 @@ Follow [the project-rule convention](PROJECT-RULES.md) for migration, scoped rul
 platform limits, and verification. Do not automatically overwrite existing rules.
 
 ```bash
-python3 coding-env-bootstrap/project_rules.py check --root /path/to/project
+python3 "$HOME/.conan-agent-skills/coding-env-bootstrap/project_rules.py" check --root /path/to/project
 # Within an authorized project setup, create missing adapters:
-python3 coding-env-bootstrap/project_rules.py apply --root /path/to/project
+python3 "$HOME/.conan-agent-skills/coding-env-bootstrap/project_rules.py" apply --root /path/to/project
 ```
 
 Keep startup rules concise; loading limits and hierarchy differ by platform.

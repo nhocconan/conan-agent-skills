@@ -8,16 +8,16 @@ description: Portable application-security audit using open-source tooling — O
 A repeatable, vendor-neutral security pass any repo can run locally. Four layers: **secrets**, **dependencies**, **static analysis (SAST)**, and a **manual OWASP review**. Prefer tools already installed; otherwise note the one-line install. Never exfiltrate code to a third-party service without the user's explicit OK — local execution does not imply zero network access. Inspect scanner telemetry, rule downloads, and credential-verification behavior. Keep secret values redacted.
 
 ## 1. Secret scanning (run first — leaked creds are the highest-severity, fastest win)
-- Working tree AND full history: a redacted gitleaks scan or TruffleHog with credential verification disabled (check installed flags).
+- Working tree AND full history: `gitleaks git --redact .` (history) and `gitleaks dir --redact .` (working tree), or `trufflehog git file://. --no-verification` (flags verified 2026-10-02 against each tool's README; `detect`/`protect` are deprecated since gitleaks 8.19).
 - Look for: API keys, tokens, JWTs, private keys, DB/LDAP passwords, cloud creds, `.env` committed by accident.
 - If a real secret is found in history: say plainly it must be **rotated** (history rewrite does not unleak it from clones/caches), then offer to scrub history. Add the path to `.gitignore` and commit a `.env.example` instead.
 
 ## 2. Dependency / CVE audit
-- JS/TS: `npm audit --omit=dev` / `pnpm audit`. Python: `pip-audit`. Go: `govulncheck ./...`. Multi-ecosystem: `osv-scanner scan -r .` (v2 form; v2's migration guide makes `osv-scanner <dir>` a shortcut for `osv-scanner scan source <dir>` and does not document whether the bare v1 `-r` form still parses — use the subcommand). Containers/images: `trivy fs .` or `trivy image <img>`.
+- JS/TS: `npm audit --omit=dev` / `pnpm audit`. Python: `pip-audit`. Go: `govulncheck ./...`. Multi-ecosystem: `osv-scanner scan -r .` (v2 subcommand form, verified 2026-10-02 at google.github.io/osv-scanner/usage). Containers/images: `trivy fs .` or `trivy image <img>`.
 - Triage by reachability and severity — a critical CVE in a transitive, unused path is lower priority than a high in your request path. Pin/upgrade; record anything intentionally deferred with the reason.
 
 ## 3. Static analysis (SAST)
-- General: `semgrep --config auto` (or `p/owasp-top-ten`, `p/secrets`, framework packs like `p/react`, `p/nextjs`, `p/django`). Semgrep's registry rules moved to the Semgrep Rules License v1.0 in December 2024 — not open source: internal use allowed, reuse in a competing product or SaaS is not. **`opengrep`** is a fork of Semgrep CE v1.100.0 under LGPL 2.1 (same rule syntax, SARIF out). Both claims read 2026-09-15 from [docs.semgrep.dev/faq/comparisons/opengrep](https://docs.semgrep.dev/faq/comparisons/opengrep); re-verify there before relying on either.
+- General: `semgrep --config auto --metrics=off` (`auto` pulls rules from the registry over the network and, by default, sends pseudonymous metrics; or `p/owasp-top-ten`, `p/secrets`, framework packs like `p/react`, `p/nextjs`, `p/django`). Semgrep's registry rules moved to the Semgrep Rules License v1.0 in December 2024 — not open source: internal use allowed, reuse in a competing product or SaaS is not. **`opengrep`** is a fork of Semgrep CE v1.100.0 under LGPL 2.1 (same rule syntax, SARIF out). Both claims read 2026-09-15 from [docs.semgrep.dev/faq/comparisons/opengrep](https://docs.semgrep.dev/faq/comparisons/opengrep); re-verify there before relying on either.
 - Language linters: `bandit -r .` (Python), `eslint` with `eslint-plugin-security` / `eslint-plugin-no-unsanitized` (JS), `gosec ./...` (Go).
 - Tune out false positives with inline ignores + a short justification; don't silence a whole rule globally without saying why.
 
@@ -30,7 +30,7 @@ Supply Chain Failures** and **A10 Mishandling of Exceptional Conditions**. SSRF 
 longer standalone — OWASP rolled it into A01; check it there.
 
 ## 5. LLM / AI features (chatbots, RAG, agents, AI dashboards — check explicitly)
-Classic SAST misses these; review manually wherever the app calls a model (OWASP LLM Top 10):
+Classic SAST misses these; review manually wherever the app calls a model (OWASP Top 10 for LLM Applications, 2025 edition: LLM01 Prompt Injection, LLM02 Sensitive Information Disclosure, LLM05 Improper Output Handling, LLM06 Excessive Agency, LLM07 System Prompt Leakage, LLM08 Vector and Embedding Weaknesses, LLM10 Unbounded Consumption):
 - **Prompt injection**: retrieved documents, user uploads, and third-party content fed to a model are DATA, not instructions — never let them override the system prompt's authority (delimit clearly, instruct the model to treat them as untrusted, strip/flag instruction-like content in RAG chunks).
 - **Tool-call authorization**: every tool an LLM can invoke re-checks authn/authz server-side with the END USER's identity — the model must not be able to reach rows/actions the user can't. No raw-SQL or shell tools without strict scoping/allow-listing. Treat tool args like any untrusted input.
 - **RAG tenancy**: retrieval queries are scoped by tenant/org id at the store level (filter in the vector/DB query, not post-hoc in the prompt); one tenant's documents must never surface in another's context.
