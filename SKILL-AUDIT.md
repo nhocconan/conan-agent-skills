@@ -79,9 +79,11 @@ Validators: `project_rules.py check`, `validate_skills.py` (32 skills, 0 errors,
 Not done: no live store submission, deployment, browser journey, history mining or real
 restore. No installer ran; `.vendor/` was not refreshed and no wrap was `--accept`ed.
 Model IDs, prices and dates in routing.md were not re-verified (owner did so 2026-09-30).
-Open: Google's Antigravity docs list `~/.gemini/antigravity-cli/skills` as the CLI's
-global skills directory while the installed agy 1.2.14 binary and this repo use
-`~/.gemini/config/skills`; probe the CLI before changing the target. The Codex "2% of the
+agy skills directory: Google's Antigravity docs list `~/.gemini/antigravity-cli/skills`
+as the CLI's global directory, but a 2026-10-02 probe of agy 1.2.14 (`agy -p` asked to
+list its skills) returned every entry of `~/.gemini/config/skills` plus built-ins and
+none of the entries present only in `antigravity-cli/skills`. The repo keeps
+`~/.gemini/config/skills`; the probe is model self-report, so re-probe on an agy upgrade. The Codex "2% of the
 context window" cap does not state its unit. OpenAI's Codex docs now 308-redirect to
 `learn.chatgpt.com`; routing.md keeps the original URLs until the redirect proves stable.
 

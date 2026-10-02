@@ -60,7 +60,7 @@ for tests.
   short-circuit at read time (list endpoints stamp healthy, ping short-circuits), gated on
   an env var that is unset everywhere except the demo box. Never fake state by writing
   future dates into data — read-time gates survive time passing.
-- **Shared external tokens: disable auto-sync** in demo/dev (`autoSync: false`) so the
+- **Shared external tokens: disable auto-sync** in demo/dev (turn the integration's sync flag off) so the
   demo worker can't throttle production APIs.
 - **Self-bootstrapping bring-up**: the canonical start is ONE command (`docker compose up
   -d` / one seed script) that is safe to re-run — first boot seeds, later boots skip.
