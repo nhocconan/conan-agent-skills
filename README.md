@@ -75,7 +75,7 @@ Five things can claim a UI task; they are layered deliberately so they do not co
 
 | Layer | Owner | Fires when |
 |---|---|---|
-| Build & refine | **impeccable** (upstream, `keep.txt`) | making or reshaping a UI: `shape`, `polish`, `critique`, `typeset`, `layout`, `animate`, `harden`, `adapt` — 24 commands (impeccable 4.1.0, 2026-10-02) + a deterministic detector binary |
+| Build & refine | **impeccable** (upstream, `keep.txt`) | making or reshaping a UI: `shape`, `polish`, `critique`, `typeset`, `layout`, `animate`, `harden`, `adapt` — 24 commands (impeccable 4.5.0, 2026-10-02) + a deterministic detector binary |
 | Taste & anti-default | `frontend-design` (official Anthropic plugin) | aesthetic direction, typography, avoiding the looks generated pages converge on |
 | Visual defect review | [`design-qa`](design-qa/SKILL.md) | a rendered page that works but looks wrong — wrapping, collisions, imbalance, cross-page inconsistency |
 | Correctness gates | [`a11y-audit`](a11y-audit/SKILL.md), [`web-perf-audit`](web-perf-audit/SKILL.md) | WCAG 2.2 AA; LCP/INP/CLS. Neither is negotiable by taste |

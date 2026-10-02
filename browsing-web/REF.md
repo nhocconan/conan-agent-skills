@@ -3,13 +3,13 @@ mode: wrap
 upstream: gstack
 source: github:garrytan/gstack@main:browse/SKILL.md
 version: 2.0.0
-fingerprint: sha256:851aab576c9c2bd38561117323add4458f72521f18939955f22c28b77e254c44
-reviewed: 2026-09-12
+fingerprint: sha256:6b3efbf1b38fab4349e5bbca7baec9a67b6d20bbc2f8c5b2b5a75bcfb6b9ebb3
+reviewed: 2026-10-02
 ---
 
 # Provenance
 
-Wraps gstack's `browse` (443 lines, binary-backed).
+Wraps gstack's `browse` (457 lines on 2026-10-02, binary-backed).
 Upstream markdown is fetched into `.vendor/gstack/` by `refsync.py ensure` (gitignored,
 files only, never a gstack install); the skill reads it by path, so its bulk loads only
 when the skill actually fires.
@@ -21,7 +21,7 @@ Binary-backed (compiled browse + daemon) so it can only ever be wrapped, never f
 ## Overrides that MUST survive an upgrade
 
 1. never the Chrome MCP (Claude in Chrome); on a host without a desktop the Playwright CLI loop in `sections/headless-server.md` is the default, and `browse` covers it where installed
-2. do not stop to re-confirm an already-open logged-in session
+2. do not stop to re-confirm an already-open logged-in session (upstream Rule 3's non-local mutation confirm still applies)
 3. never trigger a modal dialog
 4. bulk collection goes to resilient-data-harvest
 

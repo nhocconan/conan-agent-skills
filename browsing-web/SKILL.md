@@ -22,7 +22,9 @@ upstream files or binary are unavailable, use the active harness's documented br
 2. **The operator's browser is usually already open and logged in.** When they say so,
    proceed — do not stop to re-confirm or ask for credentials. Halting mid-run to ask for
    something already provided wastes their time and tokens. A stop to re-confirm a state
-   the operator has already declared is a defect, not caution.
+   the operator has already declared is a defect, not caution. This does not waive
+   upstream's gate: a mutating action on a non-local target still needs one
+   confirmation per run.
 3. **Session/profile matters.** If a task needs a specific browser profile, say so up
    front rather than failing ten minutes in.
 4. Handle dialogs through supported browser APIs. Do not inject unnecessary blocking dialogs.
