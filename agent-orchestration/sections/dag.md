@@ -1,11 +1,12 @@
 ## Cut into a DAG, not a to-do list
 
-**Cut along verification seams.** A good node has a pass/fail check that does not require
-any sibling node to exist yet. If two nodes can only be checked together, they are one node.
+**Cut along verification seams.** A good node has local acceptance and an explicit
+integration check at its dependent seam.
+Nodes may deliver independently checkable contracts before the complete journey exists.
 
 **The delegation test:** if you cannot write the acceptance check before the agent starts,
-you cannot delegate the task. Write the check first. If the check is "looks good to me",
-it is a judgment call — keep it.
+clarify its scope first. Judgment work can be delegated with criteria, raw evidence,
+and stated uncertainty; the lead retains acceptance.
 
 **Default cuts that work:** by package/layer (schema → API → UI), by screen, by connector,
 by review dimension (correctness / security / perf / tests), by file group, by data window.
@@ -21,8 +22,11 @@ runs turn sequential:
   or a safety precondition, keep the dependency; do not assume speculative rework
   is cheaper than waiting.
 
-**Waves.** A wave is every node whose dependencies are satisfied. Launch the whole wave at
-once. When a stage-2 node depends only on *its own* stage-1 node, do not wait for the whole
+**Waves.** A wave is every node whose dependencies are satisfied. Launch ready nodes
+within available slots; prioritize nodes on the critical path
+(the longest dependent chain), then independent coverage. Keep the lead useful rather
+than filling slots with speculative work. When a stage-2 node depends only on *its own*
+stage-1 node, do not wait for the whole
 stage — pipeline it (each item flows through all stages independently). A barrier is
 justified only when the next stage genuinely needs *all* prior results together: dedup
 across the full finding set, early-exit on zero, or a synthesis that compares siblings.
@@ -33,8 +37,9 @@ so each file has exactly one writer, (b) give each agent its own git worktree,
 (c) serialize those two nodes and parallelize something else. Parallelism whose outputs
 cannot be verified or merged separately buys nothing.
 
-**When not to parallelize:** the task is under ~20 minutes of work; the pieces share one
-file; the spec is still moving; or the token cost of N agents exceeds the value of the
-wall-clock saved. Say so out loud instead of fanning out for show.
+**When not to parallelize:** coordination and integration cost exceed the likely saving;
+the pieces share one file without isolation; or the spec is still moving. Duration alone
+does not decide: a short independent check can be worthwhile. Use observed timings and
+rework to improve the next partition; hypothetical solo speedups stay unknown.
 
 ---

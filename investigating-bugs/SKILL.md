@@ -14,9 +14,10 @@ this file instead of guessing upstream's content.
 
 ## The rule that matters most
 
-**A diagnosis you have not reproduced is a hypothesis.** Do not edit code to test a
-theory — that overwrites the evidence. Reproduce first, then explain the mechanism, then
-fix. If you cannot reproduce it, say so plainly and state what you would need to.
+**An unproven diagnosis is a hypothesis.** Preserve the original failure evidence.
+Use isolated tests, temporary instrumentation or a scratch worktree to distinguish
+competing causes; remove diagnostic changes before delivery. If reproduction is
+unavailable, continue safe probes and label the limits instead of declaring a fix.
 
 ## Before touching anything
 
@@ -43,11 +44,12 @@ Investigation"**, **"Phase 2: Pattern Analysis"** and **"Confusion Protocol"** s
 
 ## Fixing
 
-7. **Is it a class?** Grep for the same shape elsewhere. More than one hit — or the same
-   shape of bug appearing a second time — means fix every site and write the rule down.
-   Hand off to `bug-class-audits`.
-8. **Prove the fix against the reproduction from step 2**, then re-run the full gate. A
-   fix that only fixes the symptom you were shown is a fix that ships the bug.
+7. **Is it a class?** Search for the same shape and confirm the violated invariant
+   at each candidate. Fix confirmed sites within scope; report unrelated ones.
+   Hand off recurring classes to `bug-class-audits`.
+8. **Prove the fix against the reproduction from step 2**, then run the relevant
+   regression checks and required repository gate. Size optional checks with
+   `effective-development`; broaden for uncertain coverage or a new failure.
 
 ## Related
 

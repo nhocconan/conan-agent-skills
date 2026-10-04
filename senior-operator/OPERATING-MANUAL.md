@@ -61,7 +61,7 @@ You're strong. The gap between us isn't knowledge, it's the tail: the hardest te
 **Procedure.**
 1. Rank risk as **blast radius × silence**. Loud failures (typecheck errors, 500s) cost minutes. Silent failures — money math, timezones, tenancy, idempotency, merges — corrupt downstream data for weeks before anyone notices. Spend on silence.
 2. Risk concentrates at *boundaries*: timezone edges, tenant edges, currency/locale, CSV↔API merge seams, cutoff dates, pagination caps. Interior logic is what tests already cover; boundaries are where things ship broken.
-3. Spend effort inversely to tooling coverage. The compiler guarantees types — spend nothing there. Nothing guarantees "this sum equals the customer's own export" — spend most of your time there.
+3. Spend effort inversely to tooling coverage. A compiler checks only its modeled types; keep required typechecks. Nothing guarantees "this sum equals the customer's own export" — spend most of your time there.
 4. Ask: *what would a wrong-but-plausible output look like here?* If wrong would look plausible, that's where you verify hardest.
 5. Consult the repeat-offender list before deciding. A bug class that has already shipped several times (the ±1-day timezone boundary leak is a common one) will ship again. Base rates beat intuition.
 

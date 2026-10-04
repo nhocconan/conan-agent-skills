@@ -14,8 +14,10 @@ coherent, and only the lead sees the whole of it.
   names for one concept, an interface nobody ended up calling, a seam left dangling. Each
   agent's diff can be locally perfect and the union still incoherent — this pass is the
   only place that gets caught.
-- **Run the full gate once, on the merged tree, yourself.** Per-node green says nothing
-  about the union.
+- **Verify the final tree yourself.** Wait for its writers to finish, then run required
+  project gates and checks for affected behavior (`quality-gate.md`). Record the tested
+  revision plus working diff or artifact fingerprint. Later edits invalidate affected
+  evidence; rerun those checks before acceptance. Per-node green does not prove the union.
 - **Then report as one change**, not as N agent reports stapled together.
 
 ---

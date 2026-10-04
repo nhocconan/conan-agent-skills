@@ -5,8 +5,8 @@ example `.agents/<task>-plan.md`. If durable documentation was requested, use th
 requested path. Templates are in [TEMPLATES.md](../TEMPLATES.md).
 
 Record goal, dependencies, actual models/effort when exposed, owned files,
-acceptance checks, status, artifacts, and the lead's verdict. Unknown cost and
-hypothetical solo timing remain unknown.
+acceptance, status, artifacts, start/last meaningful progress, deadline, resource/process
+handles and the lead's verdict. Unknown cost and solo timing remain unknown.
 
 States: `pending → briefed → running → reviewing → done | failed | skipped | blocked`.
 Only the lead marks done after acceptance. Record partial results promptly.
@@ -35,6 +35,14 @@ remaining uncertainty, and next checks. Never invent an ETA, and never claim a l
 without a successful tool result.
 
 A helper crash calls for inspection and recovery, not automatic user escalation.
+On cancellation, or before reassignment or taking over files, stop the old writer and
+confirm it has stopped, including its child processes. A timeout or sent interrupt is
+not proof of termination. Preserve partial artifacts; isolate a replacement if the old
+writer cannot be stopped. Reconcile late returns against the current task before use.
+At a deadline or sustained lack of meaningful progress, inspect the last artifact and
+process state, then stop or replan; repeated status messages are not progress.
+Retry transient failures with bounded backoff within the run budget; diagnose deterministic
+failures before retrying. Check external state before replaying an uncertain write.
 End when complete or when required information/authority is unavailable after
 safe independent work is exhausted. Clearly name incomplete nodes and why.
 

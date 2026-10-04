@@ -105,6 +105,24 @@ class MiningTests(unittest.TestCase):
             self.assertEqual(len(turns), 1)
             self.assertEqual(turns[0]["line"], 1)
 
+    def test_claude_notification_provenance_preserves_identical_human_text(self):
+        with tempfile.TemporaryDirectory() as raw:
+            path = Path(raw) / "session.jsonl"
+            text = "Stop the background agent and inspect its partial result."
+            records = [
+                {"type": "user", "origin": {"kind": origin},
+                 "message": {"content": text}}
+                for origin in ("task-notification", "human")
+            ]
+            # Older stores do not always carry origin metadata.
+            records.append({"type": "user", "message": {"content": "check again"}})
+            path.write_text("\n".join(json.dumps(r) for r in records) + "\n")
+            errors = Counter()
+            turns = list(miner.read_claude_jsonl(path, "", errors))
+            self.assertEqual([t["line"] for t in turns], [2, 3])
+            self.assertEqual([t["text"] for t in turns], [text, "check again"])
+            self.assertFalse(errors)
+
     def test_private_output_and_failed_scan_cannot_advance_watermark(self):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)

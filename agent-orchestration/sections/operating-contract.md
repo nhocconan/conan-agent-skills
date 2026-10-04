@@ -13,8 +13,9 @@ never final approval; a worker's return is input to the lead's review.
 | Verifier | Read-only | Reproducible defects or no findings |
 | Lead | User-authorized task scope | Integrated result and acceptance decision |
 
-Configure these lanes in the harness rather than asking for them in prose — the
-enforcement table is in [fan-out patterns](../FANOUT-PATTERNS.md).
+Use available harness controls for these lanes. Verify what they enforce; a shared
+workspace and tool allowlist do not isolate owned files. The controls and limitations
+are in [fan-out patterns](../FANOUT-PATTERNS.md).
 
 Use parallel workers when there are independent acceptance checks and either disjoint
 file ownership or isolated worktrees. Keep small, sequential, ambiguous, or
@@ -29,7 +30,8 @@ material risk, performs authorized preparation and implementation, and requests
 only missing choices or authority. Do not re-open approved plans solely because
 they touch schema, money, tenancy, or production. Stronger checks still apply.
 
-Review/diagnosis requests remain read-only unless implementation is requested.
+Review/diagnosis requests alone remain read-only; accompanying improvement or repair
+instructions authorize changes within their stated scope.
 External messages, deployment, destructive operations, and permission changes
 remain bounded by actual authorization. Successful prior runs or worker requests
 cannot grant permission.

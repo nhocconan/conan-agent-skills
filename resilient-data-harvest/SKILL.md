@@ -5,9 +5,7 @@ description: Build data-collection runs that survive contact with reality — br
 
 # Resilient Data Harvest
 
-A harvest is not code that runs once. It is code that runs again next week, against a
-source that changed, over a connection that will drop. Each rule below is written for the
-failure it prevents; the failure, not an anecdote, is the justification.
+Make collection resumable across crashes, source changes and interrupted connections.
 
 ## 1. Checkpoint per item — never per run
 
@@ -27,12 +25,14 @@ Use authorized sources and respect published access terms and rate limits. Prefe
 - **Pace deliberately** and state the pacing in the run log so it can be checked. If the
   plan says 4–8s per page, the log must show 4–8s per page — a claimed pace that the
   timestamps contradict is the bug.
-- **Serialize.** Do not fan out concurrent requests at one source to "go faster". One
-  worker, steady rhythm. Concurrent bursts at one source are the fastest route to a block.
+- **Serialize browser collection and sources with unknown limits.** For supported APIs
+  with documented concurrency limits, use bounded workers under one shared rate budget,
+  independent unit ownership and atomic checkpoints. Reduce concurrency on warnings.
 - Honor `Retry-After`; jitter retries to avoid synchronized retry bursts, not to evade detection.
 - **Back off on the first warning sign** (429, a challenge page, a sudden empty result),
   don't push through it.
-- Slow is the point. There is no deadline that beats losing the account.
+- Optimize within the source limits; throughput is useful only while access and data
+  quality remain intact.
 
 ## 3. Use the real session
 

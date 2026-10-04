@@ -1,18 +1,12 @@
 # Templates — briefs, ledgers, verifier prompts
 
-Copy-paste shapes for `SKILL.md`. Fill every field; a blank field in a brief becomes an
-invented assumption in the executor.
+Adapt these synthetic examples to the project.
 
 ## Contents
 
-1. Handoff brief (implementation node)
-2. Structured return schema
-3. Verifier prompt (independent, evidence-based)
-4. Plan file
-5. Fleet ledger
-6. Final report shape
-
----
+[Brief](#1-handoff-brief-implementation-node) · [Returns](#2-structured-return-schema) ·
+[Verifier](#3-verifier-prompt-independent-evidence-based) · [Plan](#4-plan-file) ·
+[Ledger](#5-fleet-ledger) · [Report](#6-final-report-shape)
 
 ## 1. Handoff brief (implementation node)
 
@@ -23,7 +17,7 @@ GOAL (one sentence, outcome not activity)
 
 CONTEXT THE EXECUTOR CANNOT INFER
   Working dir: /abs/path/to/repo   Branch: wip/<topic>   Start: ./scripts/start-dev.sh
-  Ground truth for this number: <file/table/oracle>, not the code.
+  Ground truth: <file/table/oracle>.
 
 FILES IN SCOPE (absolute paths — everything else is off-limits)
   /abs/path/src/a.ts
@@ -36,17 +30,15 @@ ACCEPTANCE CHECKS (exact commands + what green looks like)
      → EXIT=0 and the new assertion for <metric> appears in the output
   Never pipe a gate through tail/head/grep — the exit code becomes the pipe's.
 
-KNOWN TRAPS HERE                        (cite the PROJECT's own rule numbers here)
-  project rule 41: UTC day-edge leak on month filters
-  project rule 35: no fabricated multipliers
-  <past incident in this area, one line>
+KNOWN TRAPS HERE
+  <applicable project invariants + evidence>
 
 BOUNDARIES
-  Implement, do NOT commit. Do not touch migrations. Do not create new docs or scratch
-  files outside <scratch dir>. Do not widen scope to adjacent files.
+  Edit owned files only; no commits, migrations or external writes.
+  Scratch artifacts: <ignored directory>.
 
-RETURN (exactly this, nothing else — the builder contract in sections/worker-modes.md)
-  - files changed + one line each on what changed and why
+RETURN (builder contract in sections/worker-modes.md)
+  - changed files and reasons
   - the two command outputs above, verbatim tail (EXIT line included)
   - anything you could NOT verify, and why
   - assumptions you had to make
@@ -55,9 +47,6 @@ RETURN (exactly this, nothing else — the builder contract in sections/worker-m
 ---
 
 ## 2. Structured return schema
-
-Use whenever the result feeds a merge or a gate — smaller than prose and mergeable
-without re-reading.
 
 ```json
 {
@@ -90,8 +79,7 @@ Finding-shaped work (reviews, audits, sweeps):
 
 ## 3. Verifier prompt (independent, evidence-based)
 
-Fresh context. Give it the location and the rules — **never the previous agent's verdict**,
-or it will confirm it.
+Use fresh context, criteria and raw artifacts without the builder's verdict.
 
 ```
 Read the code at <path>:<line>. Assess independently: is there a <category> defect here?
@@ -107,14 +95,11 @@ Return:
 A plausible mechanism is a concern until supported by evidence.
 ```
 
-The lead evaluates the evidence before accepting a finding or authorizing a repair.
-Model agreement and confidence scores do not replace a reproducible mechanism.
-
 ---
 
 ## 4. Plan file
 
-`.agents/<task>-plan.md` — written before wave 1, updated the moment a node lands.
+`.agents/<task>-plan.md`: update on each landing.
 
 ```markdown
 # <Topic> — plan (<yyyy-mm-dd>)
@@ -123,7 +108,7 @@ GOAL: <one sentence>
 DONE WHEN: <the acceptance check for the whole run>
 OUT OF SCOPE: <explicitly>
 
-## Seam contracts (decided by the lead, before fan-out)
+## Seam contracts (before fan-out)
 - types/interfaces: …
 - route + i18n key names: …
 
@@ -139,7 +124,8 @@ Lead, wave 1: <the tricky 10%>
 - [ ] N3 …
 
 ## Resume
-Next session: read this file, continue at the first unchecked box. No re-derivation needed.
+Next session: reconcile this file with the current diff, workers and latest user
+steering; continue ready nodes after checking their dependencies.
 
 ## Caps and gaps (never silent)
 - N3 research capped at 8 sources; the rest unread.
@@ -149,11 +135,10 @@ Next session: read this file, continue at the first unchecked box. No re-derivat
 
 ## 5. Fleet ledger
 
-Lives in the plan file or beside it. One row per node, updated on landing.
+One row per node in the plan or adjacent ledger.
 
 ```markdown
-Record the actual model ID the harness returned; the tiers come from
-`sections/routing.md`, which is the only place model IDs are maintained.
+Record actual models; tiers: `sections/routing.md`.
 
 | Node | Tier/effort | Status | Acceptance check | Artifact | Verdict | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -163,9 +148,7 @@ Record the actual model ID the harness returned; the tiers come from
 | N6 UI | builder/high | running | browser check | — | — | lead reviewing N4 meanwhile |
 ```
 
-`Verdict` is the lead's, after re-running the check — not the agent's self-report.
-
-Record observed metrics where available; unknown values stay unknown: `wall-clock vs solo: … · tokens: … · defects caught by verification: … · operator
+Observed metrics (unknown stays unknown): `wall-clock vs solo: … · tokens: … · defects caught by verification: … · operator
 interventions: …`.
 `rework 2/2` means two failures have occurred: escalate or re-plan now
 (`sections/quality-gate.md`, "Bounded review and repair").
@@ -174,12 +157,9 @@ interventions: …`.
 
 ## 6. Final report shape
 
-One change, not N agent reports stapled together (`sections/integrate.md`).
-
 ```markdown
 <Answer first: what is now true, in one or two sentences.>
 
-What landed: <the merged change, by area>
 Verified: <the checks the LEAD ran, with their artifacts>
 Not verified / assumed: <explicitly, in the same breath as the success>
 Coverage limits: <unverified concerns, capped scope, skipped lenses>

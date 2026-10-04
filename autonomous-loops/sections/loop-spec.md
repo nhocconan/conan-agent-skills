@@ -1,26 +1,38 @@
-## Loop spec — the file that makes it a loop
+## Loop spec
 
-One file per loop, in the repo, beside the skill it invokes (`docs/loops/<name>.md` or
-the skill's own directory). Reviewed like code; a change to it is a PR.
+Keep a reviewed project spec with the installed command/configuration and version.
+Use real project checks; this example is synthetic:
 
 ```markdown
-# loop: nightly-data-recon
-
-RUNG: 3 (headless, read-only)            # current rung; bump only per the escalation law
-TRIGGER: launchd 02:30 local, Mon–Sat     # or: push to main / PR opened / /loop 4h / routine <id>
-PROMPT: skills/nightly-data-recon/SKILL.md   # frozen in repo; the loop runs THIS, not chat
-GATE:   pnpm run verify:data > recon.log 2>&1; echo "EXIT=$?"
-        pnpm run verify:rls  > rls.log   2>&1; echo "EXIT=$?"
-        green = both EXIT=0 AND recon.log contains "reconciled" — NOT "the run finished"
-OUTPUT: docs/loops/reports/nightly-data-recon-<date>.md (one page; first line = verdict)
-STOP:   max 1 iteration · 20 min wall-clock · no writes to product code
-BRAKES: skip if .dev-server.pid exists (humans are on the box) · skip if last report < 20h old
-WRITE:  none  (rung 5 would be: open a PR; never merge)
-OWNER:  <operator> — reads the report each morning; three ignored reports = demote or delete
-HISTORY:
-  - 2026-08-28 rung 1, run by hand ×7, all outputs read
+NAME: nightly-data-recon
+TRIGGER: 02:30 UTC, Mon–Sat; identity: <scheduler account>
+PROMPT: skills/nightly-data-recon/SKILL.md
+GATE: ./scripts/check-nightly-recon.sh; nonzero on failure
+INPUT: revision + working diff + external data snapshot/window
+OUTPUT: .agents/loops/nightly-data-recon-<run-id>.md; first line = gate verdict
+STOP: max 1 iteration, 20 min; no product edits
+BRAKES: atomic resource lock; skip completed-success input keys only
+RETRY: transient failure only within STOP; reconcile partial effects before replay
+WRITE: local report only
+OWNER: <operator>; reviews results
+EVIDENCE: representative pilot runs + forced failure outcomes
+REMOVE: <exact disable/remove command>; STOP RUNNING: <cancellation command>
 ```
 
-The `HISTORY` block is the escalation evidence: a loop with no history has not earned
-its rung. When a loop is demoted or deleted, say why in the last history line — the next
-person will otherwise re-create it.
+The gate must propagate failure. A repository script can preserve both statuses:
+
+```bash
+#!/usr/bin/env bash
+pnpm run verify:data > recon.log 2>&1
+recon_status=$?
+pnpm run verify:rls > rls.log 2>&1
+rls_status=$?
+if [ "$recon_status" -ne 0 ] || [ "$rls_status" -ne 0 ]; then
+  exit 1
+fi
+rg -q 'reconciled' recon.log || exit 1
+```
+
+Choose a marker proving the required assertion ran. Bind evidence to INPUT; changed
+inputs require fresh checks. Record environment, logs and demotion/removal reasons.
+A drafted spec is not an installed scheduler.

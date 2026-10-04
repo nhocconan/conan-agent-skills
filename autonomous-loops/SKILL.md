@@ -12,9 +12,7 @@ description: >-
 
 # Autonomous loops
 
-A pre-written loop replaces the human retyping the prompt; the failure mode is an agent
-running loose overnight. A loop is only a loop when it has all
-four parts — missing any one, it is either a habit or a runaway:
+A recurring loop needs four parts to run reliably:
 
 | Part | What it is | Missing it looks like |
 | --- | --- | --- |
@@ -30,14 +28,16 @@ says the task succeeded. Every loop reports the gate's verdict, never the run's 
 
 | Rung | Trigger | Write access | What earns the next rung |
 | --- | --- | --- | --- |
-| 1 · Skill | a human invokes it | as the session allows | run by hand for ~a week, reading every output |
+| 1 · Skill | a human invokes it | as the session allows | representative runs reviewed; gate catches forced failure |
 | 2 · Hook | a session event (before/after a tool, on stop) — on blockable events (PreToolUse, Stop, UserPromptSubmit) exit code 2 *blocks* the action; PostToolUse and notification events cannot block (hooks docs, 2026-10-02). This rung enforces, it does not advise | none of its own | the hook has never blocked something it should have allowed |
 | 3 · Headless CI | repo event (push, PR) or CI cron; local artifacts only | **none; posting comments needs write authority** | outputs were correct for N runs and cheap to check |
 | 4 · Scheduled | a clock outside the repo (routines, automations, `/loop`, cron on the box) | still read-only | brakes proven under a forced failure |
-| 5 · Agentic workflow | lives in the repo as code; agent runs read-only, a separate narrowly-scoped job holds the token | **proposes PRs, never merges** | — |
+| 5 · Agentic workflow | lives in the repo as code; agent runs read-only, a separate narrowly-scoped job holds the token | **proposes PRs by default; bounded authorized writes** | — |
 
 **Escalation law:** hand → read-only CI → scheduled with brakes → write. Write access is
-the *last* rung, and even there the output is a PR for a human. Agents do not merge code. Skipping a rung is how a loop ships a bad change at 3 a.m.
+the *last* rung. Default to proposals for review; merging or deploying requires explicit
+authority for this recurring job and its required gates. Existing authority persists;
+this ladder does not require reapproval of authorized work.
 
 ## Which job first — the common first candidates
 
@@ -47,8 +47,8 @@ can verify in two minutes, and it can run at night.** Pick the candidate whose g
 already the strongest thing in the repo (a reconciliation script, an RLS assertion, a
 verify command) — the loop inherits its trustworthiness from the gate, not from the prompt.
 
-A loop is worth writing when the job has been done by hand **three times**. Before that,
-it is a skill (rung 1) and nothing more.
+Start new jobs with a read-only pilot and isolated failure checks; a fixed run count
+does not prove readiness. Automate deterministic checks in code before agent turns.
 
 ## Brakes — the minimum set, no exceptions for "it's read-only"
 
@@ -58,8 +58,9 @@ it is a skill (rung 1) and nothing more.
   authorized terminal condition or budget.
 - **Budget** — tokens or wall-clock, whichever the harness can enforce; the loop reads
   it and stops early rather than being killed mid-write.
-- **Single writer** — one loop per repo per window; two loops touching one tree is a
-  race nobody scheduled.
+- **Overlap lock** — acquire an atomic lock for the shared tree or external resource
+  before a write. A check-then-create PID file races. Independent read-only runs may
+  overlap; write retries need an input/revision key and reconciliation of partial effects.
 - **Machine limits** — a loop competes with the humans' dev server for the same RAM and
   the same DB; schedule it when they are off (see the project map).
 - **A kill switch** the operator can hit without reading the code: a file, a flag, a

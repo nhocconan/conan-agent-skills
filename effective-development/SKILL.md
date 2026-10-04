@@ -1,25 +1,16 @@
 ---
 name: effective-development
 description: >-
-  Size verification to the change instead of running the whole gate for every edit:
-  per edit, the typecheck and tests the diff reaches; before a merge, the affected set
-  plus the user journeys the touched routes serve; the full suite only at the deploy
-  gate and on a schedule. Use when a project runs full CI/E2E for small changes, when
-  deciding which tests a diff needs, when a full run fails on a change the selected run
-  passed, or when the user says "run only affected tests", "speed up the dev loop",
-  "đừng chạy full test", "test cái liên quan thôi". Green selected tests are a proxy,
-  not proof; the skill says what still has to be checked.
+  Select verification for a development change while preserving required repository
+  gates. Use when speeding up test loops, choosing affected tests, investigating
+  selection misses, or designing test impact analysis. Track gaps alongside runtime.
 ---
 
 # Effective development
 
-A full gate on every edit buys little: at Google and Meta almost every test passes on
-almost every change, and the tests that do fail sit close to the changed code. Running
-the whole suite per change spends minutes to hours of wall clock (and a shared host's
-CPU) to re-learn that. Industrial practice runs the *affected* set per change and the
-full set later and less often (test impact analysis, predictive test selection, the test
-pyramid). The risk this trades for is a **selection miss**; the skill's second half is
-how to keep that risk visible instead of letting the agent optimise the proxy.
+Use affected tests for fast feedback when selection covers the changed behavior.
+Required repository gates, hooks and branch protections still run at their declared
+stage. Selection can miss dependencies; measure misses alongside runtime.
 
 ## Tiers
 
@@ -30,6 +21,7 @@ how to keep that risk visible instead of letting the agent optimise the proxy.
 | T2 deploy gate | each deploy batch | the project's full gate (typecheck, lint, audits, all unit, build) + full E2E on a fresh DB + an independent reviewer pass over the combined diff | the long run, once per batch |
 | T3 schedule | nightly, or CI on every push off the dev host | full suite; it exists to catch what T0/T1 selection missed | free of the agent's wall clock |
 
+The tiers are a starting design, not permission to replace existing gates.
 One command per project implements T0/T1 (`check:affected`-style), with a pure
 selection function and a test that asserts every mapped spec and widening target
 exists. The agent never hand-picks tests when such a command exists.
@@ -50,8 +42,14 @@ exists. The agent never hand-picks tests when such a command exists.
    fixtures or copy catalogs widens to a named set (all contract tests, all DB suites,
    the auth/isolation journeys, the mock evals, the copy audits). Encode the set in the
    command so the widening does not depend on who runs it.
-5. **State what did not run.** The report lists the tier, every command with its exit
-   code and counts, and the explicit line "not run: full gate, full E2E (deploy gate)".
+5. **Widen on uncertain coverage.** Include deletions, renames and untracked files;
+   use the integration merge base for branch work. Unknown paths, dynamic consumers,
+   a stale map or an unexpectedly empty selected set require a broader check.
+   A known documentation-only path may use static checks if executable consumers
+   are ruled out; required gates still apply.
+6. **State what did not run.** The report lists the tier, every command with its exit
+   code and counts, and actual omitted checks with reasons. Never label a completed
+   required gate as skipped merely because the tier normally omits it.
 
 ## Goodhart guard
 
@@ -81,11 +79,12 @@ rewarded for "green" will narrow the selection; these rules keep the proxy hones
    filters, lint list, related-test list, widening steps, mapped specs) → run, or print
    with `--list`. Default ref = HEAD (uncommitted work); `--since <ref>` for a commit.
 2. Put the route map and widening table in that script; test that every target exists.
-3. Route heavy steps (E2E, pixel baselines) through the project's lock or queue when the
-   host is shared; never two heavy runs in parallel.
+3. Run independent read-only checks concurrently when resources permit. Route heavy
+   or state-sharing steps through the project's lock/queue; isolate DBs, ports and
+   output paths before parallel E2E.
 4. Make the full suite run off the dev host on every push (CI) and at the deploy gate.
-5. Write the tiers into the project's testing standard and command list; delete the
-   "run the full gate before every merge" rule in the same change (one source per rule).
+5. Propose tiers in the canonical testing standard. Change required merge gates only
+   within an authorized policy change, supported by measured selection coverage.
 
 ## Synthetic example
 

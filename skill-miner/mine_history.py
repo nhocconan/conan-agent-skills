@@ -200,6 +200,11 @@ def read_claude_jsonl(path: Path, floor: str, errors=None):
                 continue
             if d.get("type") != "user" or d.get("isMeta") or d.get("isSidechain"):
                 continue
+            # Lifecycle notices can be plain text on a user record. Prefer explicit
+            # harness provenance over wording; humans can type the same stop text.
+            origin = d.get("origin")
+            if isinstance(origin, dict) and origin.get("kind") == "task-notification":
+                continue
             ts = parse_ts(d.get("timestamp")) or fallback_ts
             if floor and ts <= floor:
                 continue

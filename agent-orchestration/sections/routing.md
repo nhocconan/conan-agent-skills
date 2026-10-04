@@ -1,9 +1,9 @@
 ## Model routing and quality ownership
 
-OpenAI and Anthropic models, pricing, effort and lifecycle re-verified 2026-09-30
-against the official pages under Sources. Gemini and installed-CLI observations
-remain the 2026-09-15 snapshot; this audit does not refresh them. This is the
-canonical model policy; companion skills link here instead of copying model tables.
+Canonical model policy; companion skills link here. OpenAI/Anthropic tables retain
+their 2026-09-30 verification; Gemini/agy retain 2026-09-15. Targeted 2026-10-04
+refresh: OpenAI deprecations and model selection, Codex configuration and Claude
+subagent mechanics. Table dates do not imply current account access.
 
 ## Contents
 
@@ -103,8 +103,11 @@ legacy fallbacks include `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna`; do not
 select them unless the active catalog exposes them. Prefer Sol 6 when Sol 6.1
 is unavailable and the task remains suitable. GPT-5.5 (`gpt-5.5`) retires from
 ChatGPT/Work/Codex on 2026-10-14; that notice does not retire its API model.
-`gpt-5.4-cyber` leaves the API on 2026-10-01; choose the most capable available
+`gpt-5.4-cyber` reached its API shutdown date on 2026-10-01; choose the most capable available
 cyber replacement, such as `gpt-5.6-cyber` where access permits.
+The 2026-10-01 API notice deprecates `gpt-5.3-codex`, `gpt-5.1` and
+`gpt-5.4-nano` for removal on 2027-04-01. Deprecation is advance notice;
+it is distinct from shutdown and from ChatGPT product retirement.
 
 ### Gemini models
 
@@ -156,7 +159,7 @@ changes, permission changes or starting another harness.
 (2.1.257+) overrides those sources, with exceptions documented for forks and
 inherited skill subagents; with FORCE alone, subagents run on the parent's model
 (built-in Explore keeps its documented model), and with both variables set,
-`CLAUDE_CODE_SUBAGENT_MODEL` wins (sub-agents docs, read 2026-10-02). Family aliases can retain the parent's exact version;
+`CLAUDE_CODE_SUBAGENT_MODEL` wins (sub-agents docs, read 2026-10-04). Family aliases can retain the parent's exact version;
 allowlists can substitute another model. Use an available full ID for deliberate
 version selection and confirm the actual model in `/tasks`. Do not assume Explore
 or Plan runs on Haiku. Agent SDK definitions and tools may differ; inspect them.
@@ -166,9 +169,14 @@ or Plan runs on Haiku. Agent SDK definitions and tools may differ; inspect them.
 `"all"` fork inherits parent model/effort and rejects overrides. This session exposes
 Astra, Sol 6.1, Sol 6, Luna 6 and Sol 5.6; other surfaces may differ.
 For CLI roles, inspect supported agent definitions/config overlays, `agent_type`,
-`model`, `model_reasoning_effort` and `agents.default_subagent_model`. The latter
-does not override a full-history fork. CLI mechanics previously observed at
-0.154.0 are not a guarantee for this collaboration surface.
+`model`, `model_reasoning_effort`, `agents.default_subagent_model` and
+`agents.default_subagent_reasoning_effort`. Explicit spawn settings take precedence;
+defaults do not override a full-history fork. Current CLI documentation names
+`agents.max_concurrent_threads_per_session` (spawned threads, excluding the primary);
+`agents.max_threads` is its legacy alias. Do not apply that counting rule to a
+collaboration tool whose limit includes the lead. Installed versions observed
+2026-10-04: Codex 0.160.0, Claude Code 2.1.289 (version probes only). Inspect
+the live schema; CLI configuration is not a guarantee for this collaboration surface.
 
 **agy (Antigravity CLI), 2026-09-15 snapshot.** `invoke_subagent` uses tiers
 `inherit`, `flash_lite`, `flash`, `pro`, not API IDs. Use the first three; `pro`
@@ -202,6 +210,7 @@ Sources:
 - [OpenAI GPT-6 guide](https://developers.openai.com/api/docs/guides/latest-model)
 - [OpenAI API pricing](https://developers.openai.com/api/docs/pricing)
 - [OpenAI Codex models and product retirement](https://developers.openai.com/codex/models)
+- [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
 - [OpenAI deprecations](https://developers.openai.com/api/docs/deprecations)
 - [Gemini API models](https://ai.google.dev/gemini-api/docs/models)
 - [Gemini API deprecations](https://ai.google.dev/gemini-api/docs/deprecations)

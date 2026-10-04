@@ -62,7 +62,7 @@ Trap-table admission rule: the entry must have actually happened. Format:
    NOT in SKILL.md — the skills repo is public and `projects/` (including the index)
    is gitignored precisely so internal repo names never leave this machine.
 3. Optional but strongest wiring: add one line to the repo's own rulebook routing section
-   (`CLAUDE.md`, or `AGENTS.md` for Codex-native repos) —
+   (canonical `AGENTS.md`; adapters remain imports only) —
    `Đầu session / task khó → invoke **senior-operator** (đọc projects/<slug>.md)`.
 4. Do NOT commit the map — `projects/` is local-only by design. Commit/push only
    changes outside `projects/` (manual, DISTILL, SKILL.md).

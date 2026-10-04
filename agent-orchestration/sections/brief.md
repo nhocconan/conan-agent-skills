@@ -15,16 +15,17 @@ Give independent reviewers criteria and raw artifacts without the builder's verd
 
 ### Context budget
 
-Default: a fresh-context worker plus a self-contained brief. Fork the lead's history
-only when the conversation itself is the input. On Codex an omitted `fork_turns`
+Use fresh context for bounded work or independent review. Fork when shared history
+is needed; on Claude, shared prompt caching can reduce fork cost. Minimize irrelevant
+context rather than assuming a fresh context is always cheaper. On Codex an omitted `fork_turns`
 defaults to `"all"`, which copies the lead's whole context *and* its model and reasoning
 effort into every worker, then rejects the overrides you meant to set — pass `"none"`
 or a positive count when you are choosing the worker's tier.
 
 Cap the return size in the brief, per return shape ([worker modes](worker-modes.md)):
 a subagent's return lands in the lead's context verbatim. Bound the run too —
-Claude Code `maxTurns`, Codex `agents.job_max_runtime_seconds` — and treat the
-resulting partial as resumable, not as a failure. Claude Code nested background
+Claude Code `maxTurns`, or supported per-task runtime limits — and preserve partial
+results. Confirm whether a runtime limit covers ordinary workers or only batch jobs. Claude Code nested background
 work depends on session mode and version; use the live tool rules and the lead's
 delegation limits ([fan-out patterns](../FANOUT-PATTERNS.md)).
 

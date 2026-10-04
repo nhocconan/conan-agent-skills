@@ -57,8 +57,9 @@ review, never a declaration that the user's task is done.
 Each worker gets the outcome, context it cannot infer, owned paths, acceptance
 checks, allowed side effects, and return shape. One writer per file unless
 isolated worktrees are deliberately integrated. Workers cannot expand authority
-or spawn further fleets — configure that in the harness rather than requesting it
-in prose (`FANOUT-PATTERNS.md`, lane enforcement).
+or spawn further fleets. Use supported harness controls; file ownership remains a
+coordination contract unless an actual path boundary enforces it
+(`FANOUT-PATTERNS.md`, lane enforcement).
 
 After two failures on one acceptance check, the lead diagnoses the task or takes
 it back. Keep evidence that distinguishes verified, failed, and unavailable

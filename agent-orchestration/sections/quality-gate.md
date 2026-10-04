@@ -8,8 +8,8 @@ that hide failures (or explicitly preserve status). A screenshot proves visible
 state, an HTTP status proves reachability, and neither alone proves a complete
 user journey. Match evidence to the claim.
 
-Re-run load-bearing checks on the integrated tree, at the tier the change needs
-(`effective-development`: affected set per change, full gate at deploy). Workers'
+Run required project gates and affected behavior checks on the final integrated tree
+(`effective-development`: size optional checks to the change). Workers'
 checks help localize failures but do not replace integration verification.
 
 For corpus audits, require separate counts for enumerated, parsed and actually
@@ -56,3 +56,13 @@ actual parent lead cannot review, or an explicitly required review is unavailabl
 ([routing](routing.md)), mark final review pending rather than claiming approval.
 Preferred model recommendations do not disqualify the active lead; there is no
 cross-harness substitute for its acceptance.
+
+### Evaluate orchestration changes
+
+Freeze synthetic representative tasks and counterexamples (small sequential work,
+shared-file/resource collisions, worker timeout, stale evidence). Compare solo and
+parallel runs on identical inputs and acceptance with isolated fixtures. Check final
+diff and behavior; measure end-to-end elapsed time including lead integration, rework,
+interventions and actual usage when exposed. Report repeat-run variation and failures;
+unknown costs stay unknown. Vendor capability claims or one green run cannot establish
+a SOTA ranking.

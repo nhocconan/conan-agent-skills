@@ -29,14 +29,16 @@ Update the requested documents against current code and the reader's actual work
   repo's existing equivalent). Declare it once in the repo's agent rulebook so every
   session and every agent uses the same one.
 - **Supersede, don't accumulate.** Mark a replaced handoff as superseded or consolidate it without losing required history. Two handoffs mean the next run picks the wrong one.
-- **Register the audience per folder.** Shipped docs take the product's voice and the
-  reader's language; private working notes may take the operator's own register. Whichever
-  applies, it is a property of the folder, not of the mood of the session.
+- **Register each folder's audience.** Shipped docs use the reader's language and
+  product voice; working notes use the operator's register.
 
 ## Process
-1. Trace claims about capabilities, counts and architecture to current code/config or
+1. Read the docs index first; update the canonical topic document. New files need a
+   distinct topic/audience. Link shared rules; repair links when consolidating. Keep
+   catalogs in references and task state in ignored notes, not always-loaded rulebooks.
+2. Trace claims about capabilities, counts and architecture to current code/config or
    a dated source. Distinguish implemented behavior from design direction.
-2. Update the user's path through the product, including setup, permissions and where
+3. Update the user's path through the product, including setup, permissions and where
    each action lives. For served docs, verify the deployed version, links, TOC, scrolling
    and diagram layout at desktop and narrow widths; a Markdown render alone is insufficient.
-3. Run `anti-slop-review` on the result — docs are content too.
+4. Run `anti-slop-review` on the result — docs are content too.

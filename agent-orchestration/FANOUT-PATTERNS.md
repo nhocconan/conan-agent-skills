@@ -7,15 +7,10 @@ schema before relying on anything below.
 
 ## Contents
 
-1. Choose a shape
-2. Concurrency and depth limits
-3. Lane enforcement
-4. Resume primitives
-5. Progress cadence
-6. Codex collaboration
-7. Claude collaborators
-8. Antigravity (agy) collaboration
-9. Worktrees and integration
+[Shapes](#choose-a-shape) · [Limits](#concurrency-and-depth-limits) ·
+[Lanes](#lane-enforcement) · [Resume](#resume-primitives) · [Cadence](#progress-cadence) ·
+[Codex](#codex-collaboration) · [Claude](#claude-collaborators) ·
+[agy](#antigravity-agy-collaboration) · [Worktrees](#worktrees-and-integration)
 
 ## Choose a shape
 
@@ -56,8 +51,12 @@ Depth exhaustion returns `Agent depth limit reached. Solve the task yourself.`
 
 ## Lane enforcement
 
-The lanes in [the operating contract](sections/operating-contract.md) are permissions,
-not etiquette. Configure them, so a worker cannot leave its lane by deciding to.
+Configure supported permission boundaries for the lanes in
+[the operating contract](sections/operating-contract.md). A tool allowlist or
+workspace-write sandbox does not enforce ownership of individual files. Shell and MCP
+tools can write even when Edit/Write are absent; restrict those routes or use an actual
+read-only boundary. Where enforcement is unavailable, record the limitation and use
+isolation plus diff review. Do not change global permissions merely to staff a lane.
 
 | Lane | Claude Code | Codex | agy (Antigravity) |
 | --- | --- | --- | --- |
@@ -68,30 +67,26 @@ not etiquette. Configure them, so a worker cannot leave its lane by deciding to.
 | No nested fleets | omit `Agent` from `tools` | `agents.max_depth` | `define_subagent` with `enable_subagent_tools: false` |
 
 Claude Code reads these from subagent frontmatter, alongside `model`, `effort`,
-`maxTurns` and `isolation`. Codex declares a role — `description`, `config_file`,
-`nickname_candidates` — and the role is chosen at spawn with `agent_type`; the
+`maxTurns` and `isolation`. Codex declares a legacy role — `description`, `config_file`,
+`nickname_candidates` — chosen with `agent_type`; the
 `config_file` it names is a config overlay, so the per-lane knobs are ordinary config
 keys (`model`, `model_reasoning_effort`, `sandbox_mode`, `mcp_servers`). Read the
 overlay's accepted keys from the installed build before relying on any one of them.
-A full-history fork inherits the parent's agent type and refuses an `agent_type` override.
+Current official docs also describe standalone `.codex/agents/*.toml` definitions
+with `name`, `description` and `developer_instructions`; inspect the installed format
+before choosing one. A full-history fork can reject `agent_type` overrides.
+Sources: [Claude subagents](https://code.claude.com/docs/en/sub-agents),
+[Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
+(checked 2026-10-04).
 
-agy (Antigravity CLI): subagents are configured via `define_subagent` (setting
-`enable_write_tools`, `enable_subagent_tools`, `enable_mcp_tools`) or loaded from `.md`
-definitions with YAML frontmatter `subagent: true` and `model:`. The built-in `research`
-type is read-only; `self` inherits parent capabilities. Spawning uses `invoke_subagent`
-where `Model` selects a tier (`inherit` / `flash_lite` / `flash` / `pro`; `pro` is off-policy,
-[routing](sections/routing.md)) and `Workspace` selects isolation (`inherit` / `branch` / `share`).
-Recorded from the 2026-09-15 vendor refresh; the installed agy 1.2.3 was probed for
-`agy models` and a `--model` call, and subagent schemas match the active harness.
-
-This is what turns "workers cannot spawn further fleets" from a line in a brief into
-something the harness enforces.
+Check the effective permissions after inheritance and runtime overrides. Claude plugin
+subagents ignore `permissionMode`, inline `mcpServers` and subagent hooks; Codex live
+parent overrides can supersede custom-agent defaults. These controls need verification,
+not assumed enforcement (official docs checked 2026-10-04).
 
 ## Resume primitives
 
-A ledger records that a node was running; it does not resume the node. Re-briefing a
-fresh worker from the ledger discards the original worker's context and pays to rebuild
-it. Resume the worker itself wherever the harness allows.
+Resume existing workers when supported; a ledger alone cannot restore worker context.
 
 **Claude Code.** `SendMessage` to the agent id returned by the Agent tool continues that
 agent with its context intact; a fresh `Agent` call starts over. A run that hits
@@ -100,16 +95,17 @@ agent with its context intact; a fresh `Agent` call starts over. A run that hits
 id, so use `general-purpose` or a custom subagent for work you may need to resume.
 Subagents can themselves launch background subagents, within the depth limit above.
 
-**Codex.** `send_input` feeds an open agent, `wait_agent` blocks for completion,
-`list_agents` enumerates, `resume_agent` restarts one, `close_agent` releases its slot.
+**Codex.** CLI surfaces may expose `send_input`, `resume_agent` and `close_agent`.
+The current collaboration surface uses `send_message` for a running worker,
+`followup_task` to trigger an idle worker, `interrupt_agent` to interrupt and
+`list_agents` / `wait_agent` to observe. It exposes no close tool. Use the live schema;
+do not copy CLI lifecycle calls into another surface or treat interruption as cleanup.
 
 **agy (Antigravity).** `send_message` with `Recipient=<conversationId>` continues a
 subagent with its context intact. `manage_subagents` with `Action="list"` enumerates
 active subagents and their states (`running`, `idle`, `waiting_for_input`, etc.);
 `Action="kill"` cancels a worker. `manage_task` monitors background commands. The harness
 resumes execution reactively on subagent messages or task completion without polling.
-
-Use the ledger to decide *what* to resume, and the harness primitive to actually resume it.
 
 ## Progress cadence
 
@@ -189,7 +185,10 @@ Set `Workspace` to `"share"` to share the repository directory like a git worktr
 ## Worktrees and integration
 
 Inspect repository state before creating worktrees. Give each writer a clear owner scope
-and branch/worktree path, and preserve user changes. The lead integrates in dependency
+and branch/worktree path, and preserve user changes. Confirm the actual base revision:
+Claude isolated subagents can start from the default branch rather than parent HEAD.
+Worktrees isolate files, not ports, databases, credentials or external writes; reserve
+those resources separately. The lead integrates in dependency
 order and runs relevant checks on the combined tree.
 
 Remove a worktree only after its changes and artifacts are integrated or explicitly

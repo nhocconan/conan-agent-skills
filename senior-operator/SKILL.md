@@ -25,9 +25,9 @@ one codebase actually runs, and the recipe for producing a new map.
 The index and the maps themselves live in `projects/` — **local-only,
 gitignored, never committed**: maps describe how real repos run (including
 private systems), so they must never reach the public skills repo.
-Start at `projects/INDEX.md`. No map for the repo you're in? Run
-[DISTILL.md](DISTILL.md) — ideally on the strongest model available — then add
-the row in `projects/INDEX.md`.
+Start at `projects/INDEX.md`. No matching map? Continue from the repo's rulebook
+and relevant manual sections. Run [DISTILL.md](DISTILL.md) when a reusable map is
+requested or materially helps repeated work; its absence is not a blocker.
 
 ## Any-model use (Claude / Codex / agy)
 

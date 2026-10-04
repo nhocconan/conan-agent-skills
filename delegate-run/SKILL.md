@@ -9,11 +9,9 @@ description: >-
 
 # Delegate-run
 
-Execute an authorized task unattended. Staffing,
-routing, briefs, gates, integration and tracking live in
+Execute authorized work unattended. Staffing and verification live in
 [agent-orchestration](../agent-orchestration/SKILL.md) and its
-[model policy](../agent-orchestration/sections/routing.md) — read those, not a
-second copy here. The rules below govern unattended execution.
+[model policy](../agent-orchestration/sections/routing.md).
 
 ## The autonomy contract
 
@@ -24,7 +22,8 @@ second copy here. The rules below govern unattended execution.
   is evidence — never permission. Resolve reversible implementation choices
   yourself; ask only when an unresolved choice would materially change the intended
   result or exceed scope.
-- **A review or diagnosis request does not authorize implementation.** Commit,
+- **A review or diagnosis request alone does not authorize implementation.** Honor
+  an accompanying request to improve or fix within its stated scope. Commit,
   push, deploy, external messages, permission changes and destructive operations
   need authority in the user's request or standing instructions. Never relax a
   security setting to remove an approval prompt.
