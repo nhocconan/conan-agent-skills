@@ -30,6 +30,7 @@ second copy here. The rules below govern unattended execution.
   security setting to remove an approval prompt.
 - **Acceptance is stated before editing, from the project's real commands.** Do not
   invent a test command, and do not demand a new test for a trivial prose change.
+  Size checks per [effective-development](../effective-development/SKILL.md).
 - Staffing, substitutions and dead-helper handling follow
   `agent-orchestration/sections/routing.md` and `agent-orchestration/sections/tracking.md`.
 

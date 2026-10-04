@@ -30,6 +30,7 @@ coding-env-bootstrap
 demo-data-craft
 dev-env-lifecycle
 docs-sync
+effective-development
 interactive-course-builder
 metric-integrity
 reference-parity

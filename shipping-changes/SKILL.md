@@ -36,7 +36,8 @@ steps; report missing authority without re-asking for existing authority.
 ## Procedure
 
 1. Confirm the working tree is what you think it is (`git status`, `git diff`).
-2. Run the project's real gate — tests, typecheck, lint — per rule 4.
+2. Run the project's gate at the tier the step needs, per rule 4: the affected set
+   before a merge, the full gate at deploy ([effective-development](../effective-development/SKILL.md)).
 3. Review the diff hunk by hunk. Delegation moves the typing, not the accountability.
 4. For the mechanics beyond this point (version bump, changelog, commit message
    composition, push), read `../.vendor/gstack/ship/SKILL.md` — specifically its

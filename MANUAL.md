@@ -117,6 +117,7 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | `agent-orchestration` | Lead của harness đang chạy lập kế hoạch, phân việc độc lập cho worker, kiểm tra evidence và chịu trách nhiệm chất lượng cuối cùng |
 | `delegate-run` | Giao việc đến kết quả đã kiểm chứng; giữ quyền đã cấp, lưu trạng thái, dùng worker khi phù hợp, lead của harness chịu trách nhiệm cuối cùng |
 | `investigating-bugs` | Something is broken — reproduce before editing |
+| `effective-development` | Which tests a change needs: affected set per edit/merge, full gate only at deploy; "đừng chạy full test", "test cái liên quan thôi" |
 | `shipping-changes` | Commit + push (repository branch/review policy, your identity, hooks must pass) |
 | `browsing-web` | Anything involving a browser |
 | `web-qa` | Test a running web app (reports by default; fixes only if you ask) |

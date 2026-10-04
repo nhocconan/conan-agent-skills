@@ -8,8 +8,9 @@ that hide failures (or explicitly preserve status). A screenshot proves visible
 state, an HTTP status proves reachability, and neither alone proves a complete
 user journey. Match evidence to the claim.
 
-Re-run load-bearing checks on the integrated tree. Workers' checks help localize
-failures but do not replace integration verification.
+Re-run load-bearing checks on the integrated tree, at the tier the change needs
+(`effective-development`: affected set per change, full gate at deploy). Workers'
+checks help localize failures but do not replace integration verification.
 
 For corpus audits, require separate counts for enumerated, parsed and actually
 content-reviewed artifacts. A generated queue or truncated tool output is not a

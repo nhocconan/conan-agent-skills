@@ -79,6 +79,11 @@
     "eager": 3500,
     "on_demand": 0
   },
+  "effective-development": {
+    "always_on": 700,
+    "eager": 8900,
+    "on_demand": 0
+  },
   "interactive-course-builder": {
     "always_on": 900,
     "eager": 8600,
