@@ -35,6 +35,8 @@ review; the validator caught it.
    in the untested theme.
 3. Fixing is in scope, but under `shipping-changes` house rules.
 4. Do not "improve" adjacent design nobody complained about.
+5. Defect class 2 (text not using its width) is prevented mechanically, not reviewed:
+   `sections/text-width.md` (root causes, probe, repo-check steps) and `scripts/narrow-wrap-probe.js`.
 
 ## Upstream sections this depends on
 
@@ -43,6 +45,11 @@ review; the validator caught it.
 - "Design Critique Format"
 
 ## Decision log
+
+**2026-10-04** — class 2 kept recurring in one operator project after being listed here as a
+review item; added root-cause table, a rendered DOM probe (threshold 0.85: a 90ch cap measured
+69–75%, below the first 0.7 draft) and repo-check steps. Single-project evidence; the procedure is
+framework-agnostic and the examples synthetic.
 
 **2026-07-25** — activated unwrapped, then wrapped within the hour after
 `validate_skills.py` flagged the description as stating no WHEN. The mechanical check

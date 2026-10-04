@@ -18,7 +18,8 @@ Examples below are illustrative shapes, not one project's log:
    mid-phrase, a card title clipped mid-glyph. Check at the real breakpoints, not just the
    width your browser happens to be.
 2. **Content not using its width** — a block wrapping to a narrow column while empty space
-   sits beside it.
+   sits beside it. A checklist does not stop this one: fix the shared component, then add the
+   source rule and the rendered probe from [sections/text-width.md](sections/text-width.md).
 3. **Collisions** — chart labels over chart, text over a circle, a toast covering the
    button the user needs, a filter row colliding with a date picker.
 4. **Layout imbalance** — everything pushed left with dead space right; controls eating a

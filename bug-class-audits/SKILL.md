@@ -31,8 +31,10 @@ numbered rule plus one mechanical check, so no class is re-argued.
 5. **Wire it into the gate** — pre-push hook and/or CI — so the rule enforces itself.
    A rule that relies on someone remembering it is a suggestion.
 6. **Keep an index**: a table of concern → rule § → audit script → where it's wired.
-   Rules that can't be mechanically checked (visual collisions, design judgment) still get
-   a numbered entry, marked "review-only", so reviews have a checklist.
+   Rules that can't be mechanically checked (design judgment) still get a numbered entry,
+   marked "review-only", so reviews have a checklist. A visual class with a measurable shape
+   (text wrapping beside empty space, overflow, overlap) is checkable: add a rendered DOM probe
+   to the E2E route sweep (`design-qa` has one for text width).
 
 ## Audit-script conventions
 

@@ -67,7 +67,7 @@
   "design-qa": {
     "always_on": 700,
     "eager": 4200,
-    "on_demand": 0
+    "on_demand": 4600
   },
   "dev-env-lifecycle": {
     "always_on": 700,
