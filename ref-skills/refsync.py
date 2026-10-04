@@ -223,8 +223,14 @@ def cmd_status(args) -> int:
             print(f"  {d.name:26} {mode:5}  UNREACHABLE  {src}")
             drift += 1
             continue
+        secondary = stale_secondary(fm)
+        if secondary:
+            drift += 1
+            state = "UNREACHABLE" if secondary[1] is None else "CHANGED"
+            print(f"  {d.name:26} {mode:5}  secondary {state}  {secondary[0]}")
         if sha256(cur) == fm.get("fingerprint", ""):
-            print(f"  {d.name:26} {mode:5}  up to date")
+            if not secondary:
+                print(f"  {d.name:26} {mode:5}  up to date")
             continue
         drift += 1
         print(f"  {d.name:26} {mode:5}  UPSTREAM CHANGED since {fm.get('reviewed','?')}")
@@ -272,6 +278,29 @@ def bump_ref(ref: Path, fingerprint: str, version: str | None) -> None:
     ref.write_text(text)
 
 
+def stale_secondary(fm: dict) -> tuple[str, str | None] | None:
+    """A wrap's `secondary_source`, when its text no longer matches `secondary_fingerprint`.
+
+    web-qa routes to two upstream skills (qa-only and qa). Fingerprinting only the
+    primary let qa shrink from 960 to 817 lines on 2026-10-02 without a warning.
+    Returns (source, current_text_or_None) when stale or unreachable, else None.
+    """
+    src = fm.get("secondary_source", "")
+    if not src:
+        return None
+    cur = read_source(src)
+    if cur is not None and sha256(cur) == fm.get("secondary_fingerprint", ""):
+        return None
+    return src, cur
+
+
+def bump_secondary(ref: Path, fingerprint: str) -> None:
+    text = ref.read_text(encoding="utf-8", errors="replace")
+    text = re.sub(r"^secondary_fingerprint:.*$", f"secondary_fingerprint: {fingerprint}",
+                  text, count=1, flags=re.M)
+    ref.write_text(text)
+
+
 def cmd_upgrade(args) -> int:
     targets = set(args.names or [])
     requested_profile = args.profile or default_profile(args.target)
@@ -300,8 +329,26 @@ def cmd_upgrade(args) -> int:
             print(f"{d.name}: UNREACHABLE source {src}")
             problems += 1
             continue
+        secondary = stale_secondary(fm) if fm.get("mode", "wrap") == "wrap" else None
+        if secondary:
+            sec_src, sec_cur = secondary
+            if sec_cur is None:
+                print(f"{d.name}: UNREACHABLE secondary source {sec_src}")
+                problems += 1
+            else:
+                snap = d / ".upstream-preview-secondary.md"
+                snap.write_text(sec_cur)
+                print(f"\n{d.name}: secondary upstream changed ({sec_src})")
+                print(f"  new secondary written to {snap.relative_to(REPO)} for review")
+                if args.accept:
+                    bump_secondary(d / "REF.md", sha256(sec_cur))
+                    snap.unlink(missing_ok=True)
+                    print("  accepted: secondary fingerprint updated")
+                else:
+                    print(f"  re-read it, then: python3 refsync.py upgrade {d.name} --accept")
         if sha256(cur) == fm.get("fingerprint", ""):
-            print(f"{d.name}: already current")
+            if not secondary:
+                print(f"{d.name}: already current")
             continue
 
         mode = fm.get("mode", "wrap")

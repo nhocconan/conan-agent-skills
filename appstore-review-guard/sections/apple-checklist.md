@@ -2,6 +2,11 @@
 
 Group by guideline area. ☐ = must verify every submission.
 
+### Upload requirements (App Store Connect rejects the build before review)
+- ☐ Built with **Xcode 26 or later** against the iOS/iPadOS/tvOS/visionOS/watchOS 26 SDK (required since 2026-04-28).
+- ☐ iOS/iPadOS deployment target is **iOS 13 or later** (required since 2026-09-09).
+- Source: [Upcoming requirements](https://developer.apple.com/news/upcoming-requirements/), read 2026-10-03 — re-check it before each release; Apple adds rows there ahead of each deadline.
+
 ### 3.1.1 — In-App Purchase & payments
 - ☐ A **distinct, clearly-labelled "Restore Purchases" button** exists and is reachable in **every** entitlement state — fresh install, mid-trial, **after purchase**, and after trial-ended. Not gated behind `!isPro`. Not auto-restore-only.
 - ☐ It lives where reviewers look: **Settings** (canonical) **and** the paywall. Don't rely on the paywall alone — it often hides post-purchase.

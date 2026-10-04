@@ -39,8 +39,8 @@ it down. Console noise from an unrelated extension is not a bug in the app.
 
 State up front which routes and flows you covered and which you did not. "Tested the app"
 when you clicked three pages is the failure mode that makes a green QA report worthless.
-Upstream's tiers (quick / standard / exhaustive) are a useful frame — name the tier you
-actually ran.
+Name the depth you actually ran; in fix mode also the fix tier (quick / standard /
+exhaustive — which severities get fixed).
 
 ## Sibling lenses — different jobs, don't substitute
 
@@ -55,4 +55,6 @@ actually ran.
 ## Browser stack
 
 Use the user-selected or project-approved available browser. Follow its current tool
-instructions; `browsing-web` describes session and evidence discipline.
+instructions; `browsing-web` describes session and evidence discipline. If upstream's
+`../.vendor/gstack/qa/sections/browser-setup.md` is unreadable, report the blocker,
+mark browser probes blocked, continue functional probes.

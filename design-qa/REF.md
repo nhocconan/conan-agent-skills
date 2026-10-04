@@ -3,8 +3,8 @@ mode: wrap
 upstream: gstack
 source: github:garrytan/gstack@main:design-review/SKILL.md
 version: 2.0.0
-fingerprint: sha256:71932e31bd8817da1ba55afb5ab3fc452b65dfacd77c61d3dd27b346525df294
-reviewed: 2026-09-23
+fingerprint: sha256:411b146216842a77d757c6483ffa1163c3e142b54c71ba1f7797f39e601fb000
+reviewed: 2026-10-02
 ---
 
 # Provenance

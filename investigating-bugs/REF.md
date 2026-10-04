@@ -3,13 +3,13 @@ mode: wrap
 upstream: gstack
 source: github:garrytan/gstack@main:investigate/SKILL.md
 version: 1.0.0
-fingerprint: sha256:a3cd44e15463b25c4f8dc2dfe66cfe7f20fc2b6568b08549b3e293377a6132d9
-reviewed: 2026-09-23
+fingerprint: sha256:2257118effdc9afcd0cd2a688e2342e99f6b681dea6aa7e836b17ac4871938bc
+reviewed: 2026-10-02
 ---
 
 # Provenance
 
-Wraps gstack's `investigate` (728 lines, binary-backed).
+Wraps gstack's `investigate` (719 lines on 2026-10-02, binary-backed).
 Upstream markdown is fetched into `.vendor/gstack/` by `refsync.py ensure` (gitignored,
 files only, never a gstack install); the skill reads it by path, so its bulk loads only
 when the skill actually fires.

@@ -3,13 +3,13 @@ mode: wrap
 upstream: gstack
 source: github:garrytan/gstack@main:ship/SKILL.md
 version: 1.0.0
-fingerprint: sha256:eb3c84ab37372374fc2bce07e1d8f57ca05b27a1a831e5092f48788b806a5854
-reviewed: 2026-09-23
+fingerprint: sha256:b785363fea9ed6999863ab50d24128899e60fd811936d4b121e473a695cf3cef
+reviewed: 2026-10-02
 ---
 
 # Provenance
 
-Wraps gstack's `ship` (1125 lines on 2026-09-23, binary-backed).
+Wraps gstack's `ship` (1212 lines on 2026-10-02, binary-backed).
 Upstream markdown is fetched into `.vendor/gstack/` by `refsync.py ensure` (gitignored,
 files only, never a gstack install); the skill reads it by path, so its bulk loads only
 when the skill actually fires.
