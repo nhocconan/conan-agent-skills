@@ -22,6 +22,8 @@ existing worker with the harness's own resume primitive rather than re-briefing 
 fresh one from the ledger, which throws away that worker's context for nothing.
 The primitives per harness are in [fan-out patterns](../FANOUT-PATTERNS.md).
 
+Resume only to return a worker its review findings or answer its blocked question, never to relay rules (they live in the shared brief); after two resumes re-brief fresh.
+
 After compaction, use both the saved plan and the latest user steering. The plan
 does not override newer instructions or authorize more work.
 

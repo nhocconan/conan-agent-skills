@@ -40,6 +40,13 @@ Anthropic recommends Opus 5.5 for most workloads; Sonnet 5.5 is our bounded-buil
 choice. Use Fable for demanding reasoning or when higher-effort Opus evaluations fall short.
 Haiku suits simple work; use Sonnet where the bounded task needs stronger reasoning.
 
+**Set `model` on every spawn:** an omitted one inherits the parent's or the agent definition's
+tier (measured: routine reviews on the hardest tier were 24 % of one project's agent spend).
+**Reviewer tier follows risk:** bounded-builder tier by default; the hardest tier only for
+migrations, tenancy/RLS, auth, routing and prompts/evals, once per release over the combined
+diff. **Cost = context × calls** (cache reads): cap workers near 80 turns / 150k context and
+re-brief a fresh one.
+
 Escalate immediately when risk, ambiguity or capability exceeds the worker's scope. After
 two failures of the same acceptance check, the lead diagnoses or takes the task back before
 choosing another model. Do not create workers solely to exercise a cheaper model. These

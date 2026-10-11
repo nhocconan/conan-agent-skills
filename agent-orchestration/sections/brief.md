@@ -29,6 +29,8 @@ results. Confirm whether a runtime limit covers ordinary workers or only batch j
 work depends on session mode and version; use the live tool rules and the lead's
 delegation limits ([fan-out patterns](../FANOUT-PATTERNS.md)).
 
+Bound workers: ~80 turns, ~150k context, tasks ≤ 45 minutes. Returns: builder ≤ 10 lines, reviewer one line per finding, design notes to a file.
+
 ### Prompt maintenance
 
 Specify outcomes, constraints, and the reasons that affect decisions. Remove generic

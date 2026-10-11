@@ -16,6 +16,8 @@ For corpus audits, require separate counts for enumerated, parsed and actually
 content-reviewed artifacts. A generated queue or truncated tool output is not a
 completed semantic review. Resume unread portions before claiming exhaustive coverage.
 
+Gate a frozen revision (release branch), never a moving main; rerun only failed tiers and shards.
+
 ### Independent review
 
 Use a fresh reviewer for complex or consequential changes. Give it the criteria
@@ -31,6 +33,8 @@ Do not discard a potentially severe concern solely because its score is low.
 
 Deduplicate by failure mechanism and affected path. Agreement among models is
 supporting evidence, not independent proof when they share assumptions.
+
+Review tier follows risk (routing.md): once per release train over the combined diff; re-review only a P0/P1 fix.
 
 ### Bounded review and repair
 

@@ -66,15 +66,12 @@ isolation plus diff review. Do not change global permissions merely to staff a l
 | MCP scoping | `disallowedTools` with `mcp__<server>` patterns; inline `mcpServers` in the definition | `mcp_servers` in the role's `config_file` | `define_subagent` with `enable_mcp_tools: false` |
 | No nested fleets | omit `Agent` from `tools` | `agents.max_depth` | `define_subagent` with `enable_subagent_tools: false` |
 
-Claude Code reads these from subagent frontmatter, alongside `model`, `effort`,
-`maxTurns` and `isolation`. Codex declares a legacy role — `description`, `config_file`,
-`nickname_candidates` — chosen with `agent_type`; the
-`config_file` it names is a config overlay, so the per-lane knobs are ordinary config
-keys (`model`, `model_reasoning_effort`, `sandbox_mode`, `mcp_servers`). Read the
-overlay's accepted keys from the installed build before relying on any one of them.
-Current official docs also describe standalone `.codex/agents/*.toml` definitions
-with `name`, `description` and `developer_instructions`; inspect the installed format
-before choosing one. A full-history fork can reject `agent_type` overrides.
+Claude Code reads these from subagent frontmatter (`model`, `effort`, `maxTurns`,
+`isolation`). Codex roles (`description`, `config_file`, `nickname_candidates`) are chosen
+with `agent_type`; the `config_file` is a config overlay (`model`, `model_reasoning_effort`,
+`sandbox_mode`, `mcp_servers`), and current docs also describe standalone
+`.codex/agents/*.toml` definitions. Read the accepted keys from the installed build; a
+full-history fork can reject `agent_type` overrides.
 Sources: [Claude subagents](https://code.claude.com/docs/en/sub-agents),
 [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
 (checked 2026-10-04).
