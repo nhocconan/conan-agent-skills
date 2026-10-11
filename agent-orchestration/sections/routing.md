@@ -89,7 +89,6 @@ representative tasks rather than carrying over the previous generation's setting
 Max input is 922,000 tokens. Prices are uncached Standard API rates for ≤272K
 input; above that threshold the full request costs 2× input and 1.5× output.
 Cache, speed, regional processing and ChatGPT credits have separate rates.
-Per-token prices do not establish cost per completed task.
 
 Astra and Sol 6.1 API `reasoning.effort` accept `low`, `medium`, `high`, `xhigh`,
 `max`; Sol 6 and Luna additionally accept `none`. Sol 6.1, Sol 6 and Luna API
@@ -100,7 +99,7 @@ when the task or evaluations justify the added cost.
 
 API support and harness controls differ. The current collaboration schema exposes
 `low` through `max` for Luna and also `ultra` for Sol/Astra; it does not expose
-`none`. Product Ultra uses subagents and is not an API effort value. Inspect the
+`none`. Inspect the
 active schema rather than copying API values into a spawn call.
 
 Use Responses for tool-calling API workers: Sol 6.1 Chat Completions has no tool
@@ -110,8 +109,6 @@ legacy fallbacks include `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna`; do not
 select them unless the active catalog exposes them. Prefer Sol 6 when Sol 6.1
 is unavailable and the task remains suitable. GPT-5.5 (`gpt-5.5`) retires from
 ChatGPT/Work/Codex on 2026-10-14; that notice does not retire its API model.
-`gpt-5.4-cyber` reached its API shutdown date on 2026-10-01; choose the most capable available
-cyber replacement, such as `gpt-5.6-cyber` where access permits.
 The 2026-10-01 API notice deprecates `gpt-5.3-codex`, `gpt-5.1` and
 `gpt-5.4-nano` for removal on 2027-04-01. Deprecation is advance notice;
 it is distinct from shutdown and from ChatGPT product retirement.
@@ -138,8 +135,6 @@ a subscription, not an API model tier. Flash prices are introductory through
 | 3.6 Flash, 3.5 Flash | `minimal`, `low`, `medium`, `high` | `medium` |
 | 3.5 Flash-Lite | `minimal`, `low`, `medium`, `high` | `minimal` |
 | 3.1 Pro (Preview) | `low`, `medium`, `high` | `high` |
-
-Computer use is a Preview tool, not a separate routing model.
 
 ### Cross-provider fleets
 
@@ -181,9 +176,8 @@ For CLI roles, inspect supported agent definitions/config overlays, `agent_type`
 defaults do not override a full-history fork. Current CLI documentation names
 `agents.max_concurrent_threads_per_session` (spawned threads, excluding the primary);
 `agents.max_threads` is its legacy alias. Do not apply that counting rule to a
-collaboration tool whose limit includes the lead. Installed versions observed
-2026-10-04: Codex 0.160.0, Claude Code 2.1.289 (version probes only). Inspect
-the live schema; CLI configuration is not a guarantee for this collaboration surface.
+collaboration tool whose limit includes the lead. Inspect the live schema;
+CLI configuration is not a guarantee for this collaboration surface.
 
 **agy (Antigravity CLI), 2026-09-15 snapshot.** `invoke_subagent` uses tiers
 `inherit`, `flash_lite`, `flash`, `pro`, not API IDs. Use the first three; `pro`
@@ -191,8 +185,7 @@ remains off-policy while reasoning Pro is Preview. `self` inherits; `research`
 is read-only. `define_subagent` configures write, nested-agent and MCP permissions.
 Definitions load from workspace `.agents/agents/`, global `~/.gemini/config/agents/`
 or plugin agent directories. On observed agy 1.2.3, bare CLI IDs require `--effort`;
-`agy models` lists suffixed IDs and some cross-provider models. Only the catalog,
-help and CLI model selection were probed; no subagent definition was executed.
+`agy models` lists suffixed IDs and some cross-provider models.
 See [fan-out patterns](../FANOUT-PATTERNS.md) for the recorded invocation format.
 
 ### Freshness and evidence
@@ -222,5 +215,3 @@ Sources:
 - [Gemini API models](https://ai.google.dev/gemini-api/docs/models)
 - [Gemini API deprecations](https://ai.google.dev/gemini-api/docs/deprecations)
 - [Antigravity CLI docs](https://antigravity.google/docs/cli/)
-
-Routing and final ownership are the operator's policy, not a vendor guarantee.

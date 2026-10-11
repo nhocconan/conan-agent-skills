@@ -3,8 +3,9 @@
 ### Evidence before acceptance
 
 The lead owns the final decision after reading the combined diff and relevant
-artifacts. Capture the actual command exit status and output; avoid pipelines
-that hide failures (or explicitly preserve status). A screenshot proves visible
+artifacts. Capture the exit status and a verdict line; full output stays in a log
+file ([brief](brief.md), results file protocol); avoid pipelines that hide failures
+(or explicitly preserve status). A screenshot proves visible
 state, an HTTP status proves reachability, and neither alone proves a complete
 user journey. Match evidence to the claim.
 
@@ -63,10 +64,7 @@ cross-harness substitute for its acceptance.
 
 ### Evaluate orchestration changes
 
-Freeze synthetic representative tasks and counterexamples (small sequential work,
-shared-file/resource collisions, worker timeout, stale evidence). Compare solo and
-parallel runs on identical inputs and acceptance with isolated fixtures. Check final
-diff and behavior; measure end-to-end elapsed time including lead integration, rework,
-interventions and actual usage when exposed. Report repeat-run variation and failures;
-unknown costs stay unknown. Vendor capability claims or one green run cannot establish
-a SOTA ranking.
+Freeze representative tasks and counterexamples (sequential work, file collisions,
+worker timeout, stale evidence); compare solo and parallel runs on identical inputs;
+measure end-to-end time, rework, interventions and usage; report variation. One green
+run or a vendor claim is not a ranking.

@@ -59,7 +59,8 @@ checks, allowed side effects, and return shape. One writer per file unless
 isolated worktrees are deliberately integrated. Workers cannot expand authority
 or spawn further fleets. Use supported harness controls; file ownership remains a
 coordination contract unless an actual path boundary enforces it
-(`FANOUT-PATTERNS.md`, lane enforcement).
+(`FANOUT-PATTERNS.md`, lane enforcement). Worker detail goes to results files; the lead
+reads ≤ 5-line digests and keeps its own context under 120k ([tracking](sections/tracking.md)).
 
 After two failures on one acceptance check, the lead diagnoses the task or takes
 it back. Keep evidence that distinguishes verified, failed, and unavailable
