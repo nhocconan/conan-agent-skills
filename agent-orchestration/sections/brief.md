@@ -5,7 +5,7 @@ Read [routing](routing.md) before selecting a model. Each worker needs:
 - Outcome and mode (see [worker modes](worker-modes.md)).
 - Working directory, relevant project instructions, and context it cannot infer.
 - Exact owned files or bounded read scope; shared resources and excluded side effects.
-- Observable acceptance checks using real project commands.
+- Observable acceptance: claim → check with real project commands → artifact → what it leaves unproven.
 - Relevant invariants: auth, tenancy, money, compatibility, or performance when applicable.
 - Return shape: changes, commands and results, assumptions, and unresolved concerns.
 - Explicit limits on further delegation, time/cost when known, and escalation conditions.
@@ -31,10 +31,11 @@ reviewer one line per finding, design notes to a file.
 **Results file protocol.** A worker writes its detail (findings, commands, counts, log
 lines) to `<workdir>/results/<node>.md` and returns ≤ 5 lines: `verdict · counts/EXIT ·
 results path · open · next`. Monitors and gate runners return one verdict line
-(`EXIT=n · passed/failed · log path`). The lead never reads a log, diff or test output
-longer than ~60 lines / 4 KB: it reads the exit status and the last lines, or sends the
-file to a cheapest-tier summariser that writes `<file>.summary.md` and returns ≤ 5 lines
-(measured: 71 % of one lead's inflow).
+(`EXIT=n · passed/failed · log path`). The lead reads exit status plus a targeted excerpt —
+`grep -n -m3 -iE 'error|fail|exception' <log>` and ≤ 40 lines around the first hit — never a
+whole log, diff or test output over ~60 lines / 4 KB (measured: 71 % of one lead's inflow).
+Larger reads go to a cheapest-tier summariser (`<file>.summary.md`, ≤ 5 lines) or an
+`investigate` worker; a summary never proves unread portions.
 
 ### Prompt maintenance
 

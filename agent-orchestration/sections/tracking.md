@@ -54,8 +54,10 @@ not proof of termination. Preserve partial artifacts; isolate a replacement if t
 writer cannot be stopped. Reconcile late returns against the current task before use.
 At a deadline or sustained lack of meaningful progress, inspect the last artifact and
 process state, then stop or replan; repeated status messages are not progress.
-Retry transient failures with bounded backoff within the run budget; diagnose deterministic
-failures before retrying. Check external state before replaying an uncertain write.
+Probe liveness read-only (results file, process table, pushed branch) — a resume restarts
+an idle worker, and a file mtime is not liveness. Retry by cause within the run budget:
+cap/OOM → smaller scope; network → bounded backoff; deterministic → diagnose first; unknown
+→ once; after two, abandon the node and replan. Check external state before replaying an uncertain write.
 End when complete or when required information/authority is unavailable after
 safe independent work is exhausted. Clearly name incomplete nodes and why.
 

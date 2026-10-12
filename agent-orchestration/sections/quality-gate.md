@@ -3,21 +3,22 @@
 ### Evidence before acceptance
 
 The lead owns the final decision after reading the combined diff and relevant
-artifacts. Capture the exit status and a verdict line; full output stays in a log
-file ([brief](brief.md), results file protocol); avoid pipelines that hide failures
-(or explicitly preserve status). A screenshot proves visible
-state, an HTTP status proves reachability, and neither alone proves a complete
-user journey. Match evidence to the claim.
+artifacts. Capture exit status and a verdict; keep full logs per [brief](brief.md),
+preserve exit status through pipes (`pipefail`). Screenshots prove visible state and HTTP statuses
+reachability, not a complete journey. Match evidence to the claim.
 
-Run required project gates and affected behavior checks on the final integrated tree
-(`effective-development`: size optional checks to the change). Workers'
-checks help localize failures but do not replace integration verification.
+Before selecting, running or reusing verification, read
+[effective-development](../../effective-development/SKILL.md). Run required gates and
+affected behavior checks on the final integrated tree; per-worker passes alone do
+not establish integration correctness.
 
 For corpus audits, require separate counts for enumerated, parsed and actually
 content-reviewed artifacts. A generated queue or truncated tool output is not a
 completed semantic review. Resume unread portions before claiming exhaustive coverage.
 
-Gate a frozen revision (release branch), never a moving main; rerun only failed tiers and shards.
+Gate a frozen revision (release branch), never a moving main. Rerun failed checks and any
+green shard a repair touched; reuse other optional evidence only under
+the `effective-development` "Reuse valid evidence" section.
 
 ### Independent review
 
@@ -35,7 +36,9 @@ Do not discard a potentially severe concern solely because its score is low.
 Deduplicate by failure mechanism and affected path. Agreement among models is
 supporting evidence, not independent proof when they share assumptions.
 
-Review tier follows risk (routing.md): once per release train over the combined diff; re-review only a P0/P1 fix.
+Review tier follows risk (routing.md): once per release over the combined diff; re-review a
+repair that changes a material invariant or invalidates review evidence, whatever its
+priority label.
 
 ### Bounded review and repair
 
@@ -45,15 +48,13 @@ After two failed attempts on one check, the lead diagnoses the failure and chang
 the approach. Limit review cycles to three before re-planning; do not silently
 accept outstanding material defects.
 
-The lead resolves technical disagreements from evidence. Ask the user for a missing
-preference or authority, not to arbitrate routine builder/reviewer disputes.
+Resolve technical disputes from evidence; ask only for missing user preference/authority.
 
 ### Stop condition
 
-Finish when acceptance checks pass and material concerns are resolved or honestly
-reported as limitations. Expand review only for new evidence, missing coverage,
-or explicit exhaustive-audit scope. Do not require repeated empty waves, fixed
-reviewer counts, or additional tests based only on diff line count.
+Finish when acceptance passes and material concerns are resolved or disclosed. Expand
+only for new evidence, missing coverage or exhaustive scope; no ritual empty waves,
+reviewer counts or tests based on diff size alone.
 
 Before reporting completion, the lead checks scope alignment, integration behavior,
 evidence, remaining risks, and that the actual lead model is known. If the harness's

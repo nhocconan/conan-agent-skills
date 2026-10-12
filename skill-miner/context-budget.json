@@ -12,7 +12,7 @@
   "agent-orchestration": {
     "always_on": 400,
     "eager": 4200,
-    "on_demand": 52900
+    "on_demand": 53400
   },
   "agent-session-backup": {
     "always_on": 600,
@@ -80,8 +80,8 @@
     "on_demand": 0
   },
   "effective-development": {
-    "always_on": 700,
-    "eager": 8900,
+    "always_on": 300,
+    "eager": 8200,
     "on_demand": 0
   },
   "interactive-course-builder": {

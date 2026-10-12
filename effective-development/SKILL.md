@@ -1,121 +1,125 @@
 ---
 name: effective-development
 description: >-
-  Select verification for a development change while preserving required repository
-  gates. Use when speeding up test loops, choosing affected tests, investigating
-  selection misses, or designing test impact analysis. Track gaps alongside runtime.
+  Choose meaningful development checks, avoid redundant runs, and diagnose slow
+  verification while preserving required repository gates. Use for affected-test
+  selection, regression coverage, gate-result reuse, or expensive test loops.
 ---
 
 # Effective development
 
-Use affected tests for fast feedback when selection covers the changed behavior.
-Required repository gates, hooks and branch protections still run at their declared
-stage. Selection can miss dependencies; measure misses alongside runtime.
+The unit of verification is a changed behavior and its failure modes, not a test
+count. Use the cheapest checks that detect those failures; required gates remain
+at their declared stage. Finite checks cannot guarantee absence of every defect.
 
-## Tiers
+## Choose the proof
 
-| Tier | When | What runs | Budget |
-| --- | --- | --- | --- |
-| T0 inner loop | every edit | typecheck of the touched packages **and their dependents**; lint on changed files; unit tests that import the changed modules (`vitest related` / `--changed`, `jest --findRelatedTests`, `pytest-testmon`, Bazel `rdeps`) | seconds to a few minutes, no lock |
-| T1 pre-merge | before each commit to the integration branch | T0 + the widening rules below + the E2E/journey specs mapped from the touched routes, plus the smoke spec | minutes; one at a time on a shared host |
-| T2 deploy gate | each deploy batch | the project's full gate (typecheck, lint, audits, all unit, build) + full E2E on a fresh DB + an independent reviewer pass over the combined diff | the long run, once per batch |
-| T3 schedule | nightly, or CI on every push off the dev host | full suite; it exists to catch what T0/T1 selection missed | free of the agent's wall clock |
+1. **Read the actual gate policy.** Inspect repository rules, scripts, hooks and CI.
+   Required merge/deploy checks cannot be deferred to a future scheduled run or
+   replaced by selected tests. Use existing test commands and runtime recipes.
+2. **Map behavior to evidence.** Write one line per changed behavior in the task
+   plan/ledger (`.agents/`): input → expected result or durable effect → the check that
+   would catch a wrong result → what stays unproven. Focus on changed risks; prose
+   with no executable consumers needs no invented runtime test.
+3. **Get focused feedback per coherent edit batch.** Run the smallest affected check
+   first, then relevant lint/typechecks including dependent packages. Use an existing
+   affected-check command without narrowing its selection by hand. Build a selector
+   only when recurring work warrants one.
+4. **Widen for indirect impact** using the rules below. Unknown coverage needs broader
+   checks, not an optimistic empty set. Runtime journeys/smoke checks follow affected
+   behavior and repository policy; they are not mandatory for every commit.
+5. **Verify the integrated result.** After writers finish, run required final gates
+   and observe the affected user path in the real runtime. A screenshot proves visible
+   state, not persistence; HTTP success alone proves neither a usable app nor a journey.
+   Reuse valid optional evidence under the rules below.
+6. **Stop on evidence.** Finish when acceptance and required gates pass and material
+   concerns are resolved or disclosed. Broaden for new failures, missing coverage or
+   explicit exhaustive scope, not repeated empty reviews. Report commands, exits/counts,
+   actual coverage and omitted checks with reasons; test count/line coverage alone is
+   not proof of the changed contract.
 
-The tiers are a starting design, not permission to replace existing gates.
-One command per project implements T0/T1 (`check:affected`-style), with a pure
-selection function and a test that asserts every mapped spec and widening target
-exists. The agent never hand-picks tests when such a command exists.
+## Widen the affected set
 
-## Side-effect discovery (run in this order, record what each step added)
+- Include deletions, renames and untracked files; use the integration merge base for
+  branch changes. Related/changed runners (vitest related/--changed, jest
+  --findRelatedTests, pytest-testmon, Bazel rdeps) find static consumers, not every dependency.
+- Search consumers of removed, renamed or re-typed exports (`git diff -U0 | grep '^-export'`
+  → grep the name repo-wide); include caller tests and dependent-package typechecks.
+- Map route/layout/shared-component paths to relevant journeys in the task ledger or
+  an existing map. Repair missing entries in existing maps; unknown paths, dynamic
+  consumers, stale maps or unexpectedly empty selection require broader checks.
+- Encode contracts/schemas, migrations, auth/session/tenancy, env/config, build/CI,
+  prompts, disk fixtures and catalogs → named contract/DB/isolation/eval/audit suites.
+  Keep widening rules in an existing selector, not individual memory. When building
+  one, test target existence and a representative missed dependency/counterexample.
+- Never delete/skip/loosen tests or narrow coverage to pass. Legitimate expectation
+  changes need a changed contract; deliberate selection narrowing needs evidence and
+  explicit rationale. Files read by code cannot silently become “docs-only.”
+- Required full gates and scheduled full suites stay full. A regression missed by
+  selection adds a map/widening rule with the fix. Log each selection miss; a rising
+  miss count means a stale map. The reviewer confirms the widening matched the touched
+  paths (a migration got the DB suite) before the gate. Flake earns one fresh rerun; an
+  identical second failure is not flake. A failure in code the diff never touched means a
+  stale base: check `git merge-base --is-ancestor <base> HEAD`, rebase, do not retry.
+  Do not invent CI jobs without policy authorization.
 
-1. **Import graph.** The test runner's related/changed mode finds tests that statically
-   import the changed files. It cannot see dynamic imports, fixtures read from disk,
-   SQL, prompts, JSON catalogs or templates: those are the widening triggers.
-2. **Consumers of changed exports.** For every removed, renamed or re-typed export
-   (`git diff -U0 | grep '^-export'`), grep its name across the repo; add the callers'
-   tests. Typechecking the *dependents* of the touched package catches the typed half.
-3. **Route → journey map.** A path prefix (page, route handler, shared layout, shared
-   component library) maps to the E2E specs that drive it; the smoke spec is always in.
-   A touched route with no row is a finding: add the row in the same commit.
-4. **Widening triggers are rules, not judgement.** A change under contracts/schemas,
-   migrations, auth/session/tenancy, env/config schema, build or CI config, prompts,
-   fixtures or copy catalogs widens to a named set (all contract tests, all DB suites,
-   the auth/isolation journeys, the mock evals, the copy audits). Encode the set in the
-   command so the widening does not depend on who runs it.
-5. **Widen on uncertain coverage.** Include deletions, renames and untracked files;
-   use the integration merge base for branch work. Unknown paths, dynamic consumers,
-   a stale map or an unexpectedly empty selected set require a broader check.
-   A known documentation-only path may use static checks if executable consumers
-   are ruled out; required gates still apply.
-6. **State what did not run.** The report lists the tier, every command with its exit
-   code and counts, and actual omitted checks with reasons. Never label a completed
-   required gate as skipped merely because the tier normally omits it.
+## Make checks detect wrong behavior
 
-## Goodhart guard
+For a bug fix, prove regression sensitivity per
+[investigating-bugs](../investigating-bugs/SKILL.md) step 8 before counting the test as coverage.
 
-When a measure becomes a target it stops measuring (Goodhart; Campbell). An agent
-rewarded for "green" will narrow the selection; these rules keep the proxy honest.
+Assert observable behavior against independently specified expectations. Call counts,
+truthiness, copied constants or expected values computed by the subject can miss a
+plausible wrong result. Yardstick: a test that would still pass if every function it
+calls returned nothing tests nothing; rewrite or delete it. Preserve legitimate type,
+relational and absence checks;
+use a permitted/effective control when it distinguishes a no-op or unconditional
+rejection. A mock may isolate an external boundary, not replace the mechanism proved.
 
-- **Green is the proxy; behaviour is the goal.** After the selected run passes, make one
-  observation of the touched journey in the real runtime: open the page, run the CLI,
-  read the job log, compare the screenshot. Verification by re-deriving, not by
-  recognising the exit code.
-- **Never shrink to pass.** No deleting, skipping or loosening a test, no narrowing a map
-  row or a widening rule, no "docs-only" classification for a file that code reads.
-  A map or rule changes only to widen, or in a commit whose subject says what it narrows
-  and why, with the evidence.
-- **Misses are data.** Every T2/T3 failure on a change a lower tier passed is logged as a
-  Trap (open) with the fix being a new map row or widening rule, landed with the code fix.
-  Watch the miss count, not just the run time; a rising miss count means the map is stale.
-- **Reviewer checks the tier, not just the diff.** The reviewer confirms the claimed tier
-  matches the touched paths (did a migration really get the DB widening?) and re-runs the
-  T1 command on the integrated tree before the deploy gate.
-- **Full runs stay full.** The deploy gate and the schedule never adopt selection; they are
-  the oracle that makes selection safe to use everywhere else.
+For costly external/AI APIs, use deterministic fixtures for routine feedback and a
+representative authorized live contract sample when needed, within known limits.
+Mocks cannot prove live behavior; record actual usage when exposed, never invented caps.
 
-## Setting a project up
+## Reuse valid evidence
 
-1. Add one script: changed files (diff against a ref + untracked) → plan (typecheck
-   filters, lint list, related-test list, widening steps, mapped specs) → run, or print
-   with `--list`. Default ref = HEAD (uncommitted work); `--since <ref>` for a commit.
-2. Put the route map and widening table in that script; test that every target exists.
-3. Run independent read-only checks concurrently when resources permit. Route heavy
-   or state-sharing steps through the project's lock/queue; isolate DBs, ports and
-   output paths before parallel E2E.
-4. Make the full suite run off the dev host on every push (CI) and at the deploy gate.
-5. Propose tiers in the canonical testing standard. Change required merge gates only
-   within an authorized policy change, supported by measured selection coverage.
+Record command/scope, revision plus working-diff fingerprint, relevant dependencies,
+tests/selector, config/build/seed/environment, exit, duration and artifact path. Reuse
+successful optional checks only while these inputs remain valid and policy permits.
+A worker verdict alone is insufficient: inspect the evidence against the final tree.
 
-## Synthetic example
+Rerun failed checks and those invalidated by later edits, including previously green
+shards affected by a repair. Unknown impact or mutable external state needs fresh
+probes. Required hooks/gates still run at their declared stage. Coordinate one final
+integrated run instead of duplicate full runs from every worker.
 
-A fix to `packages/core/pricing/round.ts`. T0: typecheck `core` and its dependents
-`web` and `worker`, lint 1 file, `vitest related` finds 4 suites (2 s). The export
-`roundMinor` was renamed, so step 2 greps it: one caller in `apps/web/lib/cost.ts`
-with its own test, added. No route touched, no widening trigger: T1 = T0 + smoke spec.
-Behaviour check: the price on the one page that shows minor units reads 12,50 €
-after the change. Report: "T1, 5 suites 41 tests, smoke 6/6, exit 0 ×4; not run: full
-gate, full E2E (deploy gate)". The nightly full run passes; had it failed on a template
-snapshot, the miss would add a `templates/` → pixel-test widening rule.
+## Keep verification bounded
 
-## Sources (read 2026-10-04)
+Run independent read-only checks concurrently only within host capacity. Isolate DBs,
+ports and output paths or serialize stateful checks (`dev-env-lifecycle`). For a long
+check record the process handle, log path, last progress and next review point; quiet
+output alone is not a hang. An unfinished check is incomplete, never passed, and no
+budget justifies weakened assertions or a skipped required gate. Stall, termination and
+cleanup rules: [tracking](../agent-orchestration/sections/tracking.md).
 
-- Memon et al., "Taming Google-Scale Continuous Testing", ICSE 2017 — few tests ever
-  fail, and those sit close to the changed code; frequently modified code breaks more.
-  https://research.google/pubs/taming-google-scale-continuous-testing/
-- Meta Engineering, "Predictive test selection" (2018-11-21) — runs about a third of the
-  transitively dependent tests and catches over 99.9 % of regressions; retrains on recent
-  outcomes. https://engineering.fb.com/2018/11/21/developer-tools/predictive-test-selection/
-- Paul Hammant, "The Rise of Test Impact Analysis" (martinfowler.com, 2017-08-22) — subset
-  pre-integration, full suite nightly or before release; misses are the cost to manage.
-  https://martinfowler.com/articles/rise-test-impact-analysis.html
-- Ham Vocke, "The Practical Test Pyramid" (martinfowler.com, 2018-02-26) — keep E2E to the
-  high-value journeys, run them late in the pipeline, push checks down the pyramid.
-  https://martinfowler.com/articles/practical-test-pyramid.html
-- Goodhart's law (Strathern's phrasing) and Campbell's law.
-  https://en.wikipedia.org/wiki/Goodhart%27s_law
-- Anthropic, Claude Code best practices, "Give Claude a way to verify its work" and
-  "The trust-then-verify gap" — a check the agent can run, evidence over assertion, a
-  fresh reviewer that did not write the code. https://code.claude.com/docs/en/best-practices
-- Vitest CLI, `vitest related` and `--changed` (static imports only).
-  https://vitest.dev/guide/cli.html · Turborepo `--filter=...[ref]` / `--affected`.
-  https://turborepo.dev/docs/reference/run
+Repeated user journeys live in the project map
+([DISTILL](../senior-operator/DISTILL.md) recipe section; rehearse once before calling
+it verified);
+never a new skill or framework to hold a recipe.
+
+Measure changes on comparable tasks: elapsed time, exposed actual usage, rework and
+selection misses. Prompt bytes are not billed tokens; unknown savings stay unknown.
+
+## Sources
+
+Selection/pyramid references (read 2026-10-04):
+[Google continuous testing](https://research.google/pubs/taming-google-scale-continuous-testing/),
+[Meta selection](https://engineering.fb.com/2018/11/21/developer-tools/predictive-test-selection/),
+[test impact analysis](https://martinfowler.com/articles/rise-test-impact-analysis.html),
+[test pyramid](https://martinfowler.com/articles/practical-test-pyramid.html).
+Runner references: [Vitest](https://vitest.dev/guide/cli.html),
+[Turborepo](https://turborepo.dev/docs/reference/run).
+
+Procedure comparison (read 2026-10-12): pstack `tdd`, `principle-test-behavior-not-implementation`,
+`create-verification-skill` and `maintain-verification-skill`, pinned at
+[1b6d44f](https://github.com/cursor/plugins/tree/1b6d44ff26d4e242f4e8f68c391e6d2f7ca16def/pstack/skills).
+Adapted to existing maps and repository authority; no upstream installation required.

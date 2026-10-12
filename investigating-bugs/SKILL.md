@@ -5,12 +5,9 @@ description: Finds the root cause of a defect before changing anything — repro
 
 # Investigating bugs
 
-Thin wrapper over gstack's `investigate`. Upstream owns the search procedure; this file
-owns the discipline that decides whether the answer is trustworthy.
-Paths below are relative to this skill's real directory in the repo checkout
-(`~/.conan-agent-skills` by default — resolve the symlink first). `refsync.py ensure`
-fetches the vendored upstream files; if one is absent, say so and apply the rules in
-this file instead of guessing upstream's content.
+Wraps gstack's `investigate`; local rules govern diagnosis and proof. Resolve paths
+from this skill's real directory. `ref-skills/refsync.py ensure` fetches the vendored
+upstream (markdown only, no install); if absent, say so and apply these rules.
 
 ## The rule that matters most
 
@@ -23,16 +20,16 @@ unavailable, continue safe probes and label the limits instead of declaring a fi
 
 1. **Verify the presupposition.** "X is broken" may be false, or broken somewhere else.
    Check that the reported behaviour is real before hunting its cause.
-2. **Reproduce it** — a failing test, a command with its output, a screenshot. This
-   artifact is what proves the fix later. Without it, "fixed" is unfalsifiable.
+2. **Reproduce it** — preserve a failing test, command output or journey artifact.
+   Without it, "fixed" is unfalsifiable.
+   Prefer a cheap existing test path; don't build unrelated infrastructure for a small fix.
 3. **Read the actual error.** Full output, not the last line. The pipe-swallows-exit-code
    trap applies: `cmd > run.log 2>&1; echo "EXIT=$?"`.
 
 ## Diagnosing
 
-4. **Locate the mechanism, not the vicinity.** Name the specific line, state, or ordering
-   that produces the symptom, and be able to explain why it produces *this* symptom and
-   not a different one.
+4. **Locate the mechanism.** Name the line, state or ordering that produces *this*
+   symptom and not a different one.
 5. **Verify by re-deriving, not by recognising.** A pattern that looks familiar is the
    most common way a wrong diagnosis survives review — see `senior-operator`
    OPERATING-MANUAL §4.
@@ -47,13 +44,15 @@ Investigation"**, **"Phase 2: Pattern Analysis"** and **"Confusion Protocol"** s
 7. **Is it a class?** Search for the same shape and confirm the violated invariant
    at each candidate. Fix confirmed sites within scope; report unrelated ones.
    Hand off recurring classes to `bug-class-audits`.
-8. **Prove the fix against the reproduction from step 2**, then run the relevant
-   regression checks and required repository gate. Size optional checks with
-   `effective-development`; broaden for uncertain coverage or a new failure.
+8. **Prove regression sensitivity.** Same check, inputs and environment before and after
+   the fix: fails for the intended defect, then passes. A setup failure (missing import,
+   credential, startup) proves nothing. Already fixed? Run the check against the old
+   revision in a scratch worktree; if no before-proof is practical, say so. When the check
+   asserts an absence or rejection, add a control input that must succeed.
+9. **Verify the final tree.** Before choosing regressions or reusing evidence, read
+   [effective-development](../effective-development/SKILL.md); run required gates.
 
 ## Related
 
-[agent-orchestration](../agent-orchestration/SKILL.md) — subsystem work: the harness lead
-owns diagnosis and quality; workers survey and fix
-([routing](../agent-orchestration/sections/routing.md)).
-`senior-operator` — how to reason under ambiguity. `bug-class-audits` — turning a confirmed class into a mechanical audit. `metric-integrity` — when the "bug" is a wrong number on a dashboard.
+[agent-orchestration](../agent-orchestration/SKILL.md) — lead owns diagnosis and quality.
+`senior-operator` — reasoning; `bug-class-audits` — enforcement; `metric-integrity` — numbers.

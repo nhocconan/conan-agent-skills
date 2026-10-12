@@ -2,7 +2,7 @@
 mode: wrap
 upstream: gstack
 source: github:garrytan/gstack@main:investigate/SKILL.md
-version: 1.0.0
+version: 1.0.1
 fingerprint: sha256:2257118effdc9afcd0cd2a688e2342e99f6b681dea6aa7e836b17ac4871938bc
 reviewed: 2026-10-02
 ---
@@ -20,10 +20,11 @@ Upstream's description does not state when to fire, so it under-triggers on the 
 
 ## Overrides that MUST survive an upgrade
 
-1. reproduce before editing — never edit to test a theory
+1. preserve reproduction before the fix; isolated diagnostic probes may test hypotheses
 2. verify the presupposition first
 3. verify by re-deriving, not recognising
 4. escalate a repeated shape to bug-class-audits
+5. fail-before/pass-after proof for the intended defect (SKILL step 8)
 
 ## Upstream sections this depends on
 

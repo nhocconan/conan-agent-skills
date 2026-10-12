@@ -25,7 +25,9 @@ runs turn sequential:
 **Waves.** A wave is every node whose dependencies are satisfied. Launch ready nodes
 within available slots; prioritize nodes on the critical path
 (the longest dependent chain), then independent coverage. Keep the lead useful rather
-than filling slots with speculative work. When a stage-2 node depends only on *its own*
+than filling slots with speculative work. For three or more similar nodes, push one through
+brief → worker → verify → integrate first and fix the brief template and the check from that
+evidence before fanning out. When a stage-2 node depends only on *its own*
 stage-1 node, do not wait for the whole
 stage — pipeline it (each item flows through all stages independently). A barrier is
 justified only when the next stage genuinely needs *all* prior results together: dedup

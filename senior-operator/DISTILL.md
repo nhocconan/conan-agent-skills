@@ -46,11 +46,19 @@ Then flow groups, in lifecycle order (keep only the ones the repo actually has):
 | 0 | Session bootstrap | What to read/run at the start of EVERY session; accounts; env traps |
 | 1 | Dev runtime | Start/stop/restart, logs, ports, the ways it breaks |
 | 2 | Verify gates | The one mirror command; what each gate does/does NOT catch; pre-push musts |
-| 3 | Behavior verification | How to actually see it work (browser/device/CLI); login/interaction gotchas |
+| 3 | Behavior verification | Executable user journeys: prerequisites, launch/readiness, drive, observe, evidence, cleanup |
 | 4 | Domain ground truth | Money/metric/date/tenancy invariants; where external truth lives |
 | 5+ | Data lifecycle, integrations, background jobs, AI plane… | Per-repo as needed |
 | n−1 | Shipping | Definition of done, docs sync, deploy |
 | n | **Trap table** | Symptom → real cause → do this. One screen. The highest-value section. |
+
+Behavior recipes reuse existing scripts and stable user entry points. Record isolated
+ports/data, a read-only instance/build/auth/readiness check, input/action, expected
+visible result and relevant durable effect, and a named evidence path. A listening
+port alone is not readiness. After a surprising result, recheck health and reset
+state or relaunch before retrying, even if the process is healthy. Clean only owned
+resources (`dev-env-lifecycle`); preserve evidence. Separate doc drift, harness gaps
+and product defects; don't change the expected behavior merely to make a recipe pass.
 
 Trap-table admission rule: the entry must have actually happened. Format:
 `| symptom as observed | real cause — action |`. Sort by frequency × cost.
@@ -72,6 +80,9 @@ Trap-table admission rule: the entry must have actually happened. Format:
 - Every command in the map: confirmed present in `package.json`/`scripts/` this session —
   not recalled from memory.
 - Every trap: traceable to a memory entry, rulebook rule, or incident you can name.
+- Rehearse one representative recipe: launch → user action → observe result and side
+  effect → teardown → confirm evidence survives. Record date, tested build and limits;
+  unexecuted recipes are drafts, unreachable prerequisites are coverage gaps.
 - Read it back as the weaker model: could you, knowing nothing else, start the dev server,
   run the gates, and avoid the top three traps? If not, the map is prose, not a map.
 
