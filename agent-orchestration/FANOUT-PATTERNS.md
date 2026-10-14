@@ -177,7 +177,26 @@ Set `Workspace` to `"share"` to share the repository directory like a git worktr
 `"branch"` for an isolated clone. For read-only scout/verifier roles, pass
 `TypeName: "research"`, or register a scoped worker first via `define_subagent` with
 `enable_write_tools: false` and `enable_subagent_tools: false`. `Model` accepts
-`inherit`, `flash_lite`, or `flash` ([routing](sections/routing.md)).
+`inherit`, `flash_lite`, `flash`, or `pro` ([routing](sections/routing.md)).
+
+## Shared-host resources
+
+Worktrees, lanes and tool allowlists isolate files, not memory, CPU, ports, databases or
+browsers. On a host that also runs production, those belong to one conductor the lead owns:
+a CLI that is the only way to start a server, browser, build, test run or fixture; runs every
+job in a capped cgroup (per-class `MemoryMax`) inside one capped slice; serializes slots;
+admits a job only against measured `MemAvailable` and load; records tree fingerprint, exit,
+duration and peak memory per run; reuses a result for the same fingerprint; stops by unit,
+never `pkill -f`. Workers request runs and read results; they never start resources, never
+re-run a gate another lane just ran on the same fingerprint, and never share a mutable
+fixture without a clone. A single lock is not a conductor: no queue, status, kill switch or
+memory bound (a CPU-only load rule plus one flock let a second `next dev` reach 40 GiB and
+hang a host). The CLI's name, classes and caps live in the project's host-local map.
+
+Staff by the content's natural partition (one worker per dashboard tab or screen; halve the
+count under load). Sonnet for testing and standard work, Haiku for simple checks. Test
+method per worker: [effective-development](../effective-development/SKILL.md) (production
+build, one browser with many contexts, API-level parity, component tests).
 
 ## Worktrees and integration
 

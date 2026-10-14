@@ -60,3 +60,5 @@ that. Source remains at `~/.agents/skills/dogfood` if the decision is ever revis
 **2026-07-25 — `design-review` activated unwrapped.** Different lens (visual, not
 functional), and its 152-char description already states what and when. A wrapper would
 be maintenance tax with no triggering gain — a wrap must earn itself.
+
+Shared host: one browser, a context per tab/test, production build: [SHARED-HOST](../effective-development/SHARED-HOST.md).

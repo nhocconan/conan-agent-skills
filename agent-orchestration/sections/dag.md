@@ -8,6 +8,10 @@ Nodes may deliver independently checkable contracts before the complete journey 
 clarify its scope first. Judgment work can be delegated with criteria, raw evidence,
 and stated uncertainty; the lead retains acceptance.
 
+On a shared host, cut by phase: code lanes, affected tier per lane, one integration gate on
+a frozen fingerprint, E2E on the one server, visual parity, review; add an edge only where
+the next phase consumes the previous artifact.
+
 **Default cuts that work:** by package/layer (schema → API → UI), by screen, by connector,
 by review dimension (correctness / security / perf / tests), by file group, by data window.
 

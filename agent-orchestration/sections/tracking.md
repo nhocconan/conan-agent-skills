@@ -8,6 +8,11 @@ Record goal, dependencies, actual models/effort when exposed, owned files,
 acceptance, status, artifacts, start/last meaningful progress, deadline, resource/process
 handles and the lead's verdict. Unknown cost and solo timing remain unknown.
 
+On a shared host the ledger also carries the conductor job id and unit per run, server port
+and mode, DB name or fixture hash, and the fingerprint a green refers to. A stop order is a
+conductor command whose result is logged, not a chat message. A result without a fingerprint
+is `unverified`, whatever the worker said.
+
 States: `pending → briefed → running → reviewing → done | failed | skipped | blocked`.
 Only the lead marks done after acceptance. Record partial results promptly.
 Failed dependencies block their dependents; independent work continues.

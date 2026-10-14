@@ -18,7 +18,7 @@ Model policy: **the lead slot belongs to the active harness, and the harness lea
 final quality; workers implement scoped work and never grant final acceptance.** Leads are
 not substituted across harnesses. Per-harness tables, model IDs, pricing, retirement dates
 and harness mechanics live in [model routing](agent-orchestration/sections/routing.md),
-OpenAI and Anthropic rows re-verified 2026-09-30, Gemini rows 2026-09-15.
+OpenAI and Anthropic rows re-verified 2026-09-30, Gemini/agy rows 2026-10-14.
 See [the audit dated 2026-10-02](SKILL-AUDIT.md) for the 32 skills and validation limits.
 
 Project rules use one source: `AGENTS.md`, with native Claude/Gemini import adapters.

@@ -214,3 +214,5 @@ than none, because it closes the question.
 
 If you could not verify — no browser, no session, an isolated network — say so
 plainly with the precise reason. A negative result with a cause is a real result.
+
+On a shared host use one browser with a BrowserContext per tab/test, against a production build: [SHARED-HOST](../../effective-development/SHARED-HOST.md).

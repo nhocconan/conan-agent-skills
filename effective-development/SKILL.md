@@ -92,6 +92,11 @@ shards affected by a repair. Unknown impact or mutable external state needs fres
 probes. Required hooks/gates still run at their declared stage. Coordinate one final
 integrated run instead of duplicate full runs from every worker.
 
+## Shared host
+
+Memory-lean testing (production build, one browser with many contexts, API-level parity,
+component tests, conductor): [SHARED-HOST.md](SHARED-HOST.md).
+
 ## Keep verification bounded
 
 Run independent read-only checks concurrently only within host capacity. Isolate DBs,

@@ -1,9 +1,9 @@
 ## Model routing and quality ownership
 
 Canonical model policy; companion skills link here. OpenAI/Anthropic tables retain
-their 2026-09-30 verification; Gemini/agy retain 2026-09-15. Targeted 2026-10-04
-refresh: OpenAI deprecations and model selection, Codex configuration and Claude
-subagent mechanics. Table dates do not imply current account access.
+their 2026-09-30 verification; Gemini/agy rows were re-verified 2026-10-14. Targeted
+2026-10-04 refresh: OpenAI deprecations and model selection, Codex configuration and
+Claude subagent mechanics. Table dates do not imply current account access.
 
 ## Contents
 
@@ -30,7 +30,7 @@ an unavailable optional specialist alone does not block acceptance.
 | --- | --- | --- | --- | --- |
 | Claude (Claude Code, Agent SDK) | `claude-opus-5-5` | `claude-fable-5-1` | `claude-sonnet-5-5` | `claude-haiku-4-5-20251001` |
 | Codex (OpenAI) | `gpt-6.1-sol` | `gpt-6-astra` | `gpt-6.1-sol` | `gpt-6-luna` |
-| agy (Antigravity CLI) | `gemini-3.8-flash` | `gemini-3.8-flash` | `gemini-3.7-flash` | `gemini-3.5-flash-lite` |
+| agy (Antigravity CLI) | `gemini-4-argon` / `gemini-3.8-flash` | `gemini-4-argon` | `gemini-3.8-flash` | `gemini-3.8-flash` (`low`) / `gemini-3.5-flash-lite` |
 
 Select the least costly model and effort that meet the task's acceptance checks. Use Luna
 for extraction, inventory, fine edits and focused patches with clear constraints and
@@ -38,7 +38,10 @@ observable checks. Use Sol 6.1 for general coding and coordinated technical work
 for demanding architecture, conflicting evidence or sustained judgment. On Claude,
 Anthropic recommends Opus 5.5 for most workloads; Sonnet 5.5 is our bounded-builder cost
 choice. Use Fable for demanding reasoning or when higher-effort Opus evaluations fall short.
-Haiku suits simple work; use Sonnet where the bounded task needs stronger reasoning.
+Haiku suits simple work; use Sonnet where the bounded task needs stronger reasoning. On
+Google/agy, use Argon for frontier judgment and complex multi-step engineering, 3.8 Flash
+as the bounded builder and cross-plan workhorse, and 3.8 Flash (`low`) or 3.5 Flash-Lite
+for focused checked work.
 
 **Set `model` on every spawn:** an omitted one inherits the parent's or the agent definition's
 tier (measured: routine reviews on the hardest tier were 24 % of one project's agent spend).
@@ -117,24 +120,34 @@ it is distinct from shutdown and from ChatGPT product retirement.
 
 | Model | API ID | Status | GA | Context / output | $/MTok in → out |
 | --- | --- | --- | --- | --- | --- |
-| 3.8 Flash | `gemini-3.8-flash` | GA, newest | 2026-09-02 | 1,048,576 / 65,536 | 0.75 → 3.75 |
-| 3.7 Flash | `gemini-3.7-flash` | GA | 2026-08-13 | 1,048,576 / 65,536 | 0.75 → 3.75 |
+| 4 Argon | `gemini-4-argon` | GA, flagship | 2026-10-13 | 1,048,576 / 65,536 (1M long decode) | 2 → 10 |
+| 3.8 Flash | `gemini-3.8-flash` | GA, newest Flash | 2026-09-02 | 1,048,576 / 65,536 | 0.75 → 3.75 |
 | 3.6 Flash | `gemini-3.6-flash` | GA | 2026-07-21 | 1,048,576 / 65,536 | 0.75 → 3.75 |
 | 3.5 Flash-Lite | `gemini-3.5-flash-lite` | GA | 2026-07-21 | 1,048,576 / 65,536 | 0.30 → 2.50 |
 | 3.1 Pro | `gemini-3.1-pro-preview` | Preview | — | 1,048,576 / 65,536 | 2 → 12 (≤200K input) |
 
-**Every agy role uses Flash.** Reasoning Pro remains Preview, so
-`gemini-3.1-pro-preview` is not a default; reconsider when reasoning Pro reaches GA.
-Use `thinking_level` to differentiate lead and builder effort. Google AI Ultra is
-a subscription, not an API model tier. Flash prices are introductory through
-2026-12-31; 3.8 / 3.7 / 3.6 then move to 1.50 → 7.50. Defaults differ:
+**Argon is the GA flagship reasoning model; 3.8 Flash is the cross-plan workhorse.**
+`gemini-4-argon` has a unified 1,048,576 input+thinking+output window (1M long decode
+via `background: true`), Antigravity Ultra/Enterprise access (app, CLI, IDE extensions),
+and `$2 → $10` intro API pricing through 2026-11-30 (`$4 → $20` from 2026-12-01; implicit
+cache `$0.10` then `$0.20`; no explicit cache or Free/AI Pro tier). Flash `$0.75 → $3.75`
+intro rates move to `$1.50 → $7.50` on 2027-01-01. `gemini-3.7-flash` and
+`gemini-3.5-flash` (deprecated 2026-10-08) auto-route to `gemini-3.8-flash` and
+`gemini-3.6-flash`. Never combine `thinking_budget` with `thinking_level`.
 
-| Model | Accepts | Default |
+| Model | Accepts (`thinking_level`) | Default |
 | --- | --- | --- |
-| 3.8 Flash, 3.7 Flash | `low`, `medium`, `high` | `medium` |
-| 3.6 Flash, 3.5 Flash | `minimal`, `low`, `medium`, `high` | `medium` |
+| 4 Argon, 3.8 Flash | `low`, `medium`, `high` | `medium` |
+| 3.6 Flash | `minimal`, `low`, `medium`, `high` | `medium` |
 | 3.5 Flash-Lite | `minimal`, `low`, `medium`, `high` | `minimal` |
 | 3.1 Pro (Preview) | `low`, `medium`, `high` | `high` |
+
+Use Argon `high` for hardest architecture, math/science, high-risk review and long decode;
+`medium` for general lead and complex multi-step engineering; `low` for lighter
+cost-sensitive reasoning. Use 3.8 Flash `high` for harder multi-step coding/agents or lead
+fallback when Argon is unavailable; `medium` for standard bounded builds and routine
+review; `low` for fast checks, inventory, extraction and narrow edits (`minimal` errors on
+3.8 Flash; use 3.5 Flash-Lite `minimal`/`low` for the lightest high-volume checks).
 
 ### Cross-provider fleets
 
@@ -179,14 +192,18 @@ defaults do not override a full-history fork. Current CLI documentation names
 collaboration tool whose limit includes the lead. Inspect the live schema;
 CLI configuration is not a guarantee for this collaboration surface.
 
-**agy (Antigravity CLI), 2026-09-15 snapshot.** `invoke_subagent` uses tiers
-`inherit`, `flash_lite`, `flash`, `pro`, not API IDs. Use the first three; `pro`
-remains off-policy while reasoning Pro is Preview. `self` inherits; `research`
-is read-only. `define_subagent` configures write, nested-agent and MCP permissions.
-Definitions load from workspace `.agents/agents/`, global `~/.gemini/config/agents/`
-or plugin agent directories. On observed agy 1.2.3, bare CLI IDs require `--effort`;
-`agy models` lists suffixed IDs and some cross-provider models.
-See [fan-out patterns](../FANOUT-PATTERNS.md) for the recorded invocation format.
+**agy (Antigravity CLI), 2026-10-14 snapshot (1.3.5).** `agy models` exposes
+`gemini-4-argon-{low,medium,high}` and `gemini-3.8-flash-{low,medium,high}` (plus
+Claude 5.5 and `gpt-oss-120b-medium`). Since 1.3.4, `--model` and `/model` accept a
+base model name without `--effort` (using its default thinking level, else `medium`),
+or pair with `--effort` (`low|medium|high|xhigh|max`). `invoke_subagent` uses tiers
+`inherit`, `flash_lite`, `flash`, `pro` (not raw API IDs or explicit thinking levels):
+use `flash_lite` for light lookups/checks, `flash` for standard bounded builders, scouts
+and routine verifiers, and `pro` (or `inherit` when the lead is already on the desired
+Argon thinking level) for complex multi-step refactors, architecture or high-risk
+verification. `self` inherits; `research` is read-only. `define_subagent` configures
+write, nested-agent and MCP permissions from `.agents/agents/`, `~/.gemini/config/agents/`
+or plugins. See [fan-out patterns](../FANOUT-PATTERNS.md).
 
 ### Freshness and evidence
 
@@ -194,7 +211,7 @@ Re-verify on a release, a deprecation, a rejected model ID, a retirement date co
 90 days, or a maintenance audit. Check the vendor model pages and the session catalog before
 changing a default, and preserve the user's explicit model choice. Keep historical benchmarks
 dated; do not relabel an old run as a new model. OpenAI/Anthropic values were checked on
-2026-09-30; Gemini values retain the 2026-09-15 evidence date. Neither is a quote
+2026-09-30; Gemini/agy values were re-verified on 2026-10-14. Neither is a quote
 for a particular account. Compare candidate models on representative inputs and
 checks; record quality, elapsed time, actual token usage and rework where available.
 
@@ -213,5 +230,9 @@ Sources:
 - [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
 - [OpenAI deprecations](https://developers.openai.com/api/docs/deprecations)
 - [Gemini API models](https://ai.google.dev/gemini-api/docs/models)
+- [Gemini 4 Argon](https://ai.google.dev/gemini-api/docs/models/gemini-4-argon)
+- [Gemini 3.8 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash)
+- [Gemini thinking](https://ai.google.dev/gemini-api/docs/thinking)
 - [Gemini API deprecations](https://ai.google.dev/gemini-api/docs/deprecations)
+- [Antigravity models](https://antigravity.google/docs/models)
 - [Antigravity CLI docs](https://antigravity.google/docs/cli/)
