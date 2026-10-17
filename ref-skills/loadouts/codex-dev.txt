@@ -10,7 +10,7 @@
 # Codex documents the cap as "2% of the model's context window, or 8,000
 # characters when unknown" (learn.chatgpt.com/docs/build-skills, 2026-10-02); the
 # unit of the 2% is not stated, so treat 8,000 chars as the working ceiling.
-# Measured 2026-10-02 from the repo: these 11 names + descriptions total ~5.9k bytes.
+# Measured 2026-10-17 from the repo: these 12 names + descriptions total ~6.0k bytes.
 # Everything else is still on disk and reachable by
 # path: read ~/.conan-agent-skills/<name>/SKILL.md and follow it. The load-out
 # governs automatic triggering, not availability.
@@ -29,3 +29,4 @@ remote-host-access
 resilient-data-harvest
 secure-code-audit
 docs-sync
+effective-development

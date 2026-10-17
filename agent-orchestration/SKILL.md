@@ -26,13 +26,13 @@ active parent session, with no cross-harness substitution. Read the
 3. Read the relevant project instructions and inspect the active tool schema.
    Respect actual model availability, permissions, budget, and the harness's
    configured concurrency and depth limits.
-   Match model and effort to the checks; confirm the actual worker model.
+   Tier each node by work nature ([routing](sections/routing.md#work-nature--tier));
+   set model, effort and turn cap on every spawn; confirm the actual worker model.
 4. For a single wave, record a short ledger; for longer runs also keep a plan in
    the repo's declared ignored working directory. Record model, owned files,
    acceptance, status, evidence, and the lead's verdict.
 5. Launch independent workers without waiting for earlier independent workers
-   to finish. Tool calls in separate messages can still run concurrently on
-   asynchronous harnesses. Parallelize according to actual execution semantics.
+   to finish; parallelize according to the harness's actual execution semantics.
 
 Do useful lead work while workers run. A worker's return is input to the lead's
 review, never a declaration that the user's task is done.
@@ -55,19 +55,19 @@ review, never a declaration that the user's task is done.
 ## Keep delegation bounded
 
 Each worker gets the outcome, context it cannot infer, owned paths, acceptance
-checks, allowed side effects, and return shape. One writer per file unless
-isolated worktrees are deliberately integrated. Workers cannot expand authority
-or spawn further fleets. Use supported harness controls; file ownership remains a
-coordination contract unless an actual path boundary enforces it
-(`FANOUT-PATTERNS.md`, lane enforcement). Worker detail goes to results files; the lead
-reads ≤ 5-line digests and keeps its own context under 120k ([tracking](sections/tracking.md)).
+checks, allowed side effects, and return shape. One writer per path, recorded in the
+ownership manifest; reserved ids claimed in the ledger; commits through own paths only
+([DAG](sections/dag.md)). Workers cannot expand authority or spawn further fleets. Use
+supported harness controls; ownership is a coordination contract unless a path boundary
+enforces it (`FANOUT-PATTERNS.md`, lane enforcement). Worker detail goes to results files;
+the lead reads ≤ 5-line digests and keeps its own context under 120k
+([tracking](sections/tracking.md)).
 
 After two failures on one acceptance check, the lead diagnoses the task or takes
 it back. Keep evidence that distinguishes verified, failed, and unavailable
 checks. The lead reviews the combined diff, verifies material behavior on the
 final tree, and reports the coherent result with remaining limitations.
 
-Read supporting skills only when the task needs them: `delegate-run` for
-unattended completion, `autonomous-loops` for recurring execution, domain audits
-for relevant risks. Do not load a whole suite, or invent a dependency on a skill
-absent from the active environment.
+Read supporting skills only when the task needs them (`delegate-run` for unattended
+completion, `autonomous-loops` for recurring execution, domain audits for their risks);
+never load a whole suite or depend on a skill absent from the environment.

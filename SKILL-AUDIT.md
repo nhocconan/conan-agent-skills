@@ -87,6 +87,36 @@ none of the entries present only in `antigravity-cli/skills`. The repo keeps
 context window" cap does not state its unit. OpenAI's Codex docs now 308-redirect to
 `learn.chatgpt.com`; routing.md keeps the original URLs until the redirect proves stable.
 
+## 2026-10-17 — orchestration token review (one project, seven days)
+
+Scope: every Claude Code transcript of one project from 2026-10-10 to 2026-10-17 — 10 lead
+sessions and 507 subagents, 60,037 assistant turns — read by a streaming script over the
+`usage` fields (input, cache read, cache creation, output per turn; list-price equivalent
+from the routing tables). Private script, raw tables and incident references live in
+`.agents/token-review-2026-10-17/`. One project, one harness: a measurement of this
+operating pattern, not a benchmark of the models.
+
+Totals: 10.37 B cache-read tokens, 314 M cache-creation, 6.7 M output, ≈ $5,100 list price;
+cache reads are 80 % of it, so cost tracked context size × calls, not output. Two days
+carried 61 % of the turns ($1,300 and $1,800). Ranked causes, each with the rule it changed:
+
+| # | Measured cause | Share | Change |
+| --- | --- | --- | --- |
+| 1 | Long workers: 223 of 507 subagents passed 80 turns or 150k average context (Sonnet builders averaged 133–187 turns; 0 of 512 spawns set a turn cap, 5 set effort, 137 set no model) | 76 % of worker spend ($3,100 of $4,060) | routing: cap per tier, `maxTurns`/runtime control named, re-brief from the results file; brief: settings travel with the brief |
+| 2 | Hardest tier doing runner work: 86 Fable subagents ($1,630, 32 %); 44 Fable reviewers made 1,881 shell calls including 79 test/E2E runs; the largest single review ran 455 turns ($127); 26 routine reviews ran on Fable although the definition says Sonnet | 32 % | routing: work-nature → tier table; a reviewer reads artifacts and runs no suite; 17 % of spend was review on the hardest tier |
+| 3 | Lead context: ten Opus leads at 250k–720k average context (budget 120k), 6,517 turns, 4.8 M output tokens; 135 test/E2E commands and 455 log reads in the lead's own context; 197 resumes (median 532 B) beside 512 spawns; 3 agents spawned only to wait | 21 % ($1,070) | tracking: lead runs no gate/suite/browser itself; resume and placeholder waste named with numbers |
+| 4 | Expensive tiers on browser/E2E work: 1,579 E2E commands in Sonnet agents, 292 Opus, 169 Fable, 107 Haiku; agents running them cost $1,450 (Opus), $1,340 (Sonnet), $860 (Fable), $9 (Haiku) | — | routing: mechanical-run row with what the cheapest tier did reliably (24 prod checks + 2 gate runs, correct verdicts, $10) and when it escalates |
+| 5 | Overlap: 84 `git reset`/`restore --staged` commands untangling foreign staged files (one a step from reverting another agent's commit); 144 revert/restore/checkout commands; 68 `git add -A`/`.`; docs map 5 writers, review index 4, product spec 3; 3 agents referenced the same new migration number; writers blocked on another writer's typecheck | rework, not tokens | DAG: ownership manifest, reserved-resource ledger, commit-by-path, shared typecheck surface; templates carry both |
+
+Not measured: wall-clock, operator interventions, defects caught per tier, and whether any
+Haiku verdict was later contradicted (none found in lead text; 27 runs is a small sample).
+Token counts are the harness's own usage fields; prices are the routing tables' list rates,
+not the account's bill. Context budget: agent-orchestration on-demand ceiling raised for the
+table and the ownership protocol; effective-development eager raised for one paragraph;
+both recorded in `skill-miner/context-budget.json` in the same commit.
+`effective-development` joined the core, codex-dev and agy-dev load-outs because the
+quality gate and the runner rule both link to it.
+
 ## Maintenance bar
 
 Keep a skill only when it changes a decision the base agent would otherwise get wrong and

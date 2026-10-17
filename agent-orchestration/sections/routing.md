@@ -8,6 +8,7 @@ Claude subagent mechanics. Table dates do not imply current account access.
 ## Contents
 
 - [The lead slot belongs to the active harness](#the-lead-slot-belongs-to-the-active-harness) — the routing table
+- [Work nature → tier](#work-nature--tier) — which tier runs which kind of work, with caps
 - [Claude models](#claude-models) · [OpenAI models](#openai-models) · [Gemini models](#gemini-models) — IDs, limits, prices, retirement
 - [Cross-provider fleets](#cross-provider-fleets) — staffing workers from another vendor
 - [Harness mechanics](#harness-mechanics) — how each harness actually selects a subagent model
@@ -32,29 +33,40 @@ an unavailable optional specialist alone does not block acceptance.
 | Codex (OpenAI) | `gpt-6.1-sol` | `gpt-6-astra` | `gpt-6.1-sol` | `gpt-6-luna` |
 | agy (Antigravity CLI) | `gemini-4-argon` / `gemini-3.8-flash` | `gemini-4-argon` | `gemini-3.8-flash` | `gemini-3.8-flash` (`low`) / `gemini-3.5-flash-lite` |
 
-Select the least costly model and effort that meet the task's acceptance checks. Use Luna
-for extraction, inventory, fine edits and focused patches with clear constraints and
-observable checks. Use Sol 6.1 for general coding and coordinated technical work, and Astra
-for demanding architecture, conflicting evidence or sustained judgment. On Claude,
-Anthropic recommends Opus 5.5 for most workloads; Sonnet 5.5 is our bounded-builder cost
-choice. Use Fable for demanding reasoning or when higher-effort Opus evaluations fall short.
-Haiku suits simple work; use Sonnet where the bounded task needs stronger reasoning. On
-Google/agy, use Argon for frontier judgment and complex multi-step engineering, 3.8 Flash
-as the bounded builder and cross-plan workhorse, and 3.8 Flash (`low`) or 3.5 Flash-Lite
-for focused checked work.
+### Work nature → tier
 
-**Set `model` on every spawn:** an omitted one inherits the parent's or the agent definition's
-tier (measured: routine reviews on the hardest tier were 24 % of one project's agent spend).
-**Reviewer tier follows risk:** bounded-builder tier by default; the hardest tier only for
-migrations, tenancy/RLS, auth, routing and prompts/evals, once per release over the combined
-diff. **Cost = context × calls** (cache reads): cap workers near 80 turns / 150k context and
-re-brief a fresh one.
+Pick the row by what the work is, then the model from the harness table above. The lead is
+the strongest model the harness exposes and the only context allowed to grow (≤ 120k,
+[tracking](tracking.md)); every other row is capped and set explicitly on the spawn.
+
+| Work | Tier | Effort | Cap | Return |
+| --- | --- | --- | --- | --- |
+| Design note, architecture, conflicting evidence, integration review; merge-gate review of migrations, tenancy/RLS, auth, routing, prompts/evals — once per release over the combined diff | hardest scoped judgment (Fable / Astra / Argon) | high | 60 turns; reads the diff and artifacts, runs nothing heavier than `git`/`grep` | one line per finding |
+| Scoped build, patch, refactor, migrate; routine diff review; spec update for a rename named in the diff; E2E flow authoring | bounded builder (Sonnet / Sol 6.1 / 3.8 Flash) | medium; high for a repair after one failed check | 80 turns / 150k context | builder contract |
+| Mechanical run: gate or shard runner (one command → `EXIT=n · passed/failed · log path`), browser read/click/screenshot check against named routes, selectors, widths and expected text with PASS/FAIL per item, log triage ≤ 30 lines (failing test, error class, suspect file, stale-vs-bug guess), inventory, file moves, host hygiene | focused checked work (Haiku 4.5 / Luna / Flash-Lite) | low or none | 60 turns; never edits code or tests | verdict line + results file |
+| Waiting on a job, relaying a message, a "placeholder" | no agent | — | — | the harness's completion notification or wait tool |
+
+Measured on one project over seven days (517 agents, 60k turns, list-price equivalent
+$5,100): 27 Haiku runs — 24 read-only production checks and 2 E2E gate runs — returned
+correct PASS/FAIL verdicts with counts and results paths for $10 in total; Opus, Sonnet and
+Fable agents running the same kinds of commands cost $3,600. The cheapest tier escalates
+rather than guesses when asked to judge visual quality by eye (it reports `scrollWidth`,
+not "looks wrong"), find a selector or flow the brief did not name, decide stale-base vs
+bug, edit an assertion, or resolve an ambiguous acceptance; give it the exact route,
+selector, width and expected text per item.
+
+**Set `model`, effort and the turn cap on every spawn** (measured: 137 of 512 spawns set no
+model, 5 set effort, none a cap; reviews on the hardest tier were 17 % of spend). An omitted
+model inherits the parent's or the definition's tier. Enforce the cap with the control the
+harness has — Claude `maxTurns` in the agent definition, Codex `job_max_runtime_seconds`,
+agy per-task runtime — plus the budget stated in the brief. **Cost = context × calls**
+(cache reads were 80 % of spend): a worker past 80 turns or 150k is re-briefed fresh from
+its results file (223 of 507 workers crossed that line and spent 76 % of worker tokens).
 
 Escalate immediately when risk, ambiguity or capability exceeds the worker's scope. After
 two failures of the same acceptance check, the lead diagnoses or takes the task back before
-choosing another model. Do not create workers solely to exercise a cheaper model. These
-roles and acceptance rules are operator policy; vendor descriptions are starting points,
-not proof of performance on a particular project.
+choosing another model. Do not create workers solely to exercise a cheaper model. Vendor
+descriptions are starting points, not proof of performance on a particular project.
 
 ### Claude models
 
@@ -65,8 +77,8 @@ not proof of performance on a particular project.
 | Sonnet 5.5 | `claude-sonnet-5-5` | 1M | 128K | 2 → 10 | 2026-09-28 | 2027-09-28 |
 | Haiku 4.5 | `claude-haiku-4-5-20251001` | 200K | 64K | 1 → 5 | 2025-10-15 | 2026-10-15 |
 
-Haiku 4.5 is active. Its minimum retirement commitment ends on 2026-10-15; that is
-not an announced shutdown date. Re-check the lifecycle page before relying on it.
+Haiku 4.5 is active (ran on 2026-10-17); its minimum retirement commitment has lapsed, so
+re-check the lifecycle page at each audit.
 Sonnet 5 (`claude-sonnet-5`) and Opus 5 (`claude-opus-5`) remain active
 but are superseded in this policy.
 Opus 5.5 and Fable keep adaptive thinking always on. All three current

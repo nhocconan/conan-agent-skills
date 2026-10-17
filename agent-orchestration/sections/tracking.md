@@ -25,7 +25,9 @@ cause is addressed, and do not replay external writes blindly.
 The ledger says *what* to resume; the harness resumes the worker with its own primitive
 ([fan-out patterns](../FANOUT-PATTERNS.md)) rather than a fresh re-brief from the ledger.
 Resume only to return a worker its review findings or answer its blocked question, never
-to relay rules (they live in the shared brief); after two resumes re-brief fresh.
+to relay rules (they live in the shared brief); after two resumes re-brief fresh. A resume
+to an idle worker restarts a full context for nothing (measured: 197 resumes in one week
+beside 512 spawns); an agent spawned only to wait is the same waste.
 
 After compaction, use both the saved plan and the latest user steering. The plan
 does not override newer instructions or authorize more work.
@@ -33,9 +35,12 @@ does not override newer instructions or authorize more work.
 ### Lead context budget and handoff
 
 The lead's context is the costliest one: every tool result, message and notification is
-re-read on every later turn (measured: median 327k, 760M cache reads in 17 h;
-capped at 120k, 72 % less). Work at ≤ 120k; never
-start a turn above 150k. At 120k, or after two corrections on one issue, write
+re-read on every later turn (measured: median 327k, 760M cache reads in 17 h; a week later
+ten leads averaged 250k–720k per turn and 21 % of all spend, having run 135 test/E2E
+commands and 455 log reads in their own context). Work at ≤ 120k; never start a turn above
+150k. The lead runs no gate, suite, build or browser itself: a runner from the
+[work-nature table](routing.md#work-nature--tier) runs it and returns the verdict line.
+At 120k, or after two corrections on one issue, write
 `<workdir>/handoff.md` — GOAL · STATE (landed, in gate, live, in flight with agent ids
 and results files) · NEXT 5 · OPEN RISKS · IDS · COMMANDS · READ FIRST — then `/clear`
 and resume from that file plus the shared brief. `/compact <focus>` only below ~60k when
@@ -45,12 +50,10 @@ full-context turns: ≤ 5 lines plus a results path, batched.
 
 ## Continue and communicate
 
-Do useful independent work while workers run. Use the completion or wait mechanism the
-active harness supports, and give the user a progress update on that harness's own
-cadence — its documented wait bounds, its commentary convention, or its completion
-notifications ([fan-out patterns](../FANOUT-PATTERNS.md)). State observed progress,
-remaining uncertainty, and next checks. Never invent an ETA, and never claim a launch
-without a successful tool result.
+Do useful independent work while workers run. Wait and report on the harness's own
+mechanism and cadence ([fan-out patterns](../FANOUT-PATTERNS.md)): observed progress,
+remaining uncertainty, next checks. Never invent an ETA, and never claim a launch without
+a successful tool result.
 
 A helper crash calls for inspection and recovery, not automatic user escalation.
 On cancellation, or before reassignment or taking over files, stop the old writer and

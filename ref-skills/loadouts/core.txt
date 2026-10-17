@@ -16,3 +16,4 @@ resilient-data-harvest
 secure-code-audit
 senior-operator
 tenant-scope-integrity
+effective-development

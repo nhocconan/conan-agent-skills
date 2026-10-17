@@ -25,8 +25,11 @@ a subagent's return lands in the lead's context verbatim and is re-read on every
 lead turn. Bound the run too — Claude Code `maxTurns`, or supported per-task runtime
 limits — and preserve partial results ([fan-out patterns](../FANOUT-PATTERNS.md)).
 
-Bound workers: ~80 turns, ~150k context, tasks ≤ 45 minutes. Returns: builder ≤ 10 lines,
-reviewer one line per finding, design notes to a file.
+Spawn settings travel with the brief: model, effort and turn cap from the
+[work-nature table](routing.md#work-nature--tier); tasks ≤ 45 minutes. A brief is ≤ 3 KB
+(measured median 1.8 KB, p90 3.2 KB): what every worker needs goes once into
+`<workdir>/brief.md` that each brief points at, never re-pasted per spawn or per resume.
+Returns: builder ≤ 10 lines, reviewer one line per finding, design notes to a file.
 
 **Results file protocol.** A worker writes its detail (findings, commands, counts, log
 lines) to `<workdir>/results/<node>.md` and returns ≤ 5 lines: `verdict · counts/EXIT ·

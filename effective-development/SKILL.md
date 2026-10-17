@@ -106,13 +106,18 @@ output alone is not a hang. An unfinished check is incomplete, never passed, and
 budget justifies weakened assertions or a skipped required gate. Stall, termination and
 cleanup rules: [tracking](../agent-orchestration/sections/tracking.md).
 
+Staff runs by work nature
+([routing](../agent-orchestration/sections/routing.md#work-nature--tier)): the cheapest tier
+runs a gate or shard and triages ≤ 30 lines, the builder tier fixes, a reviewer reads
+artifacts and runs no suite, and the lead classifies without running a suite in its own
+context.
+
 Repeated user journeys live in the project map
 ([DISTILL](../senior-operator/DISTILL.md) recipe section; rehearse once before calling
-it verified);
-never a new skill or framework to hold a recipe.
+it verified); never a new skill or framework to hold a recipe.
 
-Measure changes on comparable tasks: elapsed time, exposed actual usage, rework and
-selection misses. Prompt bytes are not billed tokens; unknown savings stay unknown.
+Measure changes on comparable tasks: elapsed time, actual usage, rework and selection
+misses; prompt bytes are not billed tokens, and unknown savings stay unknown.
 
 ## Sources
 

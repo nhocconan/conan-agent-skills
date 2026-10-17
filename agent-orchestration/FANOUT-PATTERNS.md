@@ -194,8 +194,8 @@ memory bound (a CPU-only load rule plus one flock let a second `next dev` reach 
 hang a host). The CLI's name, classes and caps live in the project's host-local map.
 
 Staff by the content's natural partition (one worker per dashboard tab or screen; halve the
-count under load). Sonnet for testing and standard work, Haiku for simple checks. Test
-method per worker: [effective-development](../effective-development/SKILL.md) (production
+count under load); tier per the [work-nature table](sections/routing.md#work-nature--tier).
+Test method per worker: [effective-development](../effective-development/SKILL.md) (production
 build, one browser with many contexts, API-level parity, component tests).
 
 ## Worktrees and integration

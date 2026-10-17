@@ -37,11 +37,28 @@ stage — pipeline it (each item flows through all stages independently). A barr
 justified only when the next stage genuinely needs *all* prior results together: dedup
 across the full finding set, early-exit on zero, or a synthesis that compares siblings.
 
-**Write conflicts are the real limit on parallelism.** Two agents editing one module
-produce a merge the lead has to resolve by hand. Options, in order of preference: (a) cut
-so each file has exactly one writer, (b) give each agent its own git worktree,
-(c) serialize those two nodes and parallelize something else. Parallelism whose outputs
-cannot be verified or merged separately buys nothing.
+**Ownership before fan-out.** Two agents editing one module produce a merge the lead
+resolves by hand, and a shared checkout lets one writer's `git add`/`reset` reach another's
+work (measured over one week: 84 `git reset`/`restore --staged` commands spent untangling
+foreign staged files, one of them a step from reverting another agent's commit; the docs
+map had five writers; two plans claimed the same migration number). Before the first spawn
+the plan file carries, and every writer checks before it commits:
+
+- **Ownership manifest** — path or directory → one writer. Index files the whole fleet
+  touches (docs map, progress, changelog, review index) belong to the lead, edited after the
+  writers land. A writer commits only when `git diff --name-only` is a subset of its rows.
+- **Reserved-resource ledger** — migration numbers, decision/ADR ids, release numbers,
+  ports, DB names: claimed in the ledger before use, first claim wins, never taken as "next
+  free" at commit time.
+- **Commit through own paths only** — `git add <owned paths>` then commit at once; never
+  `git add -A`/`.`, `commit -a`, or a staged index left behind. Before committing, unstage
+  any foreign path in `git diff --cached --name-only` without touching the file.
+- **Shared typecheck surface** — writers inside one package or app run in series or each in
+  its own worktree; a writer checks only its own files, and the integrated typecheck/gate
+  runs once on a frozen fingerprint after every writer in that surface has committed. A
+  writer blocked on another's half-done typecheck is a sequencing error, not a wait.
+- Surfaces that still overlap: (a) recut so each file has one writer, (b) one worktree per
+  writer and the lead merges, (c) serialize those nodes and parallelize others.
 
 **When not to parallelize:** coordination and integration cost exceed the likely saving;
 the pieces share one file without isolation; or the spec is still moving. Duration alone

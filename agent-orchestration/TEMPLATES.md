@@ -34,8 +34,9 @@ KNOWN TRAPS HERE
   <applicable project invariants + evidence>
 
 BOUNDARIES
-  Edit owned files only; no commits, migrations or external writes.
-  Scratch artifacts: <ignored directory>.
+  Edit owned files only (manifest rows above); reserved ids: <ledger claims, e.g. migration 0068>.
+  Commit by path only, at once; no `git add -A`, no staged index left behind; no external writes.
+  Scratch artifacts: <ignored directory>.  Budget: <N> turns; past it, write results and stop.
 
 RETURN (builder contract in sections/worker-modes.md)
   - changed files and reasons
@@ -111,6 +112,10 @@ OUT OF SCOPE: <explicitly>
 ## Seam contracts (before fan-out)
 - types/interfaces: …
 - route + i18n key names: …
+
+## Ownership manifest · reserved resources
+- src/api/** → N4 · src/ui/** → N6 · docs map, progress, review index → lead (after landing)
+- migration 0068 → N2 · decision D42 → lead · port 3120 → N7 gate
 
 ## Waves
 Wave 1 (parallel): N1 survey · N2 schema · N3 research

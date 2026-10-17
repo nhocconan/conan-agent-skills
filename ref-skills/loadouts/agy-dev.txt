@@ -32,3 +32,4 @@ skill-miner
 store-screenshots
 tenant-scope-integrity
 web-perf-audit
+effective-development
