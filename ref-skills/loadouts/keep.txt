@@ -12,3 +12,7 @@
 # `npx impeccable install --global`, which writes the per-harness trees itself —
 # for the harnesses named in upstreams.ini `providers`, agy (`antigravity`) included.
 impeccable
+
+# Claude Code's own cloud-synced skills directory (claude.ai sync writes ~/.claude/skills/synced/<bucket>/);
+# not a skill, not ours to link or remove.
+synced
