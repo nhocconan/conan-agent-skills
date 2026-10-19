@@ -24,7 +24,9 @@ at their declared stage. Finite checks cannot guarantee absence of every defect.
 3. **Get focused feedback per coherent edit batch.** Run the smallest affected check
    first, then relevant lint/typechecks including dependent packages. Use an existing
    affected-check command without narrowing its selection by hand. Build a selector
-   only when recurring work warrants one.
+   only when recurring work warrants one. Writers run the per-change tier (and every
+   cheap static audit the touched paths select) before each commit; the full gate
+   confirms, it is never the discovery tool.
 4. **Widen for indirect impact** using the rules below. Unknown coverage needs broader
    checks, not an optimistic empty set. Runtime journeys/smoke checks follow affected
    behavior and repository policy; they are not mandatory for every commit.
@@ -62,6 +64,23 @@ at their declared stage. Finite checks cannot guarantee absence of every defect.
   identical second failure is not flake. A failure in code the diff never touched means a
   stale base: check `git merge-base --is-ancestor <base> HEAD`, rebase, do not retry.
   Do not invent CI jobs without policy authorization.
+
+## Recurring failure → fix the system now
+
+A failure class seen twice in one workflow, or any failure that forces a full gate
+re-run, is a process defect, not bad luck. Stop and, in the same session:
+1. Root-cause why it reached that stage instead of the edit or commit.
+2. Pick the cheapest check at the earliest point: commit hook on staged content
+   (judge the index, not other writers' unstaged files; block only findings the base
+   lacks), the affected-check tier, or a writer-prompt requirement. Audit mechanics:
+   [bug-class-audits](../bug-class-audits/SKILL.md).
+3. Apply it, prove it catches the original case, and record it in the repository's
+   rules or trap log. A threshold that mostly produces churn without catching defects
+   becomes a warning or goes, with the evidence; thresholds live in one data file.
+
+Batch the gate: tiers run to the end so one run lists every finding; fix all of them
+before re-running, and re-run only the failed tiers plus the affected checks of the
+fix diff when the tooling allows. Never re-run a green tier whole to see the next error.
 
 ## Make checks detect wrong behavior
 
