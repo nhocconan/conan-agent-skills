@@ -28,6 +28,10 @@ Cap the return size in the brief, per return shape ([worker modes](worker-modes.
 a subagent's return lands in the lead's context verbatim and is re-read on every later
 lead turn. Bound the run too — Claude Code `maxTurns`, or supported per-task runtime
 limits — and preserve partial results ([fan-out patterns](../FANOUT-PATTERNS.md)).
+A writer brief asks for checkpoint commits: commit each coherent green group as it lands,
+so a run that hits its cap leaves commits, not an uncommitted tree; split a brief with many
+independent findings. Measured on one project in one day: 8 multi-item builder runs hit
+their turn cap, 5 with nothing committed, each needing a fresh finisher.
 
 Spawn settings travel with the brief: model, effort and turn cap from the
 [work-nature table](routing.md#work-nature--tier); tasks ≤ 45 minutes. A brief is ≤ 3 KB
