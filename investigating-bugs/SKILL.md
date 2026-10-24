@@ -43,7 +43,9 @@ Investigation"**, **"Phase 2: Pattern Analysis"** and **"Confusion Protocol"** s
 
 7. **Is it a class?** Search for the same shape and confirm the violated invariant
    at each candidate. Fix confirmed sites within scope; report unrelated ones.
-   Hand off recurring classes to `bug-class-audits`.
+   Hand off recurring classes to `bug-class-audits`. A repair or fallback that rewrites
+   an object must still satisfy its contract (length caps, enums): replace capped text,
+   never append, and parse the repaired object in the test; one bad item never fails the batch.
 8. **Prove regression sensitivity.** Same check, inputs and environment before and after
    the fix: fails for the intended defect, then passes. A setup failure (missing import,
    credential, startup) proves nothing. Already fixed? Run the check against the old

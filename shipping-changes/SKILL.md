@@ -30,7 +30,9 @@ steps; report missing authority without re-asking for existing authority.
    can hide failure; a no-match `grep` before `&&` can silently skip the next required
    step. Run required phases separately, record their statuses, and inspect the saved
    log. A phase that never ran is skipped, never passed.
-5. **Push only what was asked.** Uncommitted work from another agent's session is not
+5. **A flag turns on by default only after its stated live comparison ran** on the shipped
+   build (both arms, same inputs); a per-stage benchmark is not that comparison.
+6. **Push only what was asked.** Uncommitted work from another agent's session is not
    yours to sweep in — check `git status` and confirm anything unexpected.
 
 ## Procedure

@@ -5,6 +5,10 @@ Read [routing](routing.md) before selecting a model. Each worker needs:
 - Outcome and mode (see [worker modes](worker-modes.md)).
 - Working directory, relevant project instructions, and context it cannot infer.
 - Exact owned files or bounded read scope; shared resources and excluded side effects.
+  Name the per-worker scratch directory (workers sharing one overwrite each other's logs
+  and env files), forbid dependency installs or symlinks inside the shared checkout, and
+  hand rate-limited resources (a login, an API key) over once: the lead authenticates and
+  workers reuse one session file, since parallel logins lock the whole fleet out.
 - Observable acceptance: claim → check with real project commands → artifact → what it leaves unproven.
 - Relevant invariants: auth, tenancy, money, compatibility, or performance when applicable.
 - Return shape: changes, commands and results, assumptions, and unresolved concerns.

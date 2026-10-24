@@ -27,6 +27,11 @@ Execute authorized work unattended. Staffing and verification live in
   push, deploy, external messages, permission changes and destructive operations
   need authority in the user's request or standing instructions. Never relax a
   security setting to remove an approval prompt.
+- **Standing authority to deploy or run a script means you run it, then keep going.**
+  Never hand the operator a command and wait while authority exists: read the deploy
+  entrypoint's preflight first and build the artifact the way it demands, background long
+  commands and do other work. If the permission layer denies it, report the single command
+  and continue with everything that does not depend on it.
 - **Acceptance is stated before editing, from the project's real commands.** Do not
   invent a test command, and do not demand a new test for a trivial prose change.
   Size checks per [effective-development](../effective-development/SKILL.md).

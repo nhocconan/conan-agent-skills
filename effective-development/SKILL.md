@@ -1,17 +1,15 @@
 ---
 name: effective-development
 description: >-
-  Choose meaningful development checks, avoid redundant runs, and diagnose slow
-  verification while preserving required repository gates. Use for affected-test
-  selection, regression coverage, gate-result reuse, expensive test loops, or
-  keeping the suite lean (redundant/slop tests, "test suite too slow", "xoá test thừa").
+  Choose meaningful checks, avoid redundant runs, diagnose slow verification, keep
+  required gates. Use for affected-test selection, regression coverage, gate-result
+  reuse, expensive test loops, or a lean suite ("test suite too slow", "xoá test thừa").
 ---
 
 # Effective development
 
 The unit of verification is a changed behavior and its failure modes, not a test
-count. Use the cheapest checks that detect those failures; required gates remain
-at their declared stage. Finite checks cannot guarantee absence of every defect.
+count: the cheapest checks that detect them, required gates at their declared stage.
 
 ## Choose the proof
 
@@ -37,9 +35,8 @@ at their declared stage. Finite checks cannot guarantee absence of every defect.
    Reuse valid optional evidence under the rules below.
 6. **Stop on evidence.** Finish when acceptance and required gates pass and material
    concerns are resolved or disclosed. Broaden for new failures, missing coverage or
-   explicit exhaustive scope, not repeated empty reviews. Report commands, exits/counts,
-   actual coverage and omitted checks with reasons; test count/line coverage alone is
-   not proof of the changed contract.
+   exhaustive scope, not repeated empty reviews. Report commands, exits/counts and
+   omitted checks with reasons; test count alone does not prove the changed contract.
 
 ## Widen the affected set
 
@@ -96,36 +93,13 @@ relational and absence checks;
 use a permitted/effective control when it distinguishes a no-op or unconditional
 rejection. A mock may isolate an external boundary, not replace the mechanism proved.
 
-For costly external/AI APIs, use deterministic fixtures for routine feedback and a
-representative authorized live contract sample when needed, within known limits.
-Mocks cannot prove live behavior; record actual usage when exposed, never invented caps.
+Costly external/AI APIs: deterministic fixtures for routine feedback, an authorized live
+sample when live behavior matters (mocks cannot prove it); record actual usage.
 
-## Keep the suite lean (when it triggers)
+## Keep the suite lean
 
-A test costs every future run; it earns its place only by catching a plausible wrong
-result that no cheaper or existing check catches. Trim at the point of entry, not in
-a rescue audit.
-
-- **Writing a test (builder).** Its title names the regression it catches (behavior,
-  invariant or incident id). Never add: log/console call counts, non-contract wording,
-  source greps that a function is called (an `audit:*` script owns static facts),
-  counts or lengths of registries that only grow, a helper checked against itself,
-  expected values computed by the subject, a mock-only test, near-identical cases as
-  separate tests (one table loop that names the failing row), or a slow test whose
-  fast twin already proves it. Put this list in every builder brief.
-- **Review (merge gate).** The reviewer reads the test diff as code: one finding per
-  slop test with its delete-or-merge fix; a test diff that grows the suite without a
-  new failure mode is a finding. Test-count/suite-time growth above the repository's
-  baseline needs each new test's failure mode named, else it goes.
-- **A test-only failure in a gate.** If a gate fails only on a test that pins incidental
-  output, delete or rewrite that test and rerun only its file, never the whole gate.
-- **Periodic.** When summed suite time or test count grows past the repository threshold
-  since the last trim (or the scheduled audit comes up), run one trim pass: cheap static
-  signals first (fan-out titles, logger-spy counts, source reads in tests, `toHaveLength`
-  on registries, string snapshots), slowest files next, one editor per area, serialized
-  runs. Keep tenancy, money, auth, routing, migrations, invariants and every recorded
-  incident check. Turn each recurring slop pattern into a static audit
-  ([bug-class-audits](../bug-class-audits/SKILL.md)) so the next one fails at commit.
+Writing, reviewing or trimming tests (the slop list goes in every builder brief):
+[LEAN-SUITE.md](LEAN-SUITE.md).
 
 ## Reuse valid evidence
 
@@ -134,10 +108,9 @@ tests/selector, config/build/seed/environment, exit, duration and artifact path.
 successful optional checks only while these inputs remain valid and policy permits.
 A worker verdict alone is insufficient: inspect the evidence against the final tree.
 
-Rerun failed checks and those invalidated by later edits, including previously green
-shards affected by a repair. Unknown impact or mutable external state needs fresh
-probes. Required hooks/gates still run at their declared stage. Coordinate one final
-integrated run instead of duplicate full runs from every worker.
+Rerun failed checks and those a later edit invalidated (including green shards a repair
+touches); unknown impact or mutable external state needs fresh probes. One final
+integrated run, not a full run per worker.
 
 ## Shared host
 
@@ -159,24 +132,8 @@ runs a gate or shard and triages ≤ 30 lines, the builder tier fixes, a reviewe
 artifacts and runs no suite, and the lead classifies without running a suite in its own
 context.
 
-Repeated user journeys live in the project map
-([DISTILL](../senior-operator/DISTILL.md) recipe section; rehearse once before calling
-it verified); never a new skill or framework to hold a recipe.
-
-Measure changes on comparable tasks: elapsed time, actual usage, rework and selection
-misses; prompt bytes are not billed tokens, and unknown savings stay unknown.
+Journey recipes and measuring verification changes: [LEAN-SUITE.md](LEAN-SUITE.md#recipes-and-measurement).
 
 ## Sources
 
-Selection/pyramid references (read 2026-10-04):
-[Google continuous testing](https://research.google/pubs/taming-google-scale-continuous-testing/),
-[Meta selection](https://engineering.fb.com/2018/11/21/developer-tools/predictive-test-selection/),
-[test impact analysis](https://martinfowler.com/articles/rise-test-impact-analysis.html),
-[test pyramid](https://martinfowler.com/articles/practical-test-pyramid.html).
-Runner references: [Vitest](https://vitest.dev/guide/cli.html),
-[Turborepo](https://turborepo.dev/docs/reference/run).
-
-Procedure comparison (read 2026-10-12): pstack `tdd`, `principle-test-behavior-not-implementation`,
-`create-verification-skill` and `maintain-verification-skill`, pinned at
-[1b6d44f](https://github.com/cursor/plugins/tree/1b6d44ff26d4e242f4e8f68c391e6d2f7ca16def/pstack/skills).
-Adapted to existing maps and repository authority; no upstream installation required.
+Selection and pyramid references: [LEAN-SUITE.md](LEAN-SUITE.md#sources).

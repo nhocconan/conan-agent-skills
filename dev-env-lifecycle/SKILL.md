@@ -28,6 +28,10 @@ substitute an image rebuild or service restart without checking scope and necess
    foreground one: background workers, schedulers, queue consumers, watchers, tunnels,
    sidecar containers, port-forwards. The test is mechanical — after `down`, the inventory
    from step 1 matches the starting state.
+   A test runner that launches the app through a wrapper (`webServer` command via a
+   package runner or `tsx`) leaves grandchildren holding ports after a crash or kill. Start
+   it in its own process group and kill the group; give every post-run step (report merge,
+   teardown) a timeout so a hang cannot skip the cleanup trap.
 4. **Verify, do not assume.** A stop command that exits 0 has proved nothing. Re-check the
    ports (`lsof -i`, `ss -ltnp`), the process table, and the container list. A process that
    ignored SIGTERM is still running.
