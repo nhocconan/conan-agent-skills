@@ -59,7 +59,10 @@ A helper crash calls for inspection and recovery, not automatic user escalation.
 On cancellation, or before reassignment or taking over files, stop the old writer and
 confirm it has stopped, including its child processes. A timeout or sent interrupt is
 not proof of termination. Preserve partial artifacts; isolate a replacement if the old
-writer cannot be stopped. Reconcile late returns against the current task before use.
+writer cannot be stopped. A worker that hit its turn cap while its own background command
+still runs is not stopped: it resumes when that command ends (measured: one resumed and
+regrouped commits beside its replacement in the same worktree). Stop it explicitly before a
+finisher takes its worktree. Reconcile late returns against the current task before use.
 At a deadline or sustained lack of meaningful progress, inspect the last artifact and
 process state, then stop or replan; repeated status messages are not progress.
 Probe liveness read-only (results file, process table, pushed branch) — a resume restarts
