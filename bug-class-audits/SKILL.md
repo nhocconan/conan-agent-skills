@@ -39,7 +39,7 @@ numbered rule plus one mechanical check, so no class is re-argued.
 ## Audit-script conventions
 
 - **Allowlist with justification, never silently.** Legitimate exceptions get a same-line
-  marker comment (`// audit-ok-<rule>: <reason citing a source>`) the script honors.
+  marker comment (`// audit-ok-<rule>: <short source-cited reason>`) the script honors.
   A reason of "TODO" is not a reason.
 - **Baselines only move DOWN.** For rules adopted with pre-existing debt, the script
   carries a baseline count/list. Genuinely removing debt lowers the baseline; refreshing
@@ -49,6 +49,7 @@ numbered rule plus one mechanical check, so no class is re-argued.
 - **Fail with actionable output**: file:line, the offending snippet, the rule number and a
   one-line fix direction — fixable from the audit output alone.
 - Keep runtime in seconds; a slow audit gets bypassed.
+- No incident story in the audit or code: the rule is one line; no narrative docstring.
 
 ## What qualifies (and what doesn't)
 

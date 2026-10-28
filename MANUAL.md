@@ -122,6 +122,7 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | `browsing-web` | Anything involving a browser |
 | `web-qa` | Test a running web app (reports by default; fixes only if you ask) |
 | `design-qa` | "Nhìn xấu / rớt hàng / chữ bị đè" — visual defects, both themes + 375px |
+| `frontend-design` | Làm/làm lại landing page, dashboard, UI — nền brand token, plan, motion có ngân sách, rồi qua gate review |
 | `resilient-data-harvest` | Scraping, backfills, system-to-system migration — và sync lần sau không được đè lên sửa tay |
 | `autonomous-loops` | "Treo lịch", "chạy mỗi đêm", cron, routine: loop phải có trigger, prompt file, gate, stop condition |
 | `dev-env-lifecycle` | Bật/tắt dev stack: `down` phải dọn HẾT, không để rác, hỏi trước khi xoá |

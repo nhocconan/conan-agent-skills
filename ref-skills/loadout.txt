@@ -55,6 +55,7 @@ web-qa
 # design-qa: wraps gstack design-review markdown (fetched into .vendor/, not a
 #   gstack install). See design-qa/REF.md.
 design-qa
+frontend-design
 
 # ── third-party kept as-is (small, well-described, non-overlapping) ──────────
 context7
@@ -91,3 +92,5 @@ gemini-computer-use
 #   section the old copy lacks. Both declared `name: frontend-design`; the stale one
 #   was winning 26 invocations to 7. The plugin now owns the name. Build/refine work
 #   routes to `impeccable` (see loadouts/keep.txt); `design-qa` keeps the review lens.
+#   2026-10-27: a NEW conan `frontend-design` (wrap, see its REF.md) is active again as the
+#   routing/gate method; it is a different file from the retired Codex port.

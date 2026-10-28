@@ -59,5 +59,6 @@ with the available screenshot tooling and say so; do not stall. `impeccable` and
 
 This is the review lens, not the build tool. Making or reshaping a UI — direction,
 typography, layout, motion, copy — belongs to `impeccable` (run `impeccable` itself for
-its current command list) with `frontend-design` for aesthetic direction. WCAG failures go
+its current command list) with `frontend-design` for aesthetic direction; conan `frontend-design`
+is the build method and gates here. WCAG failures go
 to `a11y-audit`, slowness to `web-perf-audit`, wrong numbers to `metric-integrity`.

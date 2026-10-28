@@ -60,6 +60,7 @@ same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
 - Numbers reconcile to EXTERNAL ground truth, never to a re-derivation of the same code.
 - Class-of-bug → rule + mechanical audit, never a one-site patch.
 - Say out loud what is verified vs inferred vs assumed.
+- Comments are rare: one short line for a non-obvious WHY only; never restate code, tell incidents/history, cite commits, or name customers. Keep `audit-ok-*`/lint directives and `§N`.
 
 ## Maintenance
 

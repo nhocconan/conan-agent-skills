@@ -84,6 +84,11 @@
     "eager": 8250,
     "on_demand": 4500
   },
+  "frontend-design": {
+    "always_on": 700,
+    "eager": 4800,
+    "on_demand": 13900
+  },
   "interactive-course-builder": {
     "always_on": 900,
     "eager": 8600,

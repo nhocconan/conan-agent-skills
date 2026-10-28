@@ -16,7 +16,7 @@ metric bugs; check every one when touching any surface that renders numbers.
   `target = actual * 1.06` — unless the coefficient comes from a real, citable source
   (config table, budget plan, documented formula), it is fabrication. Grep any router/
   procedure for `* 0.` and `* 1.` against money variables; each hit needs a source or
-  a same-line justification comment.
+  a one-line source marker.
 - **Missing data renders as `—`, never as a plausible number.** If a tenant structurally
   lacks the inputs (no cost data, no ad spend), return a `mode` discriminator in the
   payload and let the client render the honest empty state — not `0.0%`, not a
