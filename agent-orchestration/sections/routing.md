@@ -1,24 +1,20 @@
 ## Model routing and quality ownership
 
-Canonical model policy; companion skills link here. OpenAI/Anthropic tables retain
-their 2026-09-30 verification; Gemini/agy rows were re-verified 2026-10-14. Targeted
-2026-10-04 refresh: OpenAI deprecations and model selection, Codex configuration and
-Claude subagent mechanics. Table dates do not imply current account access.
+Canonical model policy. [Verification dates](#freshness-and-evidence) do not establish access.
 
 ## Contents
 
-- [The lead slot belongs to the active harness](#the-lead-slot-belongs-to-the-active-harness) — the routing table
-- [Work nature → tier](#work-nature--tier) — which tier runs which kind of work, with caps
-- [Claude models](#claude-models) · [OpenAI models](#openai-models) · [Gemini models](#gemini-models) — IDs, limits, prices, retirement
-- [Cross-provider fleets](#cross-provider-fleets) — staffing workers from another vendor
-- [Harness mechanics](#harness-mechanics) — how each harness actually selects a subagent model
-- [Freshness and evidence](#freshness-and-evidence) — when to re-verify, and Sources
+- [Lead ownership](#the-lead-slot-belongs-to-the-active-harness)
+- [Work nature → tier](#work-nature--tier)
+- [Claude](#claude-models) · [OpenAI](#openai-models) · [Gemini](#gemini-models)
+- [Cross-provider fleets](#cross-provider-fleets)
+- [Harness mechanics](#harness-mechanics)
+- [Freshness and evidence](#freshness-and-evidence)
 
 ### The lead slot belongs to the active harness
 
-**Whichever provider's harness is running owns the lead slot.** The lead defines acceptance,
-resolves architecture, reviews the combined diff and evidence, and decides whether the
-deliverable is complete. Worker completion is never final acceptance.
+**The active harness owns the lead slot.** Its lead defines acceptance, resolves
+architecture, reviews the combined diff and evidence, and accepts the result.
 
 The active parent session is the harness lead. The table recommends models for future
 sessions and scoped workers; it does not replace or disqualify the current lead. A stronger
@@ -35,38 +31,34 @@ an unavailable optional specialist alone does not block acceptance.
 
 ### Work nature → tier
 
-Pick the row by what the work is, then the model from the harness table above. The lead is
-the strongest model the harness exposes and the only context allowed to grow (≤ 120k,
+Pick the work tier, then the harness model. The parent remains lead; only its context may grow (≤ 120k,
 [tracking](tracking.md)); every other row is capped and set explicitly on the spawn.
 
 | Work | Tier | Effort | Cap | Return |
 | --- | --- | --- | --- | --- |
 | Design note, architecture, conflicting evidence, integration review; merge-gate review of migrations, tenancy/RLS, auth, routing, prompts/evals — once per release over the combined diff | hardest scoped judgment (Fable / Astra / Argon) | high | 60 turns; reads the diff and artifacts, runs nothing heavier than `git`/`grep` | one line per finding |
 | Scoped build, patch, refactor, migrate; routine diff review; spec update for a rename named in the diff; E2E flow authoring | bounded builder (Sonnet / Sol 6.1 / 3.8 Flash) | medium; high for a repair after one failed check | 80 turns / 150k context | builder contract |
+| Source-based writing, chart/screen interpretation, bounded app workflows | scoped specialist (Codex: Terra 6.1) | low; raise when checks justify it | 60 turns / 150k context | artifact + evidence + uncertainties |
 | Mechanical run: gate or shard runner (one command → `EXIT=n · passed/failed · log path`), browser read/click/screenshot check against named routes, selectors, widths and expected text with PASS/FAIL per item, log triage ≤ 30 lines (failing test, error class, suspect file, stale-vs-bug guess), inventory, file moves, host hygiene | focused checked work (Haiku 4.5 / Luna / Flash-Lite) | low or none | 60 turns; never edits code or tests | verdict line + results file |
 | Waiting on a job, relaying a message, a "placeholder" | no agent | — | — | the harness's completion notification or wait tool |
 
-Measured on one project over seven days (517 agents, 60k turns, list-price equivalent
-$5,100): 27 Haiku runs — 24 read-only production checks and 2 E2E gate runs — returned
-correct PASS/FAIL verdicts with counts and results paths for $10 in total; Opus, Sonnet and
-Fable agents running the same kinds of commands cost $3,600. The cheapest tier escalates
-rather than guesses when asked to judge visual quality by eye (it reports `scrollWidth`,
-not "looks wrong"), find a selector or flow the brief did not name, decide stale-base vs
-bug, edit an assertion, or resolve an ambiguous acceptance; give it the exact route,
-selector, width and expected text per item.
+Give mechanical workers exact routes, selectors, widths and expected text. They escalate
+visual judgment, unspecified flows, stale-base vs bug decisions, assertion edits and
+ambiguous acceptance; report measurements such as `scrollWidth` rather than impressions.
 
-**Set `model`, effort and the turn cap on every spawn** (measured: 137 of 512 spawns set no
-model, 5 set effort, none a cap; reviews on the hardest tier were 17 % of spend). An omitted
-model inherits the parent's or the definition's tier. Enforce the cap with the control the
-harness has — Claude `maxTurns` in the agent definition, Codex `job_max_runtime_seconds`,
-agy per-task runtime — plus the budget stated in the brief. **Cost = context × calls**
-(cache reads were 80 % of spend): a worker past 80 turns or 150k is re-briefed fresh from
-its results file (223 of 507 workers crossed that line and spent 76 % of worker tokens).
+**Set `model`, effort and the turn cap on every spawn.** Omitted models inherit the parent
+or definition. Enforce caps with available controls: Claude `maxTurns`, Codex
+`job_max_runtime_seconds`, agy per-task runtime, plus the brief's budget. Re-brief workers
+past 80 turns or 150k context from their results files to bound repeated context costs.
 
 Escalate immediately when risk, ambiguity or capability exceeds the worker's scope. After
 two failures of the same acceptance check, the lead diagnoses or takes the task back before
 choosing another model. Do not create workers solely to exercise a cheaper model. Vendor
 descriptions are starting points, not proof of performance on a particular project.
+
+Terra handles specialist tasks; Sol and Astra retain their roles. Require source/screen
+evidence, flag unreadable values, and verify app changes. Tool support grants no write
+authority. If unavailable, choose a capable same-harness model unless explicitly pinned.
 
 ### Claude models
 
@@ -98,6 +90,7 @@ representative tasks rather than carrying over the previous generation's setting
 | --- | --- | --- | --- | --- | --- |
 | Astra | `gpt-6-astra` | 1,050,000 | 128K | 10 → 50 | 2026-04-30 |
 | Sol 6.1 | `gpt-6.1-sol` | 1,050,000 | 128K | 2 → 10 | 2026-04-30 |
+| Terra 6.1 | `gpt-6.1-terra` | 1,050,000 | 128K | 1 → 5 | 2026-06-01 |
 | Luna 6 | `gpt-6-luna` | 1,050,000 | 128K | 0.10 → 0.50 | 2026-05-18 |
 | Sol 6 (fallback) | `gpt-6-sol` | 1,050,000 | 128K | 2 → 10 | 2026-04-20 |
 
@@ -106,18 +99,20 @@ input; above that threshold the full request costs 2× input and 1.5× output.
 Cache, speed, regional processing and ChatGPT credits have separate rates.
 
 Astra and Sol 6.1 API `reasoning.effort` accept `low`, `medium`, `high`, `xhigh`,
-`max`; Sol 6 and Luna additionally accept `none`. Sol 6.1, Sol 6 and Luna API
-default to `medium`. Use Luna `low` for simple edits/extraction, consider `xhigh`
+`max`; Terra 6.1, Sol 6 and Luna additionally accept `none`. Terra, Sol 6.1, Sol 6 and
+Luna API default to `medium`. Use Luna `low` for simple edits/extraction, consider `xhigh`
 for constrained research, start Sol 6.1 at `medium`, and use Astra `medium` for
 broad demanding work or `xhigh` for the hardest analysis. Increase effort only
 when the task or evaluations justify the added cost.
 
 API support and harness controls differ. The current collaboration schema exposes
-`low` through `max` for Luna and also `ultra` for Sol/Astra; it does not expose
-`none`. Inspect the
-active schema rather than copying API values into a spawn call.
+`low` through `max` for Luna and also `ultra` for Terra/Sol/Astra; it does not expose
+`none`. The 2026-10-29 Codex catalog gives Terra a 500K context window and default
+`low` effort, distinct from its API limits/default above. Inspect the active schema
+rather than copying API values into a spawn call. Ultra may automatically delegate;
+use it only when nested work is permitted by the task and harness.
 
-Use Responses for tool-calling API workers: Sol 6.1 Chat Completions has no tool
+Use Responses for tool-calling API workers: Terra and Sol 6.1 Chat Completions have no tool
 calling; Sol 6/Luna Chat Completions function calling requires effort `none`.
 Model rollout and workspace settings still control access. During rollout, available
 legacy fallbacks include `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna`; do not
@@ -192,9 +187,11 @@ version selection and confirm the actual model in `/tasks`. Do not assume Explor
 or Plan runs on Haiku. Agent SDK definitions and tools may differ; inspect them.
 
 **Codex.** If collaboration exposes `model`/`reasoning_effort`, set them with
-`fork_turns: "none"` or a positive count and a self-contained brief. An omitted or
+`fork_turns: "none"` and a self-contained brief. An omitted or
 `"all"` fork inherits parent model/effort and rejects overrides. This session exposes
-Astra, Sol 6.1, Sol 6, Luna 6 and Sol 5.6; other surfaces may differ.
+Astra, Sol 6.1, Terra 6.1, Sol 6 and Luna 6 (checked 2026-10-29); other surfaces may
+differ. The Work/Codex Terra release is dated 2026-10-26; official guidance requires
+CLI 0.159.0+, but version alone does not establish catalog or workspace access.
 For CLI roles, inspect supported agent definitions/config overlays, `agent_type`,
 `model`, `model_reasoning_effort`, `agents.default_subagent_model` and
 `agents.default_subagent_reasoning_effort`. Explicit spawn settings take precedence;
@@ -222,9 +219,10 @@ or plugins. See [fan-out patterns](../FANOUT-PATTERNS.md).
 Re-verify on a release, a deprecation, a rejected model ID, a retirement date coming within
 90 days, or a maintenance audit. Check the vendor model pages and the session catalog before
 changing a default, and preserve the user's explicit model choice. Keep historical benchmarks
-dated; do not relabel an old run as a new model. OpenAI/Anthropic values were checked on
-2026-09-30; Gemini/agy values were re-verified on 2026-10-14. Neither is a quote
-for a particular account. Compare candidate models on representative inputs and
+dated; do not relabel an old run as a new model. Terra API facts and Codex catalog/schema
+were checked 2026-10-29; other OpenAI/Anthropic values retain their 2026-09-30 check,
+Gemini/agy their 2026-10-14 check. These are not account-specific quotes.
+Compare candidate models on representative inputs and
 checks; record quality, elapsed time, actual token usage and rework where available.
 
 Sources:
@@ -235,6 +233,9 @@ Sources:
 - [Claude model deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations)
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
 - [OpenAI models](https://developers.openai.com/api/docs/models)
+- [Terra API](https://developers.openai.com/api/docs/models/gpt-6.1-terra)
+- [Work/Codex models](https://learn.chatgpt.com/docs/models)
+- [Terra release](https://learn.chatgpt.com/docs/whats-new/october-26-30-2026) (2026-10-26)
 - [OpenAI model selection](https://developers.openai.com/api/docs/guides/model-selection)
 - [OpenAI GPT-6 guide](https://developers.openai.com/api/docs/guides/latest-model)
 - [OpenAI API pricing](https://developers.openai.com/api/docs/pricing)

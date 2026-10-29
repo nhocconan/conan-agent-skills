@@ -133,8 +133,9 @@ Where `spawn_agent` exposes these fields, a scoped implementation uses:
 
 `fork_turns` omitted or `"all"` copies the parent's entire context into the worker and
 inherits the parent's model and reasoning effort, and such a fork rejects `model` and
-`reasoning_effort` overrides. Set `"none"` (or a positive count) with a self-contained
-brief whenever you are choosing the worker's tier.
+`reasoning_effort` overrides. Set `"none"` with a self-contained brief whenever you
+are choosing the worker's tier. The current schema accepts only `"all"` or `"none"`;
+use numeric forks only if the active schema explicitly supports them.
 
 Launch the next independent node without awaiting earlier nodes; separate asynchronous
 tool messages can still execute concurrently. Follow up on the existing worker for
