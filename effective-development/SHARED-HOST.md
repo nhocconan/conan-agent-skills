@@ -35,3 +35,16 @@ through real Chromium and ffmpeg). Order of checks:
    failures and a full rerun.
 6. **Typecheck.** `tsgo` (native preview) type-checked a package in 4.3 s against 21.1 s for
    `tsc`, with the same 0 errors; adopt it for the inner loop once it matches on the repo.
+
+## Nothing escapes the conductor (incident 2026-11-01, host load 180)
+Three agents ran tests directly (`pnpm exec vitest …`) beside a gate; each vitest worker launched its own Chromium and
+ffmpeg, and a watchdog that started its command with `setsid` died while its children kept running. Rules, enforced in code:
+1. **Refuse raw runs.** The test runner's config throws when it is not started by the conductor (an env marker the
+   conductor sets; CI exempt; an explicit one-file override for a person).
+2. **Kill the tree with the watchdog.** A watchdog traps EXIT/TERM and kills its command's process tree; the cgroup scope
+   gets a hard `RuntimeMaxSec`, so even a SIGKILLed watchdog leaves nothing behind.
+3. **Browsers are a host resource.** Tests share one browser per process (a context/tab per test) and take a host-wide
+   slot before launching (≤ 2 browsers per host); E2E runs ≤ 2 shards with `workers: 1` each.
+4. **Agents never run suites in parallel.** One suite at a time per host; builders run only their own test files through
+   the conductor; a lead stops every builder's runs before starting a gate.
+5. **Clean up.** After any run: no orphan test, browser or ffmpeg process (check by cwd and parent), no temp dirs.
