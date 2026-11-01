@@ -49,6 +49,7 @@ review, never a declaration that the user's task is done.
 | Evaluating claims and repairing defects | [Quality gate](sections/quality-gate.md) |
 | Reviewing and verifying the combined result | [Integration](sections/integrate.md) |
 | Resume, worker failure, progress updates | [Tracking](sections/tracking.md) |
+| Token cost: turn budgets, context size, polling | [Quota discipline](sections/cost.md) |
 | Harness limits, lanes, resume primitives | [Fan-out patterns](FANOUT-PATTERNS.md) |
 | Brief, ledger and report examples | [Templates](TEMPLATES.md) |
 
