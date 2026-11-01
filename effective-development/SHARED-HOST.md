@@ -48,3 +48,8 @@ ffmpeg, and a watchdog that started its command with `setsid` died while its chi
 4. **Agents never run suites in parallel.** One suite at a time per host; builders run only their own test files through
    the conductor; a lead stops every builder's runs before starting a gate.
 5. **Clean up.** After any run: no orphan test, browser or ffmpeg process (check by cwd and parent), no temp dirs.
+6. **Shared checkout commits.** When writers commit through a temporary index (to leave other writers' hunks out), the
+   real index goes stale: it still holds the pre-commit snapshot and shows the committed files as deleted or added. After
+   each such commit run `git reset -q -- <own paths>`; before any plain `git commit`, check `git diff --cached` is only
+   yours (2026-11-02: 44 stale entries, including deletes of freshly committed files, sat in a shared index). Release
+   images build from a clean worktree of HEAD, never from a shared checkout.
