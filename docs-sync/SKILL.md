@@ -33,6 +33,12 @@ Update the requested documents against current code and the reader's actual work
   product voice; working notes use the operator's register.
 
 ## Process
+0. **Establish the latest system state before writing a word.** Read the commits since the
+   doc was last verified (`git log --since=<last-verified>`), the code/config the doc
+   describes, and the running system (app, read-only prod queries, deployed URLs) for
+   user-visible behaviour. Never update a doc from its own old text, a plan, or memory;
+   a plan is design direction and must be labelled as such. Record what you read
+   (commit hash, paths, screens) in the doc's verification stamp.
 1. Read the docs index first; update the canonical topic document. New files need a
    distinct topic/audience. Link shared rules; repair links when consolidating. Keep
    catalogs in references and task state in ignored notes, not always-loaded rulebooks.
