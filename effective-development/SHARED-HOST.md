@@ -57,3 +57,7 @@ ffmpeg, and a watchdog that started its command with `setsid` died while its chi
    never `open(f,'w').write(edit(open(f).read()))`, which truncates before it reads (2026-11-02: it emptied a doc holding
    another session's uncommitted edits). Recovery: blobs of dirty files often survive in the object store (a build cache
    that hashes the tree with `git add` into a temporary index): `git ls-tree -r <tree> -- <path>`, then `git cat-file -p`.
+8. **Wait on a PID, never on `pgrep -f <text>`.** The waiting shell's own command line contains the text, so
+   `until ! pgrep -f check-affected` never ends and `kill $(pgrep -f …)` kills the caller (2026-11-02: 8 waiters left
+   running for hours; one agent killed its own shell). Use the job's PID (`kill -0 $pid`), the runner's completion
+   notice, or a bracketed pattern (`pgrep -f '[c]heck-affected'`) that cannot match itself.
