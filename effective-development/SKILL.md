@@ -3,7 +3,8 @@ name: effective-development
 description: >-
   Choose meaningful checks, avoid redundant runs, diagnose slow verification, keep
   required gates. Use for affected-test selection, regression coverage, gate-result
-  reuse, expensive test loops, or a lean suite ("test suite too slow", "xoá test thừa").
+  reuse, expensive test loops, setup-time audits, or a lean suite ("test suite too slow",
+  "CI chậm", "xoá test thừa").
 ---
 
 # Effective development
@@ -111,6 +112,12 @@ A worker verdict alone is insufficient: inspect the evidence against the final t
 Rerun failed checks and those a later edit invalidated (including green shards a repair
 touches); unknown impact or mutable external state needs fresh probes. One final
 integrated run, not a full run per worker.
+
+## Audit setup before tests
+
+A slow loop is usually wait and setup, not tests: split runs into wait / setup / running,
+fix the biggest sink, and test that affected selection never goes green by selecting
+nothing: [SETUP-TIME.md](SETUP-TIME.md).
 
 ## Shared host
 
