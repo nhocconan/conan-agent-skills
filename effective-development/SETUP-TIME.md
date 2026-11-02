@@ -44,3 +44,22 @@ changed runtime source selects zero tests. Found 2026-11-02: an empty selection 
 - Pre-push hook (format + fast lint + fast typecheck on changed files, < 9 s): a hook, not a
   written rule, because agents skip written steps in long sessions.
 - Blobless CI checkout (`filter: blob:none`), never shallow when anything reads history.
+
+## 5. Measured adoptions (msocloud monorepo, 2026-11-02)
+
+| Change | Before | After | Guard that keeps coverage |
+|---|---|---|---|
+| Watchdog detects exit in 0.2 s; attach loop stops when the job ends | 1.5 s job = 5.3 s; 42 % of 1,091 jobs ≤ 5 s | 1.8 s | live timing test with a loaded-host bound |
+| Content fingerprint (git blob ids + untracked), commit-invariant; pre-push accepts a matching green gate | pre-push 206-231 s | 0 s on a hit, full subset on a miss | tests: same bytes reuse, one byte or a new untracked file reruns |
+| Runner worker cap via env, not CLI args (args and `TZ` enter the task-runner hash) | 10 of 34 packages cached | 29 of 34 | two identical runs compared |
+| `isolate: false` only for files proven pure; everything else isolated by default | web suite 55.8 s | 37.0 s, same 12,530 tests | allow-list, 5 shuffled runs, a reset hook that fails on leaked env/globals/timers |
+| Gate steps in dependency waves | serial ≈ 305 s | 235 s incl. E2E | `MSO_GATE_SERIAL=1` restores the order |
+| Hybrid lint: Oxlint runs every rule it covers, a slim ESLint keeps the rest | full web lint 50 s cold | Oxlint 0.5 s; slim ESLint still 45 s cold (React Compiler rules) | seeded-violation parity; unused-disable directives judged by the tool that owns the rule |
+
+- Global `isolate: false` failed 38-69 files (`vi.mock` bleed); a per-file allow-list is the safe form.
+- `tsgo` gave text-identical diagnostics to `tsc` on 45 packages and a seeded fixture, 7.5x faster;
+  only the exit code differs (1 vs 2). Use it as a fail-fast step; keep `tsc` authoritative.
+- Oxlint's ports of compiler rules disagreed with the originals (23 false hits on `purity`):
+  keep such rules in the original linter until the ports match.
+- The 100x lint gain applies to the Oxlint-only fast path; the full lint is bounded by the rules
+  only the original linter has.
