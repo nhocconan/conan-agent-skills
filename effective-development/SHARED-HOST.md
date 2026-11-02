@@ -53,3 +53,7 @@ ffmpeg, and a watchdog that started its command with `setsid` died while its chi
    each such commit run `git reset -q -- <own paths>`; before any plain `git commit`, check `git diff --cached` is only
    yours (2026-11-02: 44 stale entries, including deletes of freshly committed files, sat in a shared index). Release
    images build from a clean worktree of HEAD, never from a shared checkout.
+7. **Edit another writer's dirty file read-first.** Read the whole file into a variable, assert the anchor, then write;
+   never `open(f,'w').write(edit(open(f).read()))`, which truncates before it reads (2026-11-02: it emptied a doc holding
+   another session's uncommitted edits). Recovery: blobs of dirty files often survive in the object store (a build cache
+   that hashes the tree with `git add` into a temporary index): `git ls-tree -r <tree> -- <path>`, then `git cat-file -p`.
