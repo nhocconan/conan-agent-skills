@@ -63,3 +63,9 @@ changed runtime source selects zero tests. Found 2026-11-02: an empty selection 
   keep such rules in the original linter until the ports match.
 - The 100x lint gain applies to the Oxlint-only fast path; the full lint is bounded by the rules
   only the original linter has.
+
+## 6. Measured on content-engine (2026-11-02)
+
+- Global `isolate: false`: 154 → 152 s with 11 tests red in 6 files (import share fell from 31 % to 2 %, test time rose to 95 %): no gain, rejected. Measure the import share first; isolation pays only where import dominates.
+- Workers re-measured once the watchdog and host lock removed overlap: 4 → 8 workers cut a test shard from 154 s to 96 s, green 3 runs in a row (round 1 had found 6+ red only because runs overlapped). Re-measure parallelism after every overlap fix.
+- Blobless CI checkout: `with: { filter: blob:none }` on every `actions/checkout`, no `fetch-depth` change.
