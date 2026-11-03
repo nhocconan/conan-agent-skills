@@ -117,6 +117,27 @@ both recorded in `skill-miner/context-budget.json` in the same commit.
 `effective-development` joined the core, codex-dev and agy-dev load-outs because the
 quality gate and the runner rule both link to it.
 
+## 2026-11-03 — design-skill trigger review (one project, ~4 days)
+
+Scope: Claude Code transcripts of one project, 3 lead sessions and 132 subagents
+(2026-10-31 to 2026-11-03, all that was on disk), scanned for UI-file edits and Skill calls;
+private script and per-session table in `.agents/design-review-2026-11-03/`. Codex sessions
+were not scanned. Counts, not trends.
+
+| Measured | Result | Change |
+| --- | --- | --- |
+| Significant UI-editing sessions (≥3 UI files or ≥150 lines) that invoked any design skill before the first UI edit | 0 of 6 (1 invoked `design-qa` after its edits) | `frontend-design` description now fires on any visible change, chrome and small tweaks included, with Vietnamese phrasing; body is a 7-step loop with artifacts |
+| Worker briefs that named the design skills ("use if available") | 4 of 6; none loaded one before editing | brief.md: UI acceptance is the loop's evidence, not advice |
+| Screenshots in UI sessions / with dark mode | 6 of 11 / 3 of 11 | loop step 4 fixes the set: 1440 and 390, light and dark, open states |
+| Detector hook | 335 stop-hook passes, 2 findings (both one `side-tab`) | documented as a source floor; composition goes to `design-qa`'s counted rubric and `layout-probe.js` |
+
+Three docs disagreed on the owner of UI building (MANUAL said impeccable, README said conan
+`frontend-design`, design-qa pointed at impeccable). README and MANUAL now name one entry point
+and route impeccable by command. Context budget: `frontend-design` and `design-qa` always-on and
+on-demand ceilings raised in the same commit for the wider trigger text, the rubric and the probe.
+The Codex load-out (`codex-dev`) still omits the design skills; adding one is an operator
+decision because that load-out is capped by Codex's description budget.
+
 ## Maintenance bar
 
 Keep a skill only when it changes a decision the base agent would otherwise get wrong and

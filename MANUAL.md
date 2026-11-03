@@ -121,8 +121,8 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | `shipping-changes` | Commit + push (repository branch/review policy, your identity, hooks must pass) |
 | `browsing-web` | Anything involving a browser |
 | `web-qa` | Test a running web app (reports by default; fixes only if you ask) |
-| `design-qa` | "Nhìn xấu / rớt hàng / chữ bị đè" — visual defects, both themes + 375px |
-| `frontend-design` | Làm/làm lại landing page, dashboard, UI — nền brand token, plan, motion có ngân sách, rồi qua gate review |
+| `design-qa` | "Nhìn xấu / không hài hoà / nhìn như lỗi / rớt hàng" — chấm rubric có đếm số trên screenshot, cả 2 theme + 390px |
+| `frontend-design` | Mọi thay đổi UI nhìn thấy được, kể cả sửa nhỏ ở top bar/menu/icon: vòng ground → plan → build → shot → critique → iterate |
 | `resilient-data-harvest` | Scraping, backfills, system-to-system migration — và sync lần sau không được đè lên sửa tay |
 | `autonomous-loops` | "Treo lịch", "chạy mỗi đêm", cron, routine: loop phải có trigger, prompt file, gate, stop condition |
 | `dev-env-lifecycle` | Bật/tắt dev stack: `down` phải dọn HẾT, không để rác, hỏi trước khi xoá |
@@ -153,11 +153,13 @@ The rest (17 entries in `loadout.txt`) are third-party kept as-is, among them `c
 scripts), `graphify`, `spec`. They exist only on machines where they were installed;
 a fresh clone skips them.
 
-**Design stack** (2026-09-05): việc *làm* và *sửa* UI thuộc về `impeccable` (upstream;
-`refsync.py upgrade` cài nó, load-out không đụng vì nằm trong `keep.txt`). Gu thẩm mỹ
-để cho plugin `frontend-design` chính chủ của Anthropic. `design-qa` chỉ còn là lăng
-kính review. Bản `~/.shared-ai-skills/frontend-design` đã gỡ — nó là bản port thời
-Codex tháng 1/2026, trùng `name:` và đang che mất plugin mới (26 lượt fire so với 7).
+**Design stack** (2026-11-03): mọi thay đổi UI người dùng nhìn thấy đi qua một cửa là
+`frontend-design` (conan): grounding vào DESIGN.md và token → plan → build → screenshot
+1440/390 light+dark → một reader khác chấm theo rubric của `design-qa` → sửa → báo cáo
+before/after. `impeccable` (upstream, trong `keep.txt`) được gọi theo tên lệnh từ vòng đó
+(`critique`, `polish`, `layout`, `typeset`, `clarify`, `adapt`, `harden`, `document`);
+hook detector của nó chỉ quét source. Plugin `frontend-design` của Anthropic giữ phần gu
+cho trang marketing. Bản `~/.shared-ai-skills/frontend-design` đã gỡ từ 2026-09-05.
 
 ---
 

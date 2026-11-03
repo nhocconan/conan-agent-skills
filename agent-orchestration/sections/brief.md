@@ -10,6 +10,8 @@ Read [routing](routing.md) before selecting a model. Each worker needs:
   hand rate-limited resources (a login, an API key) over once: the lead authenticates and
   workers reuse one session file, since parallel logins lock the whole fleet out.
 - Observable acceptance: claim → check with real project commands → artifact → what it leaves unproven.
+  UI work: acceptance is `frontend-design`'s evidence (before/after shots 1440/390, light/dark,
+  rubric line from another reader); "use the design skills if available" gets skipped.
 - Relevant invariants: auth, tenancy, money, compatibility, or performance when applicable.
 - Return shape: changes, commands and results, assumptions, and unresolved concerns.
 - Explicit limits on further delegation, time/cost when known, and escalation conditions.
