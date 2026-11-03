@@ -29,7 +29,10 @@ numbered rule plus one mechanical check, so no class is re-argued.
    `scripts/audit/` that scans the relevant code and exits non-zero on violations.
    Use AST/type-aware checks when syntax alone is ambiguous. Test the audit with a failing example and a legitimate counter-case.
 5. **Wire it into the gate** — pre-push hook and/or CI — so the rule enforces itself.
-   A rule that relies on someone remembering it is a suggestion.
+   A rule that relies on someone remembering it is a suggestion. When the class is an
+   agent action (a skipped gate, a bypassed hook, a credential misuse), the owning layer
+   is the agent harness: a fail-open tool/stop hook, replayed over past transcripts to
+   count hits and false positives before it ships.
 6. **Keep an index**: a table of concern → rule § → audit script → where it's wired.
    Rules that can't be mechanically checked (design judgment) still get a numbered entry,
    marked "review-only", so reviews have a checklist. A visual class with a measurable shape

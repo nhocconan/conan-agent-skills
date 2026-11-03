@@ -29,7 +29,8 @@ steps; report missing authority without re-asking for existing authority.
 4. **Capture each gate's exit status before filtering its output.** A display filter
    can hide failure; a no-match `grep` before `&&` can silently skip the next required
    step. Run required phases separately, record their statuses, and inspect the saved
-   log. A phase that never ran is skipped, never passed.
+   log. A phase that never ran is skipped, never passed. Never hand-build a gate subset
+   to skip a red check: a known-red check is the blocker, fixed or named in line 1.
 5. **A flag turns on by default only after its stated live comparison ran** on the shipped
    build (both arms, same inputs); a per-stage benchmark is not that comparison.
 6. **Push only what was asked.** Uncommitted work from another agent's session is not

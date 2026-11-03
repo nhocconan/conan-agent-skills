@@ -57,6 +57,7 @@ same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
 ## Non-negotiables this skill exists to protect
 
 - Green gates ≠ done. Verify behavior on the journey you touched, in the real runtime.
+  "Works" means the user's own path (their account, entry point and clicks) ran end to end.
 - Numbers reconcile to EXTERNAL ground truth, never to a re-derivation of the same code.
 - Class-of-bug → rule + mechanical audit, never a one-site patch.
 - Say out loud what is verified vs inferred vs assumed.

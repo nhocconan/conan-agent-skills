@@ -50,7 +50,8 @@ Read `sections/headless-server.md`. "No desktop" is not a reason to skip browser
 verification — it is the normal case. That section owns the Playwright CLI loop (the
 fast agent default), local launch vs connecting
 to a running browser, the `connect()` version rule behind the classic 428, a
-copy-pasteable capture script, `storageState` auth with no secret written anywhere,
+copy-pasteable capture script, `storageState` auth with no secret written anywhere (sign in once, share the state;
+per-run sign-ins from parallel workers lock the account),
 and what a screenshot does not prove. Standing rule 2 does not apply there.
 
 ## When the task is bulk data collection

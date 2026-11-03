@@ -41,12 +41,12 @@
   },
   "browsing-web": {
     "always_on": 300,
-    "eager": 3900,
+    "eager": 3950,
     "on_demand": 12800
   },
   "bug-class-audits": {
     "always_on": 700,
-    "eager": 4900,
+    "eager": 5150,
     "on_demand": 0
   },
   "coding-env-bootstrap": {
@@ -56,7 +56,7 @@
   },
   "delegate-run": {
     "always_on": 400,
-    "eager": 2700,
+    "eager": 2800,
     "on_demand": 0
   },
   "demo-data-craft": {
@@ -81,8 +81,8 @@
   },
   "effective-development": {
     "always_on": 300,
-    "eager": 8250,
-    "on_demand": 4500
+    "eager": 8550,
+    "on_demand": 14300
   },
   "frontend-design": {
     "always_on": 850,
@@ -136,12 +136,12 @@
   },
   "senior-operator": {
     "always_on": 600,
-    "eager": 4800,
+    "eager": 4850,
     "on_demand": 23300
   },
   "shipping-changes": {
     "always_on": 400,
-    "eager": 3800,
+    "eager": 3950,
     "on_demand": 0
   },
   "skill-miner": {

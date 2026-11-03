@@ -16,6 +16,8 @@ migrations and load-bearing verification in that target runtime; a host-shell te
 not prove the deployed service uses the same dependencies, config or mounted files.
 Preserve the requested delivery mechanism (such as a mounted config override); do not
 substitute an image rebuild or service restart without checking scope and necessity.
+A deploy that builds from the working tree starts only from a clean tree, and nobody
+edits that tree until it ends; prefer building from a committed snapshot.
 
 ## The contract
 

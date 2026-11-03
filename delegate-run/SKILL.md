@@ -42,5 +42,7 @@ Execute authorized work unattended. Staffing and verification live in
 
 Outcome, changes, evidence, then material limitations — naming
 what passed, what failed, and what could not be checked, plus the plan-file path
-for resume. Label unfinished work; do not demand a fixed report format or a demo
+for resume. A worker's "pre-existing" or "unrelated" failure stands only with the same
+command failing on the base commit; otherwise it is the worker's. Check a worktree
+worker's base against the lead's branch before it edits. Label unfinished work; do not demand a fixed report format or a demo
 for nonvisual work.
