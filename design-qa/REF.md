@@ -51,11 +51,14 @@ review; the validator caught it.
 ## Decision log
 
 **2026-11-03** - became step 5 of `frontend-design`'s loop as well as the complaint lens. Added the
-counted rubric, the layout probe (checked on synthetic good/bad fixtures: the bad page hits all 8
-check classes, the clean page returns none; then on 7 live product screens) and defect classes
+counted rubric, the layout probe (synthetic good/bad fixtures: the bad page hits all 8 check
+classes, the clean page returns none; 7 live product screens ran before the ragged-row check and
+the icon-only glyph rule were added, so those two are fixture-tested only) and defect classes
 7-10 from composition defects an operator caught after agents shipped them. Description now
 triggers on "critique after any UI change" and on the complaint words used for those defects.
-gstack `design-review` stays an optional deeper procedure; the skill runs without it.
+gstack `design-review` stays an optional deeper procedure; the skill runs without it. The wider
+description is untested against real sessions: re-measure with the same transcript scan after a
+week (baseline 0 of 6 significant UI sessions invoking a design skill before the first edit).
 
 **2026-10-04** — class 2 kept recurring in one operator project after being listed here as a
 review item; added root-cause table, a rendered DOM probe (threshold 0.85: a 90ch cap measured

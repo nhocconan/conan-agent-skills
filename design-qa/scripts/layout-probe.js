@@ -11,6 +11,7 @@
 //   bar-*     every horizontal bar (header, nav, [role=toolbar|menubar|tablist]): controls of mixed
 //             heights, icon glyphs of mixed sizes, uneven gaps, icon-only controls whose glyph is small for the box,
 //             one control styled unlike all its siblings (reads as a badge or an error)
+//             (a filled avatar circle is an expected hit: confirm it is the same height as its row)
 //   scale-*   in main: how many distinct control heights / font sizes / small-icon sizes are used
 //   ragged-row card-like siblings on one row whose bottom edges differ
 //   overflow  horizontal page scroll; text cut by overflow (ellipsis or clip)
