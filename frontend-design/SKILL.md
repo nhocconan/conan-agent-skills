@@ -1,71 +1,60 @@
 ---
 name: frontend-design
-description: Routing and quality method for making or reshaping UI that must look designed, not generated - landing pages (with motion), marketing sites, dashboards, app screens, components. Use when asked to design, build, redesign or beautify a page ("làm landing page", "thiết kế giao diện", "page đẹp hơn", "nhìn xấu quá làm lại", "add animation", "hero", "dashboard layout"), before writing UI code, or when a generated page looks templated. Grounds in the subject and existing brand tokens first, then plans, builds, and gates through design-qa, a11y-audit, web-perf-audit and anti-slop-review.
+description: Mandatory loop for ANY change a user will see in a web UI - a new or restructured page, component, layout, form, table, dialog, empty state, header, top bar, nav, sidebar, menu, panel, launcher, icon, theme or spacing tweak, help or docs page, landing page, redesign. Use before editing markup, .tsx/.jsx/.vue or CSS that renders, including "small" chrome changes ("thêm nút", "sửa header", "đổi icon", "làm trang mới", "sửa giao diện", "chỉnh layout", "làm lại top bar", "trang help", "UI/UX", "đẹp hơn", "nhìn xấu quá làm lại", "landing page", "dashboard layout"). Grounds in the design system and DESIGN.md, plans, builds, screenshots 1440/390 in light and dark, has a second reader critique against a counted rubric, iterates, and reports before/after. Routes deep design commands to impeccable.
 ---
 
 # Frontend design
 
-The method for building or reshaping UI. Reviewing an already-rendered page is
-`design-qa`; this skill is what runs before and while it gets built. The Anthropic
-`frontend-design` plugin and `impeccable` are optional neighbours (plugin = taste prompt,
-`impeccable` = heavy command set); this file stays usable without either.
+The build loop for anything a user sees. Reviewing a page someone complained about is `design-qa`;
+this skill runs before and while the change is built, and it ends in that review. Small is not an
+exemption: chrome tweaks (a toggle, an icon, a menu) are where unreviewed defects ship most.
 
-## 1. Ground first - brand beats any style rule
+## Who does what
 
-1. Name the subject, audience and the one primary job of the page in one line each. Missing
-   from the brief: propose them, state them, continue.
-2. Read the existing system before choosing anything: the repo's tokens/CSS variables, font
-   loading, icon set, i18n copy source, a brand skill if one exists (for example
-   `younet-*-brand-identity`), and the nearest design rules in its `AGENTS.md`.
-3. Precedence: **operator's words > project brand tokens and rules > this skill > upstream
-   style rules**. Anything below this skill (including the fonts, gradient bans and palettes
-   in `elayadesign/ai-design-skills`) is advisory and loses to a brand token. Never add a font
-   or colour the brand does not own just to follow a style rule.
-4. Real content only: product facts from docs or code. No invented logos, testimonials or
-   numbers (see [sections/anti-slop.md](sections/anti-slop.md) "Content").
-
-## 2. Design plan, before code
-
-Write a compact plan and show it (chat or plan file), then challenge it:
-
-- **Tokens**: 4-6 named colours (brand's own when they exist), type roles (display, body, data)
-  and scale, radius and spacing steps, one elevation rule.
-- **Layout**: one sentence per section plus an ASCII wireframe; state alignment.
-- **Memorable thing**: exactly one element carries the boldness; the rest stays quiet.
-- **Challenge**: run the same brief mentally; if the plan matches what any similar page would
-  get, or hits a cluster in [sections/anti-slop.md](sections/anti-slop.md), revise and say what
-  changed. Where the brief or brand fixes an axis, follow it even if it is a "default look".
-
-## 3. Pick the path
-
-| Surface | Path |
+| Need | Owner |
 |---|---|
-| Landing, marketing, product, pricing, campaign page | [sections/landing-page.md](sections/landing-page.md) (strategy first, then motion via [sections/motion.md](sections/motion.md)) |
-| Dashboard, settings, admin, list/detail, tool UI | [sections/app-pages.md](sections/app-pages.md); CRUD baseline in `admin-crud-standards` |
-| Charts inside either | the `dataviz` skill / project chart package |
-| Course pages | `interactive-course-builder` owns its design system |
+| The loop, evidence, and the gate below | this skill |
+| Counted critique of rendered screens, defect fixing | `design-qa` (its `sections/rubric.md`, `scripts/layout-probe.js`) |
+| UX plan for a new surface; heuristic critique; polish, layout, typeset, clarify, adapt, harden passes; DESIGN.md from code | `impeccable` commands `shape`, `critique`, `polish`, `layout`, `typeset`, `clarify`, `adapt`, `harden`, `document` |
+| Mechanical tells (gradient text, glow, contrast, side-tab, cramped padding) | impeccable's detector: the edit hook scans source; `impeccable detect <url>` scans the rendered DOM. Neither judges composition: a lone boxed flag, tiny spread-out icons or a bare-list panel pass it |
+| WCAG, speed, admin baseline, charts | `a11y-audit`, `web-perf-audit`, `admin-crud-standards`, `dataviz` / project chart package |
 
-Upstream depth (read-only reference, summarized here, never executed):
-`elayadesign/ai-design-skills` `landing-page-design` and `design-to-motion`; see
-[REF.md](REF.md) for what is taken, what is overridden, and the MIT notice.
+Precedence: operator's words > project design system and DESIGN.md > this skill > impeccable and
+upstream style rules. Never add a font, colour, size or radius the system does not own.
 
-## 4. Build rules (all paths)
+## The loop - every step leaves an artifact
 
-- Use the project's components, tokens, icon set and copy system; copy lives in the i18n
-  source, not inline.
-- One CSS ownership per concern; watch selector specificity so section and element rules do
-  not cancel each other (padding/margin between sections is the usual victim).
-- Responsive from 375px, light and dark if the project has both, visible keyboard focus,
-  empty/loading/error states designed, not implied.
-- Screenshot while building, and drive the interactive parts. A static screenshot does not
-  prove a date picker, popover or menu works.
+1. **Ground.** Read DESIGN.md (and PRODUCT.md if present), the tokens, and the components already
+   used for this job. Shoot the current screen and two siblings ("before"). Write down the
+   neighbours' numbers: control height, icon size, gap, radius, type sizes. New elements match
+   them unless the plan says why not.
+2. **Plan** (10 lines, shown before code): the surface's one job and mode (work screen, reading
+   page, persuasion page); what changes and which existing components carry it; the inherited
+   sizes; the states (empty, loading, error, long Vietnamese text, one item, many, no permission);
+   the single place emphasis goes. Check the plan against the tells in `design-qa`'s rubric and
+   [sections/anti-slop.md](sections/anti-slop.md); revise any hit.
+3. **Build** with the system: kit components, tokens, icon set, i18n catalog. Paths:
+   [sections/app-pages.md](sections/app-pages.md) for work screens,
+   [sections/landing-page.md](sections/landing-page.md) +
+   [sections/motion.md](sections/motion.md) for marketing pages.
+4. **Shoot** per [sections/screenshots.md](sections/screenshots.md): 1440×900 and 390×844, light
+   and dark, every open state touched, one edge state; run `layout-probe.js` on each.
+5. **Critique by a second reader.** A fresh subagent (or `impeccable critique`) gets the shots,
+   probe output and siblings, not the builder's verdict, and scores `design-qa`'s 12-criterion
+   rubric with counts. The builder's own PASS does not count: builders pass their own pages.
+6. **Iterate.** Fix every FAIL, shared component first; re-shoot what changed; up to three rounds,
+   then report what is still open and why.
+7. **Report**: plan, before/after paths per viewport and theme, the rubric line with counts, gates
+   run (`a11y-audit` always for new controls; `web-perf-audit` for motion, media or heavy charts;
+   `anti-slop-review` for copy), and what was skipped.
 
-## 5. Review gate - not done until these pass
+Trivial change (one string, one token value, no layout change): steps 4, 5 and 7 at the affected
+viewport. Anything that adds, moves or resizes an element runs the full loop.
 
-1. `design-qa` on the rendered page: both themes, 375px, wrap/collision/imbalance.
-2. [sections/anti-slop.md](sections/anti-slop.md) checklist, with evidence per hit.
-3. `a11y-audit` (contrast, focus, reduced-motion, targets).
-4. `web-perf-audit` when the page has motion, large media, charts or a bundle budget.
-5. `anti-slop-review` on the words (headline, CTA, FAQ, empty states).
+## Delegating UI work
 
-Report the plan, what was verified at each gate, and what was skipped.
+A worker brief carries the loop as acceptance, not as advice: "return before/after screenshot
+paths (1440/390, light/dark) and the rubric line from a reader other than you". "Use the design
+skills if available" gets skipped. The lead reads the shots before accepting.
+
+[REF.md](REF.md) holds provenance, the overrides that survive upgrades and the decision log.

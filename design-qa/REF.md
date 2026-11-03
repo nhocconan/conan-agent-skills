@@ -37,6 +37,10 @@ review; the validator caught it.
 4. Do not "improve" adjacent design nobody complained about.
 5. Defect class 2 (text not using its width) is prevented mechanically, not reviewed:
    `sections/text-width.md` (root causes, probe, repo-check steps) and `scripts/narrow-wrap-probe.js`.
+6. Critique is counted, not adjectival: `sections/rubric.md` (12 criteria + product-UI tells) and
+   `scripts/layout-probe.js`. The builder never grades their own screen.
+7. Defect classes 7-10 (mismatched bar controls, odd one out, bare-list panels, prose walls) stay
+   in SKILL.md; they are the chrome defects generated UI ships most.
 
 ## Upstream sections this depends on
 
@@ -45,6 +49,13 @@ review; the validator caught it.
 - "Design Critique Format"
 
 ## Decision log
+
+**2026-11-03** - became step 5 of `frontend-design`'s loop as well as the complaint lens. Added the
+counted rubric, the layout probe (checked on synthetic good/bad fixtures: the bad page hits all 8
+check classes, the clean page returns none; then on 7 live product screens) and defect classes
+7-10 from composition defects an operator caught after agents shipped them. Description now
+triggers on "critique after any UI change" and on the complaint words used for those defects.
+gstack `design-review` stays an optional deeper procedure; the skill runs without it.
 
 **2026-10-04** — class 2 kept recurring in one operator project after being listed here as a
 review item; added root-cause table, a rendered DOM probe (threshold 0.85: a 90ch cap measured

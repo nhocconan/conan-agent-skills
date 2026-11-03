@@ -65,9 +65,9 @@
     "on_demand": 0
   },
   "design-qa": {
-    "always_on": 700,
+    "always_on": 800,
     "eager": 4200,
-    "on_demand": 4600
+    "on_demand": 15000
   },
   "dev-env-lifecycle": {
     "always_on": 700,
@@ -85,9 +85,9 @@
     "on_demand": 4500
   },
   "frontend-design": {
-    "always_on": 700,
+    "always_on": 850,
     "eager": 4800,
-    "on_demand": 13900
+    "on_demand": 19000
   },
   "interactive-course-builder": {
     "always_on": 900,

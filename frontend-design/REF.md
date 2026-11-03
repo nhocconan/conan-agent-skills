@@ -33,6 +33,11 @@ tokens above every style rule, and ends in the repo's review gates.
    paused off-screen; reduced-motion shows the final state.
 4. Showcase mode of `design-to-motion` (capture, ffmpeg, Figma token) is excluded.
 5. Ends in the gate handoff: design-qa, a11y-audit, web-perf-audit, anti-slop-review.
+6. The description triggers on ANY visible UI change, chrome included, in Vietnamese and English;
+   never narrow it back to "design a page".
+7. The loop is mandatory and evidence-bearing: before/after screenshots at 1440 and 390 in both
+   themes, critiqued by a reader other than the builder against `design-qa`'s rubric.
+8. impeccable is routed to by command, never copied; this skill owns the loop, not the taste.
 
 ## Upstream sections this depends on
 
@@ -59,6 +64,17 @@ warranty of any kind. Source: https://github.com/elayadesign/ai-design-skills (c
 The upstream itself credits adapted work from Leonxlnx/taste-skill (MIT).
 
 ## Decision log
+
+**2026-11-03** - became the mandatory loop for any visible UI change. Evidence: in one project's
+sessions over ~4 days, 0 of 6 significant UI-editing sessions invoked a design skill before their
+first UI edit and 1 invoked one at all, although 4 of the 6 worker briefs named the skills ("use
+if available"). The defects the operator then caught were composition defects (a lone boxed flag
+read as an error, small spread-out icons, a bare-list launcher, a text-and-links help page) that a
+source detector does not see. Changes: description widened to chrome and small changes with
+Vietnamese phrasing; 7-step loop with artifacts; second-reader critique; brief wording for workers;
+routing table to impeccable commands; screenshot recipe. Research read: taste-skill
+`app-screens.md`, impeccable 4.8 references and detector rules, Vercel Web Interface Guidelines,
+Anthropic `frontend-design`; distilled into `design-qa/sections/rubric.md`.
 
 **2026-10-27** - created at operator request after landing pages looked ugly; wrap chosen over
 fork because the upstream is two large prose files whose visual half we reject.

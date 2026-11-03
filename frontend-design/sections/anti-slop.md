@@ -48,6 +48,9 @@ Product facts must trace to docs or code. Do not claim capabilities the product 
 example autonomous execution or causal impact). No real-customer names, numbers or logos
 without a source. Straight quotes where the project's rules require them.
 
+App screens and chrome: the product-UI tells and the counted rubric live in `design-qa`
+(`sections/rubric.md`); this list is weighted toward marketing pages.
+
 ## Rule of use
 Run the list on the plan (section 2 of SKILL.md) and again on the rendered page. For each
 hit, either change it or record the one-line reason it is a deliberate choice.

@@ -21,3 +21,10 @@ do a job repeatedly; the design serves scanning and acting.
   action through the whole flow, errors say what happened and how to fix it.
 - **Numbers must be right**: any displayed metric goes through `metric-integrity`.
 - Verify by operating it (filters, pickers, popovers), at 375px and in both themes.
+- **Motion is feedback** on work screens (press, hover, menu open, a row arriving), not
+  entrances, unless the project's design system specifies otherwise.
+- **Chrome** (top bar, nav, launcher, account menu) is one system: one control height, one icon
+  size, one gap per cluster; nothing boxed or coloured alone unless it is an alert or the primary
+  action. Panels group their items under labels and give each item an icon and a line of meaning.
+- **Help and guide pages** lead with a picture of the screen, then numbered steps; links go at
+  the end, not inside every sentence.
