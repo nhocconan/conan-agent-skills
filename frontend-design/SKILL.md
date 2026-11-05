@@ -14,25 +14,26 @@ exemption: chrome tweaks (a toggle, an icon, a menu) are where unreviewed defect
 | Need | Owner |
 |---|---|
 | The loop, evidence, and the gate below | this skill |
+| The taste bar: plain copy, one system, no captions under visuals, equal edges, icon-only controls, metadata is not content | [sections/taste-gate.md](sections/taste-gate.md) (taste-skill, vendored in `upstream/taste-skill/`) - mandatory on every UI change |
 | Counted critique of rendered screens, defect fixing | `design-qa` (its `sections/rubric.md`, `scripts/layout-probe.js`) |
 | UX plan for a new surface; heuristic critique; polish, layout, typeset, clarify, adapt, harden passes; DESIGN.md from code | `impeccable` commands `shape`, `critique`, `polish`, `layout`, `typeset`, `clarify`, `adapt`, `harden`, `document` |
 | Mechanical tells (gradient text, glow, contrast, side-tab, cramped padding) | impeccable's detector: the edit hook scans source; `impeccable detect <url>` scans the rendered DOM. Neither judges composition: a lone boxed flag, tiny spread-out icons or a bare-list panel pass it |
 | WCAG, speed, admin baseline, charts | `a11y-audit`, `web-perf-audit`, `admin-crud-standards`, `dataviz` / project chart package |
 
 Precedence: operator's words > project design system and DESIGN.md > this skill > impeccable and
-upstream style rules. Never add a font, colour, size or radius the system does not own.
+upstream style rules. Never add a font, colour, size or radius the system does not own. The taste gate is not optional and not skippable for "small" changes.
 
 ## The loop - every step leaves an artifact
 
 1. **Ground.** Read DESIGN.md (and PRODUCT.md if present), the tokens, and the components already
-   used for this job. Shoot the current screen and two siblings ("before"). Write down the
+   used for this job. Read the taste gate ([sections/taste-gate.md](sections/taste-gate.md), upstream `SKILL.md` house rules). Shoot the current screen and two siblings ("before"). Write down the
    neighbours' numbers: control height, icon size, gap, radius, type sizes. New elements match
    them unless the plan says why not.
 2. **Plan** (10 lines, shown before code): the surface's one job and mode (work screen, reading
    page, persuasion page); what changes and which existing components carry it; the inherited
    sizes; the states (empty, loading, error, long Vietnamese text, one item, many, no permission);
    the single place emphasis goes. Check the plan against the tells in `design-qa`'s rubric and
-   [sections/anti-slop.md](sections/anti-slop.md); revise any hit.
+   [sections/anti-slop.md](sections/anti-slop.md); revise any hit. Add a "Taste" line: T1-T9 hits and fixes.
 3. **Build** with the system: kit components, tokens, icon set, i18n catalog. Paths:
    [sections/app-pages.md](sections/app-pages.md) for work screens,
    [sections/landing-page.md](sections/landing-page.md) +
@@ -41,7 +42,7 @@ upstream style rules. Never add a font, colour, size or radius the system does n
    and dark, every open state touched, one edge state; run `layout-probe.js` on each.
 5. **Critique by a second reader.** A fresh subagent (or `impeccable critique`) gets the shots,
    probe output and siblings, not the builder's verdict, and scores `design-qa`'s 12-criterion
-   rubric with counts. The builder's own PASS does not count: builders pass their own pages.
+   rubric AND the taste gate rows T1-T9 with counts. The builder's own PASS does not count: builders pass their own pages.
 6. **Iterate.** Fix every FAIL, shared component first; re-shoot what changed; up to three rounds,
    then report what is still open and why.
 7. **Report**: plan, before/after paths per viewport and theme, the rubric line with counts, gates

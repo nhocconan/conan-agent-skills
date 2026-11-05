@@ -78,3 +78,5 @@ Anthropic `frontend-design`; distilled into `design-qa/sections/rubric.md`.
 
 **2026-10-27** - created at operator request after landing pages looked ugly; wrap chosen over
 fork because the upstream is two large prose files whose visual half we reject.
+
+- 2026-11-05: taste-skill 2.5.0 vendored under `upstream/taste-skill/` and made a mandatory gate (`sections/taste-gate.md`) at steps 1, 2 and 5 for every UI change, in-app screens included (operator ruling after dashboards shipped with caption/metadata clutter). Only SKILL.md and the copy/system/icons/cards/layout references are vendored; marketing-only assets and scripts are not. Refresh with `ref-skills`.
