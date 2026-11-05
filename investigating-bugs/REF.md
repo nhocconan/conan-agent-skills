@@ -18,6 +18,8 @@ when the skill actually fires.
 
 Upstream's description does not state when to fire, so it under-triggers on the phrasings actually used ("sao lại lỗi", "lại bị nữa"). The reproduce-before-editing discipline and the fix-the-class handoff are local additions.
 
+Adapted from mattpocock/skills (diagnosing-bugs, commit 4ae2317, MIT).
+
 ## Overrides that MUST survive an upgrade
 
 1. preserve reproduction before the fix; isolated diagnostic probes may test hypotheses
@@ -30,7 +32,8 @@ Upstream's description does not state when to fire, so it under-triggers on the 
 
 - "Phase 1: Root Cause Investigation"
 - "Phase 2: Pattern Analysis"
-- "Confusion Protocol"
+- "Phase 3: Hypothesis Testing"
 
+SKILL also routes to `investigate/sections/` (flake, polluter, race, eval-bisect, blast-radius).
 If `refsync.py status` reports one of these has vanished, the wrapper's routing
 instructions are stale and must be re-pointed before the skill is trusted again.

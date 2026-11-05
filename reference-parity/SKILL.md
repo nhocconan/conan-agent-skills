@@ -5,9 +5,6 @@ description: Rebuild something to match an existing artifact — a competitor's 
 
 # Reference Parity
 
-For reference-driven work, enumerate the agreed surfaces and states before building.
-A description or landing screenshot rarely captures the complete target.
-
 ## Inventory the reference before writing anything
 
 Inspect the actual file, live surface, export or recording. A summary or landing
@@ -56,8 +53,7 @@ Order of work, because it is the order the reviewer checks in:
    the operator to take up with its authors rather than quietly conforming to it or
    quietly ignoring it.
 3. **Layout and hierarchy** — density, grouping, where the eye lands. A rebuild that
-   contains everything but reorganises it is not parity, and this is the second-most-common
-   complaint after missing surfaces.
+   contains everything but reorganises it is not parity.
 4. **Polish** — typography, spacing, motion. Last, and never before 1–3 are green.
 
 Do not report progress in terms of effort spent. Report it as the checklist fraction:
@@ -71,14 +67,15 @@ Go row by row: compare rendered states and exercise interactions;
 for data, diff values. When delivery includes deployment, verify that deployed build,
 not just localhost. Record unavailable roles or targets as unverified.
 
-The reference is the oracle for agreed parity dimensions, not permission to copy private data or protected assets. Record deliberate differences required by accessibility, security, or correctness. Verifying the rebuild against your own re-derivation of what
-the reference "should" say proves only that the rebuild agrees with itself.
+- The reference is the oracle for agreed parity dimensions; do not copy private data or
+  protected assets. Record deliberate differences required by accessibility, security or
+  correctness.
+- Never verify against your own re-derivation of what the reference "should" say; that
+  proves only the rebuild agrees with itself.
 
 ## Orchestration for parity rebuilds
-Use [agent-orchestration](../agent-orchestration/SKILL.md) for independent surfaces.
-The harness lead owns inventory, seam contracts, and final parity review; the default
-builder takes scoped views and the cheapest checked tier takes simple content. Keep
-shared state changes serialized.
+For independent surfaces use [agent-orchestration](../agent-orchestration/SKILL.md); the
+lead owns inventory, seam contracts and final parity review.
 
 ## Output
 

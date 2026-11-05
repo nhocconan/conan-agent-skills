@@ -11,8 +11,8 @@ descending realism — default to Tier 2; use Tier 1 only when a real-data clone
 
 ## Tier 1 — Masked clone of a real tenant (highest realism; for sales/demo servers)
 
-Prefer synthetic data unless a real-data clone is authorized. Inventory sensitive fields,
-restrict export access and retention, then clone → mask → verify → restore. Never mutate the source.
+Inventory sensitive fields, restrict export access and retention, then clone → mask →
+verify → restore.
 
 - **Never mutate the source DB.** Clone into a scratch database (`pg_dump | psql`), mask on
   the scratch, export the artifact, drop the scratch.
@@ -30,10 +30,8 @@ restrict export access and retention, then clone → mask → verify → restore
   entirely (not rendered, full of raw text, and it shrinks the artifact).
 - **Secrets**: NULL real credentials in the export; on restore, write FAKE blobs encrypted
   with the demo environment's own key so the UI shows "configured/active" without any real
-  secret in the artifact. Purge audit logs, tokens, DSAR/PII tables. Scan text and structured fields for known identifiers; a clean grep alone does not prove
+  secret in the artifact. Purge audit logs, tokens, DSAR/PII tables and real user accounts (demo users are fixed roles with a documented password). Scan text and structured fields for known identifiers; a clean grep alone does not prove
   anonymization or prevent re-identification.
-- **Demo users**: fixed roles (owner/operator/viewer) with a documented password; drop real
-  accounts from the export.
 
 ## Tier 2 — Synthetic story data (for products without a rich real tenant)
 

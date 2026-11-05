@@ -26,7 +26,7 @@ tokens above every style rule, and ends in the repo's review gates.
 
 ## Overrides that MUST survive an upgrade
 
-1. Precedence: operator words > project brand tokens/rules > this skill > upstream style rules.
+1. Precedence: operator > project design system and DESIGN.md > this skill > impeccable/upstream style rules.
 2. Upstream Part B (fonts, single typeface, gradient ban, fixed dark palette, icon sets, no
    hyphens in copy) stays advisory; do not re-import it as hard rules.
 3. Motion is a counted budget of named moments; only transform/opacity/filter/clip-path;
@@ -37,7 +37,8 @@ tokens above every style rule, and ends in the repo's review gates.
    never narrow it back to "design a page".
 7. The loop is mandatory and evidence-bearing: before/after screenshots at 1440 and 390 in both
    themes, critiqued by a reader other than the builder against `design-qa`'s rubric.
-8. impeccable is routed to by command, never copied; this skill owns the loop, not the taste.
+8. impeccable is routed to by command, never copied; this skill owns the loop.
+9. `sections/taste-gate.md` (T1-T9, taste-skill 2.5.0) runs on demand (new design or redesign, UI/design review, operator request) and blocks acceptance when it runs; "advisory" in item 2 applies to the elaya Part B only.
 
 ## Upstream sections this depends on
 
@@ -80,3 +81,4 @@ Anthropic `frontend-design`; distilled into `design-qa/sections/rubric.md`.
 fork because the upstream is two large prose files whose visual half we reject.
 
 - 2026-11-05: taste-skill 2.5.0 vendored under `upstream/taste-skill/` and made a mandatory gate (`sections/taste-gate.md`) at steps 1, 2 and 5 for every UI change, in-app screens included (operator ruling after dashboards shipped with caption/metadata clutter). Only SKILL.md and the copy/system/icons/cards/layout references are vendored; marketing-only assets and scripts are not. Refresh with `ref-skills`.
+- 2026-11-05 (later): gate made on demand at operator request (new design or redesign, UI/design review, or when asked); its step-1 reads cost about 30k tokens per change.

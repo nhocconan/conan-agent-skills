@@ -12,18 +12,18 @@ secondary_fingerprint: sha256:d303cda3491d56ed7202cdd290214316e29506b4a116e8bcc4
 # Provenance
 
 Wraps **two** upstream skills that are one skill with a mode switch:
-`qa-only` (621 lines on 2026-10-02, report) and
-`qa` (817 lines on 2026-10-02, fix).
-Neither is vendored — this skill routes to them by path.
+`qa-only` (342 lines on 2026-11-05, report) and
+`qa` (530 lines on 2026-11-05, fix).
+Both are fetched into `.vendor/gstack/`; this skill routes to them by path. Upstream qa-only now also forbids invoking /qa itself, which matches override 1: a fix is a separate, requested run.
 
 `refsync.py` fingerprints both: `status` flags a changed `secondary_source`, and
 `upgrade` writes it to `.upstream-preview-secondary.md` for review before `--accept`.
 
 ## Why this exists
 
-Upstream's descriptions cannot route: `qa` is 69 chars, `qa-only` is 32
-("Report-only QA testing. (gstack)"). Neither says when to fire, so both under-trigger on
-the phrasings actually used ("test cái này", "check xem chạy được không").
+Upstream's descriptions are one-liners ("Fix browser/API/CLI/job/worker/webhook bugs. (gstack)",
+"Report ... bugs."). Neither names the phrasings actually used ("test cái này",
+"check xem chạy được không"), so both under-trigger.
 
 Splitting one job across two ~1,000-line skills is upstream's packaging, not a real
 distinction. The distinction that IS real — *am I allowed to change your code* — was
@@ -41,9 +41,9 @@ invisible in the descriptions and is now the first decision this skill makes.
 
 ## Upstream sections this depends on
 
-- "When to invoke this skill"
-- "Preamble (run first)"
-- "Browser Setup (conditional)"
+- "Section index" (qa-only, qa)
+- "Browser Setup (conditional)" (qa-only)
+- "sections/browser-setup.md" (qa)
 
 ## Decision log
 

@@ -8,9 +8,9 @@ preserve exit status through pipes (`pipefail`). Screenshots prove visible state
 reachability, not a complete journey. Match evidence to the claim.
 
 Before selecting, running or reusing verification, read
-[effective-development](../../effective-development/SKILL.md). Run required gates and
-affected behavior checks on the final integrated tree; per-worker passes alone do
-not establish integration correctness.
+[effective-development](../../effective-development/SKILL.md). Have a runner ([routing](routing.md#work-nature--tier)) run required gates and
+affected behavior checks on the final integrated tree; the lead reads the verdict and
+artifacts. Per-worker passes alone do not establish integration correctness.
 
 For corpus audits, require separate counts for enumerated, parsed and actually
 content-reviewed artifacts. A generated queue or truncated tool output is not a
@@ -60,12 +60,3 @@ Before reporting completion, the lead checks scope alignment, integration behavi
 evidence, remaining risks, and that the actual lead model is known. If the harness's
 actual parent lead cannot review, or an explicitly required review is unavailable
 ([routing](routing.md)), mark final review pending rather than claiming approval.
-Preferred model recommendations do not disqualify the active lead; there is no
-cross-harness substitute for its acceptance.
-
-### Evaluate orchestration changes
-
-Freeze representative tasks and counterexamples (sequential work, file collisions,
-worker timeout, stale evidence); compare solo and parallel runs on identical inputs;
-measure end-to-end time, rework, interventions and usage; report variation. One green
-run or a vendor claim is not a ranking.

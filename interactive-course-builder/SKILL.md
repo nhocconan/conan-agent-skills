@@ -1,6 +1,7 @@
 ---
 name: interactive-course-builder
-description: House standard for authoring interactive HTML training courses as standalone single-file pages (LMS-embedded or independent). Use when creating, reviewing, redesigning, or unifying the style of ANY interactive/self-paced learning course, lesson, curriculum, or training module rendered as HTML. Covers the shared design system (tokens, per-course themes, light-default + dark-toggle modes), the component kit (lesson cards, SVG diagrams, images, callouts, comparisons, takeaways, quizzes), the leveled pedagogy (L1→L5, felt-problem→takeaway→quiz rhythm), WCAG 2.2 AA accessibility, the framework-free interactivity engine, and the optional LMS progress contract. Trigger on "interactive course", "training course", "make a course", "lesson HTML", "course style", "unify course design", "add takeaways/quizzes/diagrams to a course".
+description: >-
+  House standard for authoring interactive HTML training courses as standalone single-file pages (LMS-embedded or independent): design system, component kit, leveled lessons, quizzes, accessibility, validator. Use when creating, reviewing, redesigning, or unifying the style of ANY interactive/self-paced learning course, lesson, curriculum, or training module rendered as HTML. Trigger on "interactive course", "training course", "make a course", "lesson HTML", "course style", "unify course design", "add takeaways/quizzes/diagrams to a course".
 ---
 
 # Interactive Course Builder — house standard
@@ -111,9 +112,4 @@ pedagogy** those plug into.
    then the human pass: keyboard, 375px, both color modes, fact-check vs
    digests, anti-slop, and the 5-question self-test (`PLAYBOOK.md` Phase 5).
 
-## The bar
-
-A course ships only if a demanding learner would say all of: *I always knew
-where I was; every screen taught me something; the pictures did work the text
-couldn't; the examples were mine; it respected me (fast, keyboard, mobile, dark);
-I could trust the facts; it stood on its own.* (`reference.md §9`.)
+The ship bar is `reference.md` §9.

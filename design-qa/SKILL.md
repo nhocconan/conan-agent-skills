@@ -1,6 +1,6 @@
 ---
 name: design-qa
-description: Reviews a rendered UI with a designer's eye and counts what is wrong — spacing and alignment, hierarchy, controls and icons of mixed sizes, a lone boxed element that reads as an error, ungrouped list panels, walls of text, wrapping and overflow, collisions, dark-mode and phone defects, AI-slop layout — then fixes what it finds. Use as the critique step after any UI change, and when the user says "nhìn xấu", "nhìn stupid", "không hài hoà", "lố", "nhìn như lỗi", "icon nhỏ quá", "rớt hàng", "chữ bị đè", "lệch", "AI slop", "check giao diện", "does this look right", "design review", "design polish", or points at a screenshot of something that renders but looks wrong. Functional QA passes these defects — this is the lens that catches them.
+description: Reviews a rendered UI with a designer's eye and counts what is wrong — spacing and alignment, hierarchy, mixed-size controls and icons, a lone boxed element that reads as an error, ungrouped list panels, walls of text, wrapping, overflow, collisions, dark-mode and phone defects, AI-slop layout — then fixes what it finds. Use as the critique step after any UI change, and when the user says "nhìn xấu", "nhìn stupid", "không hài hoà", "lố", "nhìn như lỗi", "icon nhỏ quá", "rớt hàng", "chữ bị đè", "lệch", "AI slop", "check giao diện", "does this look right", "design review", "design polish", or points at a screenshot of something that renders but looks wrong.
 ---
 
 # Design QA
@@ -18,6 +18,7 @@ step 5 of `frontend-design`'s loop and the whole job when someone complains abou
    ungrouped panels. Each finding is a lead; confirm it on the screenshot.
 3. **Score** the 12-criterion rubric and the product-UI tells in
    [sections/rubric.md](sections/rubric.md). Measure neighbours before judging a new element.
+   On a requested UI review, also score [taste rows T1-T9](../frontend-design/sections/taste-gate.md).
    Report counts, never adjectives.
 4. **Fix or report.** Review-only requests produce findings. When fixes are requested, fix the
    shared component before the page, re-shoot, re-probe. Commit and push need authorization.

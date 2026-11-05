@@ -9,28 +9,29 @@ reviewed: 2026-10-02
 
 # Provenance
 
-Wraps gstack's `ship` (1212 lines on 2026-10-02, binary-backed).
+Wraps gstack's `ship` (1005 lines on 2026-11-05, 15 on-demand sections).
 Upstream markdown is fetched into `.vendor/gstack/` by `refsync.py ensure` (gitignored,
 files only, never a gstack install); the skill reads it by path, so its bulk loads only
 when the skill actually fires.
 
 ## Why this exists
 
-Upstream's description is 31 chars ("Pre-landing PR review."-class) and cannot route. Its default flow creates a feature branch and a PR; the house rule is main-only with the operator's own commit identity.
+Upstream's flow requires a feature branch and opens a PR, and its commit step adds a `Co-Authored-By: Claude` trailer; house rules follow the repository's branch policy and the operator's commit identity. Its description now routes, so the wrap earns itself through overrides 1-4, not triggering.
 
 ## Overrides that MUST survive an upgrade
 
 1. follow the repository's branch and review policy; never delete branches as cleanup
-2. operator commit identity, no assistant attribution (upstream still adds a co-author trailer)
+2. operator commit identity, no assistant attribution (upstream still adds a co-author trailer, ship/SKILL.md Step 15)
 3. hooks must pass, never --no-verify
 4. capture each gate's exit status before filtering its output
 
 ## Upstream sections this depends on
 
 - "Section index"
-- "Completeness Principle"
 - "sections/changelog.md"
 - "sections/pr-body.md"
+
+Override 3 (hooks) has no upstream counterpart to contradict; it stays as a house rule.
 
 If `refsync.py status` reports one of these has vanished, the wrapper's routing
 instructions are stale and must be re-pointed before the skill is trusted again.

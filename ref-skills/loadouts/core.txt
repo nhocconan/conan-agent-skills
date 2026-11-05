@@ -7,7 +7,6 @@
 agent-orchestration
 bug-class-audits
 coding-env-bootstrap
-delegate-run
 dev-env-lifecycle
 docs-sync
 metric-integrity

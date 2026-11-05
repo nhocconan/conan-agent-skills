@@ -18,19 +18,13 @@ Update the requested documents against current code and the reader's actual work
 - Match the repository's documentation format and intended audience. Add styled HTML
   or an in-app route only when requested or already part of the product; engineering
   docs usually remain Markdown.
-- Diagrams: prefer **excalidraw** (render to SVG/PNG embedded in the HTML). If mermaid is used (e.g. on GitHub), validate it renders — escape `<br/>` and special chars that break the parser.
+- Diagrams: use the repo's existing diagram tool. If mermaid, validate it renders — escape `<br/>` and special chars that break the parser.
 - Sample/template files referenced by guides must actually exist and be downloadable from the page that mentions them.
 
 ## Where an artifact is allowed to land
-- **`docs/` is shipped documentation only** — what a reader outside the work would open.
-  Agent working artifacts (evaluations, plans, handoffs, audit scratch, mined digests) do
-  not go there; a docs folder that grows a file per session stops being navigable.
-- **Working artifacts go to one declared, gitignored path** (`private/`, `local/`, or the
-  repo's existing equivalent). Declare it once in the repo's agent rulebook so every
-  session and every agent uses the same one.
-- **Supersede, don't accumulate.** Mark a replaced handoff as superseded or consolidate it without losing required history. Two handoffs mean the next run picks the wrong one.
-- **Register each folder's audience.** Shipped docs use the reader's language and
-  product voice; working notes use the operator's register.
+- `docs/` is shipped documentation only. Agent working artifacts (evaluations, plans, handoffs, audit scratch) go to one gitignored path declared in the repo's agent rulebook.
+- Supersede, don't accumulate: mark a replaced handoff superseded or consolidate it without losing required history.
+- Register each folder's audience: shipped docs use the reader's language and product voice; working notes use the operator's register.
 
 ## Process
 0. **Establish the latest system state before writing a word.** Read the commits since the
@@ -38,7 +32,10 @@ Update the requested documents against current code and the reader's actual work
    describes, and the running system (app, read-only prod queries, deployed URLs) for
    user-visible behaviour. Never update a doc from its own old text, a plan, or memory;
    a plan is design direction and must be labelled as such. Record what you read
-   (commit hash, paths, screens) in the doc's verification stamp.
+   (commit hash, paths, screens) in the change record: commit message, PR body or the
+   project's docs-maintenance log, or a non-rendered metadata field only where the
+   project's doc convention already has one. Reader-facing copy carries no process
+   trace (`anti-slop-review`, process stamps).
 1. Read the docs index first; update the canonical topic document. New files need a
    distinct topic/audience. Link shared rules; repair links when consolidating. Keep
    catalogs in references and task state in ignored notes, not always-loaded rulebooks.

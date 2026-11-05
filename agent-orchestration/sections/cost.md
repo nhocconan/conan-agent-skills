@@ -1,19 +1,21 @@
-## Quota discipline
+## Cost
 
-Measured on one week of a lead + subagent project (745M weighted token units): 70 % of
-the cost was cache re-reads of long contexts, 74 % was subagents, and output was 9 %.
-The cost of a call is the context it re-reads, so the levers are context size and turn
-count, not prompt length.
+Cost of a call is the context it re-reads, so the levers are context size and turn count,
+not prompt length. Rules live in their owners; state the expected turns per agent and the
+stop condition in the brief.
 
-| Sink (share of the week) | Rule |
-| --- | --- |
-| Builders running 150-480 turns, each turn re-reading a growing context | One outcome per agent; a hard turn budget (≈ 80); a fresh agent per task instead of "keep going until green"; stop after 2 failed gate loops and return the finding |
-| Strongest model as builder | Strongest model writes ideas, specs and reviews; the default builder implements from that spec |
-| Lead context above 300k tokens (average call 527k; a third of lead cost above 600k) | Hand off and clear at ≈ 300k, not near the window limit |
-| Polling (30 % of lead tool calls were sleep/status/tail) | Run long jobs in the background and wait for the one completion notice; a cheap runner agent runs a gate and returns ≤ 5 lines |
-| Long tool output in the lead (git status, whole-file greps, traces) | Pipe to a tail or summary; read large artefacts through a short brief file |
-| Re-spawning for the same work | Resume the existing agent; check running work before a spawn |
-| Heavy jobs overlapping on one host (false failures, full reruns) | One host lock for gate, E2E and affected runs; never start a test while a gate runs |
+- Turn caps, fresh agent per task, two failed loops: [routing](routing.md#work-nature--tier), [quality gate](quality-gate.md)
+- Strongest model writes specs and reviews; the default builder implements: [routing](routing.md#work-nature--tier)
+- Lead context: hand off at 120k: [tracking](tracking.md)
+- Polling, long output, return size: [brief](brief.md), [fan-out patterns](../FANOUT-PATTERNS.md)
+- Resume instead of re-spawn: [tracking](tracking.md)
+- Heavy jobs on one host: [shared host](../../effective-development/SHARED-HOST.md)
 
-Before a fan-out, state the expected turns per agent and the stop condition in the brief.
-After a session, compare the ledger with these rows; a sink that recurs becomes a check.
+### Paid third-party jobs
+
+- Estimate spend before running: unit price x count; show it.
+- Run the smallest or cheapest configuration first and show its output before scaling.
+- Caps, timeouts and rate limits come from vendor docs or the operator, never invented.
+- While a job is running, wait on its status once; do not re-submit or retry it.
+- Record each paid call (job id, cost) in the results file.
+- Stop and report before exceeding the operator's stated budget.

@@ -1,11 +1,11 @@
 ---
 name: web-perf-audit
-description: Framework-agnostic runtime performance audit against Core Web Vitals — LCP, INP, CLS — plus bundle, network, and rendering bottlenecks. Use when the user reports a slow page/app, says "performance", "Core Web Vitals", "Lighthouse", "it feels janky/laggy", before shipping a user-facing release, or when a data-heavy page renders large lists/charts. Measures real rendered behavior; complements vercel-react-best-practices (which is source-level React/Next rules).
+description: Framework-agnostic runtime performance audit against Core Web Vitals — LCP, INP, CLS — plus bundle, network, and rendering bottlenecks. Use when the user reports a slow page/app, says "performance", "Core Web Vitals", "Lighthouse", "it feels janky/laggy", before shipping a user-facing release, or when a data-heavy page renders large lists/charts. Complements optional vercel-react-best-practices (source-level React/Next rules).
 ---
 
 # Web Performance Audit (Core Web Vitals)
 
-`vercel-react-best-practices` covers what to write. This skill measures what actually *renders* and finds the bottleneck in a running page. Optimize against the three Core Web Vitals; never guess — profile, report findings, and when fixes are requested, repair and re-measure.
+Optional `vercel-react-best-practices` covers what to write. This skill measures what actually *renders* and finds the bottleneck in a running page. Optimize against the three Core Web Vitals; never guess — profile, report findings, and when fixes are requested, repair and re-measure.
 
 ## Targets (field "good" thresholds)
 
@@ -18,7 +18,7 @@ snapshot does not establish a field pass. See [Web Vitals](https://web.dev/artic
 - Supporting: TTFB < 0.8s, total JS transferred, main-thread long tasks (>50ms).
 
 ## How to measure (don't optimize blind)
-1. **Lab baseline**: run Lighthouse (CLI `npx lighthouse <url> --only-categories=performance --form-factor=mobile` or DevTools) for a scored snapshot + opportunities. Mobile + throttling on — desktop hides real problems.
+1. **Lab baseline**: run Lighthouse (CLI `npx lighthouse <url> --only-categories=performance --form-factor=mobile` or DevTools) for a scored snapshot + opportunities. Mobile + throttling on — desktop hides real problems. A navigation run reports TBT, not INP: never report it as an INP pass. Measure INP from field data (CrUX, or RUM via `web-vitals` `onINP`), or in the lab with a Lighthouse user-flow timespan or a DevTools Performance trace over the real interactions; TBT is only a lab proxy.
 2. **Trace the bottleneck**: DevTools Performance panel — record a load and a key interaction. Find long tasks, layout thrashing, and what's blocking the main thread.
 3. **Bundle**: inspect what ships (`@next/bundle-analyzer`, `vite-bundle-visualizer`, or `npx source-map-explorer`). Hunt large/duplicate deps (moment, lodash whole-import, two date libs, untree-shaken icon sets).
 4. **Field data** if available (Chrome UX Report / RUM) — lab and field disagree; field is truth.

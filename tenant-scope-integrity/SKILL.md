@@ -18,8 +18,7 @@ covers read-query filters; `secure-code-audit` covers authorization vulnerabilit
 2. **No scope selected is a defined state, and it is never "all" for a write.** Decide and
    document what an unscoped context means: for reads it may legitimately mean an
    aggregate across everything the caller may see; for any write, connector binding, or
-   delete it means *refuse*, with a message naming what to select. The dangerous default
-   is the silent one.
+   delete it means *refuse*, with a message naming what to select.
 3. **A scoped write may only touch rows in that scope.** The scope belongs in the WHERE
    clause of every update and delete and in the values of every insert — enforced at the
    layer closest to the database, not in the caller. Where the database supports it, make
@@ -66,29 +65,22 @@ policy as execution. Hidden menus alone do not block direct requests or backgrou
 jobs. Test an allowed and a denied role/type, then switch scope and reload to catch
 stale menus, caches and permissions. Unknown capabilities must not enable features.
 
-Check authorization of the requested scope server-side; a client-supplied tenant ID
-is not proof of access. Test forged scope IDs and cross-tenant resource IDs, including
-background jobs, object-storage keys, caches, and privileged/RLS-bypass paths.
-
+Server-side authorization of the requested scope and forged-ID tests: see
+`secure-code-audit`. Here, run those same cases through jobs, object-storage keys and
+caches.
 
 Enumerate every write path into the scoped tables (route handlers, jobs, scripts,
 migrations, seeds, admin tools) and check each for: scope required, scope in the WHERE
 clause, scope in the uniqueness key. A script that inserts directly, outside the
 application layer, is the usual survivor of this audit — the one-off ingest script written
-under time pressure. Where a column was added later to record provenance or routing, check
-that **every** writer sets it; rows left NULL by the writers nobody updated are
-indistinguishable from historic rows and will be mis-attributed forever.
+under time pressure. Where a provenance or routing column was added later, check every writer sets it (see
+`resilient-data-harvest` MIGRATION.md).
 
 When the same fix lands at more than one call site, escalate to `bug-class-audits`: write
 the rule down and add a mechanical audit that fails on a write to a scoped table without
 its scope column.
 
-## Customisation without forking the core
-
-When one customer's requirement pushes toward scope-specific behaviour, do not branch the
-core path. Express the difference as configuration or a registered per-scope extension
-loaded by the same code, so the shared path stays single. Per-customer conditionals inside
-core logic are how a multi-tenant product becomes several products with one deployment.
+- Per-scope behaviour is configuration or a registered extension, never per-customer conditionals in core code.
 
 ## Output
 

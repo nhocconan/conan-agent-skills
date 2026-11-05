@@ -30,8 +30,7 @@
   child-appealing; have the Families-compliant ad config as the documented fallback.
   Decide 13+ vs Families BEFORE configuring ads, then make console declaration ⇔ code
   config ⇔ rating questionnaire all match. Mismatch = rejection loop.
-- **Restore Purchases (Apple 3.1.1):** any non-consumable needs a reachable Restore
-  button in EVERY entitlement state — missing it is a common reject (3.1.1 requires "a restore mechanism for any restorable in-app purchases").
+- **Restore Purchases (3.1.1):** checked by `appstore-review-guard`; design it into the paywall in §2, not at submission.
 - **Ads in review:** test ads must be un-shippable (build-type-gated), but real ads
   must show for reviewers — use real units with mediation test devices only on your
   own hardware.
@@ -44,10 +43,7 @@
   access requires the ATT prompt with an honest purpose string BEFORE access (skipping
   it → rejection or silent limited ads) — and the privacy labels (§ above) must agree
   with whatever the consent stack actually does.
-- **Accounts imply deletion:** the moment your app has any account (§1.3 anonymous-first
-  counts once it's linkable), Apple 5.1.1(v) and Play both require in-app account
-  deletion, and Play additionally requires a web deletion URL declared in Data safety.
-  Ship auth and deletion in the same release, never auth first.
+- **Accounts imply deletion:** any linkable account (§1.3 anonymous-first counts) triggers Apple 5.1.1(v) and Play in-app deletion. Ship auth and deletion in the same release, never auth first (details: `appstore-review-guard`).
 
 ### 4.3 Money correctness (silent-failure class — verify hardest here)
 

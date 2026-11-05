@@ -1,19 +1,24 @@
 ---
 name: agent-session-backup
-description: Light backup & restore of Cowork + Claude Code session histories on macOS, filtered to only sessions whose working folder still exists on THIS machine (drops sessions mixed in from other machines / deleted worktrees). Copies session metadata and paired Cowork transcripts, but no caches, VM images, or binaries. Trigger when the user asks to "backup Claude sessions", "backup Cowork", "backup Claude Code history", "restore my Claude sessions", "sao lưu session Claude", "backup light", or wants to move Claude session history between machines.
+description: Light backup & restore of Cowork (macOS only) and Claude Code (portable) session histories, keeping only sessions whose working folder still exists on THIS machine. No caches, VM images, or binaries. Trigger when the user asks to "backup Claude sessions", "backup Cowork", "backup Claude Code history", "restore my Claude sessions", "sao lưu session Claude", "backup light", or wants to move Claude session history between machines.
 ---
 
 # Claude Cowork / Claude Code — light backup & restore
 
-Backs up the three trees Claude stores conversation history in on macOS, keeping
+Backs up the three trees Claude stores conversation history in, keeping
 the folders separate and **filtering to only sessions that belong to this machine**.
+
+Platform limits: the two Cowork trees exist only on macOS (Claude Desktop), so on
+Linux/Windows `Cowork` backup and restore are no-ops and `map_account.py` does not
+apply. The Claude Code half works on any OS and uses `$CLAUDE_CONFIG_DIR/projects`
+when `CLAUDE_CONFIG_DIR` is set, else `~/.claude/projects`.
 
 ## Where the data lives (macOS)
 
 | App | Path | History file |
 |---|---|---|
 | **Claude Cowork** (local agent mode in Claude Desktop) | `~/Library/Application Support/Claude/claude-code-sessions/<account-uuid>/<space-uuid>/` **and** `~/Library/Application Support/Claude/local-agent-mode-sessions/<account-uuid>/<space-uuid>/` — Cowork uses BOTH trees; back up both or you lose half the history | `local_*.json`, plus its paired `local_<uuid>/` transcript directory when present |
-| **Claude Code** (CLI) | `~/.claude/projects/<slug>/` | `*.jsonl` |
+| **Claude Code** (CLI) | `$CLAUDE_CONFIG_DIR/projects/<slug>/` (default `~/.claude/projects/<slug>/`) | `*.jsonl` |
 
 Each history file records the session's `cwd` (working directory). That field is
 the filter key.
@@ -65,7 +70,7 @@ python3 scripts/restore.py SRC_DIR [--dry-run] [--force]
 
 - Mirrors `Claude-Cowork/` back to `~/Library/Application Support/Claude/claude-code-sessions/`,
   `Claude-Cowork-Local/` back to `~/Library/Application Support/Claude/local-agent-mode-sessions/`,
-  and `Claude-Code/` back to `~/.claude/projects/`. (Pre-2026-07 backups without
+  and `Claude-Code/` back to `$CLAUDE_CONFIG_DIR/projects/` (default `~/.claude/projects/`). (Pre-2026-07 backups without
   `Claude-Cowork-Local/` restore fine — missing subfolders are skipped.)
 - **Safe by default**: never overwrites an existing live file (merge/skip). Use
   `--force` to overwrite. Always dry-run first: `--dry-run`.
@@ -80,9 +85,7 @@ python3 scripts/restore.py SRC_DIR [--dry-run] [--force]
   merge them into the current login's active space.
 - A restored session only resumes meaningfully if its `cwd` also exists on the
   target machine (same absolute path). History is preserved regardless.
-- This repo (`~/.conan-agent-skills`) is git-synced, so this skill travels with
-  you — run `backup.py` on the source machine, copy `DEST_DIR` across, run
-  `restore.py` on the target.
+- Run `backup.py` on the source machine, copy `DEST_DIR` across, run `restore.py` on the target.
 
 ## Account mapping (make another account's sessions visible under the current login)
 
@@ -124,18 +127,14 @@ python3 scripts/map_account.py --from <SRC_ACCOUNT_UUID>
 ```
 
 Notes:
-- **The email↔UUID map is NOT on disk** (oauth tokens are encrypted). Identify the
-  right source account from `--list`: session count, latest activity, sample
-  titles/cwds. The account with the most recent activity is normally the one you
-  just logged out of.
+- **The email↔UUID map is NOT on disk.** Identify the source account from `--list`
+  (session count, latest activity, sample titles/cwds); usually the one you just
+  logged out of.
 - **Target account must have logged in at least once** (started a session) so its
   space exists. If it has no space yet, the tool errors — log in with it, start
   one session, quit, then rerun.
 - Copy is the default and non-destructive; existing items in the target are never
   overwritten. Always `--dry-run` first. Operates on both session trees.
-- Common trap (learned the hard way): naively copying `A/<A-space>/…` into
-  `B/<A-space>/…` puts the sessions under B but in A's space id → the app shows
-  nothing. Always merge into B's **own active space**.
 
 ## When NOT to just trust it
 - If the user reorganized/renamed a project folder, its old sessions get SKIPPED

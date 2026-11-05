@@ -10,6 +10,8 @@ are not portable APIs.
    not survive it: Claude Code `/loop` tasks fire only while that session runs and
    recurring ones expire after 7 days; cloud routines run at a 1-hour minimum
    interval (scheduled-tasks docs, read 2026-10-02).
+   Hooks: exit 2 blocks on PreToolUse, Stop, UserPromptSubmit; not on PostToolUse or
+   notifications. Scheduler kill switch: `CLAUDE_CODE_DISABLE_CRON=1` (docs read 2026-10-02).
 3. Configure supported time/iteration/cost limits, overlap protection, error
    reporting, and a kill switch. Test a forced failure in an isolated environment,
    including a duplicate trigger, expired budget and stop during a running job.

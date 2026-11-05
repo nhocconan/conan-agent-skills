@@ -8,10 +8,13 @@ Record goal, dependencies, actual models/effort when exposed, owned files,
 acceptance, status, artifacts, start/last meaningful progress, deadline, resource/process
 handles and the lead's verdict. Unknown cost and solo timing remain unknown.
 
-On a shared host the ledger also carries the conductor job id and unit per run, server port
-and mode, DB name or fixture hash, and the fingerprint a green refers to. A stop order is a
-conductor command whose result is logged, not a chat message. A result without a fingerprint
-is `unverified`, whatever the worker said.
+On a shared host also record per run: job id, port/mode, DB or fixture hash, tree
+fingerprint; a result without a fingerprint is `unverified`. Method:
+[SHARED-HOST](../../effective-development/SHARED-HOST.md).
+
+A detached job or loop the lead itself started gets a liveness check with a deadline
+(process alive, output still growing). A dead or stalled one is reported at once with its
+last output line, never left for the operator to discover.
 
 States: `pending → briefed → running → reviewing → done | failed | skipped | blocked`.
 Only the lead marks done after acceptance. Record partial results promptly.
@@ -26,8 +29,7 @@ The ledger says *what* to resume; the harness resumes the worker with its own pr
 ([fan-out patterns](../FANOUT-PATTERNS.md)) rather than a fresh re-brief from the ledger.
 Resume only to return a worker its review findings or answer its blocked question, never
 to relay rules (they live in the shared brief); after two resumes re-brief fresh. A resume
-to an idle worker restarts a full context for nothing (measured: 197 resumes in one week
-beside 512 spawns); an agent spawned only to wait is the same waste.
+to an idle worker restarts a full context for nothing ; an agent spawned only to wait is the same waste.
 
 After compaction, use both the saved plan and the latest user steering. The plan
 does not override newer instructions or authorize more work.

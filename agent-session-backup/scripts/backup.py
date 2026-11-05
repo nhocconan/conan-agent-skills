@@ -12,7 +12,7 @@ Usage:
 What it copies (light = session metadata + transcript files only, no caches / VM / binaries):
     Cowork : ~/Library/Application Support/Claude/claude-code-sessions/<acct>/<space>/local_*.json
              ~/Library/Application Support/Claude/local-agent-mode-sessions/<acct>/<space>/local_*.json
-    Code   : ~/.claude/projects/<slug>/*.jsonl
+    Code   : $CLAUDE_CONFIG_DIR (default ~/.claude)/projects/<slug>/*.jsonl
 Cowork keeps history in BOTH trees — backing up only claude-code-sessions
 silently loses the local-agent-mode half. In local-agent-mode-sessions, a
 `local_<uuid>.json` metadata file may have a paired `local_<uuid>/` transcript
@@ -29,7 +29,9 @@ COWORK_TREES = [
     (os.path.join(HOME, "Library/Application Support/Claude/local-agent-mode-sessions"),
      "Claude-Cowork-Local"),
 ]
-CODE_SRC = os.path.join(HOME, ".claude/projects")
+# Claude Code config dir: CLAUDE_CONFIG_DIR when set, else ~/.claude.
+CLAUDE_CONFIG = os.environ.get("CLAUDE_CONFIG_DIR") or os.path.join(HOME, ".claude")
+CODE_SRC = os.path.join(CLAUDE_CONFIG, "projects")
 
 def first_cwd_from_jsonl(path):
     try:

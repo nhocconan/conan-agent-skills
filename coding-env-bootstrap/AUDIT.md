@@ -9,8 +9,8 @@
 - Recommended changes, ordered
 - Follow-up portability check, 2026-08-13
 
-What was actually found, and what to change. Read this before treating the source
-machine's config as the target state — `BOOTSTRAP.md` already encodes these decisions.
+Historical log, not a runbook: what was found on the source machine and why. An agent
+installing the environment does not need it; `BOOTSTRAP.md` already encodes these decisions.
 
 ## Follow-up portability check, 2026-07-27
 

@@ -28,6 +28,20 @@
 - Delegate independent outcomes; keep small or sequential work with the lead.
 - User authorization persists. Ask only for missing scope, preferences, or authority.
 
+## Skill routing — read the skill before the first action
+
+When a task matches, read that skill's `SKILL.md` (in the conan skills checkout if the
+harness did not list it) before acting:
+
+- Delegated, unattended or "run it yourself" work → `agent-orchestration`.
+- Starting or stopping servers, workers, browsers or test runners; host load → `dev-env-lifecycle`.
+- Broken, failing or flaky → `investigating-bugs`; the same bug again → `bug-class-audits`.
+- Any visible UI change → `frontend-design` (critique through `design-qa`).
+- Updating project docs → `docs-sync`; any reader-facing copy passes `anti-slop-review`.
+- Signing in or driving a browser → `browsing-web` (sign in once, reuse the session).
+- React/Next.js components, data fetching or bundles → `vercel-react-best-practices`;
+  current library API docs → the `context7` MCP, not memory.
+
 ## Output hygiene — hard rules (every reply, report, and doc)
 
 - Answer first: the result in sentence one; FAIL/blocked stated plainly in line 1, never buried.

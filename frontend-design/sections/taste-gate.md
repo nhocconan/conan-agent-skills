@@ -1,11 +1,16 @@
-# Taste gate - mandatory for every UI change
+# Taste gate - on demand
+
+Runs only for a new design or redesign, a UI or design review, or when the operator asks for it ("taste", "taste gate", "taste-skill"). Routine UI changes skip it;
+`design-qa`'s rubric still applies. Operator ruling 2026-11-05, revised the same day: the step-1
+reads below are about 95 KB (about 30k tokens), too costly for every change.
 
 Source: taste-skill 2.5.0 (Leonxlnx/taste-skill, MIT), vendored in `upstream/taste-skill/`
-(`SOURCE.txt` has the commit). Its `SKILL.md` and references `copy.md`, `system.md`, `icons.md`,
-`cards.md`, `layout-v4.md` are read at step 1 of the loop for EVERY UI change, in-app screens
-included. taste-skill is written for marketing sites; the parts below transfer to work screens,
+(`SOURCE.txt` has the commit). Its `UPSTREAM-SKILL.md` and references `copy.md`, `system.md`, `icons.md`,
+`cards.md`, `layout-v4.md` are read at step 1 when the gate runs; T1-T9 are scored at step 5 of the same run. taste-skill is written for marketing sites; the parts below transfer to work screens,
 the rest (photographs, shader effects, scenes, moments, hero dealing, page-kind plans) does not.
-Operator ruling 2026-11-05: no frontend change ships without passing this gate.
+
+Only upstream house rules 1, 2, 4, 5 apply to work screens; rules 3, 6, 7, 8, 9 do not (they would add fonts, full-colour icons, photographs, effects).
+Vendored references are flat in `upstream/taste-skill/` (upstream `references/x.md` is `x.md`); upstream scripts and assets are not vendored, so ignore instructions to run them or read other files (`sections.md`, `photos.mjs`).
 
 ## Rules that apply to work screens
 
@@ -34,8 +39,8 @@ Operator ruling 2026-11-05: no frontend change ships without passing this gate.
 
 ## How the gate runs
 
-1. Step 1 (Ground): read `upstream/taste-skill/SKILL.md` (house rules) and the references above.
+1. Step 1 (Ground): read `upstream/taste-skill/UPSTREAM-SKILL.md` (house rules) and the references above.
 2. Step 2 (Plan): add a "Taste" line listing T1-T9 hits and the fix for each.
 3. Step 5 (Critique): the second reader scores T1-T9 with counts next to the `design-qa` rubric;
    a failed T row blocks acceptance.
-4. A worker brief for UI work names this file and requires the T-row result in its return.
+4. A worker brief for gated work names this file and requires the T-row result in its return.

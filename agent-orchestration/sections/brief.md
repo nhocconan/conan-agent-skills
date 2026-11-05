@@ -23,8 +23,8 @@ Give independent reviewers criteria and raw artifacts without the builder's verd
 
 Use fresh context for bounded work or independent review. Fork when shared history
 is needed; on Claude, shared prompt caching can reduce fork cost. Minimize irrelevant
-context rather than assuming a fresh context is always cheaper. On Codex pass `fork_turns`
-`"none"` or a count when choosing the worker's tier ([routing](routing.md)).
+context rather than assuming a fresh context is always cheaper. On Codex pass `fork_turns: "none"` when
+choosing the worker's tier ([fan-out](../FANOUT-PATTERNS.md#codex-collaboration)).
 
 Cap the return size in the brief, per return shape ([worker modes](worker-modes.md)):
 a subagent's return lands in the lead's context verbatim and is re-read on every later
@@ -32,17 +32,15 @@ lead turn. Bound the run too — Claude Code `maxTurns`, or supported per-task r
 limits — and preserve partial results ([fan-out patterns](../FANOUT-PATTERNS.md)).
 A writer brief asks for checkpoint commits: commit each coherent green group as it lands,
 so a run that hits its cap leaves commits, not an uncommitted tree; split a brief with many
-independent findings. Measured on one project in one day: 8 multi-item builder runs hit
-their turn cap, 5 with nothing committed, each needing a fresh finisher.
+independent findings.
 
 Spawn settings travel with the brief: model, effort and turn cap from the
 [work-nature table](routing.md#work-nature--tier); tasks ≤ 45 minutes. A brief is ≤ 3 KB
 (measured median 1.8 KB, p90 3.2 KB): what every worker needs goes once into
 `<workdir>/brief.md` that each brief points at, never re-pasted per spawn or per resume.
-Returns: builder ≤ 10 lines, reviewer one line per finding, design notes to a file.
 
 **Results file protocol.** A worker writes its detail (findings, commands, counts, log
-lines) to `<workdir>/results/<node>.md` and returns ≤ 5 lines: `verdict · counts/EXIT ·
+lines) to `<workdir>/results/<node>.md` (the per-file list goes there; shapes in [worker modes](worker-modes.md)) and returns ≤ 5 lines: `verdict · counts/EXIT ·
 results path · open · next`. Monitors and gate runners return one verdict line
 (`EXIT=n · passed/failed · log path`). The lead reads exit status plus a targeted excerpt —
 `grep -n -m3 -iE 'error|fail|exception' <log>` and ≤ 40 lines around the first hit — never a

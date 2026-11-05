@@ -1,6 +1,6 @@
 ---
 name: remote-host-access
-description: Diagnose and fix "the port is open but it still won't connect" on any remote host — VPS, cloud VM, container host, home server — by descending one layer at a time instead of guessing, and set up durable agent sessions on those hosts. Covers name resolution, TCP reachability, cloud security groups, host firewalls (ufw / firewalld / CSF / iptables-legacy vs nftables / hypervisor firewalls), systemd socket-activated services, and the service's own bind address. Use when SSH or any service refuses to connect, when a rule was added and nothing changed, when the user says "không connect được", "mở port rồi mà vẫn lỗi", "ssh timeout", "connection refused", "firewall", "remote server", or when running a long task on a remote box.
+description: Diagnose and fix "the port is open but it still won't connect" on any remote host — VPS, cloud VM, container host, home server — by descending one layer at a time instead of guessing, and set up durable agent sessions on those hosts. Use when SSH or any service refuses to connect, when a rule was added and nothing changed, when the user says "không connect được", "mở port rồi mà vẫn lỗi", "ssh timeout", "connection refused", "firewall", "remote server", or when running a long task on a remote box.
 ---
 
 # Remote Host Access

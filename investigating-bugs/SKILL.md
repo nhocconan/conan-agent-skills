@@ -1,6 +1,6 @@
 ---
 name: investigating-bugs
-description: Finds the root cause of a defect before changing anything — reproduce it, locate the mechanism, prove the diagnosis, then fix the class rather than the instance. Use when something is broken, failing, flaky, slow, or behaving unexpectedly; when the user says "sao lại lỗi", "tại sao", "bị sai rồi", "lại bị nữa", "debug", "investigate", "vẫn chưa được"; or before any fix whose cause is not already proven. Prevents the guess-and-patch loop where a symptom is suppressed and the real fault ships.
+description: Finds the root cause of a defect before changing anything — reproduce it, locate the mechanism, prove the diagnosis, then fix it (recurring classes go to bug-class-audits). Use when something is broken, failing, flaky, slow, or behaving unexpectedly; when the user says "sao lại lỗi", "tại sao", "bị sai rồi", "lại bị nữa", "debug", "investigate", "vẫn chưa được"; or before any fix whose cause is not already proven. Prevents the guess-and-patch loop where a symptom is suppressed and the real fault ships.
 ---
 
 # Investigating bugs
@@ -23,13 +23,17 @@ unavailable, continue safe probes and label the limits instead of declaring a fi
 2. **Reproduce it** — preserve a failing test, command output or journey artifact.
    Without it, "fixed" is unfalsifiable.
    Prefer a cheap existing test path; don't build unrelated infrastructure for a small fix.
+   No command that can show the failure, no fix: with no test, build the smallest
+   harness that can go red. Then minimise inputs
+   until each remaining one is load-bearing.
 3. **Read the actual error.** Full output, not the last line. The pipe-swallows-exit-code
    trap applies: `cmd > run.log 2>&1; echo "EXIT=$?"`.
 
 ## Diagnosing
 
 4. **Locate the mechanism.** Name the line, state or ordering that produces *this*
-   symptom and not a different one.
+   symptom and not a different one. Rank 3-5 hypotheses, each with the
+   observation that would kill it.
 5. **Verify by re-deriving, not by recognising.** A pattern that looks familiar is the
    most common way a wrong diagnosis survives review — see `senior-operator`
    OPERATING-MANUAL §4.
@@ -37,20 +41,25 @@ unavailable, continue safe probes and label the limits instead of declaring a fi
 
 For the search mechanics — log/trace navigation, bisecting, tooling — read
 `../.vendor/gstack/investigate/SKILL.md`, particularly its **"Phase 1: Root Cause
-Investigation"**, **"Phase 2: Pattern Analysis"** and **"Confusion Protocol"** sections.
+Investigation"**, **"Phase 2: Pattern Analysis"** and **"Phase 3: Hypothesis Testing"**.
+Before a fix, read the matching `../.vendor/gstack/investigate/sections/` file: `flake`
+(intermittent/CI-only), `polluter` (passes alone, fails in suite), `race` (timing, shared
+state), `eval-bisect` (metric regressed between revisions), `blast-radius` (shared helper
+or format).
 
 ## Fixing
 
-7. **Is it a class?** Search for the same shape and confirm the violated invariant
-   at each candidate. Fix confirmed sites within scope; report unrelated ones.
-   Hand off recurring classes to `bug-class-audits`. A repair or fallback that rewrites
+7. **Same shape elsewhere?** Confirm the violated invariant at each candidate, fix
+   confirmed sites within scope, report the rest. Making the class mechanically
+   enforced (rule, audit, gate, baseline) is `bug-class-audits`. A repair or fallback that rewrites
    an object must still satisfy its contract (length caps, enums): replace capped text,
    never append, and parse the repaired object in the test; one bad item never fails the batch.
 8. **Prove regression sensitivity.** Same check, inputs and environment before and after
    the fix: fails for the intended defect, then passes. A setup failure (missing import,
    credential, startup) proves nothing. Already fixed? Run the check against the old
-   revision in a scratch worktree; if no before-proof is practical, say so. When the check
-   asserts an absence or rejection, add a control input that must succeed.
+   revision in a scratch worktree; if no before-proof is practical, say so. No correct seam to test through is itself a finding. When the check
+   asserts an absence or rejection, add a control input that must succeed. Forced the red by
+   mutation? Diff against a pristine copy to prove it landed.
 9. **Verify the final tree.** Before choosing regressions or reusing evidence, read
    [effective-development](../effective-development/SKILL.md); run required gates.
 

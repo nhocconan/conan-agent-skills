@@ -25,7 +25,7 @@ an unavailable optional specialist alone does not block acceptance.
 
 | Harness | General session / technical work | Hardest scoped judgment | Bounded builder | Focused checked work |
 | --- | --- | --- | --- | --- |
-| Claude (Claude Code, Agent SDK) | `claude-opus-5-5` | `claude-fable-5-1` | `claude-sonnet-5-5` | `claude-haiku-4-5-20251001` |
+| Claude (Claude Code, Agent SDK) | `claude-opus-5-5` | `claude-fable-5-1` | `claude-sonnet-5-5` | `claude-haiku-5-5` |
 | Codex (OpenAI) | `gpt-6.1-sol` | `gpt-6-astra` | `gpt-6.1-sol` | `gpt-6-luna` |
 | agy (Antigravity CLI) | `gemini-4-argon` / `gemini-3.8-flash` | `gemini-4-argon` | `gemini-3.8-flash` | `gemini-3.8-flash` (`low`) / `gemini-3.5-flash-lite` |
 
@@ -39,7 +39,7 @@ Pick the work tier, then the harness model. The parent remains lead; only its co
 | Design note, architecture, conflicting evidence, integration review; merge-gate review of migrations, tenancy/RLS, auth, routing, prompts/evals — once per release over the combined diff | hardest scoped judgment (Fable / Astra / Argon) | high | 60 turns; reads the diff and artifacts, runs nothing heavier than `git`/`grep` | one line per finding |
 | Scoped build, patch, refactor, migrate; routine diff review; spec update for a rename named in the diff; E2E flow authoring | bounded builder (Sonnet / Sol 6.1 / 3.8 Flash) | medium; high for a repair after one failed check | 80 turns / 150k context | builder contract |
 | Source-based writing, chart/screen interpretation, bounded app workflows | scoped specialist (Codex: Terra 6.1) | low; raise when checks justify it | 60 turns / 150k context | artifact + evidence + uncertainties |
-| Mechanical run: gate or shard runner (one command → `EXIT=n · passed/failed · log path`), browser read/click/screenshot check against named routes, selectors, widths and expected text with PASS/FAIL per item, log triage ≤ 30 lines (failing test, error class, suspect file, stale-vs-bug guess), inventory, file moves, host hygiene | focused checked work (Haiku 4.5 / Luna / Flash-Lite) | low or none | 60 turns; never edits code or tests | verdict line + results file |
+| Mechanical run: gate or shard runner (one command → `EXIT=n · passed/failed · log path`), browser read/click/screenshot check against named routes, selectors, widths and expected text with PASS/FAIL per item, log triage ≤ 30 lines (failing test, error class, suspect file, stale-vs-bug guess), inventory, file moves, host hygiene | focused checked work (Haiku 5.5 / Luna / Flash-Lite) | low or none | 60 turns; never edits code or tests | verdict line + results file |
 | Waiting on a job, relaying a message, a "placeholder" | no agent | — | — | the harness's completion notification or wait tool |
 
 Give mechanical workers exact routes, selectors, widths and expected text. They escalate
@@ -67,21 +67,21 @@ authority. If unavailable, choose a capable same-harness model unless explicitly
 | Fable 5.1 | `claude-fable-5-1` | 1M | 128K | 10 → 50 | 2026-09-01 | 2027-09-01 |
 | Opus 5.5 | `claude-opus-5-5` | 1M | 128K | 4 → 20 | 2026-09-22 | 2027-09-22 |
 | Sonnet 5.5 | `claude-sonnet-5-5` | 1M | 128K | 2 → 10 | 2026-09-28 | 2027-09-28 |
-| Haiku 4.5 | `claude-haiku-4-5-20251001` | 200K | 64K | 1 → 5 | 2025-10-15 | 2026-10-15 |
+| Haiku 5.5 | `claude-haiku-5-5` | 1M | 128K | 0.10 → 0.50 (prompts ≤ 100K; 0.50 → 2.50 above) | 2026-10-07 | 2027-10-07 |
 
-Haiku 4.5 is active (ran on 2026-10-17); its minimum retirement commitment has lapsed, so
-re-check the lifecycle page at each audit.
+Haiku 5.5 counts about 30 % more tokens than Haiku 4.5 for the same text (newer tokenizer).
+Haiku 4.5 (`claude-haiku-4-5-20251001`) is legacy, still active, with no retirement date announced.
 Sonnet 5 (`claude-sonnet-5`) and Opus 5 (`claude-opus-5`) remain active
 but are superseded in this policy.
-Opus 5.5 and Fable keep adaptive thinking always on. All three current
-reasoning models reject forced tool use. Dateless current IDs are pinned snapshots; Haiku uses the dated
-ID above. Check each platform's ID and capabilities rather than transforming
-Claude API IDs mechanically.
+Opus 5.5 and Fable keep adaptive thinking always on. Fable, Opus and Sonnet reject forced
+tool use. Dateless current IDs are pinned snapshots. Check each platform's ID and
+capabilities rather than transforming Claude API IDs mechanically.
 
-Claude Fable 5.1, Opus 5.5 and Sonnet 5.5 support `low`, `medium`, `high`, `xhigh`
-and `max` effort. API defaults are Fable `high`, Opus `medium`, Sonnet `high`;
-Haiku has no effort parameter. For well-specified agentic coding, Anthropic recommends
-starting Sonnet 5.5 at `medium`, raising it for harder work. Re-evaluate effort on
+Claude Fable 5.1, Opus 5.5, Sonnet 5.5 and Haiku 5.5 support `low`, `medium`, `high`, `xhigh`
+and `max` effort. API defaults are Fable `high`, Opus `medium`, Sonnet `high`, Haiku
+`medium`; Anthropic recommends Haiku 5.5 `low` for short tool tasks and simple high-volume
+work, and starting Sonnet 5.5 at `medium` for well-specified agentic coding, raising it
+for harder work. Re-evaluate effort on
 representative tasks rather than carrying over the previous generation's setting.
 
 ### OpenAI models
@@ -117,8 +117,7 @@ calling; Sol 6/Luna Chat Completions function calling requires effort `none`.
 Model rollout and workspace settings still control access. During rollout, available
 legacy fallbacks include `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna`; do not
 select them unless the active catalog exposes them. Prefer Sol 6 when Sol 6.1
-is unavailable and the task remains suitable. GPT-5.5 (`gpt-5.5`) retires from
-ChatGPT/Work/Codex on 2026-10-14; that notice does not retire its API model.
+is unavailable and the task remains suitable.
 The 2026-10-01 API notice deprecates `gpt-5.3-codex`, `gpt-5.1` and
 `gpt-5.4-nano` for removal on 2027-04-01. Deprecation is advance notice;
 it is distinct from shutdown and from ChatGPT product retirement.
@@ -186,42 +185,32 @@ allowlists can substitute another model. Use an available full ID for deliberate
 version selection and confirm the actual model in `/tasks`. Do not assume Explore
 or Plan runs on Haiku. Agent SDK definitions and tools may differ; inspect them.
 
-**Codex.** If collaboration exposes `model`/`reasoning_effort`, set them with
-`fork_turns: "none"` and a self-contained brief. An omitted or
-`"all"` fork inherits parent model/effort and rejects overrides. This session exposes
+**Codex.** Set `model`/`reasoning_effort` with `fork_turns: "none"` and a self-contained
+brief; fork inheritance, role config keys and concurrency limits are in
+[fan-out patterns](../FANOUT-PATTERNS.md#codex-collaboration). This session exposes
 Astra, Sol 6.1, Terra 6.1, Sol 6 and Luna 6 (checked 2026-10-29); other surfaces may
 differ. The Work/Codex Terra release is dated 2026-10-26; official guidance requires
 CLI 0.159.0+, but version alone does not establish catalog or workspace access.
-For CLI roles, inspect supported agent definitions/config overlays, `agent_type`,
-`model`, `model_reasoning_effort`, `agents.default_subagent_model` and
-`agents.default_subagent_reasoning_effort`. Explicit spawn settings take precedence;
-defaults do not override a full-history fork. Current CLI documentation names
-`agents.max_concurrent_threads_per_session` (spawned threads, excluding the primary);
-`agents.max_threads` is its legacy alias. Do not apply that counting rule to a
-collaboration tool whose limit includes the lead. Inspect the live schema;
-CLI configuration is not a guarantee for this collaboration surface.
 
 **agy (Antigravity CLI), 2026-10-14 snapshot (1.3.5).** `agy models` exposes
 `gemini-4-argon-{low,medium,high}` and `gemini-3.8-flash-{low,medium,high}` (plus
 Claude 5.5 and `gpt-oss-120b-medium`). Since 1.3.4, `--model` and `/model` accept a
-base model name without `--effort` (using its default thinking level, else `medium`),
-or pair with `--effort` (`low|medium|high|xhigh|max`). `invoke_subagent` uses tiers
-`inherit`, `flash_lite`, `flash`, `pro` (not raw API IDs or explicit thinking levels):
-use `flash_lite` for light lookups/checks, `flash` for standard bounded builders, scouts
-and routine verifiers, and `pro` (or `inherit` when the lead is already on the desired
-Argon thinking level) for complex multi-step refactors, architecture or high-risk
-verification. `self` inherits; `research` is read-only. `define_subagent` configures
-write, nested-agent and MCP permissions from `.agents/agents/`, `~/.gemini/config/agents/`
-or plugins. See [fan-out patterns](../FANOUT-PATTERNS.md).
+base model name without `--effort` (default thinking level, else `medium`), or pair with
+`--effort` (`low|medium|high|xhigh|max`). `invoke_subagent` tiers (`inherit`, `flash_lite`,
+`flash`, `pro`): `flash_lite` for light lookups/checks, `flash` for bounded builders,
+scouts and routine verifiers, `pro` (or `inherit` on the desired Argon level) for complex
+refactors, architecture or high-risk verification. Mechanics:
+[fan-out patterns](../FANOUT-PATTERNS.md#antigravity-agy-collaboration).
 
 ### Freshness and evidence
 
 Re-verify on a release, a deprecation, a rejected model ID, a retirement date coming within
 90 days, or a maintenance audit. Check the vendor model pages and the session catalog before
 changing a default, and preserve the user's explicit model choice. Keep historical benchmarks
-dated; do not relabel an old run as a new model. Terra API facts and Codex catalog/schema
-were checked 2026-10-29; other OpenAI/Anthropic values retain their 2026-09-30 check,
-Gemini/agy their 2026-10-14 check. These are not account-specific quotes.
+dated; do not relabel an old run as a new model. Claude IDs, prices, retirement floors and
+effort levels were checked 2026-11-05 (Fable/Opus/Sonnet release dates keep their 2026-09-30
+check); Terra API facts and Codex catalog/schema 2026-10-29; other OpenAI values 2026-09-30;
+Gemini/agy 2026-10-14. These are not account-specific quotes.
 Compare candidate models on representative inputs and
 checks; record quality, elapsed time, actual token usage and rework where available.
 
@@ -229,6 +218,7 @@ Sources:
 - [Claude models overview](https://platform.claude.com/docs/en/models/overview)
 - [Claude choosing a model](https://platform.claude.com/docs/en/about-claude/models/choosing-a-model)
 - [Claude Sonnet 5.5](https://platform.claude.com/docs/en/models/sonnet-5-5/overview)
+- [Claude Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/overview)
 - [Claude effort](https://platform.claude.com/docs/en/build-with-claude/effort)
 - [Claude model deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations)
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)

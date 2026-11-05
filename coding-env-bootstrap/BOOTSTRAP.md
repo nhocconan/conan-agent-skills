@@ -76,14 +76,16 @@ version you install that differs, and don't downgrade to match.
 ```bash
 # Linux (Debian/Ubuntu)
 sudo apt-get update && sudo apt-get install -y git curl jq ripgrep
-curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash - && sudo apt-get install -y nodejs
-curl -LsSf https://astral.sh/uv/install.sh | sh
+# Installer scripts: download, read, then run (SKILL.md ground rules); never pipe curl into a shell.
+curl -fsSLo /tmp/nodesource_setup.sh https://deb.nodesource.com/setup_24.x   # read it, then:
+sudo -E bash /tmp/nodesource_setup.sh && sudo apt-get install -y nodejs
+curl -LsSfo /tmp/uv-install.sh https://astral.sh/uv/install.sh               # read it, then:
+sh /tmp/uv-install.sh
 sudo corepack enable && corepack prepare pnpm@latest --activate
 # gh: https://github.com/cli/cli/blob/trunk/docs/install_linux.md
 
 # macOS
-brew install git jq ripgrep ffmpeg gh node python@3.14
-curl -LsSf https://astral.sh/uv/install.sh | sh
+brew install git jq ripgrep ffmpeg gh node python@3.14 uv
 corepack enable && corepack prepare pnpm@latest --activate
 ```
 
@@ -99,7 +101,7 @@ for c in node npm pnpm python3 uv git gh rg jq; do printf "%-8s " "$c"; command 
 
 ```bash
 npm i -g @openai/codex          # Codex CLI
-curl -fsSL https://antigravity.google/cli/install.sh | bash  # Antigravity CLI (agy)
+curl -fsSLo /tmp/agy-install.sh https://antigravity.google/cli/install.sh  # Antigravity CLI (agy): read it, then `bash /tmp/agy-install.sh`
 # Claude Code: install per https://code.claude.com/docs/en/setup
 ```
 
@@ -246,7 +248,7 @@ registry itself — hand-editing is more fragile).
 | `code-review` | CORE | diff review before landing |
 | `plugin-dev` | CORE | authoring/validating skills and plugins |
 | `typescript-lsp` | CORE for TS repos | real symbol resolution beats grep |
-| `frontend-design` | DEV | UI work |
+| official `frontend-design` plugin | DEV | marketing-page aesthetic direction only; same name as this repo's `frontend-design` skill, a different thing. The repo `frontend-design` loop wins on any conflict |
 | `clangd-lsp` | optional | C/C++ repos only |
 | `swift-lsp` | MAC | iOS/macOS repos only |
 | `karpathy-skills` | CORE | the behavioural guidelines the operator's `CLAUDE.md` mirrors |

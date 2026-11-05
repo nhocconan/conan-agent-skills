@@ -50,7 +50,7 @@ not work from memory. Paths are relative to this skill's directory.
 | running the Apple pre-submission checklist (3.1.1, 3.1.2, 2.1, 2.3, 5.1, 4.3, 2.3.1/2.5, 4.5.4, 4.0) | `sections/apple-checklist.md` |
 | the target is Google Play — policy, Play Protect, binary hygiene, listing | `sections/play-checklist.md` |
 | the app sells restorable IAP, or the rejection cites 3.1.1 — the full Restore Purchases pattern with code | `sections/restore-purchases.md` |
-| producing or reviewing App Preview video / marketing screenshots, or the rejection cites 2.3.4 | `sections/preview-video.md` |
+| producing or reviewing App Preview video / marketing screenshots, or the rejection cites 2.3.4 | `../store-screenshots/sections/preview-video.md` |
 | verifying any code- or metadata-level item — the curl/grep recipes that turn a checkbox into a fact | `sections/verification-recipes.md` |
 | you want the sourced policy notes and submission-time refresh links | `sections/research-notes.md` |
 

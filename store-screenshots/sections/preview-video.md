@@ -13,7 +13,7 @@
 > device mockup (Step 3), but the **video** must be a *full-bleed screen
 > capture* — the app fills the whole frame, no bezel, no phone, no gradient
 > margin. Text/caption/narration overlays are explicitly allowed; device frames
-> are not. A real first-submission rejection (June 2026) came from exactly this:
+> are not. A real first-submission rejection came from exactly this:
 > the old "Ken-Burns over a framed device on a brand gradient" preview was fine
 > as screenshots but illegal as a video. **Don't reuse `device_mockup()` in the
 > video.**
@@ -57,8 +57,7 @@ two scenes show it, so they don't replay an identical opening.
 
 **Accurate metadata (Guideline 2.3):** only caption a scene with a feature it
 *visibly shows*. "Widgets & Siri" over a plain home screen is a rejection risk;
-so is a "Lock Screen countdown" caption over the Settings page (a real June 2026
-near-miss). For surfaces you can't screen-record on a headless sim — Lock Screen
+so is a "Lock Screen countdown" caption over the Settings page (a real near-miss). For surfaces you can't screen-record on a headless sim — Lock Screen
 / Live Activity / widget / Siri (`simctl` has no lock command, and osascript UI
 automation needs Accessibility) — **don't fake them in the VIDEO.** Either drop
 the claim there and caption what's on screen, or — better — sell them in a
@@ -78,14 +77,15 @@ in the video; everything else lives in the stills. Same accuracy rule as Step 1.
 
 **Google Play** takes the promo as a **YouTube link**, not a file upload:
 render a vertical 1080×1920 mp4, upload it to YouTube (unlisted is fine), and
-paste the URL in the listing. Play is lenient on length (no 30s cap) and on
-device frames, but keep it tight.
+paste the URL in the listing. Play's limits on length and
+device frames are unverified (see
+`appstore-review-guard/sections/play-checklist.md`); keep the video frame-free and tight.
 
 **Apple App Preview spec (re-verified 2026-10-02 against developer.apple.com/help/app-store-connect/reference/app-information/app-preview-specifications — recheck if rejected):**
 - **Render at 886×1920** (portrait) / 1920×886 (landscape) — accepted across the
   6.5"/6.7"/6.9" iPhone App Preview slots. **Do NOT upload 1320×2868** (that's
   the *screenshot* size): the App Preview slot rejects it — *"The app preview
-  dimensions should be: 886 × 1920px or 1920 × 886px"* (real June 2026 upload
+  dimensions should be: 886 × 1920px or 1920 × 886px"* (a real upload
   error). .mp4/.mov/.m4v, **30 fps**, **15–30 s**, ≤500 MB.
 - **No device frames / bezels** in the footage (2.3.4) — full-bleed only.
 - **A stereo audio track is required** (256kbps AAC, 44.1/48 kHz) — a silent

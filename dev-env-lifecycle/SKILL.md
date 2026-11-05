@@ -24,11 +24,15 @@ edits that tree until it ends; prefer building from a committed snapshot.
 1. **Inventory before you start.** Record what is already running on the ports and paths
    you are about to use. You are responsible for what *you* start, and you must not kill
    what you did not. If a port is already bound, find out by whom before taking it.
+   A host resource share the operator sets ("at most half the server") is enforced with
+   `systemd-run --scope` (`CPUQuota`/`MemoryMax`), cgroup, `taskset` or `nice`, and
+   verified in the process table.
 2. **One entrypoint each for up, down and status.** Use the repo's script, Compose or
    Make target; encode required ordering there.
 3. **Down means all of it.** Stop covers every process the up path created, not the
    foreground one: background workers, schedulers, queue consumers, watchers, tunnels,
-   sidecar containers, port-forwards. The test is mechanical — after `down`, the inventory
+   sidecar containers, port-forwards, and detached helpers (`setsid`, `nohup`, `disown`),
+   which must share a kill path with their watchdog. The test is mechanical — after `down`, the inventory
    from step 1 matches the starting state.
    A test runner that launches the app through a wrapper (`webServer` command via a
    package runner or `tsx`) leaves grandchildren holding ports after a crash or kill. Start
@@ -54,19 +58,17 @@ edits that tree until it ends; prefer building from a committed snapshot.
   mine running?" in one command and is what steps 4 and 7 depend on.
 - Track a run ID, PIDs with start times, container IDs, and owned paths (a manifest or process group), rather than matching
   process names — a name match kills the operator's unrelated editor server eventually.
-- Make `down` idempotent and safe to run when nothing is up. It will be run that way.
+- Make `down` idempotent and safe to run when nothing is up.
 - Make `up` refuse to start on top of itself. Detect the running stack and either attach
   or fail with a clear message; two copies of a queue consumer corrupt work silently.
-- Prefer stopping by the same mechanism that started: compose down for compose up, the
-  supervisor for a supervised process. Reaching for `kill -9` first hides shutdown bugs.
-- If the stack binds privileged or shared resources (a fixed port, a system service, a
-  shared database), say so in the artifact's header — those are the ones that collide.
+- Stop by the mechanism that started: compose down for compose up, the supervisor for a
+  supervised process; `kill -9` first hides shutdown bugs.
+- Name privileged or shared resources (fixed port, system service, shared database) in the artifact's header.
 
 ## Ephemeral by default
 
-Data a run generates for its own purposes — seeded fixtures, masked exports, capture
-batches — lives in a declared, gitignored scratch path, is regenerable from a command,
-and is removed on `down`. Anything that must outlive the run gets stated explicitly as
+Run-generated data (seeded fixtures, masked exports, capture batches) lives in a declared,
+gitignored scratch path, is regenerable, and is removed on `down`. Anything that must outlive the run gets stated explicitly as
 durable, with a location the operator chose. If ownership or durability is unclear, preserve the file and resolve it before deletion.
 
 ## Production is not dev
@@ -77,6 +79,6 @@ report — changes to running services need an explicit instruction naming the s
 
 ## Output
 
-Report, in one place: what was started (processes, ports, containers), what was stopped,
-what is still running deliberately, what was deleted (with sizes) and what was kept, and
-the `status` output proving the end state. If anything refused to die, say which and why.
+Report in one place: started (processes, ports, containers), stopped, deliberately still
+running, deleted (with sizes) and kept, and the `status` output proving the end state.
+Say which resource refused to die and why.

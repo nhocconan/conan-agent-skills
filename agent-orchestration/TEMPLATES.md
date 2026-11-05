@@ -64,7 +64,7 @@ Finding-shaped work (reviews, audits, sweeps):
 
 ```json
 {
-  "severity": "critical|major|minor",
+  "severity": "P0|P1|P2|P3",
   "status": "confirmed | concern | unavailable",
   "path": "src/a.ts", "line": 42,
   "category": "tenancy",

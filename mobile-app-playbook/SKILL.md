@@ -1,27 +1,18 @@
 ---
 name: mobile-app-playbook
 description: >-
-  End-to-end operating playbook for building and shipping an Android + iOS app or game
-  through store submission. Covers: defining the quality bar with numbers, architecture
-  choice (KMP/Compose Multiplatform seams, platform traps), game-feel/UX standards,
-  retention meta-systems, monetization that survives store policy, the verification
-  discipline (fake-green traps, per-stage gates, bot-verified difficulty), store
-  submission, ASO, and post-launch LiveOps. Trigger when: building a new mobile app/game,
-  upgrading one to "top of market" quality, planning a mobile release, auditing a mobile
-  app for quality/retention/ASO, or when the user says "world-class app", "SOTA mobile",
-  "top chart", "lên top chart", "build app chuẩn thế giới", "chuẩn bị release app", "làm
-  game mobile", "submit app", "improve retention", "tăng rating", "ASO", "monetization
-  plan".
+  Operating playbook for building and shipping an Android + iOS app or game through store
+  submission: quality bar in numbers, architecture seams, game feel, retention,
+  monetization under store policy, verification gates, ASO, LiveOps. Trigger when:
+  building a new mobile app/game, upgrading one to "top of market" quality, planning a
+  mobile release, auditing a mobile app for quality/retention/ASO, or when the user says
+  "world-class app", "SOTA mobile", "top chart", "lên top chart", "build app chuẩn thế
+  giới", "chuẩn bị release app", "làm game mobile", "submit app", "improve retention",
+  "tăng rating", "ASO", "monetization plan".
 ---
 
 # Mobile App Playbook — build through store, top-chart bar
 
-> Written by the harness lead (2026-07) as a capability handoff: the complete thinking
-> process for taking a mobile app/game from "works" to "top of market", distilled from
-> real shipped projects (a cross-platform arcade game that went through Play closed
-> testing, a real Play rejection, a working IAP + ads stack, and an iOS CMP port).
-> Every rule here was either paid for with a real failure or verified on a real release.
->
 > Companion skills (use them at the step that names them): `appstore-review-guard`
 > (pre-submission gate + rejection ledger), `store-screenshots` (listing assets),
 > `bug-class-audits` (class-not-instance fixes), `senior-operator` (how to think under
@@ -77,28 +68,17 @@ working its phase; do not work from memory of the router table alone.
 | the build is real: store submission gates and the staged-rollout dwell ladder (§6), ASO as a product surface — listing, keywords, review-prompt policy, localization (§7), running the app as a service afterwards — LiveOps cadence, crash/ANR budgets, rating recovery (§8) | `reference/launch-and-growth.md` |
 | a step failed in a new way and you want the generalized scars behind these rules (§9) | `reference/failure-catalog.md` |
 
-§0, §5 and the orchestration rules below apply at all times. §1–§4 are the build
-ladder; §6–§8 the launch ladder.
-
 ## §OP. Orchestration — spend model capacity like money
 
-The full fleet discipline (tier routing, parallel DAG, briefs, scored verification,
-integration) lives in **`agent-orchestration`** — that skill is the single source; read
-it when staffing independent work. The lead slot belongs to whichever harness is active
-(model IDs and the lead table live only in `agent-orchestration/sections/routing.md`):
-the harness lead owns architecture and final quality, its default builder implements
-scoped modules, and its simple-checked-work tier handles mechanical tasks. Escalate
-critical receipt verification, concurrency, and engine invariants to the harness lead.
+Fleet discipline, tier routing, briefs and integration live in
+[`agent-orchestration`](../agent-orchestration/SKILL.md); the lead slot, model IDs and
+tier table live in [`agent-orchestration/sections/routing.md`](../agent-orchestration/sections/routing.md).
+Mobile-specific facts only:
 
-- **The natural cut** is per module or per layer (engine / UI / backend / assets). Two
-  agents editing the same Gradle module is merge hell — one writer per module, worktrees
-  when they must overlap.
-- **Briefs quote the traps from §9** (this file's failure catalog) that apply to the
-  workstream, plus "implement, do NOT commit".
-- **Verification inherits the fake-green traps of §5** — the orchestrator re-runs the
-  build/test itself, on device/emulator where the check is behavioral, and reviews the
-  diff hunk by hunk before committing atomically.
-- Anything learned mid-workstream goes into the spec of the next one.
+- Natural cut: per module or layer (engine / UI / backend / assets); one writer per Gradle module.
+- Briefs quote the applicable rows of `reference/failure-catalog.md`.
+- Have the §5.2 gate re-run through a runner on the final tree; accept only its verdict, never the builder's (`reference/verification.md` §5.1).
+- Escalate critical receipt verification, concurrency, and engine invariants to the harness lead.
 
 ---
 

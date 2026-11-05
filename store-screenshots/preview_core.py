@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Shared App Preview / promo video renderer (Ken Burns scenes + sticker
-captions + brand cards + optional voiceover). Used by gen_app_preview.py
-(Apple, 886x1920) and gen_play_preview.py (Play, 1080x1920).
+captions + brand cards + optional voiceover). Example config: example_preview.py
+(Apple 886x1920; Play 1080x1920).
 
 Voiceover backends via VO_BACKEND (unset = silent stereo track, still valid):
-  say | kokoro | piper | openai | file   (see store-screenshots SKILL.md)
+  say | kokoro | piper | openai | file   (see sections/preview-video.md)
 Method: the store-screenshots skill (SKILL.md beside this file). Requires ffmpeg.
 """
 import json

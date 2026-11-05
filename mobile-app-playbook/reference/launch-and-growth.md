@@ -67,8 +67,8 @@ played end-to-end, including one real sandbox purchase + restore.
   iOS hard-caps at 3 prompts per 365 days per user and silently ignores extras; Play's
   quota is deliberately undocumented and may silently no-op — so the call must always
   be fire-and-forget, gated by your own policy (sessions ≥ 3, days-since-install ≥ 2,
-  ≥ 60 days between prompts). This single feature moves rating from 4.0 → 4.5 over
-  months; rating gates both ranking and conversion.
+  ≥ 60 days between prompts). Review prompts raise rating volume (measure the delta on
+  your own app); rating gates both ranking and conversion.
 - **Localization:** localize the LISTING first (top 5–10 locales for your genre) — it's
   cheap and moves ranking per-locale; localize the app itself only for locales that
   convert. A one-tap game may need almost no in-app text — that's an ASO advantage,

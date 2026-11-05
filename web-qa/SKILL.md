@@ -1,6 +1,6 @@
 ---
 name: web-qa
-description: Tests a running web application for functional defects — broken flows, dead buttons, failing forms, console errors, layout breakage — and either reports them with reproduction evidence or fixes them, depending on which the user asked for. Use when the user says "qa", "test cái này", "test site", "find bugs", "check xem chạy được không", "does this work", "kiểm tra e2e", or says a feature is ready for testing. Default is REPORT-ONLY; only fix when fixing was actually requested.
+description: Tests a running web application for functional defects — broken flows, dead buttons, failing forms, console errors, layout breakage. Default is REPORT-ONLY with reproduction evidence; fixes only when fixing was actually requested. Use when the user says "qa", "test cái này", "test site", "find bugs", "check xem chạy được không", "does this work", "kiểm tra e2e", or says a feature is ready for testing. Runs the app; for reviewing a diff use /code-review, for how it looks use design-qa.
 ---
 
 # Web QA
@@ -49,12 +49,11 @@ exhaustive — which severities get fixed).
 - **Accessibility correctness** → `a11y-audit`.
 - **Displayed numbers being wrong** → `metric-integrity`. A page that renders perfectly
   while showing a fabricated KPI passes web QA and is still badly broken.
-- **Writing reusable automation** rather than running a pass → the available browser automation tooling.
 - **Driving the browser directly** for a one-off check → `browsing-web`.
 
 ## Browser stack
 
 Use the user-selected or project-approved available browser. Follow its current tool
 instructions; `browsing-web` describes session and evidence discipline. If upstream's
-`../.vendor/gstack/qa/sections/browser-setup.md` is unreadable, report the blocker,
+`../.vendor/gstack/qa/sections/browser-setup.md` (qa-only's "Browser Setup (conditional)" points there; functional-only runs skip it) is unreadable, report the blocker,
 mark browser probes blocked, continue functional probes.

@@ -12,7 +12,7 @@ Usage:
 Targets:
     Claude-Cowork/*        ->  ~/Library/Application Support/Claude/claude-code-sessions/
     Claude-Cowork-Local/*  ->  ~/Library/Application Support/Claude/local-agent-mode-sessions/
-    Claude-Code/*          ->  ~/.claude/projects/
+    Claude-Code/*          ->  $CLAUDE_CONFIG_DIR (default ~/.claude)/projects/
 
 (Claude-Cowork-Local/ is absent in backups made before 2026-07; that's fine —
 the script skips missing subfolders.)
@@ -27,6 +27,8 @@ Restart the Claude Desktop / Cowork app after restoring so it re-indexes.
 import os, shutil, sys
 
 HOME = os.path.expanduser("~")
+# Claude Code config dir: CLAUDE_CONFIG_DIR when set, else ~/.claude.
+CLAUDE_CONFIG = os.environ.get("CLAUDE_CONFIG_DIR") or os.path.join(HOME, ".claude")
 # (backup subfolder, live destination)
 TARGETS = [
     ("Claude-Cowork",
@@ -34,7 +36,7 @@ TARGETS = [
     ("Claude-Cowork-Local",
      os.path.join(HOME, "Library/Application Support/Claude/local-agent-mode-sessions")),
     ("Claude-Code",
-     os.path.join(HOME, ".claude/projects")),
+     os.path.join(CLAUDE_CONFIG, "projects")),
 ]
 
 

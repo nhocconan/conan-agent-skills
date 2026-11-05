@@ -1,13 +1,14 @@
 ---
 name: autonomous-loops
 description: >-
-  Turns a recurring job into a pre-written loop that runs without anyone typing the
-  prompt — nightly reconciliation, docs-drift checks, CI-failure summaries, post-deploy
-  checks, "keep this PR green", "iterate until the tests pass". Covers the four parts a
-  loop needs (trigger, prompt file, hard gate, stop condition), the ladder from hand-run
-  to repo-resident workflow, brakes, and the escalation law. Use when the user says "treo lịch", "chạy mỗi đêm", "tự chạy
-  đi", "loop", "cron", "schedule", "routine", "automation", "babysit", "ralph", "keep
-  going until", "đừng để tao phải gõ nữa", or asks which recurring job to automate first.
+  Designs a recurring or self-iterating agent job as four parts (trigger, frozen prompt
+  file, hard gate, stop condition), the ladder from hand-run to repo workflow, brakes and
+  the escalation law. This skill designs the loop; the built-in `/loop` and `/schedule`
+  commands only run one. Use for nightly reconciliation, docs-drift checks, CI-failure
+  summaries, post-deploy checks, "keep this PR green", "iterate until the tests pass",
+  "treo lịch", "chạy mỗi đêm", "tự chạy đi", "loop", "cron", "schedule", "routine",
+  "automation", "babysit", "ralph", "keep going until", "đừng để tao phải gõ nữa", or
+  which recurring job to automate first.
 ---
 
 # Autonomous loops
@@ -29,7 +30,7 @@ says the task succeeded. Every loop reports the gate's verdict, never the run's 
 | Rung | Trigger | Write access | What earns the next rung |
 | --- | --- | --- | --- |
 | 1 · Skill | a human invokes it | as the session allows | representative runs reviewed; gate catches forced failure |
-| 2 · Hook | a session event (before/after a tool, on stop) — on blockable events (PreToolUse, Stop, UserPromptSubmit) exit code 2 *blocks* the action; PostToolUse and notification events cannot block (hooks docs, 2026-10-02). This rung enforces, it does not advise | none of its own | the hook has never blocked something it should have allowed |
+| 2 · Hook | a session event (before/after a tool, on stop) — on blockable events (PreToolUse, Stop, UserPromptSubmit) exit code 2 *blocks* the action; PostToolUse and notification events cannot block (verify: [harness mechanics](sections/harness-mechanics.md)). This rung enforces, it does not advise | none of its own | the hook has never blocked something it should have allowed |
 | 3 · Headless CI | repo event (push, PR) or CI cron; local artifacts only | **none; posting comments needs write authority** | outputs were correct for N runs and cheap to check |
 | 4 · Scheduled | a clock outside the repo (routines, automations, `/loop`, cron on the box) | still read-only | brakes proven under a forced failure |
 | 5 · Agentic workflow | lives in the repo as code; agent runs read-only, a separate narrowly-scoped job holds the token | **proposes PRs by default; bounded authorized writes** | — |
@@ -65,7 +66,7 @@ does not prove readiness. Automate deterministic checks in code before agent tur
   the same DB; schedule it when they are off (see the project map).
 - **A kill switch** the operator can hit without reading the code: a file, a flag, a
   cron line to comment out. Claude Code's scheduler has one built in
-  (`CLAUDE_CODE_DISABLE_CRON=1`, scheduled-tasks docs 2026-10-02).
+  (see [harness mechanics](sections/harness-mechanics.md)).
 
 ## The completion promise — for "keep going until" loops
 

@@ -13,10 +13,9 @@ REPO = Path(__file__).resolve().parents[2]
 HARNESS = REPO / "coding-env-bootstrap" / "harness.py"
 REFSYNC = REPO / "ref-skills" / "refsync.py"
 def _count(path: Path) -> int:
-    return len([
-        line for line in path.read_text().splitlines()
-        if line.split("#", 1)[0].strip()
-    ])
+    """Repo-owned entries only: a fresh clone skips optional third-party skills."""
+    names = [line.split("#", 1)[0].strip() for line in path.read_text().splitlines()]
+    return len([n for n in names if n and (REPO / n / "SKILL.md").is_file()])
 
 
 CORE_COUNT = _count(REPO / "ref-skills/loadouts/core.txt")
@@ -419,12 +418,12 @@ class HarnessTests(unittest.TestCase):
                 "--target", "claude", "--profile", "claude-dev", "--apply",
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn("skip 'playwright-skill'", result.stdout)
+            self.assertIn("skip 'vercel-react-best-practices'", result.stdout)
             active = home / ".claude" / "skills"
             self.assertTrue((active / "browsing-web").is_symlink())
             self.assertFalse((active / "gstack").exists())
             self.assertFalse((active / "browse").exists())
-            self.assertFalse((active / "playwright-skill").exists())
+            self.assertFalse((active / "vercel-react-best-practices").exists())
 
     def test_explicit_workstation_profile_applies_without_gstack(self):
         with tempfile.TemporaryDirectory() as raw_home:

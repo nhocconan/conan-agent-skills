@@ -1,6 +1,12 @@
 ---
 name: bug-class-audits
-description: Turn any recurring bug into a permanent, mechanically-enforced rule — fix the class, not the instance. When a bug greps to multiple call sites or the same shape of bug appears a second time, fix every site, append a numbered rule to the project's anti-pattern list, write an audit script, and wire it into pre-push/CI with a baseline that only shrinks. Use after fixing any bug that could recur, when a bug already diagnosed and fixed once shows up again ("this happened again" / "lại bị nữa" — diagnosis itself belongs to `investigating-bugs`), when a review keeps flagging the same pattern, or when setting up quality enforcement for a project.
+description: >-
+  Turns a recurring bug into a permanent, mechanically-enforced rule: fix every site, add a
+  numbered anti-pattern entry, an audit script, and a pre-push/CI gate with a baseline that
+  only shrinks. Use after fixing any bug that could recur, when a bug already diagnosed and
+  fixed once shows up again ("this happened again" / "lại bị nữa" — diagnosis itself belongs
+  to `investigating-bugs`), when a review keeps flagging the same pattern, or when setting
+  up quality enforcement for a project.
 ---
 
 # Bug-Class Audits
@@ -12,8 +18,8 @@ numbered rule plus one mechanical check, so no class is re-argued.
 
 ## The loop
 
-1. **Detect the class.** After fixing a bug, grep the codebase for the same pattern.
-   Multiple hits are candidates: confirm the same violated invariant before grouping.
+1. **Detect the class.** Start from the sites `investigating-bugs` already confirmed;
+   grep for any it missed and confirm the same violated invariant before grouping.
    (Typical shapes: `toFixed(` for display across dozens of components; a filter applied
    in the UI but absent from SQL in several routers; a fabricated `× 0.N` coefficient in
    several metrics.)

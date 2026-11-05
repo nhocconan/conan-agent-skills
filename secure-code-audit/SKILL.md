@@ -1,6 +1,6 @@
 ---
 name: secure-code-audit
-description: Portable application-security audit using open-source tooling — OWASP Top 10 code review, secret scanning, dependency/CVE audit, and insecure-default detection. Use when the user asks for a "security scan/review/audit", before making a repo public or shipping a release, after adding auth/upload/payment/API code, or when handling secrets, user data, or third-party input. Produces severity-ranked findings with concrete fixes. No proprietary or cloud tools required.
+description: Whole-repo application-security audit with open-source tools — secret scanning incl. history, dependency CVEs, SAST, OWASP Top 10 review, LLM-feature checks. Use when the user asks for a "security scan/review/audit", before making a repo public or shipping a release, after adding auth/upload/payment/API code, or when handling secrets, user data, or third-party input. Severity-ranked findings with fixes. For only the pending branch diff, use built-in /security-review.
 ---
 
 # Secure Code Audit
@@ -29,18 +29,13 @@ report. Two categories are new in 2025 and are the ones most often skipped: **A0
 Supply Chain Failures** and **A10 Mishandling of Exceptional Conditions**. SSRF is no
 longer standalone — OWASP rolled it into A01; check it there.
 
-## 5. LLM / AI features (chatbots, RAG, agents, AI dashboards — check explicitly)
-Classic SAST misses these; review manually wherever the app calls a model (OWASP Top 10 for LLM Applications, 2025 edition: LLM01 Prompt Injection, LLM02 Sensitive Information Disclosure, LLM05 Improper Output Handling, LLM06 Excessive Agency, LLM07 System Prompt Leakage, LLM08 Vector and Embedding Weaknesses, LLM10 Unbounded Consumption):
-- **Prompt injection**: retrieved documents, user uploads, and third-party content fed to a model are DATA, not instructions — never let them override the system prompt's authority (delimit clearly, instruct the model to treat them as untrusted, strip/flag instruction-like content in RAG chunks).
-- **Tool-call authorization**: every tool an LLM can invoke re-checks authn/authz server-side with the END USER's identity — the model must not be able to reach rows/actions the user can't. No raw-SQL or shell tools without strict scoping/allow-listing. Treat tool args like any untrusted input.
-- **RAG tenancy**: retrieval queries are scoped by tenant/org id at the store level (filter in the vector/DB query, not post-hoc in the prompt); one tenant's documents must never surface in another's context.
-- **Output handling**: model output rendered as text/sanitized markdown — never `dangerouslySetInnerHTML`/`v-html` on it, never `eval`, never auto-clicking links it generates (XSS/markdown-image exfiltration).
-- **Secrets & PII**: no credentials or hidden business logic in system prompts (assume prompts leak); don't log full prompts/completions containing user PII; API keys server-side only, never shipped to the client.
-- **Denial-of-wallet**: rate-limit + max-token-cap every model endpoint per user/org; cap agent loop iterations; meter and alert on spend.
+## 5. LLM / AI features
+If the app calls a model, read `sections/llm-features.md` (OWASP LLM Top 10, 2025 edition).
 
 ## File-upload & multi-tenant (common in data apps — check explicitly)
 - Validate type by content not just extension; cap size; store outside web root or in object storage with scoped access; scan/disarm where feasible; never trust the client filename for paths (path traversal).
 - Multi-tenant: every query is scoped by tenant/org id server-side; no way to read another tenant's rows by changing an id.
+- A client-supplied tenant/scope ID is verified server-side against the caller's membership, never trusted. Test with a forged scope ID and a cross-tenant resource ID; check paths that bypass RLS (service-role/admin clients, `SECURITY DEFINER` functions, raw SQL, background jobs).
 
 ## Output
 Findings table: **severity (Critical/High/Medium/Low) → OWASP/CWE → file:line → impact → fix**. Lead with anything exploitable now (exposed secret, missing authz, injection). For audit-only requests, report findings without edits. Apply scoped fixes only when requested; credential rotation and history rewriting need explicit authority. End with the exact commands you ran so the audit is reproducible.

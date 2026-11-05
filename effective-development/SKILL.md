@@ -94,6 +94,16 @@ relational and absence checks;
 use a permitted/effective control when it distinguishes a no-op or unconditional
 rejection. A mock may isolate an external boundary, not replace the mechanism proved.
 
+Test design (new or changed tests):
+- Agree the seams first: name the public interface each test drives, and what it catches and
+  misses, before writing any test. Tests drive public interfaces, never internals or private
+  methods; if a refactor with the same behavior breaks a test, it was coupled to internals.
+- No tautological tests: the expected value comes from an independent source (hand-computed
+  fixture, spec, reference data), never recomputed by the code path under test. For displayed
+  numbers see [metric-integrity](../metric-integrity/SKILL.md).
+- Watch a new test fail for the right reason (the missing behavior, not a typo or setup error)
+  before making it pass.
+
 Costly external/AI APIs: deterministic fixtures for routine feedback, an authorized live
 sample when live behavior matters (mocks cannot prove it); record actual usage.
 
@@ -133,14 +143,12 @@ output alone is not a hang. An unfinished check is incomplete, never passed, and
 budget justifies weakened assertions or a skipped required gate. Stall, termination and
 cleanup rules: [tracking](../agent-orchestration/sections/tracking.md).
 
-Staff runs by work nature
-([routing](../agent-orchestration/sections/routing.md#work-nature--tier)): the cheapest tier
-runs a gate or shard and triages ≤ 30 lines, the builder tier fixes, a reviewer reads
-artifacts and runs no suite, and the lead classifies without running a suite in its own
-context.
+Staff runs per [routing](../agent-orchestration/sections/routing.md#work-nature--tier).
 
 Journey recipes and measuring verification changes: [LEAN-SUITE.md](LEAN-SUITE.md#recipes-and-measurement).
 
 ## Sources
 
 Selection and pyramid references: [LEAN-SUITE.md](LEAN-SUITE.md#sources).
+
+Adapted from mattpocock/skills (tdd, commit 4ae2317, MIT).

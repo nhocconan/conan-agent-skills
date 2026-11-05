@@ -10,7 +10,7 @@ schema before relying on anything below.
 [Shapes](#choose-a-shape) · [Limits](#concurrency-and-depth-limits) ·
 [Lanes](#lane-enforcement) · [Resume](#resume-primitives) · [Cadence](#progress-cadence) ·
 [Codex](#codex-collaboration) · [Claude](#claude-collaborators) ·
-[agy](#antigravity-agy-collaboration) · [Worktrees](#worktrees-and-integration)
+[agy](#antigravity-agy-collaboration) · [Shared-host](#shared-host-resources) · [Worktrees](#worktrees-and-integration)
 
 ## Choose a shape
 
@@ -136,6 +136,11 @@ inherits the parent's model and reasoning effort, and such a fork rejects `model
 `reasoning_effort` overrides. Set `"none"` with a self-contained brief whenever you
 are choosing the worker's tier. The current schema accepts only `"all"` or `"none"`;
 use numeric forks only if the active schema explicitly supports them.
+Explicit spawn settings beat `agents.default_subagent_model` and
+`default_subagent_reasoning_effort`, which never override a full-history fork.
+`agents.max_threads` is the legacy alias of `max_concurrent_threads_per_session`, which
+counts spawned threads excluding the primary; a collaboration tool whose limit includes the
+lead counts differently, so inspect the live schema.
 
 Launch the next independent node without awaiting earlier nodes; separate asynchronous
 tool messages can still execute concurrently. Follow up on the existing worker for
@@ -183,16 +188,8 @@ Set `Workspace` to `"share"` to share the repository directory like a git worktr
 ## Shared-host resources
 
 Worktrees, lanes and tool allowlists isolate files, not memory, CPU, ports, databases or
-browsers. On a host that also runs production, those belong to one conductor the lead owns:
-a CLI that is the only way to start a server, browser, build, test run or fixture; runs every
-job in a capped cgroup (per-class `MemoryMax`) inside one capped slice; serializes slots;
-admits a job only against measured `MemAvailable` and load; records tree fingerprint, exit,
-duration and peak memory per run; reuses a result for the same fingerprint; stops by unit,
-never `pkill -f`. Workers request runs and read results; they never start resources, never
-re-run a gate another lane just ran on the same fingerprint, and never share a mutable
-fixture without a clone. A single lock is not a conductor: no queue, status, kill switch or
-memory bound (a CPU-only load rule plus one flock let a second `next dev` reach 40 GiB and
-hang a host). The CLI's name, classes and caps live in the project's host-local map.
+browsers; heavy jobs go through one lead-owned runner. Method:
+[SHARED-HOST](../effective-development/SHARED-HOST.md).
 
 Staff by the content's natural partition (one worker per dashboard tab or screen; halve the
 count under load); tier per the [work-nature table](sections/routing.md#work-nature--tier).

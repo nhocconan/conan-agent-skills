@@ -29,22 +29,21 @@ review; the validator caught it.
 
 ## Overrides that MUST survive an upgrade
 
-1. The six recurring defect classes listed in SKILL.md — drawn from real reports on this
+1. The ten recurring defect classes listed in SKILL.md — drawn from real reports on this
    operator's projects, not from upstream's checklist.
-2. Always check **both themes and 375px**; most defects found here surfaced on a phone or
+2. Always check **both themes and 390px**; most defects found here surfaced on a phone or
    in the untested theme.
 3. Fixing is in scope, but under `shipping-changes` house rules.
 4. Do not "improve" adjacent design nobody complained about.
 5. Defect class 2 (text not using its width) is prevented mechanically, not reviewed:
    `sections/text-width.md` (root causes, probe, repo-check steps) and `scripts/narrow-wrap-probe.js`.
 6. Critique is counted, not adjectival: `sections/rubric.md` (12 criteria + product-UI tells) and
-   `scripts/layout-probe.js`. The builder never grades their own screen.
+   `scripts/layout-probe.js`.
 7. Defect classes 7-10 (mismatched bar controls, odd one out, bare-list panels, prose walls) stay
    in SKILL.md; they are the chrome defects generated UI ships most.
 
 ## Upstream sections this depends on
 
-- "When to invoke this skill"
 - "Phases 1-6: Design Audit Baseline"
 - "Design Critique Format"
 

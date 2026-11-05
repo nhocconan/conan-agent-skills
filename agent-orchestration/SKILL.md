@@ -3,9 +3,9 @@ name: agent-orchestration
 description: >-
   Coordinate independent agent work with scoped ownership, model routing,
   resumable state, and evidence-based integration. Use for multi-workstream tasks,
-  explicit delegation, parallel audits, agent handoffs, or "chia việc", "fan-out",
-  "chạy song song", "giao worker". The lead of the active
-  harness owns final quality; workers hold scoped, checkable tasks.
+  explicit delegation, parallel audits, agent handoffs, unattended runs, or "chia việc",
+  "fan-out", "chạy song song", "giao worker", "delegate this", "run autonomously",
+  "giao việc", "chạy xong báo". The active harness's lead owns final quality.
 ---
 
 # Agent orchestration
@@ -34,6 +34,11 @@ active parent session, with no cross-harness substitution. Read the
 5. Launch independent workers without waiting for earlier independent workers
    to finish; parallelize according to the harness's actual execution semantics.
 
+Within delegated scope, run the commands (gates through a runner) instead of handing them to the operator;
+ask only for missing scope, preference or authority. Stop for actions outside the delegated
+scope, irreversible production data changes the order does not cover, or credentials you
+lack ([operating contract](sections/operating-contract.md)).
+
 Do useful lead work while workers run. A worker's return is input to the lead's
 review, never a declaration that the user's task is done.
 
@@ -49,7 +54,7 @@ review, never a declaration that the user's task is done.
 | Evaluating claims and repairing defects | [Quality gate](sections/quality-gate.md) |
 | Reviewing and verifying the combined result | [Integration](sections/integrate.md) |
 | Resume, worker failure, progress updates | [Tracking](sections/tracking.md) |
-| Token cost: turn budgets, context size, polling | [Quota discipline](sections/cost.md) |
+| Token cost, paid third-party jobs | [Cost](sections/cost.md) |
 | Harness limits, lanes, resume primitives | [Fan-out patterns](FANOUT-PATTERNS.md) |
 | Brief, ledger and report examples | [Templates](TEMPLATES.md) |
 
@@ -66,9 +71,9 @@ the lead reads ≤ 5-line digests and keeps its own context under 120k
 
 After two failures on one acceptance check, the lead diagnoses the task or takes
 it back. Keep evidence that distinguishes verified, failed, and unavailable
-checks. The lead reviews the combined diff, verifies material behavior on the
-final tree, and reports the coherent result with remaining limitations.
+checks. The lead reviews the combined diff, confirms material behavior from
+runner evidence on the final tree, and reports the coherent result with remaining limitations.
 
-Read supporting skills only when the task needs them (`delegate-run` for unattended
-completion, `autonomous-loops` for recurring execution, domain audits for their risks);
-never load a whole suite or depend on a skill absent from the environment.
+Read supporting skills only when the task needs them (`autonomous-loops` for recurring
+execution, domain audits for their risks); never load a whole suite or depend on a skill
+absent from the environment.

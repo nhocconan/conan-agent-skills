@@ -3,7 +3,7 @@ name: browsing-web
 description: >-
   Drive an available browser for page interaction, screenshots, console/network
   inspection, and authenticated UI checks. Use for browser tasks such as "mở web",
-  "chụp màn hình", or verifying a rendered change. Prefer the user's selected session.
+  "chụp màn hình", or verifying a rendered change. Prefer the user's selected session. Driving and capturing only: test passes go to web-qa, visual critique to design-qa, WCAG to a11y-audit.
 ---
 
 # Browsing the web
@@ -64,5 +64,5 @@ connection.
 ## When the task is verifying a UI change
 
 Capture the evidence, don't just assert. A screenshot or the console output is what makes
-"it renders correctly" a fact instead of a claim. For visual quality judgements pair with
-`a11y-audit` (correctness) and the frontend design skills (aesthetics).
+"it renders correctly" a fact instead of a claim. For a pass/fail test use `web-qa`, for visual
+judgement `design-qa`, for WCAG `a11y-audit`.

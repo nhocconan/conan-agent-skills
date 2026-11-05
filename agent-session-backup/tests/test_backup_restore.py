@@ -195,5 +195,54 @@ class CoworkRoundTripTests(unittest.TestCase):
             self.assertFalse((destination_file / "session.json").exists())
 
 
+class ClaudeConfigDirTests(unittest.TestCase):
+    def load_with_env(self, home: Path, config_dir):
+        env = {"HOME": str(home)}
+        if config_dir is not None:
+            env["CLAUDE_CONFIG_DIR"] = str(config_dir)
+        with patch.dict("os.environ", env, clear=False):
+            if config_dir is None:
+                os_env = __import__("os").environ
+                os_env.pop("CLAUDE_CONFIG_DIR", None)
+            return (
+                load_script("asb_backup_env", "backup.py"),
+                load_script("asb_restore_env", "restore.py"),
+            )
+
+    def test_config_dir_env_overrides_default_projects_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home, cfg = Path(tmp) / "home", Path(tmp) / "cfg"
+            b, r = self.load_with_env(home, cfg)
+            self.assertEqual(b.CODE_SRC, str(cfg / "projects"))
+            self.assertEqual(dict(r.TARGETS)["Claude-Code"], str(cfg / "projects"))
+
+    def test_default_is_home_dot_claude_when_unset(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp) / "home"
+            b, r = self.load_with_env(home, None)
+            self.assertEqual(b.CODE_SRC, str(home / ".claude" / "projects"))
+            self.assertEqual(dict(r.TARGETS)["Claude-Code"], str(home / ".claude" / "projects"))
+
+    def test_backup_reads_projects_from_config_dir(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            home, cfg = root / "home", root / "cfg"
+            work = root / "work"
+            work.mkdir()
+            proj = cfg / "projects" / "slug"
+            proj.mkdir(parents=True)
+            (proj / "s.jsonl").write_text(json.dumps({"cwd": str(work)}) + "\n", encoding="utf-8")
+            decoy = home / ".claude" / "projects" / "decoy"
+            decoy.mkdir(parents=True)
+            (decoy / "d.jsonl").write_text(json.dumps({"cwd": str(work)}) + "\n", encoding="utf-8")
+            b, _ = self.load_with_env(home, cfg)
+            b.COWORK_TREES = []
+            dest = root / "backup"
+            with patch.object(sys, "argv", ["backup.py", str(dest)]):
+                b.main()
+            self.assertTrue((dest / "Claude-Code" / "slug" / "s.jsonl").exists())
+            self.assertFalse((dest / "Claude-Code" / "decoy").exists())
+
+
 if __name__ == "__main__":
     unittest.main()

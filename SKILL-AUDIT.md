@@ -138,6 +138,74 @@ on-demand ceilings raised in the same commit for the wider trigger text, the rub
 The Codex load-out (`codex-dev`) still omits the design skills; adding one is an operator
 decision because that load-out is capped by Codex's description budget.
 
+## 2026-11-05 — full review, usage history, upstream comparison
+
+Scope: all 34 skills (33 after one merge). Six read-only reviewers by skill group and nine
+builders with one owner per directory (Sonnet 5.5); one integration review of the combined
+diff (Fable 5.1: ACCEPT-WITH-FIXES, 0 P1, 16 P2; 11 fixed, 5 accepted as noted below); lead
+Opus 5.5. Private tables, briefs and the history scan scripts live in
+`.agents/skill-review-2026-11-05/`.
+
+Reviews raised 145 findings (6 P1). The P1s:
+
+| Defect | Change |
+| --- | --- |
+| `context_budget.py --no-ratchet` exited 1 at base: three skills over their ceilings, one by 99 KB from a vendored upstream | ceilings set deliberately in the same diff (list below) |
+| vendored taste-skill shipped a nested `SKILL.md` with its own frontmatter (a second UI skill one glob away from registering) | renamed `UPSTREAM-SKILL.md` |
+| `shipping-changes` (and `investigating-bugs`, `web-qa`, `design-qa` REFs) sent the agent to upstream sections that no longer exist (`refsync.py status`) | re-pointed to the current vendored text; fingerprints left for `refsync.py upgrade --accept` |
+| private project names in a public file (`effective-development`) | anonymized; they remain in git history and three commit subjects |
+| `agent-orchestration`: one section said clear the lead's context at 300k, two said 120k | 120k, owned by tracking.md |
+
+Usage, from this machine's Claude Code and Codex history (local history starts 2026-10-26:
+39 lead sessions, 803 subagent sessions, 27 Codex rollouts, 630 human turns; agy logs are
+not parseable): every skill showed some use; the lowest were `backtest-integrity` and
+`interactive-course-builder` (one spawn mention each). Leads rarely call the Skill tool
+(`agent-orchestration` 9); most use is by path read.
+
+Pain clusters (372 human turns, 16 clusters, 12 verified in context): in six of them the
+covering skill existed and was not loaded in the session where the pain happened.
+
+| Cluster (prompts / sessions / projects) | Change |
+| --- | --- |
+| Agent stops to ask or hands the operator commands after authority was delegated (19 / 8 / 5); `delegate-run` loaded 0 times, `agent-orchestration` 8 | `delegate-run` merged into `agent-orchestration` (operating-contract, two eager lines, its triggers) and retired |
+| Covering skill not loaded (runaway processes, slop, instance-not-class fixes, sign-in loops) | skill-routing table in `coding-env-bootstrap/templates/global-instructions.md` |
+| Paid third-party jobs: invented caps, retries while a job runs (16 / 5 / 4) | "Paid third-party jobs" in agent-orchestration `sections/cost.md` |
+| Lead's own detached job dies unnoticed (9 / 4 / 3) | liveness check in `sections/tracking.md` |
+| Unsourced thresholds, limits or causes (6 / 5 / 4) | source-or-"assumed" rule in `senior-operator` |
+| Host resource-share caps (4 prompts / 3 projects) | enforced mechanically, checked in the process table (`dev-env-lifecycle`) |
+
+Upstream comparison: mattpocock/skills @4ae2317 (39 skills, MIT). Nothing installed: the
+plugin is all-or-nothing, updates itself outside the load-out, collides with `/code-review`,
+and its model-invocable skills add ~2.3k chars to Codex's ~8k skill list. Four techniques
+ported with attribution: diagnosing-bugs → `investigating-bugs`, tdd → `effective-development`,
+grilling → agent-orchestration intake, writing-for-agents → `skill-miner`.
+
+Third-party load-out: of 17 names, `vercel-react-best-practices` is installed (vercel-labs/
+agent-skills @1a2c79d, Claude and Codex); `context7` and OpenAI docs stay MCP servers; 14 were
+removed (duplicates of repo skills, hooks or global config, or no findable upstream).
+
+Routing: the Claude focused tier is now Haiku 5.5 (released 2026-10-07, effort `low`–`max`,
+default `medium`); Haiku 4.5 is legacy (platform.claude.com, read 2026-11-05; IDs in routing.md).
+
+Context budget: ceilings raised deliberately to about measurement + 3 % for growth the
+review asked for — `agent-orchestration` (merged delegate-run, paid-job rules), `frontend-design`
+on-demand 19,000 → 120,000 B (the vendored taste-skill; its step-1 reads cost about 30k tokens, so
+the operator made the gate on demand the same day: new design, UI review, or when asked), `investigating-bugs` and `effective-development`
+(ports), `skill-miner`, `secure-code-audit` and `resilient-data-harvest` (content moved to
+on-demand files), `browsing-web`, `docs-sync`, `autonomous-loops`. 21 ceilings ratcheted down.
+
+Accepted from the integration review without change: dated measurement notes in
+agent-orchestration brief/tracking (no private names); attribution for the grilling port sits
+beside the ported text in operating-contract.md.
+
+Not done: stale vendor facts were flagged, not re-verified (store guidelines and slot sizes,
+WCAG criterion text, Next.js image props, Playwright versions, the toolchain table, scanner
+flags; list in the private results). Wrap drift is not accepted. The global template is edited,
+not applied to any harness. Description edits kept every quoted trigger phrase (checked
+mechanically) but trigger rates were not measured. Usage covers about ten days on one machine.
+`harness.py` still writes `~/.claude/...` and ignores `CLAUDE_CONFIG_DIR` (backup scripts now honor
+it); harmless where the account directory links back to `~/.claude`, as it does here.
+
 ## Maintenance bar
 
 Keep a skill only when it changes a decision the base agent would otherwise get wrong and

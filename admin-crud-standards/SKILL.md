@@ -37,29 +37,23 @@ These are the recurring gaps that turn a "finished" management UI into a pile of
 - Uploads of different data types get separate, labeled entry points near the data they belong to (admin data in admin, operator data in operator pages).
 - Must handle large files (hundreds of thousands of rows): stream/queue, progress feedback, no timeouts.
 
+Bulk deletes, uploads and connector actions require the active org/tenant: see [tenant-scope-integrity](../tenant-scope-integrity/SKILL.md). UI changes still run the [frontend-design](../frontend-design/SKILL.md) loop.
+
 ## Reachability
 Every feature must be reachable by clicking from a menu — if it exists only as a URL or API, it doesn't exist. New admin pages get menu entries, gated to the right roles.
 
 ## Operational actions belong in the admin UI, not in a growing pile of scripts
-Choose an admin screen for recurring operations only when operators need self-service and its access controls can be maintained. A documented, audited CLI may be the right interface for rare or privileged operations.
-- **Self-service parameters.** The screen exposes what the script took as argv: which org/tenant, which connector/data type, which period (from → to). "Re-run the whole thing" is not an option, it is a fallback.
-- **One command for environment-level ops.** Deploying or bringing the stack up must be a single documented command, and migrations follow the project’s release procedure with locking, compatibility checks, and recovery. Do not introduce automatic production migrations merely for convenience. An operation that requires an admin to inspect each record by hand has not been automated, it has been moved.
-- **Configuration lives in the product, not in files.** Anything a tenant/customer sets (credentials, connector config, thresholds) belongs in a form with a **Test connection** button and a save — not in `.env`, which cannot scale past one customer and cannot be edited by the person who owns the value.
+- **Self-service parameters.** Expose what the script took as argv (org/tenant, connector, period from-to); "re-run everything" is a fallback.
+- **Tenant config lives in the product** (form + **Test connection**), not in `.env`.
 - **Long jobs are jobs**: queued, with visible status, progress, and history — not a request that hangs. Failures name the failing unit and are re-runnable for that unit alone.
+- **Production migrations follow the release procedure** (locking, compatibility, recovery), never automatic for convenience; an operation needing a person to inspect each record was moved, not automated.
 - **Dry-run / preview before commit** for anything that writes at scale, and an audit trail of who ran what with which parameters.
 - Health/status pages must reflect reality: a connector shown green must have actually succeeded recently, and a stored error is rendered as human copy, never a raw stack trace or validation dump.
 
 ## Implementation patterns (modern stack)
 - **Tables/grids**: use a headless data-grid (e.g. TanStack Table, using the project’s installed version and current official docs) so sorting/filtering/column-visibility/row-selection are state you control, not bespoke per page. One shared table component site-wide (see consistency rule above).
-- **Large datasets**: server-side pagination/sort/filter for the source of truth; **virtualize** rendered rows (TanStack Virtual / react-window) — never put 10k+ DOM rows on screen. For the big-file uploads above, stream/queue server-side and show progress; the preview table virtualizes too.
-- **Pickers**: combobox/tree built on an accessible primitive (Radix, React Aria, shadcn/ui) — verify the resulting keyboard behavior and ARIA; primitives do not guarantee accessibility.
-
-## Fleet orchestration for admin suites
-For independent screen work, use [agent-orchestration](../agent-orchestration/SKILL.md).
-The harness lead defines the shared contracts (table component, pagination, filter
-semantics) and verifies the combined result; scoped implementers build individual
-screens. Role-to-model assignment lives only in
-[agent-orchestration/sections/routing.md](../agent-orchestration/sections/routing.md).
+- **Large datasets**: server-side pagination/sort/filter is the source of truth; virtualize rendered rows (10k+ DOM rows never), including the upload preview table.
+- **Pickers** on an accessible primitive (Radix, React Aria, shadcn/ui): verify keyboard behavior and ARIA; primitives do not guarantee accessibility.
 
 ## Accessibility floor (non-negotiable, every management screen)
 `a11y-audit` owns the checklist and is the gate: run it before calling any management

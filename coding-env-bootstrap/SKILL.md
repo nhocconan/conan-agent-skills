@@ -24,7 +24,7 @@ first, then re-issue the instruction.
 | File | Purpose |
 | --- | --- |
 | `BOOTSTRAP.md` | The agent-executable install + verification runbook. This is the artifact. |
-| `AUDIT.md` | Findings from the source-machine scan and what to change — read before trusting the current config as ideal. |
+| `AUDIT.md` | Dated incident log of the source-machine scan. Not required: `BOOTSTRAP.md` encodes its decisions. Open only to learn why. |
 | `harness.py` | Idempotent `audit` / `apply` / `verify` entry point for Claude, Codex, or both. |
 | `PROJECT-RULES.md` | Single-source project rules, native adapters, and drift checks. |
 | `templates/` | Secret-free Claude settings, Codex production profile, and shared global quality bar. |
@@ -33,11 +33,9 @@ first, then re-issue the instruction.
 ## Ground rules
 
 - A setup question or audit stays read-only. Install/apply only within an authorized
-  setup or upgrade. Review downloaded installers and resolved versions; moving
-  branches and `@latest` do not provide reproducibility. Use an approved pinned
+  setup or upgrade. Download installers, read, then run (never pipe `curl` into a shell); review resolved
+  versions; branches and `@latest` are not reproducible. Use an approved pinned
   toolchain on controlled hosts; `CONAN_AGENT_ENSURE=0` disables automatic network installs.
-
-
 - **This repo is public.** No API keys, tokens, account identifiers, internal hostnames,
   or employer project names in `BOOTSTRAP.md` or `AUDIT.md`. Secrets are named and
   sourced, never printed.

@@ -53,9 +53,9 @@ an edit cue. Judge by information density first: can each sentence be pointed at
 fact? Vietnamese phrase lists are practitioner observation, not research — house
 style, never evidence of authorship.
 
-**Process stamps (owner rule).** Reader copy carries no trace of the checking workflow: no "kiểm 28/09/2026" / "checked Sep 28, 2026" stamps, no "(quan sát thực tế)" or "(weak sign)" labels, no source lines that list everything consulted, no caveat repeated in every table row. Keep a date only when the date is the fact. Cite only the sources the reader can open that carry the claim.
+**Process stamps (owner rule).** Reader copy carries no trace of the checking workflow: no "kiểm 28/09/2026" / "checked Sep 28, 2026" stamps, no "(quan sát thực tế)" or "(weak sign)" labels, no source lines that list everything consulted, no caveat repeated in every table row. Keep a date only when the date is the fact. Verification records (commit, paths, screens read) go in the change record, not the doc; see `docs-sync` step 0. Cite only the sources the reader can open that carry the claim.
 
-Sign catalogue with verbatim quotes, source status, the Vietnamese phrase lists and which signs are fading: `references/sources.md`. Read it before teaching or auditing slop. Mechanical checks in `interactive-course-builder/scripts/validate_course.py` (if that skill is present) are house heuristics, not proof.
+Sign catalogue with verbatim quotes, source status, the Vietnamese phrase lists and which signs are fading: `references/sources.md`. Read the relevant section only when you need a verbatim example or source; do not load it for a normal review. Mechanical checks in `interactive-course-builder/scripts/validate_course.py` (if that skill is present) are house heuristics, not proof.
 
 For Vietnamese, proofread diacritics and natural phrasing. Use the audience's
 established technical vocabulary; do not impose one translation on every context.

@@ -115,7 +115,6 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | --- | --- |
 | `senior-operator` | Hard or ambiguous task. Read **before** acting |
 | `agent-orchestration` | Lead của harness đang chạy lập kế hoạch, phân việc độc lập cho worker, kiểm tra evidence và chịu trách nhiệm chất lượng cuối cùng |
-| `delegate-run` | Giao việc đến kết quả đã kiểm chứng; giữ quyền đã cấp, lưu trạng thái, dùng worker khi phù hợp, lead của harness chịu trách nhiệm cuối cùng |
 | `investigating-bugs` | Something is broken — reproduce before editing |
 | `effective-development` | Which checks prove the changed behavior: affected feedback per batch, required gates at their declared stage, valid evidence reuse; "đừng chạy full test", "test cái liên quan thôi" |
 | `shipping-changes` | Commit + push (repository branch/review policy, your identity, hooks must pass) |
@@ -148,18 +147,24 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | `coding-env-bootstrap` | Set up a new or production machine |
 | `agent-session-backup` | Back up / restore session history |
 
-The rest (17 entries in `loadout.txt`) are third-party kept as-is, among them `context7`
-(live library docs — genuinely useful), `playwright-skill` (writing reusable test
-scripts), `graphify`, `spec`. They exist only on machines where they were installed;
-a fresh clone skips them.
+### Third-party (reviewed 2026-11-05)
+| Tool | Kind | Use when |
+| --- | --- | --- |
+| `vercel-react-best-practices` | skill, `~/.shared-ai-skills/` (vercel-labs/agent-skills @1a2c79d, pin in `SOURCE.txt`) | Viết/review component, data fetching, bundle React/Next.js; `web-perf-audit` đo kết quả |
+| `context7` | MCP (`harness.py --with-mcp`) | Cần docs hiện hành của một thư viện thay vì trí nhớ của model |
+| OpenAI docs | MCP cho Codex (`harness.py --with-mcp`) | Tra API/model OpenAI |
+
+16 tên third-party cũ đã gỡ khỏi `loadout.txt` (lý do ghi ở cuối file đó). Máy mới:
+copy lại theo `SOURCE.txt`, rồi `refsync.py loadout --apply`.
 
 **Design stack** (2026-11-03): mọi thay đổi UI người dùng nhìn thấy đi qua một cửa là
 `frontend-design` (conan): grounding vào DESIGN.md và token → plan → build → screenshot
 1440/390 light+dark → một reader khác chấm theo rubric của `design-qa` → sửa → báo cáo
 before/after. `impeccable` (upstream, trong `keep.txt`) được gọi theo tên lệnh từ vòng đó
 (`critique`, `polish`, `layout`, `typeset`, `clarify`, `adapt`, `harden`, `document`);
-hook detector của nó chỉ quét source. Plugin `frontend-design` của Anthropic giữ phần gu
-cho trang marketing. Bản `~/.shared-ai-skills/frontend-design` đã gỡ từ 2026-09-05.
+hook detector của nó chỉ quét source. Taste gate T1-T9 (taste-skill 2.5.0, vendored trong
+`frontend-design/upstream/`) chỉ chạy khi thiết kế mới/redesign, review UI, hoặc khi được yêu cầu. Plugin `frontend-design` của
+Anthropic chỉ cho gu trang marketing. Bản `~/.shared-ai-skills/frontend-design` đã gỡ từ 2026-09-05.
 
 ---
 
@@ -179,7 +184,7 @@ việc đã có tiêu chí và không bao giờ tự accept. Không thay lead gi
 báo final review là pending thay vì tự duyệt. Việc nhỏ hoặc tuần tự lead làm trực tiếp.
 Bảng model ID, giá, ngày retirement và harness mechanics chỉ nằm ở một chỗ:
 [routing](agent-orchestration/sections/routing.md).
-Kết quả rà soát 32 skills ngày 2026-10-02: [SKILL-AUDIT.md](SKILL-AUDIT.md).
+Kết quả rà soát mới nhất (2026-11-05, 33 skills): [SKILL-AUDIT.md](SKILL-AUDIT.md).
 
 ---
 

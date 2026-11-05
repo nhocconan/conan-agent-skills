@@ -1,6 +1,6 @@
 ---
 name: resilient-data-harvest
-description: Build data-collection runs that survive contact with reality — browser scraping, paged API pulls, and system-to-system migrations. Covers rate-limit-aware pacing and challenge handling, write-as-you-go checkpointing so a dropped connection costs one item not the whole run, resume-from-partial, endpoint/schema drift detection, data-quality gates before ingest, and the rule that the harvester script or skill gets updated the moment reality changes. Use when scraping a logged-in site, pulling a paginated API, backfilling or re-syncing a connector, migrating tickets/records between systems, when a re-sync must not clobber a manual correction, or when the user says "lấy data", "scrape", "crawl", "backfill", "bị block", "CloudFlare", "chạy lại từ đầu".
+description: Resumable data collection — browser scraping, paged API pulls, backfills and system-to-system migrations — per-item checkpoints, pacing and challenge handling, resume-from-partial, drift detection, quality gate before ingest, harvester updated when reality changes. Use when scraping a logged-in site, pulling a paginated API, backfilling or re-syncing a connector, migrating tickets/records between systems, when a re-sync must not clobber a manual correction, or when the user says "lấy data", "scrape", "crawl", "backfill", "bị block", "CloudFlare", "chạy lại từ đầu".
 ---
 
 # Resilient Data Harvest
@@ -20,7 +20,7 @@ ticket — whatever the unit is. Then keep a manifest of what is done.
 
 ## 2. Respect source limits
 
-Use authorized sources and respect published access terms and rate limits. Prefer a supported export/API when available.
+Use authorized sources; prefer a supported export/API.
 
 - **Pace deliberately** and state the pacing in the run log so it can be checked. If the
   plan says 4–8s per page, the log must show 4–8s per page — a claimed pace that the
@@ -31,20 +31,12 @@ Use authorized sources and respect published access terms and rate limits. Prefe
 - Honor `Retry-After`; jitter retries to avoid synchronized retry bursts, not to evade detection.
 - **Back off on the first warning sign** (429, a challenge page, a sudden empty result),
   don't push through it.
-- Optimize within the source limits; throughput is useful only while access and data
-  quality remain intact.
 
 ## 3. Use the real session
 
-For a logged-in source, drive the operator's already-authenticated browser rather than
-re-implementing auth or re-solving login.
-
-The two standing rules for driving that session — state the profile/session requirement
-up front, and don't halt to re-ask for a session the operator has already said is open —
-are owned by `browsing-web` (**"Standing rules"**). Follow them from there; they are not
-restated here.
-
-When a CAPTCHA or access challenge appears, preserve progress and let the user complete it manually. Do not bypass access controls.
+Logged-in source: drive the operator's authenticated browser; session rules live in
+`browsing-web` (**"Standing rules"**). On a CAPTCHA or access challenge, save progress and
+hand it to the user; never bypass.
 
 ## 4. Detect drift, don't paper over it
 
@@ -87,44 +79,12 @@ Every harvester ships with:
 - a **reset + reload** command, so a bad pull can be redone without hand-surgery;
 - a note of the last-verified date and the last-known-good response shape.
 
-## 7. Migrations: preserve, don't recreate
+## Migration and sync
 
-Moving records between systems (tickets, users, content) has extra invariants:
-
-- **Preserve identity and history** — original author, original timestamps, the original
-  id recorded on the target record for traceability.
-- **Timestamps the target overwrites** (a modified-at column the platform always stamps) need an
-  explicit post-pass to restore. Expect this; check it rather than assume it.
-- **Suppress notifications.** A migration that emails thousands of users is unrecoverable.
-  Disable notification on every write, verify on one record before the bulk run.
-- **Dry-run into a scratch instance first**, diff against the source, then run for real.
-- When the operator can grant DB access, **prefer generating a reviewable script over
-  performing hidden writes** — reversibility beats speed.
-
-## 8. A second sync must not clobber a human edit
-
-The moment a record can be written by both a sync and a person, precedence is a design
-decision — and if it is not made explicitly, the next re-sync makes it for you by
-overwriting the correction someone was asked to make.
-
-- **Record provenance on every row, from the first writer.** A column saying which path
-  produced this value (`source`/`transport`: automated sync, manual edit, import,
-  backfill) plus when. Add it before the second writer exists, and stamp it in *every*
-  writer — a one-off script that leaves it NULL makes its rows indistinguishable from
-  pre-column history, permanently.
-- **State the precedence rule and enforce it in the writer.** Usually: a human edit wins
-  until the upstream value changes again, or wins outright. Either is defensible; silence
-  is not. Full re-syncs and reprocessing runs obey the same rule as incremental ones —
-  "resync" is where this breaks.
-- **Make the sync's write conditional, not wholesale.** Update only fields the sync owns,
-  and only when the row is not human-owned; never `DELETE`-then-`INSERT` a table that
-  carries human edits.
-- **Show the origin in the UI** where the value can be edited, so the operator knows
-  whether what they are looking at will survive the night.
+Moving records between systems, or a sync that can overwrite human edits (provenance
+column, precedence rule): read `MIGRATION.md`.
 
 ## Companions
 
 `agent-orchestration` — the plan-file/resume discipline this shares: see
 `agent-orchestration/sections/tracking.md`, its **"Track and resume"** section.
-`metric-integrity` — what happens downstream if harvested numbers are wrong.
-`demo-data-craft` — when the requirement is fabricated data, not harvested data.

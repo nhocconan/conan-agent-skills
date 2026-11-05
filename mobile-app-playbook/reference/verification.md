@@ -35,7 +35,7 @@ launch the real app (emulator/simulator), traverse the changed journey, screensh
 Where simulator input automation is unavailable (common on iOS: no idb, no Accessibility
 permission), build a **debug-only capture harness** into the app: launch args select a
 screen, skip tutorials/prompts, autopilot gameplay. It pays for itself the first week
-— and it must be compiled out of release builds (§6 debug-hook rule).
+— and it must be compiled out of release builds (`appstore-review-guard` 2.3.1 debug-hook item).
 
 ### 5.4 Bot-verify game difficulty (genre-specific but generalizes)
 

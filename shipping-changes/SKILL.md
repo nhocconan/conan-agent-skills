@@ -44,15 +44,14 @@ steps; report missing authority without re-asking for existing authority.
    they do not replace required merge or deploy checks.
 3. Review the diff hunk by hunk. Delegation moves the typing, not the accountability.
 4. For the mechanics beyond this point (version bump, changelog, commit message
-   composition, push), read `../.vendor/gstack/ship/SKILL.md` — specifically its
-   **"Section index — Read each section when its situation applies"** and
-   **"Completeness Principle — Boil the Ocean"** sections — then read the on-demand
-   section that index names for the step you are on — they live under
-   `../.vendor/gstack/ship/sections/` (changelog wording in `changelog.md`,
-   PR body in `pr-body.md`, Apple release steps in `apple-release.md`) — `refsync.py ensure`
-   fetches every section the upstream index references — and follow it with the house
-   rules above applied. A section the index names but `.vendor/` lacks is reported, not
-   improvised.
+   composition, push), read `../.vendor/gstack/ship/SKILL.md` — its
+   **"Section index — Read each section when its situation applies"** — then read only the
+   sections that index names for the step you are on (all under
+   `../.vendor/gstack/ship/sections/`; `refsync.py ensure` fetches them) and follow them
+   with the house rules above applied. Upstream's flow aborts on the base branch and opens
+   a PR; rule 1 decides whether that applies. Finish what the request covers: no partial
+   or deferred work without saying so. A section the index names but `.vendor/` lacks is
+   reported, not improvised.
 5. Verify the authorized outcome: inspect the local diff/status for a handoff; check
    commit identity after committing, remote revision after pushing, or deployed build
    and user journey after deployment. Preserve unrelated uncommitted work.

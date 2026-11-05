@@ -9,7 +9,7 @@ reviewed: 2026-10-02
 
 # Provenance
 
-Wraps gstack's `browse` (457 lines on 2026-10-02, binary-backed).
+Wraps gstack's `browse` (470 lines on 2026-11-05, binary-backed).
 Upstream markdown is fetched into `.vendor/gstack/` by `refsync.py ensure` (gitignored,
 files only, never a gstack install); the skill reads it by path, so its bulk loads only
 when the skill actually fires.

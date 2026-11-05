@@ -5,12 +5,6 @@ description: Honesty checklist for quantitative strategy research — backtests,
 
 # Backtest Integrity
 
-Every celebrated backtest number deserves the null hypothesis: **it's a bug.** The failure
-mode this exists for: two quiet bugs (a wrong annualization factor plus a look-ahead
-feature) inflate every headline metric and survive review because the equity curve looks
-plausible — a headline Sharpe that falls below 1.0 once both bugs are fixed. Only the checks
-below catch that; a second opinion on the idea does not.
-
 ## The prime heuristic
 
 **When a result looks great — Sharpe > 1.5, MaxDD < 5%, smooth equity — suspect a bug FIRST,**
@@ -30,14 +24,11 @@ survive this whole checklist and reproduce from a clean re-run.
 3. **Point-in-time everywhere**: fundamentals as-published (with reporting lag), universe
    membership as-of-date, prices unadjusted for information not yet known. Any join on
    "current" attributes (today's sector, today's shares outstanding) is quiet look-ahead.
-4. **Survivorship**: a current-listings universe biases results — but don't just *assert*
-   doom either way: **test it empirically** by adding real delisted/blown-up names and
-   re-running WITH vs WITHOUT. Include delisting returns and point-in-time membership;
-   a stop-loss does not guarantee executable exits or remove survivorship bias.
-   Delisted names auto-exclude from LIVE signals; they exist for honest history only.
-5. **Costs & capacity**: realistic fees + slippage per market; position sizes capped by
-   liquidity (e.g. % of ADTV); no fills at prices the size couldn't get. An edge that dies
-   at 40bps round-trip was never an edge.
+4. **Survivorship**: test it empirically: add delisted/blown-up names and re-run WITH vs
+   WITHOUT, using point-in-time membership and delisting returns. A stop-loss does not
+   guarantee executable exits. Delisted names auto-exclude from LIVE signals.
+5. **Costs & capacity**: fees + slippage per market; size capped by liquidity (e.g. % of
+   ADTV). An edge that dies at 40bps round-trip was never an edge.
 6. **Silent data degradation**: verify the data layer actually loaded (a data package
    silently missing degrades to empty frames with no error; a mis-parameterized API call can
    masquerade as "fundamentals are broken"). Add a `doctor`/probe command and run it before
@@ -60,7 +51,7 @@ survive this whole checklist and reproduce from a clean re-run.
 - Parameter sweeps: report the neighborhood, not the peak. A config whose CAGR swings widely
   across nearby params is overfit noise.
 
-## Provenance ("không bịa" — every published number is auditable)
+## Provenance (every published number is auditable)
 
 Every backtest result surfaced to a UI/report carries: config hash, data-store fingerprint/
 version, code version, run date, and the full-span ledger (no truncated last-N-rows chart
@@ -69,10 +60,9 @@ is a draft, not a result.
 
 ## Promotion gate (before live money)
 
-Full checklist above clean + costs-on OOS edge still positive + risk controls tested (stop
-behavior, regime brake, max drawdown budget) + paper/canary period defined + a written
-decision-log entry (what was promoted, why, what would falsify it). Record negative results
-too — "no edge found" findings prevent re-running the same dead end next quarter.
+Checklist clean and costs-on OOS edge positive, plus: risk controls tested (stop behavior,
+regime brake, max drawdown budget), paper/canary period defined, decision-log entry (what
+was promoted, why, what would falsify it). Record negative results too.
 
 ## Output
 

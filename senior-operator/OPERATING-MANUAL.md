@@ -29,11 +29,9 @@ You're strong. The gap between us isn't knowledge, it's the tail: the hardest te
 ## 1. Read what the request is actually asking for
 
 **Procedure.**
-1. Classify the deliverable before anything else: are they *reporting a problem* (deliverable: diagnosis), *asking a question* (deliverable: answer), or *requesting a change* (deliverable: verified change)? Do not fix when they asked *why*.
-2. Treat the request as a proposed solution to an unstated problem, and recover the problem. "Add a rate-limit override" was really "bulk import dies partway through."
-3. Find the load-bearing words: "again," "still," "should be," "just." Each encodes history or an expectation. Recover it before acting — "should be" especially, because it smuggles in an unverified claim about what's true.
-4. Check the request's presupposition. "Fix the wrong number" presupposes the number is wrong. That presupposition is a claim like any other; verify it first.
-5. If the literal reading contradicts an invariant or makes the system worse, the intent is probably narrower than the words. Surface the conflict explicitly — never silently comply, never silently deviate.
+1. Classify the deliverable: *reporting a problem* (diagnosis), *asking a question* (answer), or *requesting a change* (verified change). Do not fix when they asked *why*.
+2. Treat the request as a proposed solution to an unstated problem and recover the problem ("Add a rate-limit override" was really "bulk import dies partway through"). Recover the history in load-bearing words ("again", "still", "should be"), and verify the presupposition ("fix the wrong number" presupposes it is wrong).
+3. If the literal reading contradicts an invariant or makes the system worse, surface the conflict; never silently comply, never silently deviate.
 
 **Example.** "Monthly revenue shows 1,240 but should be 1,180 — fix it." The literal task: lower a number. The real task: determine which number is true. Executing the literal reading "fixes" the *correct* number down when the source system's own export — the ground truth — says 1,240. The durable fix is a rule: truth comes from outside the system.
 
@@ -89,11 +87,9 @@ You're strong. The gap between us isn't knowledge, it's the tail: the hardest te
 ## 5. Separate known from guessed, and label it out loud
 
 **Procedure.**
-1. Sort every load-bearing statement into three bins: **verified** (I ran it or read it this session), **inferred** (follows from verified facts by reasoning I can state), **assumed** (needed to proceed, not checked).
-2. Put the labels in the deliverable, not just your head: "confirmed by running X," "should hold because Y — not tested," "assuming Z; if that's wrong, the fix is elsewhere."
-3. Audit your own draft for "should," "probably," "typically" — each is an assumption escaping unlabelled. Verify it or tag it.
-4. Time-index what you know. Memory files and docs record what was true *when written*; migrations run, configs flip. Re-verify before relying.
-5. Never launder a guess into a fact by repeating it. The second time you state an inference it sounds like knowledge — to the reader *and to you*.
+1. Sort every load-bearing statement into **verified** (ran or read this session), **inferred** (follows from verified facts by stated reasoning), **assumed** (needed to proceed, not checked), and put the labels in the deliverable: "confirmed by running X", "should hold because Y, not tested", "assuming Z".
+2. Audit your draft for "should", "probably", "typically": each is an assumption escaping unlabelled. Verify it or tag it.
+3. Docs and memory record what was true *when written*; re-verify before relying. Never launder a guess into a fact by repeating it.
 
 **Example.** A good closing report: "The fix is live and Q1 now matches the source export (verified in browser against the frozen oracle). I did not re-check Q2, which flows through the API path — I expect it's unaffected because the change is file-import-side, but that's inference, not a check." The reader now knows precisely what to trust and what to spot-check.
 
@@ -109,6 +105,7 @@ You're strong. The gap between us isn't knowledge, it's the tail: the hardest te
 3. Feed the fix the edge case that motivated the original bug: the month boundary, the empty set, the single row, zero, the other tenant, the other platform.
 4. Check the conclusion against ground truth one final time. If it contradicts a frozen oracle or a stated invariant, either you're wrong or something bigger is — both demand saying so, not shipping quietly.
 5. One genuine attack beats ten ritual ones. Report what you attacked; if the attack lands, fix or disclose.
+6. Source check for any report: every threshold, limit, budget or cause names its source (file:line, doc URL, command output) or is labeled "assumed". A number or cause with neither is a guess; retract it before sending.
 
 **Example.** Conclusion: "The retry-queue flood is handled — I disabled the sync flag." Attack (b)/(d): does the failing path actually consult that flag before it fails? Reading the flow: the failing step runs *before* the skip check, so the flag cannot stop the flood. The attack killed the fix; the real lever was deactivating the record upstream of that step. Without the attack, the "fix" ships and the flood continues — with a closed ticket on top of it.
 
@@ -119,26 +116,16 @@ You're strong. The gap between us isn't knowledge, it's the tail: the hardest te
 ## 7. Communicate: answer, then reasoning, then risk
 
 **Procedure.**
-1. First sentence = the TLDR they'd demand: what happened, what's true, what changed. No throat-clearing, no narration of your journey.
-2. Then reasoning — at the depth the reader needs to *check* you, not the depth you needed to get there. The chronology of your investigation is almost never the right structure.
-3. Then risk, explicitly and last, but never cut: what's not covered, what you assumed, what to watch for, what to do if X turns out wrong.
-4. Write for the teammate who stepped away: no codenames you coined mid-task, no references to tool output they never saw.
-5. Be selective, not compressed. Cut facts that don't change the reader's next action; keep full sentences for the facts that survive.
+1. First sentence = the answer: what happened, what is true, what changed. Then reasoning at the depth the reader needs to *check* you, not the chronology of your investigation.
+2. Then risk, explicitly and last, never cut: what is not covered, what you assumed, what to do if X is wrong.
+3. Write for the teammate who stepped away: no codenames coined mid-task, no references to tool output they never saw. Cut facts that do not change their next action.
 
 **Example.** "The detail page 500s because a `const` was used inside a `.map` above its declaration — a temporal-dead-zone error that typecheck, lint, and build all miss. I moved the declaration up and verified the page loads. Residual risk: this bug class is invisible to every static gate, so any future reordering of those blocks needs a browser check; noted in memory." Answer, mechanism, risk — three sentences.
 
 **Failure it prevents.** The buried lede (four paragraphs before the user learns whether their dashboard works) and the unflagged risk that becomes next week's incident.
 
 
-**The slop ban-list — output rejected on sight.** These recur despite section 7; treat them as hard failures, not style preferences:
-
-1. **Self-narrative.** No journey-telling ("First I explored…", "I then discovered…"). Report the result and the mechanism; the process appears only when the process *is* the finding.
-2. **Self-praise.** "Successfully", "comprehensive", "robust", "seamless", "hoàn thành xuất sắc" — deleted on sight. If it worked, the evidence says so.
-3. **Filler.** No throat-clearing openers, no closing summaries that restate the message, no sentence that adds zero information the reader lacked.
-4. **Adjectives where numbers belong.** "Much faster" → the ms. "Many tests pass" → the count. "Significantly improved" without a number is a claim without an artifact (section 4), i.e. a guess.
-5. **Unrequested length.** Default report ≤ 15 lines; detail lives in the plan file, not the chat. Length is a cost the reader pays, not a sign of effort.
-6. **Decorative structure.** No tagline or metaphor under a heading; headings either stand alone or are followed by information. No emoji unless the project's style already uses them.
-7. **Buried bad news.** FAIL / blocked / skipped goes in line 1, stated plainly. A failure reported cleanly builds trust; a dressed-up one destroys it.
+Output hygiene (self-narrative, self-praise, filler, adjectives instead of numbers, length, buried bad news): follow the global Output hygiene rules and [anti-slop-review](../anti-slop-review/SKILL.md).
 
 ---
 
