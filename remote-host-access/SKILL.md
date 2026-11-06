@@ -1,6 +1,12 @@
 ---
 name: remote-host-access
-description: Diagnose and fix "the port is open but it still won't connect" on any remote host — VPS, cloud VM, container host, home server — by descending one layer at a time instead of guessing, and set up durable agent sessions on those hosts. Use when SSH or any service refuses to connect, when a rule was added and nothing changed, when the user says "không connect được", "mở port rồi mà vẫn lỗi", "ssh timeout", "connection refused", "firewall", "remote server", or when running a long task on a remote box.
+description: >-
+  Use when SSH or any service refuses to connect, when a rule was added and nothing
+  changed, on "không connect được", "mở port rồi mà vẫn lỗi", "ssh timeout",
+  "connection refused", "firewall", "remote server", or when running a long task on a
+  remote box. Fixes "the port is open but it still won't connect" on any remote host
+  (VPS, cloud VM, container host, home server) one layer at a time, and sets up
+  durable agent sessions there.
 ---
 
 # Remote Host Access
@@ -85,17 +91,7 @@ can still help distinguish a service failure from a network policy.
 
 An agent or build that outlives the connection must not be tied to it.
 
-- Run the work inside a detachable multiplexer session (`tmux`/`screen`) with a stable,
-  predictable name, so a dropped link is reattachment rather than a lost run.
-- Wrap the connection in an auto-reconnecting tunnel for links that flap. Set its gate
-  time so a fast initial failure is reported instead of being retried forever.
-- Keep the connection alive at the protocol level (client keepalive intervals) rather than
-  relying on a busy terminal.
-- Make the launcher a small parameterised script kept with the operator's other scripts,
-  taking the host alias and deriving the session name, so the same invocation works for
-  every host and the session name is guessable months later.
-- Nothing about the remote run may depend on the local terminal staying open. Verify by
-  disconnecting deliberately once and reattaching.
+Run it in a named `tmux`/`screen` session behind an auto-reconnecting tunnel; nothing may depend on the local terminal staying open. Verify by disconnecting once and reattaching.
 
 ## Output
 

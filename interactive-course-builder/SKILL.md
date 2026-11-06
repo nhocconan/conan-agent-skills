@@ -1,7 +1,13 @@
 ---
 name: interactive-course-builder
 description: >-
-  House standard for authoring interactive HTML training courses as standalone single-file pages (LMS-embedded or independent): design system, component kit, leveled lessons, quizzes, accessibility, validator. Use when creating, reviewing, redesigning, or unifying the style of ANY interactive/self-paced learning course, lesson, curriculum, or training module rendered as HTML. Trigger on "interactive course", "training course", "make a course", "lesson HTML", "course style", "unify course design", "add takeaways/quizzes/diagrams to a course".
+  Use when creating, reviewing, redesigning, or unifying the style of ANY
+  interactive/self-paced learning course, lesson, curriculum, or training module
+  rendered as HTML — "interactive course", "training course", "make a course", "lesson
+  HTML", "course style", "unify course design", "add takeaways/quizzes/diagrams to a
+  course". House standard for standalone single-file HTML courses (LMS-embedded or
+  independent): design system, component kit, leveled lessons, quizzes, accessibility,
+  validator.
 ---
 
 # Interactive Course Builder — house standard

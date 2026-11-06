@@ -1,9 +1,10 @@
 ---
 name: anti-slop-review
 description: >-
-  Review factual claims, clarity, and unnecessary filler in courses, docs,
-  announcements, UI copy, and marketing text. Use for fact checking, "AI slop",
-  "đừng bịa", or a publication review. Preserve the author's voice and intent.
+  Use for fact checking, "AI slop", "đừng bịa", "không đem lại giá trị cho người đọc",
+  process stamps, negative non-information ("Max N per run"), or a publication review
+  of courses, docs, announcements, UI copy and marketing text. Reviews factual claims,
+  clarity and unnecessary filler; preserves the author's voice and intent.
 ---
 
 # Content review

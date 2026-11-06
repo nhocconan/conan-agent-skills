@@ -65,7 +65,21 @@ CODE_PATH_RE = re.compile(
 WHEN_HINTS = ("use when", "use this", "use for", "use it", "use proactively",
               "trigger", "apply when", "apply proactively", "invoke when", "run before",
               "run after", "when the user", "when working", "when building",
-              "when reviewing", "when creating", "when asked", "before ", "after ")
+              "when reviewing", "when creating", "when asked")
+# Front-load rule: Codex and Claude Code cut descriptions from the end, so the
+# first trigger clause must start early. Warn-only this round.
+TRIGGER_CLAUSES = ("use when", "use for", "use before", "use after", "use this", "use as",
+                   "use instead", "trigger", "run before", "run after", "before every")
+FRONT_LOAD_CHARS = 250
+DESC_WARN_CHARS = 520
+DESC_MAX_CHARS = 1024  # agentskills.io spec
+# Frontmatter allow-list (agentskills.io spec + Claude Code extensions).
+SPEC_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
+CLAUDE_CODE_KEYS = {"when_to_use", "argument-hint", "arguments", "disable-model-invocation",
+                    "user-invocable", "disallowed-tools", "model", "effort", "context", "agent",
+                    "background", "hooks", "paths", "shell"}
+# Directory names whose contents are vendored, not authored here.
+VENDORED_PARTS = {"upstream"}
 FIRST_PERSON = ("i can ", "i will ", "you can use this", "we ")
 
 # --- cross-reference (§) check -------------------------------------------------
@@ -416,6 +430,8 @@ def check_banned_words(skill_dir: Path, banned_terms=BANNED_TERMS):
         except OSError:
             continue
         rel = f.relative_to(skill_dir.resolve())
+        if VENDORED_PARTS & set(rel.parts[:-1]):
+            continue  # vendored upstream text is not authored here
         for lineno, raw_line in enumerate(text.splitlines(), start=1):
             if LINT_ALLOW_MARKER in raw_line:
                 continue
@@ -533,6 +549,16 @@ def check(skill_dir: Path):
             if not isinstance(parsed, dict):
                 errors.append("frontmatter does not parse to a mapping")
 
+    for k in fields:
+        if k in SPEC_KEYS:
+            continue
+        if k in CLAUDE_CODE_KEYS:
+            warns.append(f"Claude-Code-only frontmatter key '{k}' — no-op in Codex/agy, "
+                         "rejected by claude.ai Skills API")
+        else:
+            errors.append(f"unknown frontmatter key '{k}' — not in agentskills.io spec or "
+                          "Claude Code; ignored by every harness (typo?)")
+
     raw_name = fields.get("name", "")
     name = raw_name if isinstance(raw_name, str) else str(raw_name) if raw_name is not None else ""
     if raw_name not in ("", None) and not isinstance(raw_name, str):
@@ -562,13 +588,23 @@ def check(skill_dir: Path):
     if not desc:
         errors.append("missing/empty `description`")
     else:
-        if len(desc) > 1024:
-            errors.append(f"`description` is {len(desc)} chars (max 1024)")
+        if len(desc) > DESC_MAX_CHARS:
+            errors.append(f"`description` is {len(desc)} chars (max {DESC_MAX_CHARS})")
+        elif len(desc) > DESC_WARN_CHARS:
+            warns.append(f"`description` is {len(desc)} chars (>{DESC_WARN_CHARS}) — "
+                         "Codex/Claude cut from the end")
         if XML_RE.search(desc):
             errors.append("`description` contains an XML tag")
         low = desc.lower()
-        if not any(h in low for h in WHEN_HINTS):
+        has_when = any(h in low for h in WHEN_HINTS)
+        if not has_when:
             warns.append("`description` never says WHEN to use it — it is a trigger, not a summary")
+        positions = [low.find(h) for h in TRIGGER_CLAUSES if h in low]
+        if positions and min(positions) > FRONT_LOAD_CHARS:
+            warns.append(f"first trigger clause starts at char {min(positions)} "
+                         f"(>{FRONT_LOAD_CHARS}) — front-load 'Use when…'")
+        elif not positions and has_when:
+            warns.append("no front-loadable trigger clause ('Use when…') in `description`")
         if any(p in low for p in FIRST_PERSON):
             warns.append("`description` is not third person")
         if len(desc) < 60:
@@ -617,8 +653,9 @@ def check(skill_dir: Path):
             except OSError:
                 continue
             sub_lines = len(sub.split("\n"))
+            vendored = bool(VENDORED_PARTS & set(target.relative_to(root).parts[:-1]))
             head = "\n".join(sub.split("\n")[:40]).lower()
-            if sub_lines > 100 and not any(k in head for k in ("## contents", "## table of contents",
+            if not vendored and sub_lines > 100 and not any(k in head for k in ("## contents", "## table of contents",
                                                                "# contents", "toc")):
                 warns.append(f"{target.relative_to(root)} is {sub_lines} lines with no table of contents")
             queue.append((target, sub))

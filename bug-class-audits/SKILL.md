@@ -1,12 +1,12 @@
 ---
 name: bug-class-audits
 description: >-
-  Turns a recurring bug into a permanent, mechanically-enforced rule: fix every site, add a
-  numbered anti-pattern entry, an audit script, and a pre-push/CI gate with a baseline that
-  only shrinks. Use after fixing any bug that could recur, when a bug already diagnosed and
-  fixed once shows up again ("this happened again" / "lại bị nữa" — diagnosis itself belongs
-  to `investigating-bugs`), when a review keeps flagging the same pattern, or when setting
-  up quality enforcement for a project.
+  Use when the same bug keeps coming back or one case was patched repeatedly while the
+  class stayed broken — "lại bị nữa", "sửa tới sửa lui", "còn các trường hợp khác thì
+  sao", "làm cho đúng cả class", "this happened again", "make sure it can never come
+  back", a review flagging the same pattern. Turns it into an enforced rule: fix every
+  site, numbered anti-pattern entry, audit script, pre-push/CI gate with a baseline
+  that only shrinks. Diagnosis belongs to investigating-bugs.
 ---
 
 # Bug-Class Audits

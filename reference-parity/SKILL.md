@@ -1,6 +1,12 @@
 ---
 name: reference-parity
-description: Rebuild something to match an existing artifact — a competitor's dashboard, a vendor deliverable, a legacy screen, a design comp, a report a client already receives — without discovering the missing half at review time. Extract the reference's complete inventory first (every tab, sub-tab, section, state and content type), turn it into a parity checklist that is the deliverable's definition of done, and verify row by row with evidence. Use for any port, migration, replication, redesign-to-match or "make ours like theirs" job, and when the user says "so sánh apple to apple", "giống bên kia", "match the reference", "port màn hình này", "parity", "vẫn thiếu", "vẫn chưa giống".
+description: >-
+  Use for any port, migration, replication or redesign-to-match job — "make ours like
+  theirs", "giống bên kia", "so sánh apple to apple", "match the reference", "port màn
+  hình này", "parity", "vẫn thiếu", "vẫn chưa giống" (competitor dashboard, vendor
+  deliverable, legacy screen, design comp, client report). Extracts the reference's
+  complete inventory first (every tab, sub-tab, section, state, content type), makes
+  it the parity checklist that defines done, verifies row by row with evidence.
 ---
 
 # Reference Parity

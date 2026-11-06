@@ -1,14 +1,13 @@
 ---
 name: mobile-app-playbook
 description: >-
-  Operating playbook for building and shipping an Android + iOS app or game through store
-  submission: quality bar in numbers, architecture seams, game feel, retention,
-  monetization under store policy, verification gates, ASO, LiveOps. Trigger when:
-  building a new mobile app/game, upgrading one to "top of market" quality, planning a
-  mobile release, auditing a mobile app for quality/retention/ASO, or when the user says
+  Use when building a new mobile app/game, upgrading one to "top of market" quality,
+  planning a mobile release, auditing a mobile app for quality/retention/ASO, or on
   "world-class app", "SOTA mobile", "top chart", "lên top chart", "build app chuẩn thế
   giới", "chuẩn bị release app", "làm game mobile", "submit app", "improve retention",
-  "tăng rating", "ASO", "monetization plan".
+  "tăng rating", "ASO", "monetization plan". Playbook for shipping Android + iOS
+  through store submission: quality bar in numbers, architecture seams, retention,
+  monetization, LiveOps.
 ---
 
 # Mobile App Playbook — build through store, top-chart bar
@@ -85,7 +84,7 @@ Mobile-specific facts only:
 ## The pre-ship self-test (run before calling anything "done")
 
 1. **The bar:** which §0 number does this change move, and how will I see it move?
-2. **The gate:** did EVERY §5.2 command run at HEAD, exit-code-checked, by me (not an agent's claim)?
+2. **The gate:** did EVERY §5.2 command run at HEAD, through a runner, exit-code-checked, with the verdict and artifacts read by me (not the builder's claim)?
 3. **The journey:** did I watch the real app do the changed thing on a real device/simulator?
 4. **The money/policy:** if this touches payment, ads, or declarations — did I re-run the §4 matrix and cross-check the consoles?
 5. **The next model:** is what I learned written where the next (possibly weaker) model will find it — spec, checklist, or failure catalog?

@@ -1,32 +1,46 @@
-# Personal Codex load-out — deliberately the SMALLEST of the three.
+# Personal Codex load-out — the full first-party set (2026-11-06).
 #
-# Codex injects the name+description of every discovered skill into the system
-# prompt and caps that block at 2% of the model's context window (~5,440 chars
-# at 272k; 8,000 when the window is unknown). Over the cap it SHORTENS
-# descriptions before it omits skills — and these descriptions carry their
-# trigger phrases at the end, so truncation eats exactly the part that decides
-# whether a skill fires. A trimmed list beats a truncated one.
-#
-# Codex documents the cap as "2% of the model's context window, or 8,000
-# characters when unknown" (learn.chatgpt.com/docs/build-skills, 2026-10-02); the
-# unit of the 2% is not stated, so treat 8,000 chars as the working ceiling.
-# Measured 2026-11-05: these 12 names + descriptions total ~5.6k chars.
-# Everything else is still on disk and reachable by
-# path: read ~/.conan-agent-skills/<name>/SKILL.md and follow it. The load-out
-# governs automatic triggering, not availability.
-#
-# Chosen for what Codex is actually used for here: enterprise BI/multi-tenant
-# work, remote/production hosts, and long delegated runs.
+# Codex caps the skills catalog at skills.max_context_tokens: default 2% of the
+# model's context window, explicit values capped at 10,000 tokens; 8,000 chars
+# only when the window is unknown (learn.chatgpt.com/docs/build-skills, read
+# 2026-11-06). Over budget it shortens descriptions first, then omits skills, so
+# every description starts with its "Use when" trigger clause
+# (skill-miner/validate_skills.py warns when it does not).
+# Checked 2026-11-06 with: codex exec -s read-only "print each skill as NAME | DESCRIPTION
+# verbatim" -> 49 catalog entries, none shortened (34 first-party ≈ 14.5k chars).
+# Claude-only skills (verify: run by Claude Code before commits) stay out.
 
-senior-operator
+a11y-audit
+admin-crud-standards
 agent-orchestration
-metric-integrity
-tenant-scope-integrity
+agent-session-backup
+autonomous-loops
+anti-slop-review
+appstore-review-guard
+backtest-integrity
 bug-class-audits
+coding-env-bootstrap
+demo-data-craft
 dev-env-lifecycle
+docs-sync
+effective-development
+interactive-course-builder
+metric-integrity
+reference-parity
 remote-host-access
 resilient-data-harvest
 secure-code-audit
-docs-sync
-effective-development
+senior-operator
+skill-miner
+store-screenshots
+tenant-scope-integrity
+web-perf-audit
+mobile-app-playbook
+ref-skills
+browsing-web
+shipping-changes
+investigating-bugs
+web-qa
+design-qa
+frontend-design
 vercel-react-best-practices

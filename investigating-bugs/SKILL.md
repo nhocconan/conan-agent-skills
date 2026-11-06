@@ -1,6 +1,12 @@
 ---
 name: investigating-bugs
-description: Finds the root cause of a defect before changing anything — reproduce it, locate the mechanism, prove the diagnosis, then fix it (recurring classes go to bug-class-audits). Use when something is broken, failing, flaky, slow, or behaving unexpectedly; when the user says "sao lại lỗi", "tại sao", "bị sai rồi", "lại bị nữa", "debug", "investigate", "vẫn chưa được"; or before any fix whose cause is not already proven. Prevents the guess-and-patch loop where a symptom is suppressed and the real fault ships.
+description: >-
+  Use when something is broken, failing, flaky, slow, or behaving unexpectedly; on
+  "sao lại lỗi", "tại sao", "bị sai rồi", "lại bị nữa", "debug", "investigate", "vẫn
+  chưa được"; or before any fix whose cause is not already proven. Finds the root
+  cause before changing anything — reproduce, locate the mechanism, prove the
+  diagnosis, then fix (recurring classes go to bug-class-audits); stops the
+  guess-and-patch loop that suppresses a symptom.
 ---
 
 # Investigating bugs

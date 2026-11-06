@@ -2,9 +2,10 @@
 # agy discovers these through ~/.gemini/config/skills.
 # Skills whose value is a Claude-only harness feature are deliberately absent.
 #
-# Broader than codex-dev on purpose: agy has a much larger context window,
-# so this set (~16.2k chars measured 2026-09-05) fits comfortably where
-# the same set does not fit in Codex's 272k.
+# agy publishes no catalog size cap and rereads skills each turn
+# (antigravity.google/docs/skills/, read 2026-11-06). Measured 2026-11-06:
+# 26 skills ≈ 13.2k chars. Symlink discovery is not documented by Google;
+# if agy stops listing these, copy instead of link.
 
 a11y-audit
 admin-crud-standards

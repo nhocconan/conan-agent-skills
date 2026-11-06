@@ -1,6 +1,13 @@
 ---
 name: frontend-design
-description: Mandatory loop for ANY change a user will see in a web UI - a new or restructured page, component, layout, form, table, dialog, empty state, header, top bar, nav, sidebar, menu, panel, launcher, icon, theme or spacing tweak, help or docs page, landing page, redesign. Use before editing markup, .tsx/.jsx/.vue or CSS that renders, including "small" chrome changes ("thêm nút", "sửa header", "đổi icon", "làm trang mới", "sửa giao diện", "chỉnh layout", "làm lại top bar", "trang help", "UI/UX", "đẹp hơn", "nhìn xấu quá làm lại", "landing page", "dashboard layout").
+description: >-
+  Use when editing markup, .tsx/.jsx/.vue or CSS that renders — any change a user will
+  see in a web UI, including "small" chrome changes ("thêm nút", "sửa header", "đổi
+  icon", "làm trang mới", "sửa giao diện", "chỉnh layout", "làm lại top bar", "trang
+  help", "UI/UX", "đẹp hơn", "nhìn xấu quá làm lại", "landing page", "dashboard
+  layout"). Mandatory loop for any new or restructured page, component, form, table,
+  dialog, empty state, header, nav, sidebar, menu, panel, icon, theme, help/docs page,
+  redesign.
 ---
 
 # Frontend design
@@ -45,7 +52,7 @@ upstream style rules. The Anthropic plugin `frontend-design:frontend-design` may
    rubric (plus taste rows T1-T9 when the gate applies) with counts. The builder's own PASS does not count: builders pass their own pages.
 6. **Iterate.** Fix every FAIL, shared component first; re-shoot what changed; up to three rounds,
    then report what is still open and why.
-7. **Report**: plan, before/after paths per viewport and theme, the rubric line with counts, gates
+7. **Report**: plan, before/after paths per viewport and theme (on the deployed build, in the operator's org/role, when delivery includes deploy), the rubric line with counts, gates
    run (`a11y-audit` always for new controls; `web-perf-audit` for motion, media or heavy charts;
    `anti-slop-review` for copy), and what was skipped.
 

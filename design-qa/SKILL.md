@@ -1,6 +1,13 @@
 ---
 name: design-qa
-description: Reviews a rendered UI with a designer's eye and counts what is wrong — spacing and alignment, hierarchy, mixed-size controls and icons, a lone boxed element that reads as an error, ungrouped list panels, walls of text, wrapping, overflow, collisions, dark-mode and phone defects, AI-slop layout — then fixes what it finds. Use as the critique step after any UI change, and when the user says "nhìn xấu", "nhìn stupid", "không hài hoà", "lố", "nhìn như lỗi", "icon nhỏ quá", "rớt hàng", "chữ bị đè", "lệch", "AI slop", "check giao diện", "does this look right", "design review", "design polish", or points at a screenshot of something that renders but looks wrong.
+description: >-
+  Use as the critique step after any UI change, and when the user says "nhìn xấu",
+  "nhìn stupid", "không hài hoà", "lố", "nhìn như lỗi", "icon nhỏ quá", "rớt hàng",
+  "chữ bị đè", "lệch", "AI slop", "check giao diện", "does this look right", "design
+  review", "design polish", or shows a screenshot that looks wrong. Counts defects in
+  a rendered UI with a designer's eye (spacing, alignment, mixed-size controls/icons,
+  a lone boxed element, overflow, collisions, dark-mode/phone issues, AI-slop layout),
+  then fixes them.
 ---
 
 # Design QA

@@ -1,6 +1,13 @@
 ---
 name: metric-integrity
-description: Correctness audit for every number a product displays — KPIs, dashboards, reports, charts, exports. Hunts fabricated values (hardcoded multipliers, fake denominators), formula drift between frontend/backend/recon, filters that don't reach every query, timezone-wrong date bucketing, and locale-inconsistent formatting. Use when building or reviewing any dashboard/report/metric, when numbers differ between pages, when the user says "số liệu sai", "fake number", "the KPI looks wrong", or before demoing a BI surface.
+description: >-
+  Use when any number a product shows may be wrong or invented — KPIs, dashboards,
+  reports, charts, exports, alert thresholds: "số liệu sai", "toàn bịa", "con số này
+  lấy từ đâu", "fake number", "the KPI looks wrong", numbers differ between pages, or
+  before demoing a BI surface. Hunts hardcoded multipliers and fake denominators,
+  formula drift between frontend/backend/recon, filters that miss a query,
+  timezone-wrong date bucketing, locale-inconsistent formatting; every threshold names
+  its source.
 ---
 
 # Metric Integrity
@@ -9,7 +16,7 @@ Check each class below when a surface renders numbers.
 
 ## 1. Never fabricate (the cardinal rule)
 
-- **No hardcoded fractional multipliers on money columns.** `cost = revenue * 0.35`,
+- **No hardcoded fractional multipliers on money columns, and no unsourced alert or target thresholds.** `cost = revenue * 0.35`,
   `target = actual * 1.06` — unless the coefficient comes from a real, citable source
   (config table, budget plan, documented formula), it is fabrication. Grep any router/
   procedure for `* 0.` and `* 1.` against money variables; each hit needs a source or

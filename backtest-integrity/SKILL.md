@@ -1,6 +1,12 @@
 ---
 name: backtest-integrity
-description: Honesty checklist for quantitative strategy research — backtests, factor studies, trading-system evaluation in any market (stocks, crypto, futures). Catches the bugs that inflate results (wrong annualization, look-ahead via truncated features, survivorship, ignored costs), enforces out-of-sample discipline (walk-forward, champion/challenger, decay monitoring) and auditable provenance. Use when writing or reviewing any backtest, when a result looks great (high Sharpe, tiny drawdown), before promoting a strategy to production/live money, or when the user says "backtest", "Sharpe", "CAGR", "edge", "chiến lược".
+description: >-
+  Use when writing or reviewing any backtest, factor study or trading-system
+  evaluation, when a result looks too good (high Sharpe, tiny drawdown), before going
+  live, or on "backtest", "Sharpe", "CAGR", "edge", "chiến lược". Catches
+  result-inflating bugs — wrong annualization, look-ahead, survivorship, ignored costs
+  — and enforces out-of-sample discipline (walk-forward, champion/challenger, decay
+  monitoring) with auditable provenance.
 ---
 
 # Backtest Integrity

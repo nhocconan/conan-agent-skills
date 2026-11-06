@@ -91,3 +91,4 @@ vercel-react-best-practices
 #   intent-layer, graphify: install hooks/global config and overlap AGENTS.md rules.
 #   interview-spec, spec, spec-task-breakdown, app-creator: no findable upstream;
 #     intake questions now live in agent-orchestration (operating-contract.md).
+verify

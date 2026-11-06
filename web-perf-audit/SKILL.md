@@ -1,6 +1,12 @@
 ---
 name: web-perf-audit
-description: Framework-agnostic runtime performance audit against Core Web Vitals — LCP, INP, CLS — plus bundle, network, and rendering bottlenecks. Use when the user reports a slow page/app, says "performance", "Core Web Vitals", "Lighthouse", "it feels janky/laggy", before shipping a user-facing release, or when a data-heavy page renders large lists/charts. Complements optional vercel-react-best-practices (source-level React/Next rules).
+description: >-
+  Use when the user reports a slow page/app, says "performance", "Core Web Vitals",
+  "Lighthouse", "it feels janky/laggy", before shipping a user-facing release, or when
+  a data-heavy page renders large lists/charts. Framework-agnostic runtime audit
+  against Core Web Vitals — LCP, INP, CLS — plus bundle, network and rendering
+  bottlenecks. Complements optional vercel-react-best-practices (source-level
+  React/Next rules).
 ---
 
 # Web Performance Audit (Core Web Vitals)
@@ -23,24 +29,7 @@ snapshot does not establish a field pass. See [Web Vitals](https://web.dev/artic
 3. **Bundle**: inspect what ships (`@next/bundle-analyzer`, `vite-bundle-visualizer`, or `npx source-map-explorer`). Hunt large/duplicate deps (moment, lodash whole-import, two date libs, untree-shaken icon sets).
 4. **Field data** if available (Chrome UX Report / RUM) — lab and field disagree; field is truth.
 
-## Fix playbook (by metric)
-
-### LCP too high
-- Identify the LCP element. If an image: serve modern formats (AVIF/WebP), correct dimensions, `fetchpriority=high` (Next.js 16+: `<Image fetchPriority="high">`; its `priority` prop is deprecated in favor of `preload`, docs 2026-08-25), preload only when needed; lazy-load everything below the fold.
-- Cut render-blocking CSS/JS; inline critical CSS; defer non-critical scripts.
-- Slow TTFB → cache/CDN, move work server-side, stream HTML, avoid waterfalls of sequential data fetches.
-- Self-host or `preconnect` fonts; `font-display: swap`; subset fonts.
-
-### INP too high (interaction lag — common on data dashboards)
-- Break up long tasks; `yield` to the main thread; move heavy compute to a Web Worker.
-- Virtualize long lists/tables (TanStack Virtual / react-window) — never render 10k DOM rows.
-- Memoize expensive renders; debounce filter/search; avoid re-rendering every chart on one filter change.
-- Ship less JS: code-split routes, dynamic-import heavy widgets (charts, editors, maps), drop unused polyfills.
-
-### CLS too high
-- Reserve space for images/embeds/ads with explicit width/height or aspect-ratio.
-- Don't inject content above existing content after load; reserve space for async/skeleton states.
-- Preload fonts to avoid FOIT/FOUT reflow.
+Fix by metric only after the trace names the bottleneck. Next.js 16+: `<Image fetchPriority="high">`; its `priority` prop is deprecated in favor of `preload` (docs 2026-08-25).
 
 ## Data-heavy app checklist (fits dashboard/BI work)
 - Paginate or virtualize big tables; don't ship 100k rows to the client.

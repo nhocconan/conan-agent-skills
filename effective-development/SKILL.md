@@ -136,12 +136,8 @@ component tests, conductor): [SHARED-HOST.md](SHARED-HOST.md).
 
 ## Keep verification bounded
 
-Run independent read-only checks concurrently only within host capacity. Isolate DBs,
-ports and output paths or serialize stateful checks (`dev-env-lifecycle`). For a long
-check record the process handle, log path, last progress and next review point; quiet
-output alone is not a hang. An unfinished check is incomplete, never passed, and no
-budget justifies weakened assertions or a skipped required gate. Stall, termination and
-cleanup rules: [tracking](../agent-orchestration/sections/tracking.md).
+An unfinished check is incomplete, never passed, and no budget justifies weakened
+assertions or a skipped required gate.
 
 Staff runs per [routing](../agent-orchestration/sections/routing.md#work-nature--tier).
 

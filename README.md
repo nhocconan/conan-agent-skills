@@ -19,15 +19,17 @@ final quality; workers implement scoped work and never grant final acceptance.**
 not substituted across harnesses. Per-harness tables, model IDs, pricing, retirement dates
 and harness mechanics live in [model routing](agent-orchestration/sections/routing.md),
 OpenAI and Anthropic rows re-verified 2026-09-30, Gemini/agy rows 2026-10-14.
-See [the audit](SKILL-AUDIT.md) (latest section 2026-11-05, 33 skills) for findings and validation limits.
+See [the audit](SKILL-AUDIT.md) (latest section 2026-11-06, 34 skills) for findings and validation limits.
 
 Project rules use one source: `AGENTS.md`, with native Claude/Gemini import adapters.
 See [the shared-rule convention](coding-env-bootstrap/PROJECT-RULES.md) for safe
 migration and drift checks; never save shared rules independently per platform.
 
-Keep the active set small on purpose: Codex caps the injected skill list at 2% of the
-context window (8,000 characters when it cannot tell), shortening descriptions and then
-dropping skills entirely. An over-full directory does not fail loudly — it goes quiet.
+Skill listings are budgeted. Claude Code gives them 1% of the context window and drops
+the descriptions of the least-used skills first; Codex caps them at `skills.max_context_tokens`
+(2% of the window, at most 10,000 tokens) and shortens descriptions before dropping skills.
+An over-full listing does not fail loudly — it goes quiet. Descriptions therefore open with
+their trigger clause, and skills invoked only by name are set to `name-only` in Claude.
 
 **[MANUAL.md](MANUAL.md) — start here** (tiếng Việt): what's here, what fires when,
 how to upgrade, how to roll back.

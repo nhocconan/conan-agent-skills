@@ -16,5 +16,15 @@
       "Bash(pnpm test:*)",
       "Bash(pnpm lint:*)"
     ]
+  },
+  "skillOverrides": {
+    "agent-session-backup": "name-only",
+    "coding-env-bootstrap": "name-only",
+    "ref-skills": "name-only",
+    "skill-miner": "name-only",
+    "appstore-review-guard": "name-only",
+    "store-screenshots": "name-only",
+    "backtest-integrity": "name-only",
+    "interactive-course-builder": "name-only"
   }
 }

@@ -45,5 +45,11 @@ Validation after relevant changes:
 - `python3 -m unittest discover -s ref-skills/tests -q`
 - `git diff --check`
 
+After editing a frontmatter `description`, also run the trigger eval (needs the `claude`
+CLI and makes about 60 real model calls; Codex has no runner yet) from a small app checkout:
+`python3 skill-miner/trigger_eval.py skill-miner/trigger-set.synthetic.json "$TMPDIR/trig.json" --runs 2 --cwd <repo>`.
+Accept at recall >= 85 % with every negative clean. Descriptions open with their "Use when"
+clause and stay under 520 characters; `validate_skills.py` warns otherwise.
+
 Use isolated temporary fixtures for scripts. A clean validator proves structural
 properties, not skill quality or real-service compatibility; state testing limits.

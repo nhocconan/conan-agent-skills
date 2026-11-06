@@ -1,6 +1,12 @@
 ---
 name: resilient-data-harvest
-description: Resumable data collection — browser scraping, paged API pulls, backfills and system-to-system migrations — per-item checkpoints, pacing and challenge handling, resume-from-partial, drift detection, quality gate before ingest, harvester updated when reality changes. Use when scraping a logged-in site, pulling a paginated API, backfilling or re-syncing a connector, migrating tickets/records between systems, when a re-sync must not clobber a manual correction, or when the user says "lấy data", "scrape", "crawl", "backfill", "bị block", "CloudFlare", "chạy lại từ đầu".
+description: >-
+  Use when scraping a logged-in site, pulling a paginated API, backfilling or
+  re-syncing a connector, migrating tickets/records between systems, when a re-sync
+  must not clobber a manual correction, or on "lấy data", "scrape", "crawl",
+  "backfill", "bị block", "CloudFlare", "chạy lại từ đầu". Resumable collection:
+  per-item checkpoints, pacing and challenge handling, resume-from-partial, drift
+  detection, quality gate before ingest, harvester updated when reality changes.
 ---
 
 # Resilient Data Harvest

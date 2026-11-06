@@ -271,5 +271,28 @@ class OnDemandMeasureTests(unittest.TestCase):
             self.assertIn("added alpha.on_demand:", output)
 
 
+class DescriptionParseTests(unittest.TestCase):
+    FM = "name: a\ndescription: >-\n  Fixture. Use when testing.\n  Triggers: a, b\n"
+
+    def _skill(self, root):
+        sk = root / "a"
+        sk.mkdir()
+        (sk / "SKILL.md").write_text(f"---\n{self.FM}---\nbody\n", encoding="utf-8")
+        return sk
+
+    def test_block_description_with_triggers_line_measures_full_yaml_length(self):
+        import yaml
+        with tempfile.TemporaryDirectory() as raw:
+            sk = self._skill(Path(raw))
+            want = len(" ".join(yaml.safe_load(self.FM)["description"].split()).encode())
+            self.assertEqual(context_budget.measure(sk)["always_on"], want)
+
+    def test_regex_fallback_still_returns_a_description(self):
+        with tempfile.TemporaryDirectory() as raw:
+            sk = self._skill(Path(raw))
+            with patch.object(context_budget, "yaml", None):
+                self.assertGreater(context_budget.measure(sk)["always_on"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()

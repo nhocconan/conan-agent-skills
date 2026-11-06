@@ -1,6 +1,12 @@
 ---
 name: dev-env-lifecycle
-description: Own the full lifecycle of everything a run starts — dev servers, workers, containers, tunnels, ports, temp files, backups. One command brings the stack up, one brings ALL of it down, and nothing survives that the operator did not ask for. Use before starting any local stack, after finishing a task that started one, when handing a machine back, when the user says "stop dev", "stop hết", "start lại", "sao còn process", "port bị chiếm", "máy đầy rác", "cleanup", "teardown", or before any delete of files/volumes/backups. Prevents the residue that makes the next run fail on a port that is already bound.
+description: >-
+  Use when a machine is overloaded or littered by what a run started — "load cao",
+  "giảm tải server", "chỉnh resources", "stop dev", "stop hết", "start lại", "sao còn
+  process", "port bị chiếm", "máy đầy rác", "cleanup", "teardown" — or before deleting
+  files/volumes/backups. Inventories every dev server, worker, container, tunnel, port
+  and temp file a run started; one command up, one brings ALL down; caps concurrent
+  browsers/workers to the operator's share.
 ---
 
 # Dev-Environment Lifecycle

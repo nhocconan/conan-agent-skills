@@ -1,6 +1,12 @@
 ---
 name: web-qa
-description: Tests a running web application for functional defects — broken flows, dead buttons, failing forms, console errors, layout breakage. Default is REPORT-ONLY with reproduction evidence; fixes only when fixing was actually requested. Use when the user says "qa", "test cái này", "test site", "find bugs", "check xem chạy được không", "does this work", "kiểm tra e2e", or says a feature is ready for testing. Runs the app; for reviewing a diff use /code-review, for how it looks use design-qa.
+description: >-
+  Use when the user says "qa", "test cái này", "test site", "find bugs", "check xem
+  chạy được không", "does this work", "kiểm tra e2e", or says a feature is ready for
+  testing. Tests a running web app for functional defects — broken flows, dead
+  buttons, failing forms, console errors, layout breakage; REPORT-ONLY with
+  reproduction evidence unless fixing was requested. Runs the app; for reviewing a
+  diff use Claude Code's /code-review, for how it looks use design-qa.
 ---
 
 # Web QA

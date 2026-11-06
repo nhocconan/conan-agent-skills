@@ -192,9 +192,9 @@ Astra, Sol 6.1, Terra 6.1, Sol 6 and Luna 6 (checked 2026-10-29); other surfaces
 differ. The Work/Codex Terra release is dated 2026-10-26; official guidance requires
 CLI 0.159.0+, but version alone does not establish catalog or workspace access.
 
-**agy (Antigravity CLI), 2026-10-14 snapshot (1.3.5).** `agy models` exposes
+**agy (Antigravity CLI), 2026-10-14 snapshot (1.3.5); `--effort` levels re-checked on 1.5.2 (`agy --help`, 2026-11-06).** `agy models` exposes
 `gemini-4-argon-{low,medium,high}` and `gemini-3.8-flash-{low,medium,high}` (plus
-Claude 5.5 and `gpt-oss-120b-medium`). Since 1.3.4, `--model` and `/model` accept a
+Claude 5.5 and `gpt-oss-120b-medium`, which the models page says is removed 2026-11-18). Since 1.3.4, `--model` and `/model` accept a
 base model name without `--effort` (default thinking level, else `medium`), or pair with
 `--effort` (`low|medium|high|xhigh|max`). `invoke_subagent` tiers (`inherit`, `flash_lite`,
 `flash`, `pro`): `flash_lite` for light lookups/checks, `flash` for bounded builders,
@@ -210,7 +210,7 @@ changing a default, and preserve the user's explicit model choice. Keep historic
 dated; do not relabel an old run as a new model. Claude IDs, prices, retirement floors and
 effort levels were checked 2026-11-05 (Fable/Opus/Sonnet release dates keep their 2026-09-30
 check); Terra API facts and Codex catalog/schema 2026-10-29; other OpenAI values 2026-09-30;
-Gemini/agy 2026-10-14. These are not account-specific quotes.
+Gemini/agy 2026-10-14 (agy effort flags and GPT-OSS removal 2026-11-06). These are not account-specific quotes.
 Compare candidate models on representative inputs and
 checks; record quality, elapsed time, actual token usage and rework where available.
 

@@ -1,6 +1,12 @@
 ---
 name: demo-data-craft
-description: Build convincing, safe demo/seed data for product demos — masked clones of real tenants (joins survive, secrets scrubbed), synthetic story-shaped seed data, demo orgs with env-gated forcing, and screenshot/capture seeding. Use when preparing any demo, showcase, sales environment, seeded dev/e2e data, or marketing capture; when the user says "demo", "seed data", "chuẩn bị demo", "mask the data", or asks for a populated environment. Demo data must be internally consistent and never mutate the source system.
+description: >-
+  Use when preparing any demo, showcase, sales environment, seeded dev/e2e data, or
+  marketing capture; on "demo", "seed data", "chuẩn bị demo", "mask the data"; or when
+  a populated environment is needed. Builds convincing, safe demo data — masked clones
+  of real tenants (joins survive, secrets scrubbed), synthetic story-shaped seeds,
+  env-gated demo orgs, capture seeding — internally consistent, never mutating the
+  source system.
 ---
 
 # Demo Data Craft

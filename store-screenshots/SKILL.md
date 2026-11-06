@@ -1,6 +1,11 @@
 ---
 name: store-screenshots
-description: Turn raw app screenshots into high-converting App Store / Play Store marketing screenshots and App Preview videos — outcome-driven copywriting (not feature lists), story-sequenced, branded device-frame screenshot graphics, and full-bleed no-device-frame App Preview videos (Apple Guideline 2.3.4) from real screen captures, generated via PIL/ffmpeg. Trigger when the user asks for store screenshots, listing screenshots, ASO screenshot copy, an App Store preview video, or to "make screenshots better / eye-catching".
+description: >-
+  Use when the user asks for store screenshots, listing screenshots, ASO screenshot
+  copy, an App Store preview video, or to "make screenshots better / eye-catching".
+  Turns raw app captures into outcome-driven, story-sequenced App Store / Play Store
+  screenshots (branded device frames) and full-bleed no-device-frame App Preview
+  videos (Apple Guideline 2.3.4), via PIL/ffmpeg.
 ---
 
 # Store screenshots & previews that convert

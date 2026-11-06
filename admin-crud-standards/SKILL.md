@@ -50,11 +50,6 @@ Every feature must be reachable by clicking from a menu — if it exists only as
 - **Dry-run / preview before commit** for anything that writes at scale, and an audit trail of who ran what with which parameters.
 - Health/status pages must reflect reality: a connector shown green must have actually succeeded recently, and a stored error is rendered as human copy, never a raw stack trace or validation dump.
 
-## Implementation patterns (modern stack)
-- **Tables/grids**: use a headless data-grid (e.g. TanStack Table, using the project’s installed version and current official docs) so sorting/filtering/column-visibility/row-selection are state you control, not bespoke per page. One shared table component site-wide (see consistency rule above).
-- **Large datasets**: server-side pagination/sort/filter is the source of truth; virtualize rendered rows (10k+ DOM rows never), including the upload preview table.
-- **Pickers** on an accessible primitive (Radix, React Aria, shadcn/ui): verify keyboard behavior and ARIA; primitives do not guarantee accessibility.
-
 ## Accessibility floor (non-negotiable, every management screen)
 `a11y-audit` owns the checklist and is the gate: run it before calling any management
 screen done. The one rule admin surfaces add: a sortable column header is a `<button>`

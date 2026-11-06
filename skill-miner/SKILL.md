@@ -146,7 +146,9 @@ Vietnamese phrases where useful.
 Keep only guidance that changes an agent's decisions.
 Use tested scripts for deterministic processing, prose for judgment, and supporting
 references for conditional detail. Evaluate the procedure on a representative failure
-and a legitimate counterexample; do not infer behavioral quality from a clean validator.
+and a legitimate counterexample, and the description on ~20 realistic queries (half should
+fire, half near-miss should not), 3 runs each, split 60/40 train/validation and judged on
+validation; do not infer behavioral quality from a clean validator.
 
 Body style: concise, procedural, evidence-backed. Keep incident references in ignored
 private evidence; public skills use generalized or synthetic examples. Date changing
@@ -170,7 +172,7 @@ an unrelated skill. Creating a skill does not itself authorize global installati
 ## Scheduling
 
 There is no daemon. Either the operator invokes it, or wire it to a scheduler
-(`/loop`, a cron routine) — the watermark makes repeated invocation cheap and correct.
+(Claude Code `/loop`, a cron routine) — the watermark makes repeated invocation cheap and correct.
 A sensible cadence is every 2–4 weeks: less often and the digest is too big to reason
 over, more often and nothing has cleared the "recurring" bar yet.
 

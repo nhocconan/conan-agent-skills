@@ -1,11 +1,12 @@
 ---
 name: agent-orchestration
 description: >-
-  Coordinate independent agent work with scoped ownership, model routing,
-  resumable state, and evidence-based integration. Use for multi-workstream tasks,
-  explicit delegation, parallel audits, agent handoffs, unattended runs, or "chia việc",
-  "fan-out", "chạy song song", "giao worker", "delegate this", "run autonomously",
-  "giao việc", "chạy xong báo". The active harness's lead owns final quality.
+  Coordinate independent agent work with scoped ownership, model routing, resumable
+  state, and evidence-based integration. Use for multi-workstream tasks, delegation,
+  parallel audits, agent handoffs, unattended runs, a status ping on a running job
+  ("are you still working?", "có đang chạy không"), or "chia việc", "fan-out", "chạy
+  song song", "giao worker", "delegate this", "run autonomously", "giao việc", "chạy
+  xong báo". The active harness's lead owns final quality.
 ---
 
 # Agent orchestration

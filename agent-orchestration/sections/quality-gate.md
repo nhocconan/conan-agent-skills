@@ -22,7 +22,9 @@ the `effective-development` "Reuse valid evidence" section.
 
 ### Independent review
 
-Use a fresh reviewer for complex or consequential changes. Give it the criteria
+Use a fresh reviewer for complex or consequential changes and for any generated deliverable
+the operator will see (render, video, audio, export, report), read or watched in full, not
+sampled. Give it the criteria
 and raw artifacts, without the builder's verdict. Select lenses by actual risk:
 security for permissions/tenancy/input boundaries, data safety for migrations,
 performance for hot paths, and design/accessibility for UI behavior.

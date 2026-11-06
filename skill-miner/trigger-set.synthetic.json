@@ -1,0 +1,232 @@
+{
+ "note": "Synthetic and negative cases only (no real-history prompts). n07-n10 are near-miss negatives that share vocabulary with a skill but must not fire it.",
+ "cases": [
+  {
+   "id": "s01",
+   "src": "synthetic",
+   "prompt": "Add a new settings page with a table of team members and an invite dialog.",
+   "expect": [
+    "frontend-design",
+    "admin-crud-standards"
+   ]
+  },
+  {
+   "id": "s02",
+   "src": "synthetic",
+   "prompt": "The header looks off on mobile, buttons wrap and the icon is tiny. Fix it.",
+   "expect": [
+    "design-qa",
+    "frontend-design"
+   ]
+  },
+  {
+   "id": "s03",
+   "src": "synthetic",
+   "prompt": "Tests pass locally but the checkout flow is flaky in CI about 1 in 5 runs. Figure out why.",
+   "expect": [
+    "investigating-bugs"
+   ]
+  },
+  {
+   "id": "s04",
+   "src": "synthetic",
+   "prompt": "Our test suite takes 14 minutes now, can you make CI faster?",
+   "expect": [
+    "effective-development"
+   ]
+  },
+  {
+   "id": "s05",
+   "src": "synthetic",
+   "prompt": "ok ship it — commit and push to main",
+   "expect": [
+    "shipping-changes"
+   ]
+  },
+  {
+   "id": "s06",
+   "src": "synthetic",
+   "prompt": "Before we open-source this repo, check it for leaked keys and vulnerable deps.",
+   "expect": [
+    "secure-code-audit"
+   ]
+  },
+  {
+   "id": "s07",
+   "src": "synthetic",
+   "prompt": "SSH to the staging VPS times out even though I opened port 22 in the firewall.",
+   "expect": [
+    "remote-host-access"
+   ]
+  },
+  {
+   "id": "s08",
+   "src": "synthetic",
+   "prompt": "The revenue number on the overview page differs from the export. Which one is right?",
+   "expect": [
+    "metric-integrity"
+   ]
+  },
+  {
+   "id": "s09",
+   "src": "synthetic",
+   "prompt": "Make our analytics page look exactly like the competitor's screenshots I attached — every tab.",
+   "expect": [
+    "reference-parity"
+   ]
+  },
+  {
+   "id": "s10",
+   "src": "synthetic",
+   "prompt": "Split this migration into 4 parallel workstreams and run them with subagents overnight.",
+   "expect": [
+    "agent-orchestration",
+    "autonomous-loops"
+   ]
+  },
+  {
+   "id": "s11",
+   "src": "synthetic",
+   "prompt": "Pull all tickets from the old helpdesk API into the new system; it has 40k pages and rate limits.",
+   "expect": [
+    "resilient-data-harvest"
+   ]
+  },
+  {
+   "id": "s12",
+   "src": "synthetic",
+   "prompt": "We added a feature last sprint; the user guide and PRD still describe the old flow.",
+   "expect": [
+    "docs-sync"
+   ]
+  },
+  {
+   "id": "s13",
+   "src": "synthetic",
+   "prompt": "My Sharpe ratio is 3.8 on this momentum strategy, should I go live?",
+   "expect": [
+    "backtest-integrity"
+   ]
+  },
+  {
+   "id": "s14",
+   "src": "synthetic",
+   "prompt": "Apple rejected the build under guideline 3.1.1, help me resubmit.",
+   "expect": [
+    "appstore-review-guard"
+   ]
+  },
+  {
+   "id": "s15",
+   "src": "synthetic",
+   "prompt": "Dev server says port 3000 already in use and there are 6 node processes left from yesterday.",
+   "expect": [
+    "dev-env-lifecycle"
+   ]
+  },
+  {
+   "id": "s16",
+   "src": "synthetic",
+   "prompt": "Bulk delete in the admin deleted rows from the wrong workspace.",
+   "expect": [
+    "tenant-scope-integrity"
+   ]
+  },
+  {
+   "id": "s17",
+   "src": "synthetic",
+   "prompt": "Page takes 6 seconds to become interactive, Lighthouse INP is red.",
+   "expect": [
+    "web-perf-audit"
+   ]
+  },
+  {
+   "id": "s18",
+   "src": "synthetic",
+   "prompt": "Run through the signup and billing flows on localhost and tell me what's broken.",
+   "expect": [
+    "web-qa"
+   ]
+  },
+  {
+   "id": "s19",
+   "src": "synthetic",
+   "prompt": "Run this check every night and open an issue if docs drift from code.",
+   "expect": [
+    "autonomous-loops"
+   ]
+  },
+  {
+   "id": "s20",
+   "src": "synthetic",
+   "prompt": "This keeps happening: timezone bug in date bucketing again. Make sure it can never come back.",
+   "expect": [
+    "bug-class-audits"
+   ]
+  },
+  {
+   "id": "n01",
+   "src": "negative",
+   "prompt": "Rename the variable usrCnt to userCount in utils.ts.",
+   "expect": []
+  },
+  {
+   "id": "n02",
+   "src": "negative",
+   "prompt": "What does this regex do: ^\\d{3}-\\d{4}$ ?",
+   "expect": []
+  },
+  {
+   "id": "n03",
+   "src": "negative",
+   "prompt": "Add a unit test for the parseDate helper covering leap years.",
+   "expect": []
+  },
+  {
+   "id": "n04",
+   "src": "negative",
+   "prompt": "Explain the difference between useMemo and useCallback.",
+   "expect": []
+  },
+  {
+   "id": "n05",
+   "src": "negative",
+   "prompt": "Bump lodash to the latest patch version in package.json.",
+   "expect": []
+  },
+  {
+   "id": "n06",
+   "src": "negative",
+   "prompt": "Write a SQL query that counts orders per customer for last month.",
+   "expect": []
+  },
+  {
+   "id": "n07",
+   "src": "negative",
+   "prompt": "Explain what a Sharpe ratio measures",
+   "expect": [],
+   "near_miss": true
+  },
+  {
+   "id": "n08",
+   "src": "negative",
+   "prompt": "What does `setsid` do in bash?",
+   "expect": [],
+   "near_miss": true
+  },
+  {
+   "id": "n09",
+   "src": "negative",
+   "prompt": "Translate these 5 UI strings to Vietnamese: Save, Cancel, Delete, Settings, Back",
+   "expect": [],
+   "near_miss": true
+  },
+  {
+   "id": "n10",
+   "src": "negative",
+   "prompt": "Write a SQL view for monthly revenue per org",
+   "expect": [],
+   "near_miss": true
+  }
+ ]
+}

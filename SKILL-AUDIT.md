@@ -213,3 +213,23 @@ has a distinct trigger boundary. Prefer updating an existing skill to adding a n
 Re-verify vendor facts on a release, deprecation, rejected ID or retirement within 90 days.
 Run `refsync.py upgrade` within an authorized update and review each wrap preview before
 `--accept`; a wrap pointing at a vanished upstream section is wrong, not stale.
+
+## 2026-11-06 — trigger firing and harness fit (34 skills)
+
+Scope: whether skills load when they should in Claude Code 2.1.319 and Codex CLI 0.167.0,
+judged by a three-reviewer panel (firing, decision value, portability). Harness facts were
+read from the vendor docs on 2026-11-06 (code.claude.com skills/plugin-evals/changelog;
+learn.chatgpt.com build-skills; agentskills.io specification).
+
+| Finding | Evidence | Change |
+| --- | --- | --- |
+| Claude's skill listing sat at its budget (1 % of context); overflow drops the least-used skills' descriptions first | `/context`: Skills 9.9k tokens = 1.0 % | descriptions cut 15.9k → 14.5k chars, trigger clause first (≤ char 217); 8 by-name skills set `name-only` in the settings template |
+| Skills fired on clean English tasks but not on complaint or correction phrasing | real-harness eval: 48/64 baseline, real-style prompts 10/24 | descriptions carry the operator's natural trigger phrases. Holdout set written before edits: 20/24 → 22/24 (two runs per case; within noise). On the set the new wording was drawn from: 48/64 → 62/64. Negatives 18/18, near-miss 8/8 |
+| Codex load-out was cut to 12 skills on an 8,000-character premise | Codex budget is `skills.max_context_tokens` (2 % of window, ≤ 10,000 tokens); echo probe: 49 entries, none shortened | `codex-dev` carries all 34 first-party skills |
+| No check that a description fires or is front-loaded | — | `validate_skills.py` warns on late trigger clause, > 520 chars, unknown keys (error); `skill-miner/trigger_eval.py` + synthetic set, run after description edits (AGENTS.md) |
+| Claude Code runs a skill named `verify` before every commit (2.1.286) | changelog | new `verify` skill: repo gates with exit codes (runner in orchestrated runs), residue inventory, replay of the operator's named path |
+
+Content cuts of base-default material (a11y, web-perf, admin-crud, remote-host, senior-operator,
+effective-development) removed about 5.8 KB of eager text. Limits: one model (Opus 5.5),
+two runs per case, read-only tools in a synthetic fixture repo; Codex firing is not measured
+by a runner, only by catalog inspection.

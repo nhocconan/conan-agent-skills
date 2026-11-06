@@ -28,6 +28,11 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    import yaml
+except ImportError:  # bare interpreters fall back to the regex below
+    yaml = None
+
 CEILINGS = Path(__file__).resolve().parent / "context-budget.json"
 HEADROOM = 0.05  # a ceiling sits 5% above the measurement that set it
 
@@ -80,6 +85,20 @@ def _referenced_paths(text: str):
     return paths
 
 
+def _description(fm: str) -> str:
+    """YAML is the source of truth; the regex fallback stops at the next key."""
+    if yaml is not None:
+        try:
+            parsed = yaml.safe_load(fm)
+        except Exception:
+            parsed = None
+        if isinstance(parsed, dict):
+            d = parsed.get("description", "")
+            return " ".join(d.split()) if isinstance(d, str) else ""
+    d = re.search(r"^description:\s*(.*?)(?=^\w[\w-]*:|\Z)", fm + "\n", re.S | re.M)
+    return " ".join(d.group(1).split()) if d else ""
+
+
 def measure(skill_dir: Path):
     f = skill_dir / "SKILL.md"
     if not f.exists():
@@ -87,8 +106,7 @@ def measure(skill_dir: Path):
     text = f.read_text(encoding="utf-8", errors="replace")
     m = re.match(r"^---\n(.*?)\n---\n", text, re.S)
     fm = m.group(1) if m else ""
-    d = re.search(r"^description:\s*(.*?)(?=^\w[\w-]*:|\Z)", fm + "\n", re.S | re.M)
-    desc = " ".join(d.group(1).split()) if d else ""
+    desc = _description(fm)
     return {
         "always_on": len(desc.encode()),
         "eager": len(text.encode()),

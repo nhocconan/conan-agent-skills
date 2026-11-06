@@ -13,7 +13,8 @@ fingerprint; a result without a fingerprint is `unverified`. Method:
 [SHARED-HOST](../../effective-development/SHARED-HOST.md).
 
 A detached job or loop the lead itself started gets a liveness check with a deadline
-(process alive, output still growing). A dead or stalled one is reported at once with its
+(process alive, output still growing); a missing check result at the deadline is itself a
+failure. A dead or stalled one is reported at once with its
 last output line, never left for the operator to discover.
 
 States: `pending → briefed → running → reviewing → done | failed | skipped | blocked`.

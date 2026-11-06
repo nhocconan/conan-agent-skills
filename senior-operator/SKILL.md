@@ -1,12 +1,13 @@
 ---
 name: senior-operator
 description: >-
-  Craft discipline for hard or ambiguous tasks: classify the ask, verify by independent
-  re-derivation, label verified vs inferred, attack your conclusion; plus a recipe for
-  writing an optional private per-repo map. Use at the start of nontrivial work, before
-  diagnosing a bug, touching money-math/dates/tenancy, shipping, or sending a hard
-  conclusion. Triggers: "làm theo playbook", "đọc operating manual", "check theo
-  self-test", "train Opus", "distill project này", handing work to a weaker model.
+  Use when starting nontrivial work, before diagnosing a bug, touching
+  money-math/dates/tenancy, shipping, or sending a hard conclusion; on "làm theo
+  playbook", "đọc operating manual", "check theo self-test", "train Opus", "distill
+  project này"; or when handing work to a weaker model. Craft discipline for hard or
+  ambiguous tasks: classify the ask, verify by independent re-derivation, label
+  verified vs inferred, attack your conclusion; plus a recipe for an optional private
+  per-repo map.
 ---
 
 # Senior Operator
@@ -26,21 +27,6 @@ producing an optional per-repo map. Maps are private and a fresh clone has none.
 `projects/INDEX.md` exists locally, start there; otherwise work from the repo's rulebook and
 the manual. Run [DISTILL.md](DISTILL.md) when a reusable map is requested or materially
 helps repeated work; its absence is not a blocker.
-
-## Any-model use (Claude / Codex / agy)
-
-Everything here is plain Markdown — no harness feature required. A harness without an available
-skill loader uses it by reading files directly, in the
-same order the table above prescribes: `SKILL.md` → `OPERATING-MANUAL.md` →
-`projects/<slug>.md` for the repo at hand.
-
-- **Wiring for Codex:** point the repo's `AGENTS.md` (or a `.codex/skills/` wrapper) at
-  this directory with one line: "Nontrivial task → read
-  `~/.conan-agent-skills/senior-operator/SKILL.md` and follow it."
-- **Model policy:** [agent-orchestration](../agent-orchestration/SKILL.md) owns routing.
-  Project maps contain commands and invariants usable by any worker.
-- Harness-specific references inside the manual/maps (memory paths, browser tools,
-  `CLAUDE.md`) are examples, not requirements — substitute the local equivalent.
 
 ## Order of operations (any project)
 

@@ -1,6 +1,12 @@
 ---
 name: tenant-scope-integrity
-description: Make active scope — organisation, tenant, workspace, brand, project, store — a hard precondition for every write, persisted UI state, and visible on screen. Prevents cross-scope uploads/connectors/bulk deletes, silent picker resets, and treating no selection as "all" on destructive paths. Use for multi-tenant/workspace/brand features, especially imports, connectors, bulk actions/deletes, or "sai brand", "nhầm org", "data của khách khác", "wrong tenant", "it reset to default", "scope".
+description: >-
+  Use when data or an action crosses organisation/tenant/workspace/brand/project/store
+  scope — a page shows another customer's data, "lộ khách hàng", "data của khách
+  khác", "sai brand", "nhầm org", "wrong tenant", "it reset to default", "scope" — and
+  for multi-tenant imports, connectors, bulk actions or deletes. Makes active scope a
+  hard precondition for every write and persisted UI state, visible on screen; no
+  silent picker resets; no selection is never "all" on destructive paths.
 ---
 
 # Tenant-Scope Integrity

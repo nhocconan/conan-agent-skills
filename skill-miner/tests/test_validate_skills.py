@@ -497,5 +497,78 @@ class ModelIdContainmentCheckTests(unittest.TestCase):
             self.assertEqual(errors, [])
 
 
+class FrontLoadAndKeyTests(unittest.TestCase):
+    def _check(self, frontmatter, files=None):
+        with tempfile.TemporaryDirectory() as raw:
+            skill = write_skill(Path(raw), "fx", frontmatter, "body\n")
+            for rel, text in (files or {}).items():
+                f = skill / rel
+                f.parent.mkdir(parents=True, exist_ok=True)
+                f.write_text(text, encoding="utf-8")
+            return validate_skills.check(skill)
+
+    @staticmethod
+    def _desc(text):
+        return f"name: fx\ndescription: >-\n  {text}"
+
+    def test_trigger_clause_past_250_chars_warns(self):
+        _, warns = self._check(self._desc("x" * 260 + " Use when testing the validator."))
+        self.assertTrue(any("front-load" in w for w in warns), warns)
+
+    def test_trigger_clause_in_first_sentence_is_clean(self):
+        _, warns = self._check(self._desc("Use when testing. " + "x" * 300))
+        self.assertFalse(any("front-load" in w or "trigger clause" in w for w in warns), warns)
+
+    def test_no_trigger_clause_warns(self):
+        _, warns = self._check(self._desc("When asked, this reports things " + "x" * 60))
+        self.assertTrue(any("trigger clause" in w for w in warns), warns)
+
+    def test_bare_after_is_not_a_when_hint(self):
+        _, warns = self._check(self._desc("Reports findings after a run, with enough words to be long."))
+        self.assertTrue(any("never says WHEN" in w for w in warns), warns)
+
+    def test_description_over_520_warns_over_1024_errors(self):
+        e, w = self._check(self._desc("Use when testing. " + "x" * 520))
+        self.assertEqual(e, [])
+        self.assertTrue(any(">520" in x for x in w), w)
+        e, _ = self._check(self._desc("Use when testing. " + "x" * 1030))
+        self.assertTrue(any("max 1024" in x for x in e), e)
+
+    def test_unknown_frontmatter_key_is_an_error(self):
+        e, _ = self._check(self._desc("Use when testing keys in a fixture skill.") + "\nwhen-to-use: x")
+        self.assertTrue(any("unknown frontmatter key 'when-to-use'" in x for x in e), e)
+
+    def test_claude_code_only_key_is_a_warning(self):
+        e, w = self._check(self._desc("Use when testing keys in a fixture skill.") + "\npaths: ['**/*.css']")
+        self.assertEqual(e, [])
+        self.assertTrue(any("'paths'" in x for x in w), w)
+
+    def test_spec_keys_are_clean(self):
+        e, w = self._check(self._desc("Use when testing keys in a fixture skill.") + "\nlicense: MIT")
+        self.assertEqual(e, [])
+        self.assertFalse(any("frontmatter key" in x for x in w), w)
+
+    def test_vendored_upstream_skips_toc_and_banned_terms(self):
+        long = "# Title\n" + "robust comprehensive line\n" * 120
+        link = "[x](%s/x.md)"
+        for part, expect in (("upstream", False), ("reference", True)):
+            with tempfile.TemporaryDirectory() as raw:
+                skill = write_skill(Path(raw), "fx", self._desc("Use when testing vendored text."),
+                                    link % (part if part == "reference" else "upstream") + "\n")
+                d = skill / part
+                d.mkdir()
+                (d / "x.md").write_text(long, encoding="utf-8")
+                _, warns = validate_skills.check(skill)
+                self.assertEqual(any("no table of contents" in w for w in warns), expect, (part, warns))
+                self.assertEqual(any("banned term" in w for w in warns), expect, (part, warns))
+
+    def test_vendored_missing_reference_is_still_reported(self):
+        with tempfile.TemporaryDirectory() as raw:
+            skill = write_skill(Path(raw), "fx", self._desc("Use when testing vendored text."),
+                                "[x](upstream/gone.md)\n")
+            _, warns = validate_skills.check(skill)
+            self.assertTrue(any("referenced file missing" in w for w in warns), warns)
+
+
 if __name__ == "__main__":
     unittest.main()

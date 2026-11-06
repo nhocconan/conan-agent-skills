@@ -60,15 +60,15 @@ it installs and verifies itself.
 Ba profile, ba kích cỡ khác nhau — vì mỗi agent nhét description của **mọi** skill vào
 system prompt và cắt theo một trần khác nhau:
 
-| Agent | Profile | Đo được 2026-09-05 | Trần |
+| Agent | Profile | Đo được 2026-11-06 | Trần |
 | --- | --- | --- | --- |
-| Claude | `claude-dev` | 50 skills · 25,733 ký tự | không công bố |
-| Codex | `codex-dev` | 11 skills · 7,724 ký tự | 2% context (~5,440 ở 272k), fallback 8,000 |
-| agy | `agy-dev` | 26 skills · 16,213 ký tự | Context lớn, progressive disclosure |
+| Claude | `claude-dev` | 36 skills (34 first-party) · ~14.5k ký tự | 1% context window; skill ít dùng bị bỏ description trước. 8 skill gọi bằng tên để `name-only` (`skillOverrides`) |
+| Codex | `codex-dev` | 34 skills · ~4.3k token | `skills.max_context_tokens`: 2% window, tối đa 10,000 token; 8,000 ký tự chỉ khi không biết window |
+| agy | `agy-dev` | 26 skills · ~13k ký tự | docs không công bố trần |
 
-Codex **rút gọn description trước khi bỏ skill** — mà trigger phrase nằm ở cuối
-description, nên bị cắt đúng phần quyết định skill có fire hay không. Vì vậy `codex-dev`
-cố tình nhỏ. Skill không nằm trong load-out vẫn dùng được: bảo nó đọc
+Cả hai agent **cắt description từ cuối trước khi bỏ skill**, nên mọi description mở đầu
+bằng câu "Use when…" (`validate_skills.py` cảnh báo nếu không). `codex-dev` giờ có đủ bộ
+first-party vì vẫn nằm dưới trần. Skill không nằm trong load-out vẫn dùng được: bảo nó đọc
 `~/.conan-agent-skills/<tên>/SKILL.md` rồi làm theo. Load-out chỉ quản việc **tự động
 fire**, không quản việc có sẵn hay không.
 
