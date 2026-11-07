@@ -108,7 +108,8 @@ when the task or evaluations justify the added cost.
 API support and harness controls differ. The current collaboration schema exposes
 `low` through `max` for Luna and also `ultra` for Terra/Sol/Astra; it does not expose
 `none`. The 2026-10-29 Codex catalog gives Terra a 500K context window and default
-`low` effort, distinct from its API limits/default above. Inspect the active schema
+`low` effort, distinct from its API limits/default above. Sol 6.1 also defaults to
+500K in Codex/Work, per its API model page. Inspect the active schema
 rather than copying API values into a spawn call. Ultra may automatically delegate;
 use it only when nested work is permitted by the task and harness.
 
@@ -134,9 +135,10 @@ it is distinct from shutdown and from ChatGPT product retirement.
 
 **Argon is the GA flagship reasoning model; 3.8 Flash is the cross-plan workhorse.**
 `gemini-4-argon` has a unified 1,048,576 input+thinking+output window (1M long decode
-via `background: true`), Antigravity Ultra/Enterprise access (app, CLI, IDE extensions),
+via `background: true`), Antigravity access on paid Pro/eligible-device trials,
+Ultra and Enterprise (app, CLI, IDE extensions),
 and `$2 → $10` intro API pricing through 2026-11-30 (`$4 → $20` from 2026-12-01; implicit
-cache `$0.10` then `$0.20`; no explicit cache or Free/AI Pro tier). Flash `$0.75 → $3.75`
+cache `$0.10` then `$0.20`; no explicit cache or Free API tier). Flash `$0.75 → $3.75`
 intro rates move to `$1.50 → $7.50` on 2027-01-01. `gemini-3.7-flash` and
 `gemini-3.5-flash` (deprecated 2026-10-08) auto-route to `gemini-3.8-flash` and
 `gemini-3.6-flash`. Never combine `thinking_budget` with `thinking_level`.
@@ -210,7 +212,14 @@ changing a default, and preserve the user's explicit model choice. Keep historic
 dated; do not relabel an old run as a new model. Claude IDs, prices, retirement floors and
 effort levels were checked 2026-11-05 (Fable/Opus/Sonnet release dates keep their 2026-09-30
 check); Terra API facts and Codex catalog/schema 2026-10-29; other OpenAI values 2026-09-30;
-Gemini/agy 2026-10-14 (agy effort flags and GPT-OSS removal 2026-11-06). These are not account-specific quotes.
+Gemini/agy 2026-10-14 (agy effort flags and GPT-OSS removal 2026-11-06;
+Antigravity Argon plan access corrected from the models page 2026-11-07).
+These are not account-specific quotes.
+On 2026-11-07, model pages and pricing re-confirmed the Astra/Sol 6.1/Terra 6.1/Luna
+specifications and standard rates; Google's Argon/Flash pages, pricing and thinking
+guide re-confirmed limits, intro-price deadlines and supported levels; Claude's
+overview/deprecation tables re-confirmed current IDs, limits, rates and retirement
+floors. Earlier release-date evidence retains its original check date.
 Compare candidate models on representative inputs and
 checks; record quality, elapsed time, actual token usage and rework where available.
 
@@ -223,6 +232,7 @@ Sources:
 - [Claude model deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations)
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
 - [OpenAI models](https://developers.openai.com/api/docs/models)
+- [Sol 6.1 API](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
 - [Terra API](https://developers.openai.com/api/docs/models/gpt-6.1-terra)
 - [Work/Codex models](https://learn.chatgpt.com/docs/models)
 - [Terra release](https://learn.chatgpt.com/docs/whats-new/october-26-30-2026) (2026-10-26)
@@ -236,6 +246,7 @@ Sources:
 - [Gemini 4 Argon](https://ai.google.dev/gemini-api/docs/models/gemini-4-argon)
 - [Gemini 3.8 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash)
 - [Gemini thinking](https://ai.google.dev/gemini-api/docs/thinking)
+- [Gemini API pricing](https://ai.google.dev/gemini-api/docs/pricing)
 - [Gemini API deprecations](https://ai.google.dev/gemini-api/docs/deprecations)
 - [Antigravity models](https://antigravity.google/docs/models)
 - [Antigravity CLI docs](https://antigravity.google/docs/cli/)

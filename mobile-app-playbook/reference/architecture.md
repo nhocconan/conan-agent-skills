@@ -29,15 +29,15 @@
   (`:<your-kmp-module>:linkDebugFrameworkIosSimulatorArm64` — find yours with
   `./gradlew tasks | grep linkDebugFramework`) — it is the only gate that catches this
   class. Replacements: `kotlin.math`, `kotlin.uuid.Uuid` (needs
-  `@OptIn(ExperimentalUuidApi::class)` for `Uuid.random()` even on Kotlin 2.4.0 — the type and parsing are stable since 2.4, V4/V7 generation is still Experimental, kotlinlang.org whatsnew24 read 2026-10-02), `Mutex`,
+  opt-in for V4/V7 generation on [Kotlin 2.4](https://kotlinlang.org/docs/whatsnew24.html#stable-uuid-api-in-the-common-kotlin-standard-library); type/parsing are stable), `Mutex`,
   expect/actual.
 - **Flavor discipline:** if you ship store variants (e.g. Play build vs sideload build
   with extra SDKs), the store flavor must provably NOT contain the other flavor's SDKs
   (Play scans for them), and both flavors build + test at every stage.
-- **iOS host minimum:** for CMP, `Info.plist` needs `CADisableMinimumFrameDurationOnPhone` —
-  Compose Multiplatform's renderer has been reported to fatal-error at launch without it (unverified against JetBrains docs) (a CMP check, not
-  an Apple rule; Apple would merely cap you at 60Hz) — and the Xcode project should be
-  generated (xcodegen) so it's reviewable text, not a binary pbxproj war.
+- **iOS host:** verify the installed Compose Multiplatform version's host setup,
+  including its `CADisableMinimumFrameDurationOnPhone` guidance, then cold-launch
+  on device. Do not infer an Apple upload requirement or a fatal launch error from
+  the flag alone. Keep Xcode project changes reviewable; generation is optional.
 
 ### 1.3 Backend
 

@@ -3,7 +3,7 @@
 Loaded on demand by `secure-code-audit` step 4. This is the half of an audit tools do
 not cover.
 
-Numbering per [OWASP Top 10:2025](https://top10.owasp.org/2025), verified 2026-09-15. OWASP renumbers each release — confirm the list before quoting a category id.
+Numbering per [OWASP Top 10:2025](https://top10.owasp.org/2025). Confirm the edition before quoting a category id.
 - **A01 Broken Access Control**: every endpoint/server action/route checks authn AND authz server-side; object-level checks (can THIS user touch THIS record — IDOR); admin-only routes gated by role, not just hidden in the UI.
 - **A02 Security Misconfiguration**: debug off in prod; security headers (CSP, HSTS, X-Content-Type-Options, Referrer-Policy); CORS not `*` with credentials; default/admin creds removed; stack traces not shown to users.
 - **A03 Software Supply Chain Failures** (new in 2025; absorbs the old "Vulnerable and Outdated Components"): lockfile committed and CI installing *from* it (`npm ci`, `pip install --require-hashes`, `go mod verify`), not re-resolving a floating range; provenance/attestation verified where the publisher offers it (npm provenance, Sigstore); an SBOM (CycloneDX/SPDX) per release, kept with the artifact; CI trust boundaries — third-party actions pinned to a commit SHA not a tag, secrets unreachable from fork PRs, release credentials not writable by ordinary contributors; unmaintained/typosquat-adjacent packages flagged. Step 2 is the automated half of this category, not all of it.

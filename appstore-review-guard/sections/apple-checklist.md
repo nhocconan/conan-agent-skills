@@ -5,16 +5,16 @@ Group by guideline area. ☐ = must verify every submission.
 ### Upload requirements (App Store Connect rejects the build before review)
 - ☐ Built with **Xcode 26 or later** against the iOS/iPadOS/tvOS/visionOS/watchOS 26 SDK (required since 2026-04-28).
 - ☐ iOS/iPadOS deployment target is **iOS 13 or later** (required since 2026-09-09).
-- Source: [Upcoming requirements](https://developer.apple.com/news/upcoming-requirements/), read 2026-10-03 — re-check it before each release; Apple adds rows there ahead of each deadline.
+- Source: [Upcoming requirements](https://developer.apple.com/news/upcoming-requirements/) — re-check before each release, including the age-rating questionnaire and any device-specific submission changes.
 
 ### 3.1.1 — In-App Purchase & payments
 - ☐ A **distinct, clearly-labelled "Restore Purchases" button** exists and is reachable in **every** entitlement state — fresh install, mid-trial, **after purchase**, and after trial-ended. Not gated behind `!isPro`. Not auto-restore-only.
 - ☐ It lives where reviewers look: **Settings** (canonical) **and** the paywall. Don't rely on the paywall alone — it often hides post-purchase.
 - ☐ "Restore" wording is unambiguous: a backup/import feature must **not** be the only thing called "Restore" (rename it "Restore from file" / "Import").
-- ☐ Restore actually calls the platform restore (`AppStore.sync()` on StoreKit 2 / `restorePurchases()` on Play Billing) and gives user feedback on success/failure.
+- ☐ Restore calls `AppStore.sync()` on StoreKit 2 (or the selected SDK's documented restore API) and gives user feedback on success/failure. Play reconciliation is covered in `play-checklist.md`.
 - ☐ Purchase failures show user-facing feedback (no dead button).
 - ☐ Nothing is **sold that isn't implemented** (paywall feature list == shipped features). "Planned" features only as clearly-labelled future notes, never in the buy list.
-- ☐ **Scope the external-purchase-link rule by storefront, not blanket.** On the **United States storefront**, Guideline 3.1.1(a) does **not** prohibit buttons, external links, or other calls-to-action to non-IAP purchase methods, and no entitlement is required there. Outside the US storefront, such buttons/links/CTAs are prohibited **unless** the app holds a StoreKit External Purchase Link Entitlement or Music Streaming Services Entitlement for that specific storefront (those entitlements only cover the storefronts Apple lists for them). Check the current entitlement-covered storefront list before submitting — don't assume the US rule travels with the build.
+- ☐ **Scope external-purchase links by storefront, platform and app type.** US storefront links/CTAs do not require the 3.1.1(a) entitlements. Elsewhere, verify the applicable regional program or entitlement and its terms, including Reader apps under 3.1.3(a), before adding links. Use the [current payment guidelines](https://developer.apple.com/app-store/review/guidelines/#in-app-purchase); do not assume the US rule applies worldwide.
 - ☐ Non-consumable: don't use "free trial" wording that implies an auto-renewing subscription. An app-managed trial is fine if described as one-time.
 
 ### 3.1.2 — Auto-renewable subscription disclosure
@@ -35,10 +35,10 @@ Group by guideline area. ☐ = must verify every submission.
 - ☐ Every advertised feature actually works on this platform build.
 
 ### 2.3 — Accurate metadata
-- ☐ **App Preview video is full-bleed** real screen capture — **no device frame/bezel** (2.3.4). (Marketing screenshots MAY use frames.)
+- ☐ **App Preview video uses real app captures throughout** — no device frame/bezel or generated full-screen intro/outro card (2.3.4). Text/narration may overlay captures. Marketing screenshots may use frames.
 - ☐ Screenshots show **real in-app UI** only; no features the build doesn't have.
 - ☐ Listing copy promises nothing unshipped (cut "Widgets/Siri/etc." if not in this build).
-- ☐ Preview video uploads at the **correct slot size** (iPhone App Preview: 886×1920 or 1920×886 — NOT the 1320×2868 screenshot size; ASC rejects the wrong one). iPad sizes per slot.
+- ☐ Preview video uploads at the [accepted resolution for its device set](https://developer.apple.com/help/app-store-connect/reference/app-information/app-preview-specifications/) (Dynamic Island / Face ID iPhone: 886×1920 or 1920×886; other iPhone/iPad sets differ). Do not substitute screenshot dimensions.
 - ☐ The advertised USP is **demonstrated** in screenshots/video, not just claimed (Apple can reject "feature not shown").
 - ☐ App name/subtitle/keywords aren't spammy or trademark-infringing (2.3.7).
 

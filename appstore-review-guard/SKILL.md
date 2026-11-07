@@ -12,27 +12,20 @@ description: >-
 
 # App Store Review Guard
 
-Apple doesn't publish rejection-frequency data, so no claim about the "most
-common" rejection is verifiable — but every rejection logged in this skill's own
-ledger was an **avoidable, mechanical mistake**, not a subtle judgement call: a
-required thing that existed in the code but wasn't reachable in the state the
-reviewer was in. This skill is a checklist built to catch that failure mode,
-plus a **rejection ledger** you append to after every real rejection so the same
-mistake never ships twice.
+Check required affordances in the exact state the reviewer reaches: fresh install,
+post-purchase and trial-ended. Existence in code does not establish reachability.
+Record each real rejection and its verified repair in the rejection ledger.
 
-**Golden rule:** the reviewer is a busy human on one device looking for reasons
-to bounce you. Every required affordance must be **obvious, reachable in the
-state they'll be in, and labelled the way they expect.** "It's technically in
-there" is how you get rejected.
-
-**The failure mode to hunt:** every rejection in the ledger is a required thing
-that existed in the code but was **not reachable in the state the reviewer was
-in.** Check reachability, not existence.
+Apple publishes rejection counts by guideline section in its
+[App Store Transparency Report](https://www.apple.com/legal/app-store/transparency/2025/).
+Those aggregates do not identify the most frequent specific implementation mistake
+or explain an individual rejection; use the review message and reproduced behavior.
 
 ## How to use this skill
 
 1. **Before any submission/resubmission:** read the ledger, then run the
-   platform checklist top to bottom. Anything unchecked is a blocker.
+   platform checklist. Mark inapplicable rows N/A with a reason; an unverified
+   applicable requirement blocks submission.
 2. **After a rejection:** read Apple's message, find the guideline number, fix
    the code/metadata, then append a ledger row.
 3. **Verify, don't assume.** Code-level items get a grep recipe run against the

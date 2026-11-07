@@ -6,13 +6,8 @@
   minute 2, not on first death, cooldown ≥ 90s), rewarded (player-initiated only:
   revive, double coins, unlock trial). Rewarded is the only ad players like — build
   the economy so they want it.
-- IAP: one lifetime "remove ads" at $2.99–$4.99 typically converts best in genre
-  (price-test via the stores' pricing experiments rather than trusting this number);
-  it must remove
-  interstitial+banner but KEEP rewarded (players consider rewarded a feature).
-- Soft currency: **earn-only** (never purchasable with money) if you want to stay out
-  of loot-box/gambling regulation entirely — document this stance; it also simplifies
-  every store questionnaire.
+- IAP: price-test a lifetime "remove ads" offer; no genre-wide best price is established here. State whether optional rewarded ads remain before purchase, and honor that promise.
+- Soft currency: an earn-only economy can reduce purchase complexity, but does not establish an exemption from gambling or loot-box rules. Review the actual mechanics and distribution regions.
 
 ### 4.2 The policy traps (each of these is a real rejection class)
 
@@ -20,8 +15,7 @@
   SDK configuration (TFCD/TFUA flags, max ad content rating), and your actual content
   must agree. Declaring or "appealing to" under-13 pulls you into the ads-format
   section of the Play Families Policies (rejections cite it as "Families ad format
-  requirements"): ads serving children must be closeable within 5 seconds — stricter
-  than the general-audience Ads policy's 15-second rule — plus certified ad SDKs only. "Appeals to
+  requirements"): [ads interfering with normal use, including rewarded ads, must be closeable after 5 seconds](https://support.google.com/googleplay/android-developer/answer/9893335); non-interfering placements may persist longer. Apply the same protections to unknown-age users in mixed-audience apps; use certified SDKs for these users. "Appeals to
   children" is judged by Google from the app's look, not your intent: cartoon/cute
   characters, bright simple visuals, young actors in assets, child-oriented wording
   ("for everyone, including kids" in a brief is already a Families signal). If your
@@ -31,19 +25,12 @@
   Decide 13+ vs Families BEFORE configuring ads, then make console declaration ⇔ code
   config ⇔ rating questionnaire all match. Mismatch = rejection loop.
 - **Restore Purchases (3.1.1):** checked by `appstore-review-guard`; design it into the paywall in §2, not at submission.
-- **Ads in review:** test ads must be un-shippable (build-type-gated), but real ads
-  must show for reviewers — use real units with mediation test devices only on your
-  own hardware.
-- **Data safety / privacy labels:** must match the binary's actual SDK traffic
-  (Play data-safety form, Apple nutrition labels). Ad SDKs = "data collected". An
-  analytics SDK you forgot about is a rejection or a takedown later.
-- **Consent stack (ads = consent obligations):** serving ads to EEA/UK users requires
-  a Google-certified CMP gathering consent before the first ad request (in practice
-  Google's UMP; missing it → limited ads + legal exposure); on iOS, ANY IDFA/tracking
-  access requires the ATT prompt with an honest purpose string BEFORE access (skipping
-  it → rejection or silent limited ads) — and the privacy labels (§ above) must agree
-  with whatever the consent stack actually does.
-- **Accounts imply deletion:** any linkable account (§1.3 anonymous-first counts) triggers Apple 5.1.1(v) and Play in-app deletion. Ship auth and deletion in the same release, never auth first (details: `appstore-review-guard`).
+- **Ads in review:** replace demo units/test-device debug settings before publication; use [test ads](https://developers.google.com/admob/android/test-ads) on development devices. Verify production configuration and consent/no-fill behavior; do not force an ad to appear by bypassing consent or audience rules.
+- **Data safety / privacy labels:** reconcile the binary's SDK traffic with each
+  store's collection/sharing definitions and the SDK's disclosure guidance. Audit
+  analytics and ad SDKs explicitly; do not infer disclosures from the SDK name alone.
+- **Consent stack:** Google publisher products require a [Google-certified TCF CMP](https://support.google.com/admob/answer/13554116) for personalized ads in the EEA, UK and Switzerland. With UMP, refresh consent information and check [`canRequestAds()`](https://developers.google.com/admob/android/privacy) before requests; a denied consent choice does not automatically prohibit every ad mode. On iOS, obtain ATT permission before tracking/IDFA access; privacy labels must match actual behavior.
+- **Accounts imply deletion:** Apple's requirement includes automatically created guest accounts. Play applies its [app-account definition and creation-flow scope](https://support.google.com/googleplay/android-developer/answer/13327111), with an in-app deletion path plus a web resource. Do not equate a device identifier with an app account; inspect the actual account flow. Ship required deletion alongside account creation (`appstore-review-guard`).
 
 ### 4.3 Money correctness (silent-failure class — verify hardest here)
 

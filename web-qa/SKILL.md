@@ -18,6 +18,14 @@ Paths below are relative to this skill's real directory in the repo checkout
 fetches the vendored upstream files; if one is absent, say so and apply the rules in
 this file instead of guessing upstream's content.
 
+Use upstream's exploration and reporting procedure only. Skip Claude startup,
+preambles, telemetry, hooks and gstack helper commands; drive the available browser
+through `browsing-web`. Missing upstream browser setup does not block an available
+driver. Preserve functional, accessibility and evidence checks. For a diff review,
+use the active harness's review tool or inspect the diff directly.
+
+Before upstream reads, follow [portable routes and helper replacements](sections/portable-upstream.md).
+
 ## Pick the mode first
 
 | The user said | Mode | Read |
@@ -46,9 +54,7 @@ it down. Console noise from an unrelated extension is not a bug in the app.
 
 ## Scope honestly
 
-State up front which routes and flows you covered and which you did not. "Tested the app"
-after three pages is worthless.
-Name the depth you actually ran; in fix mode also the fix tier (quick / standard /
+State up front which routes and flows you covered and which you did not. Name the depth you actually ran; in fix mode also the fix tier (quick / standard /
 exhaustive — which severities get fixed).
 
 ## Sibling lenses — different jobs, don't substitute
@@ -63,6 +69,5 @@ exhaustive — which severities get fixed).
 ## Browser stack
 
 Use the user-selected or project-approved available browser. Follow its current tool
-instructions; `browsing-web` describes session and evidence discipline. If upstream's
-`../.vendor/gstack/qa/sections/browser-setup.md` (qa-only's "Browser Setup (conditional)" points there; functional-only runs skip it) is unreadable, report the blocker,
-mark browser probes blocked, continue functional probes.
+instructions; `browsing-web` describes session and evidence discipline. If no approved
+driver is available, mark browser probes blocked and continue functional probes.

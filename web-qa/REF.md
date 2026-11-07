@@ -1,19 +1,20 @@
 ---
 mode: wrap
 upstream: gstack
-source: github:garrytan/gstack@main:qa-only/SKILL.md
-version: 1.0.0
-fingerprint: sha256:ee78c0215c2d476a0a1ab736b24b6d8fd852439f57a0ec112111c9071076ce99
-reviewed: 2026-10-02
-secondary_source: github:garrytan/gstack@main:qa/SKILL.md
-secondary_fingerprint: sha256:d303cda3491d56ed7202cdd290214316e29506b4a116e8bcc4bb66c0bde75ae9
+source: github:garrytan/gstack@5862765a20cd751b73e54fe85ffebd9e4da01e30:qa-only/SKILL.md
+tracking_source: github:garrytan/gstack@main:qa-only/SKILL.md
+version: 1.0.1
+fingerprint: sha256:1130fd5a80b02eea003d5cd8370e8eab524f2a6bf14a8caf262650ce64606c26
+reviewed: 2026-11-07
+secondary_source: github:garrytan/gstack@5862765a20cd751b73e54fe85ffebd9e4da01e30:qa/SKILL.md
+secondary_tracking_source: github:garrytan/gstack@main:qa/SKILL.md
+secondary_fingerprint: sha256:1cda78da8e01d074966334d1ff3c3103f1a78732f6d7ecf797df5b8cbf6ce540
 ---
 
 # Provenance
 
 Wraps **two** upstream skills that are one skill with a mode switch:
-`qa-only` (342 lines on 2026-11-05, report) and
-`qa` (530 lines on 2026-11-05, fix).
+`qa-only` (report) and `qa` (fix), at the same pinned commit.
 Both are fetched into `.vendor/gstack/`; this skill routes to them by path. Upstream qa-only now also forbids invoking /qa itself, which matches override 1: a fix is a separate, requested run.
 
 `refsync.py` fingerprints both: `status` flags a changed `secondary_source`, and
@@ -21,9 +22,8 @@ Both are fetched into `.vendor/gstack/`; this skill routes to them by path. Upst
 
 ## Why this exists
 
-Upstream's descriptions are one-liners ("Fix browser/API/CLI/job/worker/webhook bugs. (gstack)",
-"Report ... bugs."). Neither names the phrasings actually used ("test cái này",
-"check xem chạy được không"), so both under-trigger.
+Upstream now has task-oriented descriptions; the wrapper preserves local phrases
+("test cái này", "check xem chạy được không") and makes repair authority explicit.
 
 Splitting one job across two ~1,000-line skills is upstream's packaging, not a real
 distinction. The distinction that IS real — *am I allowed to change your code* — was
@@ -47,8 +47,9 @@ invisible in the descriptions and is now the first decision this skill makes.
 ## Upstream sections this depends on
 
 - "Section index" (qa-only, qa)
-- "Browser Setup (conditional)" (qa-only)
-- "sections/browser-setup.md" (qa)
+- "sections/exploratory.md" (qa-only, qa)
+- "sections/reporting.md" (qa-only)
+- "sections/scope.md" and "sections/qa-patterns.md" (qa)
 
 ## Decision log
 
@@ -67,3 +68,10 @@ functional), and its 152-char description already states what and when. A wrappe
 be maintenance tax with no triggering gain — a wrap must earn itself.
 
 Shared host: one browser, a context per tab/test, production build: [SHARED-HOST](../effective-development/SHARED-HOST.md).
+
+## Accepted source review — 2026-11-07
+
+Pinned source and markdown cache use the commit in `source`; this is a frozen
+compatibility baseline; `tracking_source` separately checks the moving branch.
+Reviewed entrypoint/section changes against the previous cache; local runtime,
+evidence, authority and repository gates take precedence over upstream helpers.

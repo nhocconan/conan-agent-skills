@@ -1,5 +1,5 @@
 {
- "note": "Synthetic and negative cases only (no real-history prompts). n07-n10 are near-miss negatives that share vocabulary with a skill but must not fire it.",
+ "note": "Synthetic and negative cases only. Positives cover every repository skill. Ten negatives include near misses; n04 explicitly permits only external React guidance as an auxiliary, while raw loads remain reported. Scope adjudicated against skill contracts and global rules before final acceptance; loading does not prove task performance.",
  "cases": [
   {
    "id": "s01",
@@ -179,14 +179,17 @@
   {
    "id": "n03",
    "src": "negative",
-   "prompt": "Add a unit test for the parseDate helper covering leap years.",
+   "prompt": "Explain the difference between a function parameter and an argument.",
    "expect": []
   },
   {
    "id": "n04",
    "src": "negative",
    "prompt": "Explain the difference between useMemo and useCallback.",
-   "expect": []
+   "expect": [],
+   "allowed_auxiliary": [
+    "vercel-react-best-practices"
+   ]
   },
   {
    "id": "n05",
@@ -197,7 +200,7 @@
   {
    "id": "n06",
    "src": "negative",
-   "prompt": "Write a SQL query that counts orders per customer for last month.",
+   "prompt": "What does SQL DISTINCT do?",
    "expect": []
   },
   {
@@ -217,16 +220,162 @@
   {
    "id": "n09",
    "src": "negative",
-   "prompt": "Translate these 5 UI strings to Vietnamese: Save, Cancel, Delete, Settings, Back",
+   "prompt": "Convert binary 1010 to decimal.",
    "expect": [],
    "near_miss": true
   },
   {
    "id": "n10",
    "src": "negative",
-   "prompt": "Write a SQL view for monthly revenue per org",
+   "prompt": "Write a SQL view listing book titles and author names.",
    "expect": [],
    "near_miss": true
+  },
+  {
+   "id": "s21",
+   "src": "synthetic",
+   "prompt": "Audit the accessibility of a login form for WCAG 2.2 AA, including keyboard navigation, focus and screen-reader labels. Plan the audit only; no browser is available in this fixture.",
+   "expect": [
+    "a11y-audit"
+   ]
+  },
+  {
+   "id": "s22",
+   "src": "synthetic",
+   "prompt": "Plan a light backup of Claude Code session histories for a move between machines. Do not read personal histories or perform a backup in this fixture.",
+   "expect": [
+    "agent-session-backup"
+   ]
+  },
+  {
+   "id": "s23",
+   "src": "synthetic",
+   "prompt": "Review this draft for AI slop and unsupported claims: 'Our tool is the world’s fastest editor and unlocks effortless productivity.' Give an edit; do not browse.",
+   "expect": [
+    "anti-slop-review"
+   ]
+  },
+  {
+   "id": "s24",
+   "src": "synthetic",
+   "prompt": "I need a screenshot and console inspection of a local page using the available browser session. Explain the browser workflow before launching anything; this fixture has no running page.",
+   "expect": [
+    "browsing-web"
+   ]
+  },
+  {
+   "id": "s25",
+   "src": "synthetic",
+   "prompt": "Plan how to reproduce my coding-agent setup on a new Linux machine, including skills and MCP servers. Do not install or change machine settings in this fixture.",
+   "expect": [
+    "coding-env-bootstrap"
+   ]
+  },
+  {
+   "id": "s26",
+   "src": "synthetic",
+   "prompt": "Design convincing synthetic demo data for a support dashboard with related tickets, customers and agents. Do not access real customer data or write files.",
+   "expect": [
+    "demo-data-craft"
+   ]
+  },
+  {
+   "id": "s27",
+   "src": "synthetic",
+   "prompt": "Plan a standalone interactive HTML course that teaches SQL joins with examples, diagrams and quizzes. Do not create files yet.",
+   "expect": [
+    "interactive-course-builder"
+   ]
+  },
+  {
+   "id": "s28",
+   "src": "synthetic",
+   "prompt": "Plan a new Android and iOS habit app through store release, with retention, ASO and monetization checkpoints. This is a planning-only fixture.",
+   "expect": [
+    "mobile-app-playbook"
+   ]
+  },
+  {
+   "id": "s29",
+   "src": "synthetic",
+   "prompt": "Review how to check skill drift and upgrade upstream wrappers while preserving local overrides. Do not run installers or change settings.",
+   "expect": [
+    "ref-skills"
+   ]
+  },
+  {
+   "id": "s30",
+   "src": "synthetic",
+   "prompt": "Read the operating manual and explain which checks you would use before accepting an ambiguous technical conclusion. Do not inspect private project maps.",
+   "expect": [
+    "senior-operator"
+   ]
+  },
+  {
+   "id": "s31",
+   "src": "synthetic",
+   "prompt": "Plan how to mine coding-agent conversations for reusable skills with distinct project evidence. Do not access actual history files in this fixture.",
+   "expect": [
+    "skill-miner"
+   ]
+  },
+  {
+   "id": "s32",
+   "src": "synthetic",
+   "prompt": "Plan App Store and Google Play listing screenshots and an App Preview video for a new calendar app, including sizes and a story sequence. Do not render or upload media.",
+   "expect": [
+    "store-screenshots"
+   ]
+  },
+  {
+   "id": "s33",
+   "src": "synthetic",
+   "prompt": "Verify this fixture before a possible commit: inspect the available repository gates and report missing validation evidence. Do not commit or run commands that change files.",
+   "expect": [
+    "verify"
+   ]
+  },
+  {
+   "id": "s34",
+   "src": "synthetic",
+   "prompt": "Add a unit test for the parseDate helper covering leap years.",
+   "expect": [
+    "senior-operator",
+    "effective-development"
+   ]
+  },
+  {
+   "id": "s35",
+   "src": "synthetic",
+   "prompt": "Write a SQL view for monthly revenue per org",
+   "expect": [
+    "metric-integrity"
+   ]
+  },
+  {
+   "id": "s36",
+   "src": "synthetic",
+   "prompt": "Add a unit test for the parseIdentifier helper covering an empty string.",
+   "expect": [
+    "effective-development"
+   ]
+  },
+  {
+   "id": "s37",
+   "src": "synthetic",
+   "prompt": "Write a SQL query that counts orders per customer for last month.",
+   "expect": [
+    "senior-operator",
+    "metric-integrity"
+   ]
+  },
+  {
+   "id": "s38",
+   "src": "synthetic",
+   "prompt": "Translate these 5 UI strings to Vietnamese: Save, Cancel, Delete, Settings, Back",
+   "expect": [
+    "anti-slop-review"
+   ]
   }
  ]
 }

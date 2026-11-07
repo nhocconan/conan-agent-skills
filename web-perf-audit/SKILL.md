@@ -29,7 +29,7 @@ snapshot does not establish a field pass. See [Web Vitals](https://web.dev/artic
 3. **Bundle**: inspect what ships (`@next/bundle-analyzer`, `vite-bundle-visualizer`, or `npx source-map-explorer`). Hunt large/duplicate deps (moment, lodash whole-import, two date libs, untree-shaken icon sets).
 4. **Field data** if available (Chrome UX Report / RUM) — lab and field disagree; field is truth.
 
-Fix by metric only after the trace names the bottleneck. Next.js 16+: `<Image fetchPriority="high">`; its `priority` prop is deprecated in favor of `preload` (docs 2026-08-25).
+Fix by metric only after the trace names the bottleneck. For Next.js images, check the installed version's [Image reference](https://nextjs.org/docs/app/api-reference/components/image#preload): `priority` is deprecated since 16. For a confirmed LCP image, choose `loading="eager"` or `fetchPriority="high"` where appropriate; use `preload` when early discovery is needed, without combining it with `loading` or `fetchPriority`.
 
 ## Data-heavy app checklist (fits dashboard/BI work)
 - Paginate or virtualize big tables; don't ship 100k rows to the client.

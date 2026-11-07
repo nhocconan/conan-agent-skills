@@ -63,8 +63,8 @@ played end-to-end, including one real sandbox purchase + restore.
   carry the message — most views are muted + truncated).
 - **Ratings engine:** wire the platform in-app review APIs at the moment of earned
   delight: new best score, level-set complete, streak milestone — NEVER after a death,
-  never on first session, never more than once per version. Quotas (verified 2026):
-  iOS hard-caps at 3 prompts per 365 days per user and silently ignores extras; Play's
+  never on first session, never more than once per version (house UX policy).
+  [Apple allows up to 3 prompts in 365 days](https://developer.apple.com/app-store/ratings-and-reviews/); the API may decline to display one. Play's
   quota is deliberately undocumented and may silently no-op — so the call must always
   be fire-and-forget, gated by your own policy (sessions ≥ 3, days-since-install ≥ 2,
   ≥ 60 days between prompts). Review prompts raise rating volume (measure the delta on

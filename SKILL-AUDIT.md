@@ -254,3 +254,123 @@ were read from the 1.65.0 package source on 2026-11-07; other sources are dated 
 Limits: no speedup was measured on an application repo. `colocate.sh apply`/`revert` need
 root and were reviewed but not executed here. `senior-operator` keeps the comment rule because
 the agy target receives no managed global block.
+
+## 2026-11-07 — Codex and agy portability
+
+Interim findings; the follow-up below records repairs and subsequent validation.
+
+The review found executable-workflow gaps despite valid skill metadata. All 34 repository
+entrypoints were read for harness assumptions, authority and dependencies; deeper inspection
+focused on wrappers, orchestration, installation and verification. This establishes a content
+review, not equal effectiveness across models or an industry ranking.
+
+| Finding | Change and evidence |
+| --- | --- |
+| Shipping required gstack binaries and upstream sections despite a markdown-only install | Native git/gh release path; optional prose references; required gates refreshed after release edits. Independent forward review covered missing `.vendor` and authorized commit/push/draft PR |
+| QA loaded Claude startup and could block on missing upstream browser setup | Use portable exploration/reporting with an available approved driver; retain report-only default, reproduction, accessibility and artifacts. Independent forward review covered Playwright with missing setup |
+| Hooks and resource controls assumed one harness/host | Claude hook semantics labeled; inspect active tools; use job gates when blocking hooks are unavailable. Linux systemd/cgroup recipe is conditional; other hosts disclose unenforced limits |
+| Browser and security-review discovery assumed Claude commands | Active harness inventory and bounded diff-review fallback |
+| Codex omitted `verify`; agy omitted nine entries relative to the revised full profile | Both workstation definitions now contain all 34 repository skills plus optional `vercel-react-best-practices`; dry run proposes 1 Codex link and 9 agy links. Global links/settings were not applied |
+| Freshness status could silently reuse cached GitHub text | `status` bypasses cache for primary and secondary sources; offline upgrade keeps its existing cache behavior. Isolated regression fails on stale success, passes for changed/unreachable sources, and permits a matching remote |
+| Debugging headings disappeared upstream | Optional routing supports old phase headings and current recipes; local diagnosis/proof remains self-contained. Fingerprints were not silently accepted |
+| Host-load tests inherited `HOST_SHARE` from the machine | Isolate the variable; original suite had 2 failures, repaired suite passes without changing runtime behavior or expected worker counts |
+| Argon access guidance omitted paid Pro and eligible-device trials | Corrected plan access from Google's current models page; API pricing and account entitlement remain separate |
+
+Codex smoke evidence: one ephemeral read-only CLI run in an empty Git fixture loaded
+`web-qa`, `design-qa`, `a11y-audit` and `web-perf-audit`. It reported missing application
+evidence and no established product pass or defect. This tests discovery and restraint
+on one prompt; it does not test a running browser, every trigger, or real application fixes.
+
+Sources consulted for the portability decisions: [OpenAI skills](https://developers.openai.com/codex/skills),
+[Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents),
+[Antigravity skills](https://antigravity.google/docs/skills/),
+[Antigravity CLI](https://antigravity.google/docs/cli/reference/),
+[Antigravity model access](https://antigravity.google/docs/models), and the
+[Agent Skills specification](https://agentskills.io/specification).
+Domain spot checks matched the current [OWASP list](https://top10.owasp.org/2025/),
+[WCAG 2.2](https://www.w3.org/TR/WCAG22/), [Web Vitals thresholds](https://web.dev/articles/defining-core-web-vitals-thresholds),
+and [Apple preview rule 2.3.4](https://developer.apple.com/app-store/review/guidelines/).
+These spot checks do not refresh every vendor claim in supporting references.
+
+Validation: 157 unit tests across six suites; project-rule, skill-structure, context-budget
+and diff checks pass. Four eager ceilings were deliberately raised by a combined 1,050
+bytes for executable fallbacks; descriptions are unchanged, so trigger wording was not
+re-evaluated. Working logs and transcripts stay in ignored `.agents/`.
+
+Remaining limits: live AGY discovery/task execution and full Codex trigger/behavior
+coverage are unmeasured. Fresh remote status detects six changed gstack source documents
+across five wrappers; this review repairs known portability/routing defects without accepting
+the complete upstream diffs or running installers. Model prices, store submission details,
+scanner flags and all other dated vendor facts are not certified current by this audit.
+The repository profiles need an authorized loadout apply before the newly listed skills
+appear in the installed catalogs. No commit or push was requested or performed.
+
+## 2026-11-07 — repairs and installed-harness acceptance
+
+The follow-up repairs the interim gaps above and applies the workstation profiles.
+All three profiles contain 34 repository skills plus the optional React skill, with
+zero pending links. Codex and agy profile verification passes. AGY now receives the
+shared generated global rules and Context7 configuration; no global tool-permission
+bypass was added.
+
+Six changed gstack documents across five wrappers were reviewed at
+[`5862765a20cd751b73e54fe85ffebd9e4da01e30`](https://github.com/garrytan/gstack/commit/5862765a20cd751b73e54fe85ffebd9e4da01e30).
+Install sources and the vendor cache use that commit; separate tracking sources
+retain live drift detection. Native git/gh/browser paths replace unavailable helper
+runtimes. Pinned upgrades explicitly retain their pin until a candidate is reviewed
+and the coordinated source pins are updated.
+
+A final live check caught gstack retiring `investigate` by snapshot
+`6cf00aee9c0fdedc722f35c1f0032c3db9404104`. The local debugging skill now owns
+its diagnosis/proof procedure and five pattern probes. Its dead runtime/fetch
+dependency is removed; source hashes, attribution and retirement evidence remain
+in [historical provenance](investigating-bugs/PROVENANCE.md). Other active tracked
+Markdown remained unchanged; a retained vendor snapshot is not presented as live
+support for the retired skill.
+
+Vendor corrections cover Apple/Play submission rules, screenshot and video sizes,
+billing reconciliation, ad-consent scope, Android vitals, scanner commands/network
+behavior and Next.js image loading. Apple's [transparency report](https://www.apple.com/legal/app-store/transparency/2025/)
+replaces the false claim that no rejection counts are published. The Apple preview
+example now uses five capture scenes, zero generated cards, and a 16-second silent
+timeline; [2.3.4](https://developer.apple.com/app-store/review/guidelines/) permits app
+captures and overlays. Backtest guidance distinguishes causal warm-up from
+[full-sample preprocessing leakage](https://scikit-learn.org/stable/common_pitfalls.html#data-leakage).
+Routing specifications/prices were re-checked against current vendor documentation.
+
+`trigger_eval.py` now supports all three installed CLIs, successful read/completion
+tracking, denied-run handling, scoped public-Markdown grants for AGY, process-group
+cleanup and reports without raw prompts/tool output. Regression checks caught the
+Claude text-result metadata crash, failed reads passing negative cases, private
+symlink grants, and rejection of valid trusted checkout ancestors.
+
+The final synthetic corpus has 38 positive scenarios covering all 34 repository
+skills and 10 negatives, each run twice in selection-only mode. Independent review
+corrected labels that contradicted the test/date/UI-copy rules; those requests remain
+positive checks. Pure Sharpe definitions remain negative, and the backtest description
+now excludes them. The React-concept negative explicitly permits only the external
+React reference; raw loads and unexpected skills remain reported. No blanket external
+or repository-skill exclusion is used. The CLI enforces the existing 85% recall floor
+and requires every negative to pass; `--min-recall 1` selects a stricter positive gate.
+
+| Harness | Positive routing hits | Negatives accepted | Acceptance |
+| --- | --- | --- | --- |
+| Codex | 76/76 (100%) | 20/20 | Pass |
+| agy | 70/76 (92.1%) | 20/20 | Pass |
+| Claude | 68/76 (89.5%) | 20/20 | Pass |
+
+Every repository skill name was loaded in each harness. Actual model identity was
+stream-reported for Claude and agy; Codex's requested model remains unverified.
+The App Store and backtest bodies changed during evaluation; their affected positive
+cases and the Sharpe negative were re-run against stable final sources, passing
+4/4 positives and 2/2 negatives per harness. The later debugging retirement received
+another affected-only check: 4/4 positives and 2/2 negatives per harness. Unaffected
+misses are retained: Claude has one read failure
+and seven non-loads; agy has six non-loads. Earlier execution-mode/oracle variants
+are retained privately and are not presented as comparable before/after scores.
+
+All 172 unit tests and the 10 required repository gates pass. Fixture workspaces and
+evaluation processes were cleaned up; working evidence stays in ignored `.agents/`.
+These are routing and repository checks, not proof of equal implementation quality,
+live store acceptance, scanner compatibility or every OS/tool/version combination.
+No commit or push was requested or performed.

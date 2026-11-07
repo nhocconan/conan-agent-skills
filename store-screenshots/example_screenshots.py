@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Apple App Store marketing screenshots (1320x2868, 6.9" slot — the current default; 1284x2778 (6.5") is accepted on
-its own; App Store Connect does NOT auto-convert between iPhone slots) from
+"""Apple App Store marketing screenshots (1320x2868 example canvas; confirm the
+required device sets and scaling in App Store Connect before rendering) from
 appstore/screenshots/raw/ (iPhone simulator captures via
 -uiScreenshots -uiSeedHistory -uiTab N; the renderer reframes any raw size).
 

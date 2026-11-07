@@ -1,16 +1,12 @@
-# Personal Antigravity CLI (agy) load-out.
-# agy discovers these through ~/.gemini/config/skills.
-# Skills whose value is a Claude-only harness feature are deliberately absent.
-#
-# agy publishes no catalog size cap and rereads skills each turn
-# (antigravity.google/docs/skills/, read 2026-11-06). Measured 2026-11-06:
-# 26 skills ≈ 13.2k chars. Symlink discovery is not documented by Google;
-# if agy stops listing these, copy instead of link.
+# Antigravity CLI workstation profile: same workflows as Codex.
+# User scope: ~/.gemini/config/skills; runtime tools remain harness-specific.
+# Symlink discovery must be checked with the installed agy catalog.
 
 a11y-audit
 admin-crud-standards
 agent-orchestration
 agent-session-backup
+autonomous-loops
 anti-slop-review
 appstore-review-guard
 backtest-integrity
@@ -19,10 +15,9 @@ coding-env-bootstrap
 demo-data-craft
 dev-env-lifecycle
 docs-sync
+effective-development
 interactive-course-builder
 metric-integrity
-mobile-app-playbook
-ref-skills
 reference-parity
 remote-host-access
 resilient-data-harvest
@@ -32,4 +27,13 @@ skill-miner
 store-screenshots
 tenant-scope-integrity
 web-perf-audit
-effective-development
+mobile-app-playbook
+ref-skills
+browsing-web
+shipping-changes
+investigating-bugs
+web-qa
+design-qa
+frontend-design
+vercel-react-best-practices
+verify

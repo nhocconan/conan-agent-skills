@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""App Store App Preview renderer from REAL captures — NO device frames.
+"""Full-bleed preview renderer from real captures, without device frames.
 
 Apple Guideline 2.3.4 requires the App Preview *video* to be a full-screen
 screen capture of the app (textual/narration overlays are allowed, device
-frames are NOT). This renderer composites:
+frames are NOT). Apple previews use only clip/still scenes with permitted overlays.
+Generated card scenes are for other promotional-video targets. This renderer supports:
 
   card  — a generated brand card (gradient + app icon + title + subtitle)
   clip  — a real screen recording (.mp4), shown full-bleed, with a caption
   still — a real full-screen screenshot, gentle Ken Burns, with a caption
 
-The captured media must already be at the output resolution (e.g. 1320x2868,
-an accepted 6.9" App Preview size) so nothing is letterboxed or framed.
+Use the selected App Preview set's accepted output resolution (e.g. 886x1920
+for Dynamic Island / Face ID iPhone); the renderer scales captured media to fit.
 
 Voiceover reuses preview_core's backends via VO_BACKEND (unset = silent track).
 Requires ffmpeg. Method notes: the store-screenshots skill (SKILL.md beside this file).

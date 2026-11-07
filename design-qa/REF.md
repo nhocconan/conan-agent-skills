@@ -1,16 +1,16 @@
 ---
 mode: wrap
 upstream: gstack
-source: github:garrytan/gstack@main:design-review/SKILL.md
-version: 2.0.0
-fingerprint: sha256:411b146216842a77d757c6483ffa1163c3e142b54c71ba1f7797f39e601fb000
-reviewed: 2026-10-02
+source: github:garrytan/gstack@5862765a20cd751b73e54fe85ffebd9e4da01e30:design-review/SKILL.md
+tracking_source: github:garrytan/gstack@main:design-review/SKILL.md
+version: 2.0.1
+fingerprint: sha256:56c3dcd8b33a692f73c26fc7a3f01974cbf9c861b2c3b3f3cc5b66da14046b8e
+reviewed: 2026-11-07
 ---
 
 # Provenance
 
-Wraps gstack's `design-review` (1897 lines in the 2026-09-05 vendored copy; 1940 upstream on 2026-10-02,
-binary-backed). Not vendored — routed to by path.
+Wraps gstack's `design-review` (markdown cached in `.vendor/gstack/`, routed by path).
 
 ## Why this exists
 
@@ -41,8 +41,9 @@ review; the validator caught it.
    `scripts/layout-probe.js`.
 7. Defect classes 7-10 (mismatched bar controls, odd one out, bare-list panels, prose walls) stay
    in SKILL.md; they are the chrome defects generated UI ships most.
-8. Only upstream's "Phases 1-6" and "Design Critique Format" are read; its test bootstrap
-   (design-review/SKILL.md:329-339) and 8e.5 regression-test-and-commit step are not run.
+8. Only upstream's "Phases 1-6" through "Design Critique Format" are read. Its
+   `sections/test-bootstrap.md`, outside voices, helpers and automatic commits are skipped;
+   browser capture and scoring use the local procedure.
 
 ## Upstream sections this depends on
 
@@ -69,3 +70,8 @@ framework-agnostic and the examples synthetic.
 **2026-07-25** — activated unwrapped, then wrapped within the hour after
 `validate_skills.py` flagged the description as stating no WHEN. The mechanical check
 outranked the eyeball judgment.
+
+## Accepted source review — 2026-11-07
+
+The source commit pins the cache; `tracking_source` checks moving-branch freshness.
+Reviewed source diffs. Local runtime, evidence, authority and gates override helpers.

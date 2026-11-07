@@ -1,13 +1,14 @@
 ## §0. Define the bar with numbers, or you will polish forever
 
 "World-class" is not a feeling. Before touching code, write down the target numbers.
-For a casual/arcade mobile game in 2026, top-of-market means roughly:
+For a casual/arcade mobile game, the table supplies starting targets to agree with
+the owner, not measured genre benchmarks. Platform policy thresholds are sourced separately.
 
-| Dimension | Table-stakes | Top-chart |
+| Dimension | Minimum target | Stretch target |
 | --- | --- | --- |
 | D1 / D7 / D30 retention | 30% / 10% / 4% | 45%+ / 20%+ / 8%+ |
 | Crash-free sessions | 99.5% | 99.8%+ |
-| Android vitals | below "bad behavior" thresholds | green on ALL vitals (user-perceived crash < 1.09% overall / 8% per device model, ANR < 0.47% / 8% per model, excessive partial wake locks < 5% of sessions — 28-day windows; Play demotes visibility above them, per developer.android.com/topic/performance/vitals — re-verify thresholds there, they evolve) |
+| Android vitals | below applicable bad-behavior thresholds | [Current Play vitals](https://developer.android.com/google/play/vitals): phone crash <1.09% overall / 8% per model; ANR <0.47% / 8%; excessive partial wake locks <5%. Use Play's metric definitions and 28-day window, not crash-free-session arithmetic. Check memory/bitmap and DEX optimization thresholds too; their visibility impact may begin February 2027. |
 | Time-to-fun (install → first core-loop moment) | < 60s | < 20s, zero mandatory reading |
 | Frame rate | stable 60fps on 5-year-old devices | 120Hz on ProMotion/high-Hz Android |
 | Input latency (tap → visible response) | < 100ms | < 50ms, with haptic + audio confirm |

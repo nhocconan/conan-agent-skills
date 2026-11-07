@@ -1,6 +1,6 @@
 ## Guideline 3.1.1 — Restore Purchases (the pattern)
 
-A frequent avoidable IAP rejection. Guideline 3.1.1 itself says only that you "make sure you have a restore mechanism for any restorable in-app purchases" (read 2026-10-02); App Review's rejection message typically adds:
+A logged IAP rejection. [Guideline 3.1.1](https://developer.apple.com/app-store/review/guidelines/#in-app-purchase) requires a restore mechanism for restorable purchases; the ledger's rejection also requested:
 
 > Provide a **distinct "Restore" button** and initiate the restore when tapped.
 > **Automatically restoring purchases on launch will not resolve this.**
@@ -44,8 +44,8 @@ Place it **both** in Settings (where reviewers look first) **and** as its own
 always-visible section in the paywall — visible even after purchase. Confirm the
 result with an alert so the action is never silent.
 
-**Play Billing equivalent:** query `queryPurchasesAsync()` / call the billing
-client's restore path behind an explicit "Restore purchases" button; same "must
-be a real, distinct, tappable control" rule applies.
+**Play Billing:** reconcile `queryPurchasesAsync()` on connection/foreground return,
+including completed pending purchases. An explicit Restore control is optional UX,
+not a replacement for [automatic reconciliation](https://developer.android.com/google/play/billing/integrate).
 
 ---

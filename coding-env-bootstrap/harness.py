@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install and verify the portable Claude/Codex coding-agent harness.
+"""Install and verify the portable Claude/Codex/agy coding-agent harness.
 
 This script is intentionally stdlib-only and does not handle credentials. It
 merges a safe Claude settings subset, installs a separate Codex profile, adds a
@@ -152,6 +152,11 @@ def install_codex_config() -> None:
     print(f"codex global instructions: {'updated' if changed else 'already current'}")
 
 
+def install_agy_config() -> None:
+    changed = install_managed_instructions(HOME / ".gemini" / "AGENTS.md")
+    print(f"agy global instructions: {'updated' if changed else 'already current'}")
+
+
 def install_skills(target: str, profile: str) -> None:
     command = [
         sys.executable,
@@ -181,7 +186,10 @@ def ensure_upstreams(target: str, profile: str) -> None:
 def mcp_names(cli: str | None) -> str:
     if not cli:
         return ""
-    return run([cli, "mcp", "list"]).stdout
+    result = subprocess.run([cli, "mcp", "list"], text=True, capture_output=True, timeout=30)
+    if result.returncode:
+        raise RuntimeError(f"{Path(cli).name}: cannot inspect configured MCP servers")
+    return result.stdout
 
 
 def install_context7(target: str) -> None:
@@ -199,6 +207,11 @@ def install_context7(target: str) -> None:
             command = [
                 cli, "mcp", "add", "-s", "user", "context7", "--",
                 "npx", "-y", "@upstash/context7-mcp@latest",
+            ]
+        elif target == "agy":
+            command = [
+                cli, "mcp", "add", "--type", "http", "context7",
+                "https://mcp.context7.com/mcp",
             ]
         else:
             command = [
@@ -259,7 +272,7 @@ def verify_target(target: str, profile: str) -> list[str]:
         if repo_skill.is_file():
             if not path.is_dir() or not (path / "SKILL.md").exists():
                 errors.append(f"{target}: missing or invalid skill {path}")
-            elif profile in {"core", "codex-dev"}:
+            elif profile in {"core", "codex-dev", "agy-dev"}:
                 expected = (REPO / name).resolve()
                 if path.resolve() != expected:
                     errors.append(
@@ -283,6 +296,8 @@ def verify_target(target: str, profile: str) -> list[str]:
         if not profile_path.is_file():
             errors.append(f"codex: missing profile {profile_path}")
         instructions = HOME / ".codex" / "AGENTS.md"
+    elif target == "agy":
+        instructions = HOME / ".gemini" / "AGENTS.md"
     else:
         return errors
 
@@ -319,7 +334,9 @@ def apply(args) -> int:
             install_claude_config()
         elif target == "codex":
             install_codex_config()
-        if args.with_mcp and target in {"claude", "codex"}:
+        elif target == "agy":
+            install_agy_config()
+        if args.with_mcp:
             install_context7(target)
     return audit(args)
 

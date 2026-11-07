@@ -159,7 +159,7 @@ def fetch_github_file(
         return r.read().decode("utf-8", "replace")
 
 
-def read_source(spec: str) -> str | None:
+def read_source(spec: str, *, cache: bool = True) -> str | None:
     """spec: local:<path> | github:<owner>/<repo>@<ref>:<path> | https:<url>"""
     try:
         if spec.startswith("local:"):
@@ -170,7 +170,7 @@ def read_source(spec: str) -> str | None:
             if not parsed:
                 return None
             owner, repo, ref, path = parsed
-            return fetch_github_file(owner, repo, ref, path)
+            return fetch_github_file(owner, repo, ref, path, cache=cache)
         if spec.startswith(("http://", "https://")):
             with urlopen(spec, timeout=30) as r:
                 return r.read().decode("utf-8", "replace")
@@ -217,13 +217,13 @@ def cmd_status(args) -> int:
             )
             continue
         mode = fm.get("mode", "?")
-        src = fm.get("source", "")
-        cur = read_source(src)
+        src = fm.get("tracking_source", fm.get("source", ""))
+        cur = read_source(src, cache=False)
         if cur is None:
             print(f"  {d.name:26} {mode:5}  UNREACHABLE  {src}")
             drift += 1
             continue
-        secondary = stale_secondary(fm)
+        secondary = stale_secondary(fm, cache=False, tracking=True)
         if secondary:
             drift += 1
             state = "UNREACHABLE" if secondary[1] is None else "CHANGED"
@@ -278,17 +278,17 @@ def bump_ref(ref: Path, fingerprint: str, version: str | None) -> None:
     ref.write_text(text)
 
 
-def stale_secondary(fm: dict) -> tuple[str, str | None] | None:
+def stale_secondary(fm: dict, *, cache: bool = True, tracking: bool = False) -> tuple[str, str | None] | None:
     """A wrap's `secondary_source`, when its text no longer matches `secondary_fingerprint`.
 
     web-qa routes to two upstream skills (qa-only and qa). Fingerprinting only the
     primary let qa shrink from 960 to 817 lines on 2026-10-02 without a warning.
     Returns (source, current_text_or_None) when stale or unreachable, else None.
     """
-    src = fm.get("secondary_source", "")
+    src = (fm.get("secondary_tracking_source") if tracking else None) or fm.get("secondary_source", "")
     if not src:
         return None
-    cur = read_source(src)
+    cur = read_source(src, cache=cache)
     if cur is not None and sha256(cur) == fm.get("secondary_fingerprint", ""):
         return None
     return src, cur
@@ -348,7 +348,11 @@ def cmd_upgrade(args) -> int:
                     print(f"  re-read it, then: python3 refsync.py upgrade {d.name} --accept")
         if sha256(cur) == fm.get("fingerprint", ""):
             if not secondary:
-                print(f"{d.name}: already current")
+                if fm.get("tracking_source"):
+                    print(f"{d.name}: installed pin unchanged; tracking branch not advanced. "
+                          "Use status and the pinned-wrap review procedure before repinning.")
+                else:
+                    print(f"{d.name}: already current")
             continue
 
         mode = fm.get("mode", "wrap")

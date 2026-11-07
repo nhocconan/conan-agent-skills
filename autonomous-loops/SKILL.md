@@ -29,7 +29,7 @@ says the task succeeded. Every loop reports the gate's verdict, never the run's 
 | Rung | Trigger | Write access | What earns the next rung |
 | --- | --- | --- | --- |
 | 1 · Skill | a human invokes it | as the session allows | representative runs reviewed; gate catches forced failure |
-| 2 · Hook | a session event (before/after a tool, on stop) — on blockable events (PreToolUse, Stop, UserPromptSubmit) exit code 2 *blocks* the action; PostToolUse and notification events cannot block (verify: [harness mechanics](sections/harness-mechanics.md)). This rung enforces, it does not advise | none of its own | the hook has never blocked something it should have allowed |
+| 2 · Hook | a supported blocking session event; verify the active harness's events and rejection semantics ([harness mechanics](sections/harness-mechanics.md)). Notification-only hooks cannot enforce a gate | none of its own | the hook has never blocked something it should have allowed |
 | 3 · Headless CI | repo event (push, PR) or CI cron; local artifacts only | **none; posting comments needs write authority** | outputs were correct for N runs and cheap to check |
 | 4 · Scheduled | a clock outside the repo (routines, automations, Claude Code `/loop`, cron on the box) | still read-only | brakes proven under a forced failure |
 | 5 · Agentic workflow | lives in the repo as code; agent runs read-only, a separate narrowly-scoped job holds the token | **proposes PRs by default; bounded authorized writes** | — |

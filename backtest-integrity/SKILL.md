@@ -1,12 +1,12 @@
 ---
 name: backtest-integrity
 description: >-
-  Use when writing or reviewing any backtest, factor study or trading-system
-  evaluation, when a result looks too good (high Sharpe, tiny drawdown), before going
-  live, or on "backtest", "Sharpe", "CAGR", "edge", "chiến lược". Catches
-  result-inflating bugs — wrong annualization, look-ahead, survivorship, ignored costs
-  — and enforces out-of-sample discipline (walk-forward, champion/challenger, decay
-  monitoring) with auditable provenance.
+  Use when writing or reviewing a backtest, factor study or trading-system
+  evaluation, investigating suspicious Sharpe/CAGR/drawdown results, or assessing
+  a strategy before live trading ("backtest", "edge", "chiến lược"). Catches result
+  inflation from annualization, look-ahead, survivorship and ignored costs; enforces
+  out-of-sample evaluation and auditable provenance. Excludes standalone definitions
+  and formula explanations.
 ---
 
 # Backtest Integrity
@@ -23,10 +23,11 @@ survive this whole checklist and reproduce from a clean re-run.
    calendar, not the trading/rebalance frequency. Daily marked-to-market returns
    remain daily even with monthly rebalances. Compute CAGR from elapsed years;
    document the assumptions behind Sharpe scaling, especially serial correlation.
-2. **Look-ahead via truncated features**: never date-filter the raw price/fundamental data
-   *before* computing features — a momentum/ADTV feature computed on truncated history ranks
-   differently and flatters OOS probes. Build features on FULL history, then **slice the
-   equity curve by date** to get period results.
+2. **Causal features and warm-up**: retain enough pre-period history for rolling features,
+   using only information available at each bar. Fit scalers, feature selection and models
+   on each training fold only, never the full sample; then slice evaluation outputs by date.
+   [Preprocessing leakage](https://scikit-learn.org/stable/common_pitfalls.html#data-leakage)
+   can inflate scores even when the final estimator uses a proper split.
 3. **Point-in-time everywhere**: fundamentals as-published (with reporting lag), universe
    membership as-of-date, prices unadjusted for information not yet known. Any join on
    "current" attributes (today's sector, today's shares outstanding) is quiet look-ahead.
@@ -34,7 +35,7 @@ survive this whole checklist and reproduce from a clean re-run.
    WITHOUT, using point-in-time membership and delisting returns. A stop-loss does not
    guarantee executable exits. Delisted names auto-exclude from LIVE signals.
 5. **Costs & capacity**: fees + slippage per market; size capped by liquidity (e.g. % of
-   ADTV). An edge that dies at 40bps round-trip was never an edge.
+   ADTV). Evaluate net results at the intended venue, size and execution costs.
 6. **Silent data degradation**: verify the data layer actually loaded (a data package
    silently missing degrades to empty frames with no error; a mis-parameterized API call can
    masquerade as "fundamentals are broken"). Add a `doctor`/probe command and run it before

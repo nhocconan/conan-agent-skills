@@ -18,6 +18,11 @@ Track commit, push and deploy authority separately: permission to deploy/test do
 grant commit/push, and a commit request does not grant deployment. Continue authorized
 steps; report missing authority without re-asking for existing authority.
 
+Upstream is procedural reference: skip its Claude startup, telemetry and gstack helper
+commands. Use repository gates, `docs-sync` for release documentation, and the active
+harness's review tools. Compose authorized PRs with `gh pr create --body-file` or `gh pr edit --body-file`
+using a temporary file; verify the resulting PR. Missing helpers never waive a gate.
+
 ## House rules — non-negotiable
 
 1. **Follow the repository's branch and review policy.** Direct-to-main is appropriate
@@ -43,17 +48,17 @@ steps; report missing authority without re-asking for existing authority.
    checks for feedback where permitted ([effective-development](../effective-development/SKILL.md));
    they do not replace required merge or deploy checks.
 3. Review the diff hunk by hunk.
-4. For the mechanics beyond this point (version bump, changelog, commit message
-   composition, push), read `../.vendor/gstack/ship/SKILL.md` — its
-   **"Section index — Read each section when its situation applies"** — then read only the
-   sections that index names for the step you are on (all under
-   `../.vendor/gstack/ship/sections/`; `refsync.py ensure` fetches them) and follow them
-   with the house rules above applied. Upstream Steps 4–11 (test bootstrap, coverage
-   generation, review army) are replaced by steps 2–3; skip `sections/tests.md` and
-   `sections/test-coverage.md`. Upstream's flow aborts on the base branch and opens
-   a PR; rule 1 decides whether that applies. Finish what the request covers: no partial
-   or deferred work without saying so. A section the index names but `.vendor/` lacks is
-   reported, not improvised.
+4. Follow the repo's release policy for any required version/changelog updates;
+   re-run affected gates if they change the verified tree. Stage only owned paths
+   (`git add -- <paths>`), inspect `git diff --cached`, and commit with the operator's
+   identity and passing hooks. Push the intended branch to the confirmed remote
+   only when authorized; create/update a PR only within that authority.
+   Optional writing guidance lives in `../.vendor/gstack/ship/sections/changelog.md`
+   and `pr-body.md`: use their evidence and writing guidance, with the repo's title,
+   version and body format. Omit assistant attribution, invented coverage and unrun
+   review claims. If absent, use the native git/gh flow above.
+   Upstream test bootstrap, coverage generation and review-army steps are replaced
+   by steps 2–3; no upstream command replaces a repository gate.
 5. Verify the authorized outcome: inspect the local diff/status for a handoff; check
    commit identity after committing, remote revision after pushing, or deployed build
    and user journey after deployment. Preserve unrelated uncommitted work.

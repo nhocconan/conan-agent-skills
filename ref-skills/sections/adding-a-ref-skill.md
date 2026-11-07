@@ -20,9 +20,12 @@ Loaded on demand by `ref-skills`.
 ## REF.md fields
 
 - `mode` — `wrap` or `fork`.
-- `source` — `github:<owner>/<repo>@<ref>:<path>`. Pin a commit SHA where you can.
-  `upstreams.ini` currently sets `ref = main` for gstack, a moving branch: `@main` plus a
-  `fingerprint` records *what you reviewed*, not *which upstream release it was*.
+- `source` — `github:<owner>/<repo>@<ref>:<path>`. Pin a commit SHA and keep
+  `upstreams.ini` on the same ref for reproducible installs.
+- `tracking_source` — optional moving-branch source checked by `status` against the
+  accepted fingerprint. It detects newer content without changing the install pin.
+  A two-source wrap uses `secondary_tracking_source` for its second document.
+  Review drift before updating both pins and accepting new fingerprints.
 - `version` — **this wrapper's own revision, not the upstream's.** `refsync.py bump_ref`
   rewrites it on `--accept`; nothing reads an upstream version number into it. An upstream
   release string quoted in a SKILL.md body (for example a `gstack vX.Y` citation) is prose
@@ -30,4 +33,18 @@ Loaded on demand by `ref-skills`.
   recorded, put the commit SHA in `source`.
 - `fingerprint` — sha256 of the upstream file as reviewed. This, with `source`, is the
   only identification of the upstream.
-- `reviewed` — the date a human last read the upstream diff.
+- `reviewed` — the date the upstream diff was last reviewed.
+
+## Updating a pinned wrap
+
+`upgrade` retains a pinned source; `--accept` accepts only its installed content.
+It does not adopt the tracking branch. To review a newer candidate:
+
+1. Run `status`, resolve the tracking branch to a full commit SHA, and fetch candidate
+   Markdown at that SHA into ignored scratch files. Compare with the accepted source.
+2. Review depended-on sections and local overrides; repair routes before repinning.
+3. Update `upstreams.ini` and all affected `source`/`secondary_source` pins for that
+   upstream to the reviewed SHA; retain tracking fields. Fetch the pinned Markdown
+   before accepting fingerprints. A shared upstream pin is a coordinated update.
+4. Run `upgrade <names> --accept` within authorized update scope, then `status` and
+   repository gates. A cache-only/offline run does not establish tracking freshness.

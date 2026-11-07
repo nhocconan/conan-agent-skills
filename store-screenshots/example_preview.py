@@ -16,7 +16,6 @@ Capture the media first (see SKILL.md Step 4):
 import os
 import subprocess
 
-from store_frames import INK, INK_TOP
 from preview_clips import render_preview_from_media
 
 os.environ.setdefault("VO_BACKEND", "none")  # silent by default; set kokoro/say/openai for narration
@@ -37,13 +36,9 @@ if not os.path.exists(HOME_B):
 
 # kind="clip"  → full-bleed real recording + caption (no frame)
 # kind="still" → full-screen screenshot + gentle Ken Burns + caption
-# kind="card"  → generated brand card (intro/outro only)
 # Only put a feature claim on a scene that visibly SHOWS it (accurate metadata):
 # e.g. don't caption "Siri" unless Siri is on screen.
 SCENES = [
-    dict(kind="card", dur=3.0, title="STAND TIMER",
-         sub="Your hourly nudge to move.", bg=(INK_TOP, INK),
-         vo="Long days in a chair quietly wear you down."),
     dict(kind="clip", dur=3.6, src="home.mp4", head="SITTING ALL DAY?",
          vo="Stand Timer shows your next stand-up break at a glance."),
     dict(kind="still", dur=3.6, src="stills/profiles.png",
@@ -62,15 +57,7 @@ SCENES = [
          vo="Pick your theme and keep everything on your terms."),
     dict(kind="clip", dur=3.6, src="home_b.mp4", head="NO ADS. NO ACCOUNT.",
          vo="No ads, no account. It all stays on your iPhone."),
-    dict(kind="card", dur=3.0, title="STAND TIMER",
-         sub="Move more, starting this hour.", bg=(INK_TOP, INK),
-         vo="Move more, starting this hour."),
 ]
 
-# OUTPUT SIZE = 886x1920 (App Preview), NOT 1320x2868 (that's the SCREENSHOT
-# size — App Store Connect's iPhone App Preview slot REJECTS it: "dimensions
-# should be 886 × 1920px or 1920 × 886px", a real June 2026 upload error).
-# 886x1920 is accepted across the 6.5"/6.7"/6.9" preview slots. The renderer
-# downscales the native 1320x2868 captures to fit (the ~0.3% aspect delta is
-# imperceptible); it's still a real screen capture, just not 1:1.
+# App Preview sets accept video dimensions distinct from screenshot dimensions.
 render_preview_from_media(SCENES, MEDIA, ICON, OUT, 886, 1920, max_total=29.5)

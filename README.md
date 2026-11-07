@@ -17,9 +17,22 @@ platform requirements. Check the active tools before executing a referenced reci
 Model policy: **the lead slot belongs to the active harness, and the harness lead owns
 final quality; workers implement scoped work and never grant final acceptance.** Leads are
 not substituted across harnesses. Per-harness tables, model IDs, pricing, retirement dates
-and harness mechanics live in [model routing](agent-orchestration/sections/routing.md),
-OpenAI and Anthropic rows re-verified 2026-09-30, Gemini/agy rows 2026-10-14.
-See [the audit](SKILL-AUDIT.md) (latest section 2026-11-06, 34 skills) for findings and validation limits.
+and harness mechanics, with their verification dates, live in
+[model routing](agent-orchestration/sections/routing.md).
+See [the audit](SKILL-AUDIT.md) for findings and validation limits, including the
+2026-11-07 Codex/agy portability review.
+
+Workstation profiles for Codex and agy include all 34 repository skills plus the
+optional React skill. `verify` works in each harness; automatic pre-commit invocation
+depends on the harness. Profile definitions do not prove live discovery or equal
+task performance. Claude session backup remains a Claude-data workflow regardless
+of which agent executes it.
+
+Bootstrap installs the shared quality bar for each selected harness, including
+`~/.gemini/AGENTS.md` for agy. `--with-mcp` configures Context7 for all three.
+Real routing checks for Claude, Codex and agy use
+[the trigger evaluator](skill-miner/TRIGGER-EVAL.md); structural validity and
+successful loading do not establish equal task performance.
 
 Project rules use one source: `AGENTS.md`, with native Claude/Gemini import adapters.
 See [the shared-rule convention](coding-env-bootstrap/PROJECT-RULES.md) for safe
@@ -141,7 +154,7 @@ wrap by default, fork only when you mean to diverge.
 | 20 | [skill-miner](skill-miner/SKILL.md) | Mine authorized local histories with source references, exact replay tracking, archive coverage and private digests. Separate scans from semantic review; require recurring procedural evidence across ≥2 projects, prefer existing skills, and preserve the watermark on read failures. |
 | 21 | [ref-skills](ref-skills/SKILL.md) | Derive skills from upstream suites and keep them current. Two modes — **wrap** (own ~50 lines that fix upstream's triggering + carry house rules, point at the 1,000–2,000-line original by path; the only workable mode for gstack, which is binary-backed) and **fork** (vendor `.upstream/` as a merge base, `git merge-file --diff3` on upgrade). `refsync.py` does drift detection by fingerprint, merges, validates, and **re-applies the load-out** — necessary because gstack's installer rewrites `~/.claude/skills` with its whole suite on every upgrade and no flag prevents it. |
 | 22 | [shipping-changes](shipping-changes/SKILL.md) | Wrap over gstack `ship`. Carries the house rules upstream gets wrong: repository branch/review controls, operator commit identity with no assistant attribution, hooks must pass rather than be skipped, and never pipe a gate through `tail`/`head` (the exit code becomes the pipe's). |
-| 23 | [investigating-bugs](investigating-bugs/SKILL.md) | Wrap over gstack `investigate`. Preserve the reproduction before any fix — hypotheses are tested only in isolated probes (scratch worktree, temporary instrumentation) removed before delivery; verify the presupposition first; verify by re-deriving rather than recognising; prove fail-before/pass-after; escalate a repeated shape to `bug-class-audits`. |
+| 23 | [investigating-bugs](investigating-bugs/SKILL.md) | Local diagnosis/proof workflow: preserve reproduction, test causes in isolated probes, verify the presupposition, prove fail-before/pass-after and escalate recurring classes. Includes flake, order-dependence, race, metric-regression and shared-helper probes; retired upstream provenance is archived. |
 | 24 | [browsing-web](browsing-web/SKILL.md) | Wrap over gstack `browse` (compiled binary — wrap is the only possible mode). Uses the selected, available browser with evidence and session discipline. Don't stop to re-confirm an already-open logged-in session; bulk collection hands off to `resilient-data-harvest`. |
 | 25 | [web-qa](web-qa/SKILL.md) | Wrap over gstack `qa` + `qa-only` — one job with a mode switch, not two skills. **Report-only is the default**; fixing happens only when asked, and then under the `shipping-changes` house rules. Every finding carries an artifact and is reproduced before it is written down; the scope and tier actually covered are stated, not implied. Routes visual defects to `design-qa`, wrong numbers to `metric-integrity`. Uses the project-approved or user-selected available browser. |
 | 26 | [design-qa](design-qa/SKILL.md) | Counted critique of rendered screens: 12-criterion rubric, product-UI tells, `layout-probe.js` (bar control/icon/gap consistency, odd-one-out, ragged rows, prose walls, ungrouped panels). Step 5 of `frontend-design`'s loop; report-only unless fixes are requested. |

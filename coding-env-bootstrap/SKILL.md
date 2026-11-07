@@ -25,7 +25,7 @@ first, then re-issue the instruction.
 | --- | --- |
 | `BOOTSTRAP.md` | The agent-executable install + verification runbook. This is the artifact. |
 | `AUDIT.md` | Dated incident log of the source-machine scan. Not required: `BOOTSTRAP.md` encodes its decisions. Open only to learn why. |
-| `harness.py` | Idempotent `audit` / `apply` / `verify` entry point for Claude, Codex, or both. |
+| `harness.py` | Idempotent `audit` / `apply` / `verify` for Claude, Codex and agy; `--target all` selects all three. |
 | `PROJECT-RULES.md` | Single-source project rules, native adapters, and drift checks. |
 | `templates/` | Secret-free Claude settings, Codex production profile, and shared global quality bar. |
 | `local/` | Gitignored. Machine-specific values and anything sensitive. Never committed. |
@@ -48,4 +48,4 @@ first, then re-issue the instruction.
   than no snapshot, because the next machine is built on it.
 - **Use the script, not hand-copied snippets.** The script merges Claude's portable
   settings, writes Codex settings as a separate `production` profile, preserves existing
-  global instructions outside its managed block, and never copies credentials.
+  global instructions outside its managed block in each selected harness, and never copies credentials.

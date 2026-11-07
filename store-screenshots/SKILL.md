@@ -38,7 +38,7 @@ sequence, you have a catalog, not a story.
 **The sequence (5 screenshots, each does ONE job, one short message each):**
 1. **Name the pain** — their frustration before your app ("Buried in notes you'll never find again?")
 2. **State the shift** — life after the app ("Everything you capture, organized automatically.")
-3. **Show proof** — real numbers/users/result ("Used by 10,000 developers."). *Never invent numbers.* A v1 with no users substitutes its strongest verifiable claim (reliability, privacy, offline, free).
+3. **Show proof** — a verifiable result from the app. Never invent numbers; Play's promotion guidance excludes testimonials, rankings and download counts, so use product evidence there.
 4. **Feature delivery #1** — the capability that delivers the promise from #2
 5. **Feature delivery #2** — second strongest capability (privacy/no-ads is a great closer)
 
@@ -81,13 +81,7 @@ gradient, alternating tilt) and call `render_slides(SLIDES, raw_dir, out_dir, W,
 
 Canvas sizes (the renderer scales its layout to any of these):
 - **Google Play:** 1080×1920 (9:16 — the recommended minimum for promotion placements)
-- **Apple App Store iPhone:** use the current 6.9-inch screenshot set by default:
-  **1260×2736, 1290×2796, or 1320×2868** portrait (and the rotated landscape
-  equivalents). Choose the exact accepted size matching the source device and the
-  App Store Connect slot. The older **6.5-inch** sizes, **1284×2778** and
-  **1242×2688**, remain supported fallback assets; Apple uses scaled 6.9-inch
-  screenshots when that primary set is supplied. Re-check the official size table
-  immediately before rendering/uploading because device slots change.
+- **Apple App Store iPhone:** use Apple's [required device sizes and size table](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/), then confirm the required set in App Store Connect. The table lists **1179×2556 / 1206×2622** for Dynamic Island medium and **1260×2736 / 1290×2796 / 1320×2868** for large (portrait; rotate for landscape). Scaling depends on the source set and matching UI; do not assume one canvas fills every required slot.
 - **Apple App Store iPad:** for the current 13-inch set use **2064×2752** or
   **2048×2732** portrait (and rotated landscape). Choose the target slot rather
   than assuming one size is universally required.
@@ -130,5 +124,5 @@ rejection, not a retouch:
 - With voiceover: confirm the track isn't silent —
   `ffmpeg -i out.mp4 -af volumedetect -f null -` should report a mean_volume
   around −16 dB, not −91 dB. Listen that no line is clipped at a scene cut.
-- Play: JPEG or 24-bit PNG without alpha, sides 320–3840 px, at least 2 phone screenshots (verified 2026-10-02); the 8 MB cap and 8-screenshot maximum are unverified — recheck in Play Console.
+- [Play phone screenshots](https://support.google.com/googleplay/android-developer/answer/9866151): JPEG/24-bit PNG, no alpha; sides 320–3840 px, long side ≤2× short side; minimum 2 across device types, maximum 8 per type. Promotion eligibility needs ≥4 app or ≥3 game captures at 1080×1920 portrait (or landscape equivalent); keep captions ≤20% of each image. Check device-specific limits separately; no universal 8 MB phone cap is established here.
 - Don't claim anything the app can't verifiably do (store rejection / trust).

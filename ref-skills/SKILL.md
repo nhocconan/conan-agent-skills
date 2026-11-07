@@ -24,6 +24,10 @@ Run them only within an installation/update request. Record resolved versions/co
 and review upstream diffs; a moving branch or `@latest` is not a reproducible pin.
 On controlled hosts, use an approved pinned toolchain or disable network installation
 with `CONAN_AGENT_ENSURE=0`. Do not claim this installer alone certifies production safety.
+`status` reads remote sources without changing the vendor cache; unreachable sources
+fail the check rather than falling back to a cached freshness claim.
+For pinned wraps, `tracking_source` follows the moving branch for drift; installation
+continues to use the accepted commit. Review before updating both the pin and fingerprints.
 
 ## The one command
 
@@ -76,8 +80,12 @@ install, preview and re-apply the curated profile; keep unrelated external skill
 
 ## Upgrading a wrap (never automatic)
 
-A wrapper's value is the local rules, so `refsync.py` will not rewrite one. On drift it
-writes the new upstream to `.upstream-preview.md` and stops. Then:
+A wrapper's value is the local rules, so `refsync.py` will not rewrite one.
+For a **pinned source**, `upgrade` retains that pin; `--accept` accepts only the
+installed source, never the tracking branch. Before adopting tracking drift, follow
+[the pinned-source review procedure](sections/adding-a-ref-skill.md#updating-a-pinned-wrap).
+
+For **unpinned sources**, drift writes `.upstream-preview.md` and stops. Then:
 
 1. Read the preview against the wrapper's **"Upstream sections this depends on"**.
 2. If a depended-on section vanished or its commands changed, **re-point the wrapper**

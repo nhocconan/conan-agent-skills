@@ -1,0 +1,17 @@
+{
+ "note": "Two synthetic prompts for bounded real CLI smoke checks, not a replacement for the full trigger evaluation. Run from an isolated fixture without production integrations.",
+ "cases": [
+  {
+   "id": "smoke-positive",
+   "src": "synthetic",
+   "prompt": "Review this draft for AI slop and unsupported factual claims: 'Our app is the world's fastest task manager. It empowers everyone to seamlessly unlock productivity.' Give a concise edit and name the claims that need evidence. Do not browse, modify files, or delegate.",
+   "expect": ["anti-slop-review"]
+  },
+  {
+   "id": "smoke-negative",
+   "src": "negative",
+   "prompt": "Translate 'Good morning' into Vietnamese. Reply with the translation only.",
+   "expect": []
+  }
+ ]
+}

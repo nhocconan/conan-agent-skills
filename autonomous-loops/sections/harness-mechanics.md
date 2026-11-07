@@ -1,16 +1,16 @@
 ## Harness mechanics
 
-Inspect the current scheduling, hook and headless interfaces; historical commands
-are not portable APIs.
+Check harness interfaces; historical commands are not portable APIs.
 
-1. Read the active tool definitions or installed CLI help and current official
-   documentation for the exact harness.
+1. Check tools, official docs and CLI help: `codex --help` /
+   `codex exec --help`, or `agy --help` (print mode/timeout). Headless does not
+   imply scheduling or blocking hooks; use a CI/job gate where hooks cannot block.
 2. Establish whether execution survives session closure, where credentials and
    skills load, and which identity performs writes. Session-scoped schedulers do
    not survive it: Claude Code `/loop` tasks fire only while that session runs and
    recurring ones expire after 7 days; cloud routines run at a 1-hour minimum
    interval (scheduled-tasks docs, read 2026-10-02).
-   Hooks: exit 2 blocks on PreToolUse, Stop, UserPromptSubmit; not on PostToolUse or
+   Claude hooks: exit 2 blocks on PreToolUse, Stop, UserPromptSubmit; not on PostToolUse or
    notifications. Scheduler kill switch: `CLAUDE_CODE_DISABLE_CRON=1` (docs read 2026-10-02).
 3. Configure supported time/iteration/cost limits, overlap protection, error
    reporting, and a kill switch. Test a forced failure in an isolated environment,

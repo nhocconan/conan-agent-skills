@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import json
 import shutil
 import subprocess
 import sys
@@ -64,6 +65,33 @@ def invoke(
 
 
 class HarnessTests(unittest.TestCase):
+    def test_agy_with_mcp_provisions_documentation_server(self):
+        with tempfile.TemporaryDirectory() as raw_home:
+            home = Path(raw_home)
+            cli = home / ".local/bin/agy"
+            cli.parent.mkdir(parents=True)
+            cli.write_text(
+                "#!/usr/bin/python3\n"
+                "import json,os,sys,pathlib\n"
+                "p=pathlib.Path(os.environ['HOME'])/'mcp-fixture.json'\n"
+                "a=sys.argv[1:]\n"
+                "if a==['mcp','list']:\n"
+                " print(p.read_text() if p.exists() else '{}')\n"
+                "elif len(a)==6 and a[:4]==['mcp','add','--type','http']:\n"
+                " p.write_text(json.dumps({a[4]:{'url':a[5]}}))\n"
+                "else:\n"
+                " sys.exit(23)\n"
+            )
+            cli.chmod(0o755)
+            result = invoke(home, str(HARNESS), "apply", "--target", "agy",
+                            "--profile", "core", "--with-mcp",
+                            env_updates={"PATH": "/usr/bin:/bin"})
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            state = home / "mcp-fixture.json"
+            self.assertTrue(state.is_file(), "AGY setup omitted its documentation server")
+            self.assertEqual(json.loads(state.read_text())["context7"]["url"],
+                             "https://mcp.context7.com/mcp")
+
     def test_with_mcp_finds_claude_in_user_bin_when_missing_from_path(self):
         with tempfile.TemporaryDirectory() as raw_home:
             home = Path(raw_home)

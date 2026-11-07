@@ -60,11 +60,11 @@ it installs and verifies itself.
 Ba profile, ba kích cỡ khác nhau — vì mỗi agent nhét description của **mọi** skill vào
 system prompt và cắt theo một trần khác nhau:
 
-| Agent | Profile | Đo được 2026-11-06 | Trần |
+| Agent | Profile | Bộ skill hiện tại | Trần |
 | --- | --- | --- | --- |
-| Claude | `claude-dev` | 36 skills (34 first-party) · ~14.5k ký tự | 1% context window; skill ít dùng bị bỏ description trước. 8 skill gọi bằng tên để `name-only` (`skillOverrides`) |
-| Codex | `codex-dev` | 34 skills · ~4.3k token | `skills.max_context_tokens`: 2% window, tối đa 10,000 token; 8,000 ký tự chỉ khi không biết window |
-| agy | `agy-dev` | 26 skills · ~13k ký tự | docs không công bố trần |
+| Claude | `claude-dev` | 35 entries: 34 first-party và React skill tùy chọn | 1% context window; skill ít dùng bị bỏ description trước. 8 skill gọi bằng tên để `name-only` (`skillOverrides`) |
+| Codex | `codex-dev` | Cùng bộ 35 entries | `skills.max_context_tokens`: 2% window, tối đa 10,000 token; 8,000 ký tự chỉ khi không biết window |
+| agy | `agy-dev` | Cùng bộ 35 entries | Kiểm tra catalog thực tế sau apply; số entry không chứng minh skill đã được load |
 
 Cả hai agent **cắt description từ cuối trước khi bỏ skill**, nên mọi description mở đầu
 bằng câu "Use when…" (`validate_skills.py` cảnh báo nếu không). `codex-dev` giờ có đủ bộ

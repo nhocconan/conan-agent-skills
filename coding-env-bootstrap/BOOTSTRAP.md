@@ -145,11 +145,12 @@ This one command:
 - links the self-contained production skills into `~/.claude/skills` and
   `~/.agents/skills` (Codex's documented user-skill directory);
 - merges the portable subset into Claude settings without deleting unrelated keys;
-- installs the shared quality bar as managed blocks in `~/.claude/CLAUDE.md` and
-  `~/.codex/AGENTS.md`, preserving text outside those blocks;
+- installs the shared quality bar as managed blocks in each selected harness:
+  `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/AGENTS.md`, preserving text outside the blocks;
 - writes `~/.codex/production.config.toml` instead of copying the source machine's
   path-specific base config; and
-- configures `context7` for both CLIs and the official OpenAI docs MCP for Codex.
+- configures `context7` for each selected CLI and the official OpenAI docs MCP for Codex.
+  AGY uses the remote Context7 HTTP endpoint; existing server entries are preserved.
 
 The profile selects the Codex harness lead at high effort; workers come from the
 canonical routing policy, which is harness-conditional — a Claude or agy install
@@ -217,7 +218,7 @@ The canonical secret-free files are under `coding-env-bootstrap/templates/`:
 - `codex-production.config.toml` — a separate production profile, not a replacement for
   `~/.codex/config.toml`;
 - `global-instructions.md` — vendor-neutral quality and verification rules installed
-  into both agents.
+  into Claude, Codex and agy when selected.
 
 `harness.py apply` installs and merges them. Re-running it is idempotent. A timestamped
 backup is written before changing an existing file.
@@ -279,7 +280,7 @@ only when that production repository actually uses it.
 
 | Server | Tier | Command |
 | --- | --- | --- |
-| `context7` | CORE | Installed for Claude and Codex by `harness.py --with-mcp` |
+| `context7` | CORE | Configured for selected Claude, Codex and agy targets by `harness.py --with-mcp` |
 | `openaiDeveloperDocs` | CORE for Codex | Official OpenAI docs; installed by the harness |
 | XcodeBuild MCP | MAC | only where Xcode exists; skip on Linux |
 | Chrome/browser MCP | DEV | needs a desktop browser + extension; skip headless |

@@ -1,15 +1,16 @@
 ---
 mode: wrap
 upstream: gstack
-source: github:garrytan/gstack@main:ship/SKILL.md
-version: 1.0.0
-fingerprint: sha256:b785363fea9ed6999863ab50d24128899e60fd811936d4b121e473a695cf3cef
-reviewed: 2026-10-02
+source: github:garrytan/gstack@5862765a20cd751b73e54fe85ffebd9e4da01e30:ship/SKILL.md
+tracking_source: github:garrytan/gstack@main:ship/SKILL.md
+version: 1.0.1
+fingerprint: sha256:f1928425c92b41f66b5d4ff96adf9b4c3cc947e01697c275670af41ba4230aa5
+reviewed: 2026-11-07
 ---
 
 # Provenance
 
-Wraps gstack's `ship` (1005 lines on 2026-11-05, 15 on-demand sections).
+Wraps gstack's `ship` (976 lines at the pinned source).
 Upstream markdown is fetched into `.vendor/gstack/` by `refsync.py ensure` (gitignored,
 files only, never a gstack install); the skill reads it by path, so its bulk loads only
 when the skill actually fires.
@@ -21,10 +22,10 @@ Upstream's flow requires a feature branch and opens a PR, and its commit step ad
 ## Overrides that MUST survive an upgrade
 
 1. follow the repository's branch and review policy; never delete branches as cleanup
-2. operator commit identity, no assistant attribution (upstream still adds a co-author trailer, ship/SKILL.md Step 15)
+2. operator commit identity, no assistant attribution (upstream Step 15 delegates the trailer to Step 16's release helper)
 3. hooks must pass, never --no-verify
 4. capture each gate's exit status before filtering its output
-5. upstream Steps 4–11 are not run: no TESTING.md / CLAUDE.md `## Testing` writes, no
+5. upstream ship orchestration/helpers are not run: no TESTING.md / CLAUDE.md `## Testing` writes, no
    coverage-driven test generation, no header-comment value cards (effective-development
    LEAN-SUITE, global Tests/Comments lines)
 
@@ -38,3 +39,10 @@ Override 3 (hooks) has no upstream counterpart to contradict; it stays as a hous
 
 If `refsync.py status` reports one of these has vanished, the wrapper's routing
 instructions are stale and must be re-pointed before the skill is trusted again.
+
+## Accepted source review — 2026-11-07
+
+Pinned source and markdown cache use the commit in `source`; this is a frozen
+compatibility baseline; `tracking_source` separately checks the moving branch.
+Reviewed entrypoint/section changes against the previous cache; local runtime,
+evidence, authority and repository gates take precedence over upstream helpers.

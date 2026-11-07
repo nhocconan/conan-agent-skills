@@ -1,4 +1,5 @@
 import contextlib, importlib.util, io, json, os, subprocess, sys, tempfile, unittest
+from unittest.mock import patch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPT = os.path.join(HERE, "..", "scripts", "host_load.py")
@@ -48,6 +49,10 @@ def run(root, *args, clock=lambda: 0, sleep=lambda s: None, **kw):
 
 class HostLoad(unittest.TestCase):
     def setUp(self):
+        environment = patch.dict(os.environ)
+        environment.start()
+        self.addCleanup(environment.stop)
+        os.environ.pop("HOST_SHARE", None)
         self._t = tempfile.TemporaryDirectory()
         self.root = self._t.name
         self.addCleanup(self._t.cleanup)

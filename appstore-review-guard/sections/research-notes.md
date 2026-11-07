@@ -5,8 +5,8 @@ linked Apple/Google source at submission time; store policies and console surfac
 Checklist items (3.1.1(a) storefront scope, 4.3, 3.1.2 disclosure, anonymous URL check, Restore, privacy label) live in `apple-checklist.md` and `restore-purchases.md`.
 
 - **Restore internals (beyond the checklist).** Call `AppStore.sync()` only behind the button, never on launch. Re-read `Transaction.currentEntitlements`, not `Transaction.all` (includes refunded/revoked); accept only `.verified` with `revocationDate == nil`. Never show a custom Apple-ID/password field.
-- **Background modes ↔ real tasks (2.5.4).** Declaring `processing` in `UIBackgroundModes` with no `BGProcessingTaskRequest` (or `fetch` with no `BGAppRefreshTaskRequest`) is flagged. Every `BGTaskScheduler` id must also be in `BGTaskSchedulerPermittedIdentifiers` and registered before launch finishes, or you get **ITMS-90771** at upload.
-- **Notifications: stay functional + consent-clean (4.5.4 / 5.1.2).** Reminder content only — no Pro upsell / "rate us" / ads in notifications. The app must stay **fully usable with notification permission DENIED**. `.timeSensitive` is fine; `.critical` needs the (separately-approved) Critical Alerts entitlement — don't request `.criticalAlert` without it.
+- **Background modes ↔ real tasks (2.5.4).** Match each declared mode to implemented work. Check task types, permitted identifiers and registration against the selected BackgroundTasks API, then verify scheduling on the submitted build; a plist declaration alone does not prove valid background behavior or a particular upload error.
+- **Notifications (4.5.4 / 5.1.2).** The app must function with notification permission denied. Promotional pushes require explicit marketing opt-in in the app and an in-app opt-out; ordinary push permission alone is insufficient. Critical Alerts need Apple's entitlement; use time-sensitive delivery only for qualifying content.
 - **Screenshots: real UI, exact specs.** PNG/JPEG, RGB, **no alpha channel**, exact accepted sizes; verify with `sips`/`file`. Reconcile the submission guide's count/order/filenames against the actual files (they drift after renames).
 - **Single source of truth for listing copy (2.3.7).** Name (≤30) / subtitle / promo / keywords / description must come from ONE canonical file and match byte-for-byte everywhere; `diff` the artifacts before pasting into ASC.
 
@@ -26,4 +26,4 @@ Checklist items (3.1.1(a) storefront scope, 4.3, 3.1.2 disclosure, anonymous URL
 
 - Auto-renewable Subscriptions (in-app presentation requirements) — https://developer.apple.com/app-store/subscriptions/
 - Updated guidelines now available — 3.1.1/3.1.1(a)/3.1.3/3.1.3(a) external-purchase-link changes for the US storefront, May 1 2025 — https://developer.apple.com/news/?id=9txfddzf
-- Updated Apple Developer Program License Agreement and App Review Guidelines now available — most recent guideline revision (1.2, 4.3(a)/(b), 4.5.3), June 8 2026 — https://developer.apple.com/news/?id=a233fmpw
+- For later guideline revisions, use the living guidelines and Apple's current news; an older announcement does not establish the latest policy.

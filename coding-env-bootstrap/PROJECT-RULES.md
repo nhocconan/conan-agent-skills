@@ -1,9 +1,7 @@
 # Project rules and native adapters
 
-`AGENTS.md` is the canonical project rulebook. Keep shared rules, decisions, and
-durable constraints there; do not maintain a second copied policy for each agent.
-The file's directory is part of its scope. A nested rule file is an intentional
-scope boundary, not a reason to flatten everything into the repository root.
+`AGENTS.md` holds shared rules, decisions and durable constraints; adapters import it.
+Its directory defines scope. Preserve nested rules instead of flattening them into the root.
 
 ## Loading contract
 
@@ -87,6 +85,8 @@ Claude's `/context` or Gemini's `/memory show` after loading/reloading the proje
 `coding-env-bootstrap/templates/global-instructions.md` is a separate, secret-free
 source for the managed global instruction block written by the bootstrap harness.
 It is not a project `AGENTS.md`, and it is not a substitute for project rules.
+Selected targets receive it in `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, or
+`~/.gemini/AGENTS.md`; surrounding user text is preserved.
 Changes to global behavior belong in that template and require the authorized
 harness apply/verify flow. This project-rules contract makes no global setting
 changes and must not be used to edit global auto-memory, account settings, or

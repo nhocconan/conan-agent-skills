@@ -20,9 +20,7 @@ upstream files or binary are unavailable, use the active harness's documented br
    setup never use the Chrome MCP (`mcp__claude-in-chrome__*`): use the selected browser,
    gstack `browse` (Aside or `$B`) where installed, or the Playwright CLI loop.
 2. **The operator's browser is usually already open and logged in.** When they say so,
-   proceed — do not stop to re-confirm or ask for credentials. Halting mid-run to ask for
-   something already provided wastes their time and tokens. A stop to re-confirm a state
-   the operator has already declared is a defect, not caution. Track authority for non-local writes
+   proceed without re-confirming or asking for credentials. Track authority for non-local writes
    separately: proceed when the current request already authorizes the action and
    target; ask only for missing authority or a tool-enforced approval.
 3. **Session/profile matters.** If a task needs a specific browser profile, say so up
@@ -30,6 +28,10 @@ upstream files or binary are unavailable, use the active harness's documented br
 4. Handle dialogs through supported browser APIs. Do not inject unnecessary blocking dialogs.
 
 ## Getting the commands
+
+Use only the browser sections below; skip upstream startup, telemetry, Claude
+preambles and install helpers. Resolve upstream `sections/` links in the matching
+`.vendor/gstack/` directory, never under `~/.claude/skills/`.
 
 Read `../.vendor/gstack/browse/SKILL.md` — its **"BROWSER SETUP"** probe, then the driver
 it selects. `READY` (macOS, Aside open) → **"Rules for driving a real browser"** and the

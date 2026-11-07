@@ -8,7 +8,7 @@
 # (skill-miner/validate_skills.py warns when it does not).
 # Checked 2026-11-06 with: codex exec -s read-only "print each skill as NAME | DESCRIPTION
 # verbatim" -> 49 catalog entries, none shortened (34 first-party ≈ 14.5k chars).
-# Claude-only skills (verify: run by Claude Code before commits) stay out.
+# verify is portable; automatic pre-commit invocation depends on the harness.
 
 a11y-audit
 admin-crud-standards
@@ -44,3 +44,4 @@ web-qa
 design-qa
 frontend-design
 vercel-react-best-practices
+verify

@@ -20,13 +20,14 @@
 
 Templates: `preview_clips.py` (the no-frame renderer + the same voiceover
 engine) and `example_preview.py` (a thin config calling
-`render_preview_from_media(scenes, media_dir, icon, out_path, W, H)`). It builds:
-brand intro card → real captures full-bleed with a sticker caption overlaid on
-top → outro card, 0.5s crossfades, optional voiceover. Scene kinds:
+`render_preview_from_media(scenes, media_dir, icon, out_path, W, H)`). For Apple,
+every scene uses real app captures with optional captions/narration and crossfades.
+Opening and closing titles overlay captures rather than replacing them. Scene kinds:
 - **`clip`** — a real screen recording (.mp4), shown full-bleed, caption on top.
 - **`still`** — a real full-screen screenshot, gentle Ken Burns (1.00→1.05 zoom),
   caption on top. Use for calm screens you can't record with motion.
-- **`card`** — generated brand card (icon + name + tagline); intro/outro only.
+- **`card`** — generated brand card for non-App-Store promotional videos only;
+  it is not an app screen capture and must not appear in an Apple App Preview.
 
 **Capture native (1320×2868); the renderer outputs the video at 886×1920.**
 Native captures are the *screenshot* size — the renderer downscales them for the
@@ -77,16 +78,14 @@ in the video; everything else lives in the stills. Same accuracy rule as Step 1.
 
 **Google Play** takes the promo as a **YouTube link**, not a file upload:
 render a vertical 1080×1920 mp4, upload it to YouTube (unlisted is fine), and
-paste the URL in the listing. Play's limits on length and
-device frames are unverified (see
-`appstore-review-guard/sections/play-checklist.md`); keep the video frame-free and tight.
+paste the URL in the listing. [Play's preview guidance](https://support.google.com/googleplay/android-developer/answer/9866151) requires an embeddable public/unlisted video without age restriction or ads. Both orientations are supported; autoplay covers up to 30 seconds, which is not a maximum upload duration. Show actual use early and keep promotional cards brief.
 
-**Apple App Preview spec (re-verified 2026-10-02 against developer.apple.com/help/app-store-connect/reference/app-information/app-preview-specifications — recheck if rejected):**
+**[Apple App Preview specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/app-preview-specifications/): verify the selected device's accepted resolution before rendering.**
 - **Render at 886×1920** (portrait) / 1920×886 (landscape) — accepted across the
-  6.5"/6.7"/6.9" iPhone App Preview slots. **Do NOT upload 1320×2868** (that's
+  Dynamic Island / Face ID iPhone App Preview sets. **Do NOT upload 1320×2868** (that's
   the *screenshot* size): the App Preview slot rejects it — *"The app preview
   dimensions should be: 886 × 1920px or 1920 × 886px"* (a real upload
-  error). .mp4/.mov/.m4v, **30 fps**, **15–30 s**, ≤500 MB.
+  error). H.264 .mp4/.mov/.m4v, **up to 30 fps**, **15–30 s**, ≤500 MB.
 - **No device frames / bezels** in the footage (2.3.4) — full-bleed only.
 - **A stereo audio track is required** (256kbps AAC, 44.1/48 kHz) — a silent
   `anullsrc` stereo track satisfies it if you ship without voiceover.
@@ -112,14 +111,14 @@ listed backend) explicitly; `VO_BACKEND=none` makes the silent choice explicit.
 For a voiced run, the renderer self-verifies that the result is not effectively
 silent and fails if narration is missing.
 
-Pick a voice source (decision order for a free, license-clean, published asset):
+Pick a voice source; check the exact model, voice and recording licenses before publication:
 
 | Backend | Quality | Cost / setup | Local? | Notes |
 |---|---|---|---|---|
-| `kokoro` | Excellent | see below; ~350MB model | Yes | **Apache-2.0 → safe for commercial listings.** Best free pick. `VO_VOICE=af_heart`/`af_bella`/`am_michael` etc. |
-| `piper` | Good | Piper binary + a `.onnx` voice (`VO_VOICE=<path>`) | Yes | Lighter than Kokoro; MIT voices available |
+| `kokoro` | Excellent | see below; ~350MB model | Yes | Verify the selected weights and voice assets' licenses. `VO_VOICE=af_heart`/`af_bella`/`am_michael` etc. |
+| `piper` | Good | Piper binary + a `.onnx` voice (`VO_VOICE=<path>`) | Yes | Check the selected voice's model card and license |
 | `say` | OK | zero install; **download a Premium voice** in System Settings (defaults sound robotic) | Yes | `VO_VOICE="Ava (Premium)"`. Fine for a draft |
-| `openai` | Excellent | `OPENAI_API_KEY`, model `gpt-4o-mini-tts` ($0.60/1M input + $12/1M audio-output tokens on 2026-10-02; cost per preview unverified) <!-- model-id-allow: TTS API model, not an orchestration routing tier --> | No | Bills at standard API rates; check the account's current pricing page |
+| `openai` | Excellent | `OPENAI_API_KEY`, model `gpt-4o-mini-tts` <!-- model-id-allow: TTS API model, not an orchestration routing tier --> | No | Verify model access, current account pricing and voice disclosure requirements |
 | `file` | — | drop `vo/<stem>-<i>.wav` per scene | Yes | Use your own recorded voice — most authentic |
 
 **Installing Kokoro (use kokoro-onnx — `pip install kokoro` breaks on Python
@@ -136,11 +135,8 @@ The `kokoro` backend prefers `kokoro_onnx` and falls back to the torch
 `kokoro` package; set `KOKORO_MODEL`/`KOKORO_VOICES` to override model paths.
 Run the generator with the venv's python so Pillow + kokoro-onnx are on the path.
 
-Avoid **edge-tts** (Microsoft's free no-key neural voices) for a *published*
-asset: it's online and its ToS scopes it to Edge's read-aloud feature. Great for
-throwaway drafts only. (voice-pro and similar all-in-one tools lean on it, plus
-F5-TTS/CosyVoice for zero-shot cloning if you want a *custom* voice — heavier,
-GPL.)
+For online or cloned-voice backends, verify service terms and voice rights for the
+intended publication; a free endpoint or open-source client does not establish them.
 
 Add a music bed only if you have a license for the track (ffmpeg can duck it
 under the VO with `sidechaincompress`); never grab a random song.

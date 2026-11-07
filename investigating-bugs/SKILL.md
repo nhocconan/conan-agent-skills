@@ -11,9 +11,7 @@ description: >-
 
 # Investigating bugs
 
-Wraps gstack's `investigate`; local rules govern diagnosis and proof. Resolve paths
-from this skill's real directory. `ref-skills/refsync.py ensure` fetches the vendored
-upstream (markdown only, no install); if absent, say so and apply these rules.
+Diagnose and prove the root cause with the active harness's tools.
 
 ## The rule that matters most
 
@@ -45,13 +43,18 @@ unavailable, continue safe probes and label the limits instead of declaring a fi
    OPERATING-MANUAL §4.
 6. **Label known vs guessed** in the write-up. Anything unverified is marked unverified.
 
-For the search mechanics — log/trace navigation, bisecting, tooling — read
-`../.vendor/gstack/investigate/SKILL.md`, particularly its **"Phase 1: Root Cause
-Investigation"**, **"Phase 2: Pattern Analysis"** and **"Phase 3: Hypothesis Testing"**.
-Before a fix, read the matching `../.vendor/gstack/investigate/sections/` file: `flake`
-(intermittent/CI-only), `polluter` (passes alone, fails in suite), `race` (timing, shared
-state), `eval-bisect` (metric regressed between revisions), `blast-radius` (shared helper
-or format).
+Choose probes for the failure pattern:
+
+- **Flake / CI-only:** capture the failing seed, environment and artifacts; vary one
+  timing or resource condition at a time. A passing rerun does not explain the failure.
+- **Passes alone:** hold the failing test fixed and bisect preceding tests or shards;
+  identify leaked state, then verify both isolation and suite order.
+- **Race:** trace ownership and ordering of shared state; force the suspected
+  interleaving and prove the fix restores the invariant under it.
+- **Metric regression:** freeze inputs, evaluator, seeds and configuration; compare
+  revisions with the same measurement and bisect the first regression.
+- **Shared helper / format:** trace callers and their guards, transactions and scope;
+  verify affected contracts before treating similar paths as duplicates.
 
 ## Fixing
 
@@ -74,3 +77,4 @@ or format).
 
 [agent-orchestration](../agent-orchestration/SKILL.md) — lead owns diagnosis and quality.
 `senior-operator` — reasoning; `bug-class-audits` — enforcement; `metric-integrity` — numbers.
+[Provenance](PROVENANCE.md) records the retired upstream and retained overrides.
