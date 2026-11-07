@@ -123,7 +123,7 @@ regenerated on upgrade: report those defects, don't patch them.
 
 Behavioural preferences and demands — tone and address forms, "work autonomously, don't
 ask", "test everywhere", "definition of done", git habits (main-only, commit identity),
-scolding patterns. Shared project constraints belong in the canonical `AGENTS.md`;
+scolding patterns. Shared project constraints belong in the canonical `AGENTS.md`, under PROJECT-RULES' Rule hygiene bar;
 keep `CLAUDE.md` and `GEMINI.md` import-only. Personal preferences stay private unless
 the user requests their promotion. A preference alone does not justify a new skill.
 

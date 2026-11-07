@@ -16,4 +16,6 @@ jobs:
       - run: python3 -m unittest discover -s skill-miner/tests -v
       - run: python3 -m unittest discover -s agent-session-backup/tests -q
       - run: python3 -m unittest discover -s ref-skills/tests -q
+      - run: python3 -m unittest discover -s effective-development/tests -q
+      - run: python3 -m unittest discover -s dev-env-lifecycle/tests -q
       - run: git diff --check

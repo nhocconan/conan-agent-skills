@@ -24,6 +24,9 @@ Upstream's flow requires a feature branch and opens a PR, and its commit step ad
 2. operator commit identity, no assistant attribution (upstream still adds a co-author trailer, ship/SKILL.md Step 15)
 3. hooks must pass, never --no-verify
 4. capture each gate's exit status before filtering its output
+5. upstream Steps 4–11 are not run: no TESTING.md / CLAUDE.md `## Testing` writes, no
+   coverage-driven test generation, no header-comment value cards (effective-development
+   LEAN-SUITE, global Tests/Comments lines)
 
 ## Upstream sections this depends on
 

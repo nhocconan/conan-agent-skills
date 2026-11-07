@@ -3,8 +3,8 @@
 ### Evidence before acceptance
 
 The lead owns the final decision after reading the combined diff and relevant
-artifacts. Capture exit status and a verdict; keep full logs per [brief](brief.md),
-preserve exit status through pipes (`pipefail`). Screenshots prove visible state and HTTP statuses
+artifacts. Capture exit status and a verdict; keep full logs per [brief](brief.md).
+Screenshots prove visible state and HTTP statuses
 reachability, not a complete journey. Match evidence to the claim.
 
 Before selecting, running or reusing verification, read

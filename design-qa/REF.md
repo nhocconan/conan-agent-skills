@@ -41,6 +41,8 @@ review; the validator caught it.
    `scripts/layout-probe.js`.
 7. Defect classes 7-10 (mismatched bar controls, odd one out, bare-list panels, prose walls) stay
    in SKILL.md; they are the chrome defects generated UI ships most.
+8. Only upstream's "Phases 1-6" and "Design Critique Format" are read; its test bootstrap
+   (design-review/SKILL.md:329-339) and 8e.5 regression-test-and-commit step are not run.
 
 ## Upstream sections this depends on
 

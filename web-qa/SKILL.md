@@ -18,25 +18,28 @@ Paths below are relative to this skill's real directory in the repo checkout
 fetches the vendored upstream files; if one is absent, say so and apply the rules in
 this file instead of guessing upstream's content.
 
-## Pick the mode first — this is the whole point
+## Pick the mode first
 
 | The user said | Mode | Read |
 | --- | --- | --- |
 | "test này", "check xem chạy không", "find bugs", "qa" | **report-only** | `../.vendor/gstack/qa-only/SKILL.md` |
 | "test and fix", "sửa luôn đi", "fix what's broken" | **fix** | `../.vendor/gstack/qa/SKILL.md` |
 
-**Default to report-only.** Fixing is a bigger action than testing, and a QA pass that
+**Default to report-only.** A QA pass that
 silently rewrites source is not a QA pass. If the request is ambiguous, report first and
-offer to fix — that costs one message; an unwanted commit costs trust.
+offer to fix.
 
 In fix mode, implement and re-verify scoped repairs. Commit/push only when authorized,
-following repository controls and `shipping-changes` if shipping was requested.
+following repository controls and `shipping-changes` if shipping was requested. Regression
+tests follow [LEAN-SUITE](../effective-development/LEAN-SUITE.md); skip upstream's 8a.5
+attribution comment and test-bootstrap's TESTING.md / CLAUDE.md `## Testing` writes (the test
+command is one `AGENTS.md` line, no coverage target).
 
 ## Evidence, or it didn't happen
 
 Every reported defect carries: the URL/route, the exact steps, what was expected, what
 happened, and an artifact — screenshot, console output, or HTTP status. A finding without
-an artifact is a guess, and the operator will find out at the worst moment.
+an artifact is a guess.
 
 Equally: **do not report a defect you have not reproduced.** Re-run it once before writing
 it down. Console noise from an unrelated extension is not a bug in the app.
@@ -44,7 +47,7 @@ it down. Console noise from an unrelated extension is not a bug in the app.
 ## Scope honestly
 
 State up front which routes and flows you covered and which you did not. "Tested the app"
-when you clicked three pages is the failure mode that makes a green QA report worthless.
+after three pages is worthless.
 Name the depth you actually ran; in fix mode also the fix tier (quick / standard /
 exhaustive — which severities get fixed).
 

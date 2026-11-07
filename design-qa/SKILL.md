@@ -65,4 +65,4 @@ step 5 of `frontend-design`'s loop and the whole job when someone complains abou
 
 `frontend-design` owns the build loop. `impeccable critique` adds heuristic scoring; `impeccable
 polish`, `layout`, `typeset` are deeper fix passes. `web-qa`: does it work. `a11y-audit`: WCAG.
-`anti-slop-review`: slop in the words. Optional deeper procedure: gstack `design-review` ([REF.md](REF.md)).
+`anti-slop-review`: slop in the words. Optional deeper procedure: gstack `design-review`, Phases 1-6 and the critique format only ([REF.md](REF.md)).

@@ -38,6 +38,11 @@ invisible in the descriptions and is now the first decision this skill makes.
 4. State the scope actually covered and the tier actually run.
 5. Use the user-selected or project-approved available browser; `browsing-web` owns
    session and evidence discipline.
+6. Fix-mode regression tests follow `effective-development/LEAN-SUITE.md`; upstream's 8a.5
+   attribution comment block is not written into code (2026-11-07: it cites ids and dates,
+   which the global comment rule and `slop_audit.py` W7 reject). Nor are
+   `sections/test-bootstrap.md`'s TESTING.md / CLAUDE.md `## Testing` writes (:29, :84): the
+   test command is one `AGENTS.md` line, with no coverage target.
 
 ## Upstream sections this depends on
 

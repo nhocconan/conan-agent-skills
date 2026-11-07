@@ -40,6 +40,7 @@ or `No match.` — file-path first, line attached, symbols backticked.
 ```
 <path:line-range> — <change ≤ 10 words>      (one line per file touched)
 gate: <cmd> → EXIT=<n>, marker: <the positive marker, verbatim>
+tests: +n — <failure mode ≤ 6 words each> | none
 unverified: <what could not be checked, and why>   |   assumptions: <…>
 ```
 or a terminal first token: `too-big.` / `needs-confirm.` / `ambiguous.` / `regressed.`

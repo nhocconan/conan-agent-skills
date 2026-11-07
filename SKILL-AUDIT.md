@@ -233,3 +233,24 @@ Content cuts of base-default material (a11y, web-perf, admin-crud, remote-host, 
 effective-development) removed about 5.8 KB of eager text. Limits: one model (Opus 5.5),
 two runs per case, read-only tools in a synthetic fixture repo; Codex firing is not measured
 by a runner, only by catalog inspection.
+
+## 2026-11-07 — testing, effective-development and host load (29 files changed, 8 added)
+
+Scope: whether the testing skills stop agents writing low-value tests, narrating comments and
+bloated rule files, and whether the e2e guidance matches current practice. Playwright facts
+were read from the 1.65.0 package source on 2026-11-07; other sources are dated in the files.
+
+| Finding | Evidence | Change |
+| --- | --- | --- |
+| The test-slop list reached no agent writing a test: no skill fires on "add a test" (negative case n03), and builder briefs never carried it | `agent-orchestration/sections/brief.md`, trigger set | Tests and Comments lines in the global template; test-diff bullet in briefs; `tests:` line in builder returns |
+| Nothing enforced the test or comment rules | — | `effective-development/scripts/slop_audit.py`: 6 high-precision errors and 10 warnings, `--base` judges added lines only; 14 fixture tests in CI |
+| No rule decided when a project rule earns a line, so rule files only grew | arXiv 2602.11988: context files cost > 20 % more inference with no general success gain | "Rule hygiene" in PROJECT-RULES; `project_rules.py check` warns over 200 lines / 32 KiB or more than 3 all-caps emphasis tokens |
+| No file owned browser-suite design (auth reuse, seeding, selection, flake) | — | new `effective-development/E2E.md` |
+| `--only-changed` and empty selections were undocumented | playwright 1.65.0 `runner/index.js`: it follows imports, and a zero-test run under it exits 0 | E2E.md Selection; SETUP-TIME §3 canary covers it |
+| Vendored QA/ship/design-review steps write TESTING.md "100% coverage", `CLAUDE.md ## Testing` and ticket/date comments | gstack `qa/sections/test-bootstrap.md:84`, `ship/sections/tests.md:177` | overrides in web-qa, shipping-changes, design-qa |
+| Worker counts were literals; "load up to 40 on 32 CPUs" had no answer | 32 CPUs = 16 cores × SMT (+13 % geomean, Phoronix 2025-02-06); make `-l` / parallel `--load` stop at load ≥ CPUs | `effective-development/scripts/host_load.py`: cgroup-aware CPUs, loadavg, PSI, MemAvailable → workers and admit/defer (exit 75); 10 fixture tests |
+| Production containers and agent jobs shared CPU and memory at equal weight, no pressure-based OOM | cgroup v2 weights all 100, systemd-oomd absent | `dev-env-lifecycle/scripts/colocate.sh` apply/status/revert: production `MemoryLow`, agent `CPUWeight`/`MemoryHigh`/`MemoryMax`/`TasksMax`, systemd-oomd on `user@.service` |
+
+Limits: no speedup was measured on an application repo. `colocate.sh apply`/`revert` need
+root and were reviewed but not executed here. `senior-operator` keeps the comment rule because
+the agy target receives no managed global block.

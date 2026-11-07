@@ -7,15 +7,17 @@ cheapest layer:
 
 1. **Production build, not `next dev`.** `next build` once per tree fingerprint, then
    `next start`. Dev only for hot reload while editing: one per checkout, in a capped cgroup.
-2. **Parallelism inside one browser.** Separate BrowserContexts/pages per test or tab, not
-   extra browser processes or forked Playwright workers; `workers` 1-2 on a shared host; cap E2E at ≤ 2 shards with `workers: 1` each unless the repo's gate policy says otherwise.
+2. **Parallelism inside one browser.** Separate BrowserContexts per test, not extra browser
+   processes; `workers` and shard count come from the conductor's env (`fullyParallel: true`
+   balances per test), never a literal in config, and never past slot capacity
+   (Playwright test-sharding docs, read 2026-11-07).
 3. **Data parity without a browser.** Call the server/API/resolver layer directly; the
    browser is for interaction, layout and visual checks only.
 4. **UI logic in component tests** (vitest + Testing Library/jsdom): single-open popovers,
    pickers, i18n labels.
 5. **The conductor.** Worktrees and allowlists isolate files, not memory, CPU, ports, DBs or
    browsers. One lead-owned runner provides per-class memory caps (cgroup `MemoryMax`) and a
-   hard `RuntimeMaxSec`, serialized slots, admission on `MemAvailable`, result reuse by tree
+   hard `RuntimeMaxSec`, serialized slots, admission via `host_load.py --admit`, result reuse by tree
    fingerprint, stop by unit (never `pkill -f`), and a host-wide browser slot (≤ 2 per host).
    Enforce it in code: the test runner's config refuses to start without the conductor's env
    marker (CI exempt, explicit one-file override for a person). The watchdog traps EXIT/TERM and
@@ -35,8 +37,13 @@ busy; one 1,903 s file set the wall):
    move its rows to a cheaper layer and keep one full journey.
 3. **Tier placement.** A heavy suite (ffmpeg, browser) runs in its own tier selected by the
    diff's import graph, not in every unit run as well.
-4. **Caps against today's hardware.** A CPU cap set for a smaller host silently halves
-   throughput after an upgrade; re-read caps when `nproc` changes.
+4. **Caps against today's host.** Size and admit every run from
+   [`host_load.py`](scripts/host_load.py) (`--workers-for <kind> --admit`, exit 75 = defer):
+   workers = min(HOST_SHARE x cgroup CPUs, idle CPUs = C - loadavg1, (MemAvailable - reserve) /
+   per-worker MB, browser slot). Ceiling for the host is loadavg1 <= logical CPUs; PSI memory
+   full avg10 >= 10 % or cpu some >= 40 % (avg10 and avg60, not falling) defers; on defer wait
+   with backoff, never kill another agent's processes. A cap written for a smaller host is
+   stale after an upgrade; the sensor reads today's `nproc` and cgroup quota.
 5. **No overlap.** One host lock for gate, E2E and affected runs; overlap produced false
    failures and a full rerun.
 6. **Typecheck.** Use the native checker for the inner loop once it matches `tsc` on the repo.

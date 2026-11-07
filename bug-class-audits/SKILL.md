@@ -34,6 +34,8 @@ numbered rule plus one mechanical check, so no class is re-argued.
 4. **Write a mechanical audit** when the rule is grep-able/parse-able: a small script in
    `scripts/audit/` that scans the relevant code and exits non-zero on violations.
    Use AST/type-aware checks when syntax alone is ambiguous. Test the audit with a failing example and a legitimate counter-case.
+   In the commit that wires it (step 5), the numbered entry shrinks to one line naming the audit (its index row);
+   the audit's fix text carries the why.
 5. **Wire it into the gate** — pre-push hook and/or CI — so the rule enforces itself.
    A rule that relies on someone remembering it is a suggestion. When the class is an
    agent action (a skipped gate, a bypassed hook, a credential misuse), the owning layer
@@ -56,9 +58,9 @@ numbered rule plus one mechanical check, so no class is re-argued.
   baseline bump in a diff as a red flag. When touching a file that carries baselined debt,
   clean the part you touch; at minimum don't add to it.
 - **Fail with actionable output**: file:line, the offending snippet, the rule number and a
-  one-line fix direction — fixable from the audit output alone.
-- Keep runtime in seconds; a slow audit gets bypassed.
-- No incident story in the audit or code: the rule is one line; no narrative docstring.
+  one-line fix direction — fixable from the output alone.
+- Keep runtime in seconds; slow audits get bypassed.
+- No incident story in the audit or its comments; the rule is one line.
 
 ## What qualifies (and what doesn't)
 

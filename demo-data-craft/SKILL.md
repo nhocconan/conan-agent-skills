@@ -55,8 +55,8 @@ verify → restore.
 ## Tier 3 — Capture-time seeding (screenshots/videos/QA)
 
 The DEBUG-only `-uiScreenshots` launch-arg pattern is fully specified in `store-screenshots`
-Step 2 — read it there rather than from memory. e2e-seeded accounts follow the same idea
-for tests.
+Step 2 — read it there rather than from memory. e2e state is seeded per test via API/DB
+factory, never demo data: [E2E.md](../effective-development/E2E.md).
 
 ## Shared rules (all tiers)
 

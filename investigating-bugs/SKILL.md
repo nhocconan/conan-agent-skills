@@ -65,7 +65,8 @@ or format).
    credential, startup) proves nothing. Already fixed? Run the check against the old
    revision in a scratch worktree; if no before-proof is practical, say so. No correct seam to test through is itself a finding. When the check
    asserts an absence or rejection, add a control input that must succeed. Forced the red by
-   mutation? Diff against a pristine copy to prove it landed.
+   mutation? Diff against a pristine copy to prove it landed. The test meets
+   [LEAN-SUITE](../effective-development/LEAN-SUITE.md).
 9. **Verify the final tree.** Before choosing regressions or reusing evidence, read
    [effective-development](../effective-development/SKILL.md); run required gates.
 

@@ -14,9 +14,8 @@ count: the cheapest checks that detect them, required gates at their declared st
 
 ## Choose the proof
 
-1. **Read the actual gate policy.** Inspect repository rules, scripts, hooks and CI.
-   Required merge/deploy checks cannot be deferred to a future scheduled run or
-   replaced by selected tests. Use existing test commands and runtime recipes.
+1. **Read the actual gate policy** (rules, scripts, hooks, CI); required checks are never
+   deferred or replaced by selected tests.
 2. **Map behavior to evidence.** Write one line per changed behavior in the task
    plan/ledger (`.agents/`): input → expected result or durable effect → the check that
    would catch a wrong result → what stays unproven. Focus on changed risks; prose
@@ -32,7 +31,8 @@ count: the cheapest checks that detect them, required gates at their declared st
    behavior and repository policy; they are not mandatory for every commit.
 5. **Verify the integrated result.** After writers finish, run required final gates
    and observe the affected user path in the real runtime. A screenshot proves visible
-   state, not persistence; HTTP success alone proves neither a usable app nor a journey.
+   state, not persistence; an aria snapshot proves structure and text; HTTP success alone
+   proves neither a usable app nor a journey.
    Reuse valid optional evidence under the rules below.
 6. **Stop on evidence.** Finish when acceptance and required gates pass and material
    concerns are resolved or disclosed. Broaden for new failures, missing coverage or
@@ -53,15 +53,16 @@ count: the cheapest checks that detect them, required gates at their declared st
   prompts, disk fixtures and catalogs → named contract/DB/isolation/eval/audit suites.
   Keep widening rules in an existing selector, not individual memory. When building
   one, test target existence and a representative missed dependency/counterexample.
-- Never delete/skip/loosen tests or narrow coverage to pass. Legitimate expectation
+- Never delete, skip or loosen a test to turn a red gate green; a slop test leaves under
+  [LEAN-SUITE](LEAN-SUITE.md) with its failure mode named. Legitimate expectation
   changes need a changed contract; deliberate selection narrowing needs evidence and
   explicit rationale. Files read by code cannot silently become “docs-only.”
 - Required full gates and scheduled full suites stay full. A regression missed by
   selection adds a map/widening rule with the fix. Log each selection miss; a rising
   miss count means a stale map. The reviewer confirms the widening matched the touched
-  paths (a migration got the DB suite) before the gate. Flake earns one fresh rerun; an
-  identical second failure is not flake. A failure in code the diff never touched means a
-  stale base: check `git merge-base --is-ancestor <base> HEAD`, rebase, do not retry.
+  paths (a migration got the DB suite) before the gate. Flake policy: [E2E.md](E2E.md#flake).
+  A failure in code the diff never touched means a stale base: check
+  `git merge-base --is-ancestor <base> HEAD`, rebase, do not retry.
   Do not invent CI jobs without policy authorization.
 
 ## Recurring failure → fix the system now
@@ -88,19 +89,16 @@ For a bug fix, prove regression sensitivity per
 
 Assert observable behavior against independently specified expectations. Call counts,
 truthiness, copied constants or expected values computed by the subject can miss a
-plausible wrong result. Yardstick: a test that would still pass if every function it
-calls returned nothing tests nothing; rewrite or delete it. Preserve legitimate type,
-relational and absence checks;
-use a permitted/effective control when it distinguishes a no-op or unconditional
+plausible wrong result (displayed numbers: [metric-integrity](../metric-integrity/SKILL.md)).
+Yardstick: a test that would still pass if every function it calls returned nothing
+tests nothing; rewrite or delete it. Preserve legitimate type, relational and absence
+checks; use a permitted/effective control when it distinguishes a no-op or unconditional
 rejection. A mock may isolate an external boundary, not replace the mechanism proved.
 
 Test design (new or changed tests):
 - Agree the seams first: name the public interface each test drives, and what it catches and
   misses, before writing any test. Tests drive public interfaces, never internals or private
   methods; if a refactor with the same behavior breaks a test, it was coupled to internals.
-- No tautological tests: the expected value comes from an independent source (hand-computed
-  fixture, spec, reference data), never recomputed by the code path under test. For displayed
-  numbers see [metric-integrity](../metric-integrity/SKILL.md).
 - Watch a new test fail for the right reason (the missing behavior, not a typo or setup error)
   before making it pass.
 
@@ -111,6 +109,7 @@ sample when live behavior matters (mocks cannot prove it); record actual usage.
 
 Writing, reviewing or trimming tests (the slop list goes in every builder brief):
 [LEAN-SUITE.md](LEAN-SUITE.md).
+Browser suites (layers, auth reuse, seeding, selection, flake): [E2E.md](E2E.md).
 
 ## Reuse valid evidence
 
@@ -132,7 +131,7 @@ nothing: [SETUP-TIME.md](SETUP-TIME.md).
 ## Shared host
 
 Memory-lean testing (production build, one browser with many contexts, API-level parity,
-component tests, conductor): [SHARED-HOST.md](SHARED-HOST.md).
+component tests, conductor; host-load sensor and worker formula): [SHARED-HOST.md](SHARED-HOST.md).
 
 ## Keep verification bounded
 

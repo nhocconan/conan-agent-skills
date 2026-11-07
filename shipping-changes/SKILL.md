@@ -42,13 +42,15 @@ steps; report missing authority without re-asking for existing authority.
 2. Run every gate required by the repository for this step, per rule 4. Use affected
    checks for feedback where permitted ([effective-development](../effective-development/SKILL.md));
    they do not replace required merge or deploy checks.
-3. Review the diff hunk by hunk. Delegation moves the typing, not the accountability.
+3. Review the diff hunk by hunk.
 4. For the mechanics beyond this point (version bump, changelog, commit message
    composition, push), read `../.vendor/gstack/ship/SKILL.md` — its
    **"Section index — Read each section when its situation applies"** — then read only the
    sections that index names for the step you are on (all under
    `../.vendor/gstack/ship/sections/`; `refsync.py ensure` fetches them) and follow them
-   with the house rules above applied. Upstream's flow aborts on the base branch and opens
+   with the house rules above applied. Upstream Steps 4–11 (test bootstrap, coverage
+   generation, review army) are replaced by steps 2–3; skip `sections/tests.md` and
+   `sections/test-coverage.md`. Upstream's flow aborts on the base branch and opens
    a PR; rule 1 decides whether that applies. Finish what the request covers: no partial
    or deferred work without saying so. A section the index names but `.vendor/` lacks is
    reported, not improvised.

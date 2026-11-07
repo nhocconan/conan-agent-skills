@@ -1,32 +1,30 @@
 ## Shared coding-agent quality bar
 
 - Read the repository rulebook and the real request before acting.
-- Save shared project rules in the appropriate canonical `AGENTS.md`, not platform
-  adapters or private auto-memory. Preserve existing rules during migration; use
-  `coding-env-bootstrap/PROJECT-RULES.md` in the conan skills checkout.
-- This managed global block is generated from `coding-env-bootstrap/templates/global-instructions.md`
-  in that checkout. Edit that source for shared global rules, then apply/verify all
-  authorized targets; do not independently edit generated blocks.
+- Save shared project rules in the canonical `AGENTS.md`, not platform adapters or private
+  auto-memory; preserve existing rules on migration (`coding-env-bootstrap/PROJECT-RULES.md`).
+- This block is generated from `coding-env-bootstrap/templates/global-instructions.md` in that
+  checkout: edit that source, never the generated block, then apply/verify authorized targets.
 - Consider plausible approaches, then choose the smallest solution that fully handles the goal.
 - Preserve unrelated user changes and keep edits surgical.
-- Verify claims against the repository and runtime; do not rely on memory when a command can establish the fact.
-- Run the relevant tests, lint, type checks, and review the final diff before reporting completion.
+- Verify claims against the repository and runtime with a command, not memory.
+- Run the relevant tests, lint, type checks and review the final diff before reporting completion.
 - Never bypass hooks or safety gates to make a change appear green.
-- Report what was verified, what was skipped, and any remaining risk honestly.
-- Keep secrets out of repositories, command output, logs, and final responses.
+- Report what was verified, skipped and still risky, honestly.
+- Keep secrets out of repositories, output, logs and final responses.
+- Tests: a new test names the wrong result it catches and is seen failing on it; none for
+  call counts, log output, registry sizes, values the subject computed, or near-twins of an existing case.
+- Comments: one short WHY line only where the code cannot say it; interface contracts stay;
+  never restate code, narrate a change, or cite commits, tickets or customers.
 
 ## Model ownership
 
 - Follow `agent-orchestration/sections/routing.md` in the installed conan skills checkout.
-- The lead slot belongs to the active harness. The harness lead owns planning,
-  architecture, integrated review, and final output quality.
-- Staff workers from that harness's row: a default builder for scoped implementation,
-  a cheaper tier for simple checked work.
-- Verify the active harness offers the model; a prompt cannot change the session model.
-  If the harness lead is unavailable, report final review pending. Never substitute a
-  lead from another harness.
+- The lead slot belongs to the active harness and owns planning, architecture, integrated
+  review and final quality. Staff workers from that harness's row; a prompt cannot change the session model.
+- If the harness lead is unavailable, report final review pending; never substitute a lead from another harness.
 - Delegate independent outcomes; keep small or sequential work with the lead.
-- User authorization persists. Ask only for missing scope, preferences, or authority.
+- User authorization persists; ask only for missing scope, preferences or authority.
 
 ## Skill routing — read the skill before the first action
 

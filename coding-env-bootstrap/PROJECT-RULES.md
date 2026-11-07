@@ -37,6 +37,18 @@ precedence or discovery semantics across tools.
    adapter. If an existing adapter contains user-authored rules, first merge the
    desired rule into `AGENTS.md`, then review and replace that adapter manually.
 
+## Rule hygiene
+
+Admit a line only when an agent got it wrong here twice, or it names a command or decision
+the code cannot show. A zero-exception rule becomes a hook, lint or audit, and in the commit that
+lands the check its prose shrinks to one line naming that check. One imperative line each: no incident story,
+no all-caps emphasis (models over-apply it). Keep the file under 200 lines (the Claude Code
+memory docs' per-file target); Codex stops reading at `project_doc_max_bytes`, 32 KiB by
+default (both read 2026-11-07). Context files raised inference cost by more than 20 % without
+a general success gain (arXiv 2602.11988), so a line stays only if removing it would cause a
+mistake on a recorded task. Prune on each review: lines that restate a default, name a
+missing path or command, contradict another line, or cannot be acted on ("be careful").
+
 ## Drift checker
 
 Run the checker for one explicit project-rule directory:

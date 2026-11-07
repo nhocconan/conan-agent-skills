@@ -40,7 +40,7 @@ for (const [vp, w, h] of [['d', 1440, 900], ['m', 390, 844]])
     // that saves a user preference.
     await ctx.addInitScript((t) => localStorage.setItem(THEME_KEY, t), theme);
     const page = await ctx.newPage();
-    await page.goto(url, { waitUntil: 'networkidle' });
+    await page.goto(url, { waitUntil: 'load' }); await page.getByRole('heading').first().waitFor({ timeout: 10_000 });
     await page.screenshot({ path: `${out}/${name}-${vp}-${theme}.png` });
     const { findings } = await page.evaluate(`${probe}\nlayoutProbe()`);
     fs.writeFileSync(`${out}/${name}-${vp}-${theme}.probe.json`, JSON.stringify(findings, null, 1));

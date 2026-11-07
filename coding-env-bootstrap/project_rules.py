@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -19,6 +20,10 @@ CANONICAL = "AGENTS.md"
 OVERRIDE = "AGENTS.override.md"
 ADAPTERS = ("CLAUDE.md", "GEMINI.md")
 ADAPTER_CONTENT = "@AGENTS.md\n"
+MAX_LINES = 200
+MAX_BYTES = 32 * 1024
+MAX_EMPHASIS = 3
+EMPHASIS = re.compile(r"\b(?:IMPORTANT|CRITICAL|NEVER EVER|YOU MUST|ALWAYS)\b")  # all-caps only
 
 
 @dataclass(frozen=True)
@@ -72,6 +77,25 @@ def inspect(root: Path) -> tuple[list[Finding], list[Path]]:
     return findings, missing
 
 
+def warnings(root: Path) -> list[str]:
+    """Size and emphasis warnings for the canonical file; never affect the exit code."""
+    canonical = root / CANONICAL
+    if canonical.is_symlink() or not canonical.is_file():
+        return []
+    data = canonical.read_bytes()
+    text = data.decode("utf-8", errors="replace")
+    out: list[str] = []
+    lines = len(text.splitlines())
+    if lines > MAX_LINES or len(data) > MAX_BYTES:
+        out.append(f"WARNING: {canonical}: {lines} lines, {len(data)} bytes; "
+                   f"keep under {MAX_LINES} lines and {MAX_BYTES} bytes")
+    count = len(EMPHASIS.findall(text))
+    if count > MAX_EMPHASIS:
+        out.append(f"WARNING: {canonical}: {count} emphasis tokens (max {MAX_EMPHASIS}); "
+                   "emphasis makes models over-apply")
+    return out
+
+
 def check(root: Path) -> int:
     findings, missing = inspect(root)
     for adapter in missing:
@@ -80,6 +104,8 @@ def check(root: Path) -> int:
         for finding in findings:
             print(f"FAIL: {finding.path}: {finding.message}")
         return 1
+    for line in warnings(root):
+        print(line)
     print(f"OK: {root} uses {CANONICAL} with exact Claude/Gemini adapters")
     return 0
 

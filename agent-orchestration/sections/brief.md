@@ -12,6 +12,7 @@ Read [routing](routing.md) before selecting a model. Each worker needs:
 - Observable acceptance: claim → check with real project commands → artifact → what it leaves unproven.
   UI work: acceptance is `frontend-design`'s evidence (before/after shots 1440/390, light/dark,
   rubric line from another reader); "use the design skills if available" gets skipped.
+- Test diff: each new test names the wrong result it catches (slop list: effective-development/LEAN-SUITE.md); no fixed sleeps, log-count asserts or narrating comments.
 - Relevant invariants: auth, tenancy, money, compatibility, or performance when applicable.
 - Return shape: changes, commands and results, assumptions, and unresolved concerns.
 - Explicit limits on further delegation, time/cost when known, and escalation conditions.

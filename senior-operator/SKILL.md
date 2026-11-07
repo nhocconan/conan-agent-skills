@@ -44,7 +44,8 @@ helps repeated work; its absence is not a blocker.
 - Numbers reconcile to EXTERNAL ground truth, never to a re-derivation of the same code.
 - Say out loud what is verified vs inferred vs assumed, and name the source of every
   threshold, limit, budget or cause.
-- Comments are rare: one short WHY line; never restate code, incidents, commits or customer names; keep `audit-ok-*` and lint directives.
+- Comments are rare: one short WHY line; never restate code, narrate a change, or cite commits,
+  tickets or customers; keep `audit-ok-*` and lint directives.
 
 ## Maintenance
 

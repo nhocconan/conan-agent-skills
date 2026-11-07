@@ -52,7 +52,7 @@
   "coding-env-bootstrap": {
     "always_on": 500,
     "eager": 3000,
-    "on_demand": 35000
+    "on_demand": 35500
   },
   "demo-data-craft": {
     "always_on": 500,
@@ -66,7 +66,7 @@
   },
   "dev-env-lifecycle": {
     "always_on": 600,
-    "eager": 5950,
+    "eager": 6150,
     "on_demand": 0
   },
   "docs-sync": {
@@ -76,8 +76,8 @@
   },
   "effective-development": {
     "always_on": 300,
-    "eager": 9200,
-    "on_demand": 11300
+    "eager": 9000,
+    "on_demand": 15400
   },
   "frontend-design": {
     "always_on": 600,

@@ -43,6 +43,8 @@ Validation after relevant changes:
 - `python3 -m unittest discover -s agent-session-backup/tests -v`
 - `python3 -m unittest discover -s coding-env-bootstrap/tests -q`
 - `python3 -m unittest discover -s ref-skills/tests -q`
+- `python3 -m unittest discover -s effective-development/tests -q`
+- `python3 -m unittest discover -s dev-env-lifecycle/tests -q`
 - `git diff --check`
 
 After editing a frontmatter `description`, also run the trigger eval (needs the `claude`

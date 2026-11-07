@@ -1,25 +1,24 @@
 ## §5. Verification discipline — where projects actually die
 
-The bugs that kill releases are the ones your gates don't cover. These rules exist
-because each was paid for:
+The bugs that kill releases are the ones your gates don't cover.
 
 ### 5.1 Fake green (the worst class)
 
 Piping a build through `tail`/`head`/`grep` makes the exit code the PIPE's exit code.
-A missing SDK produced "BUILD SUCCESSFUL"-looking output for SIX stages once; nothing
-had compiled. **Rule: never pipe build commands. Redirect to a log
+**Rule: never pipe build commands. Redirect to a log
 (`> build.log 2>&1; echo EXIT=$?`), then check BOTH the exit code and a positive marker
 (`BUILD SUCCESSFUL`, test counts) in the log.** An agent claiming green counts for
 nothing until the orchestrator has re-run the command itself (§OP).
 
-### 5.2 The per-stage gate (run ALL of it, every stage, no exceptions)
+### 5.2 The per-stage gate
 
-For a KMP/CMP project the minimum is: unit tests for EVERY flavor × the assemble for
-EVERY flavor × the iOS framework link × (if backend touched) backend lint+test+build.
+Affected checks give feedback ([effective-development](../../effective-development/SKILL.md));
+the stage gate for a KMP/CMP project is: unit tests for every flavor × the assemble for
+every flavor × the iOS framework link × (if backend touched) backend lint+test+build.
 The stage isn't done until all are green AT HEAD — not green on the files you think
 you touched.
 
-**Bootstrap on a cold repo (do this FIRST, before any change):** derive the concrete
+**Bootstrap on a cold repo (do this first, before any change):** derive the concrete
 gate and freeze it into a script so you never re-derive it wrong. Recipe:
 `./gradlew projects` (module list) → `./gradlew tasks | grep -E "test.*UnitTest|assemble|linkDebugFramework"`
 (the real task names, including every flavor) → check `package.json`/`Makefile`/CI
@@ -42,8 +41,7 @@ screen, skip tutorials/prompts, autopilot gameplay. It pays for itself the first
 Hand-tuning difficulty is guessing. Write a headless bot that plays the real engine
 thousands of runs across the whole level range, and assert invariants: every level
 reachable, no level with median-death-at-zero, gap/reaction-time floors ≥ human limits,
-difficulty monotonic where designed. This converts "feels hard" into a regression test —
-and it once caught levels that were mathematically impossible.
+difficulty monotonic where designed. This converts "feels hard" into a regression test.
 
 ### 5.5 Determinism as a test target
 

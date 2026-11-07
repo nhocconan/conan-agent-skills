@@ -121,5 +121,37 @@ class ProjectRulesTests(unittest.TestCase):
             self.assertFalse((project / "CLAUDE.md").exists())
 
 
+class WarningTests(unittest.TestCase):
+    def project(self, parent: Path, body: str) -> Path:
+        root = parent / "p"
+        root.mkdir()
+        (root / "AGENTS.md").write_text(body, encoding="utf-8")
+        for name in ("CLAUDE.md", "GEMINI.md"):
+            (root / name).write_text(ADAPTER_CONTENT, encoding="utf-8")
+        return root
+
+    def test_long_file_warns_without_failing(self):
+        with tempfile.TemporaryDirectory() as raw:
+            res = invoke(self.project(Path(raw), "- rule\n" * 201), "check")
+            self.assertEqual(res.returncode, 0, res.stdout)
+            self.assertIn("WARNING", res.stdout)
+
+    def test_short_file_is_clean(self):
+        with tempfile.TemporaryDirectory() as raw:
+            res = invoke(self.project(Path(raw), "- rule\n" * 55), "check")
+            self.assertEqual(res.returncode, 0)
+            self.assertNotIn("WARNING", res.stdout)
+
+    def test_emphasis_counts_all_caps_only(self):
+        with tempfile.TemporaryDirectory() as raw:
+            prose = self.project(Path(raw), "never always important critical\n" * 10)
+            self.assertNotIn("WARNING", invoke(prose, "check").stdout)
+        with tempfile.TemporaryDirectory() as raw:
+            loud = self.project(Path(raw), "ALWAYS IMPORTANT CRITICAL YOU MUST\n")
+            res = invoke(loud, "check")
+            self.assertEqual(res.returncode, 0)
+            self.assertIn("emphasis", res.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()

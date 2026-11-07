@@ -41,7 +41,10 @@ Fix the largest wait/setup sink first. Removing tests to save time is never the 
 Affected selection that selects nothing reports green. Add a canary that hides a change in a
 service, a pipeline, a job and a migration, and asserts each selects at least one test that
 imports it (or the widening step that covers it); make the runner exit non-zero when a
-changed runtime source selects zero tests. (2026-11-02: an empty selection exited 0 and
+changed runtime source selects zero tests. Playwright fails a run that finds no tests, except under
+`--pass-with-no-tests`, `--only-changed` or a test list (lib/runner/index.js, 1.65.0, read
+2026-11-07); sharded runs count tests before sharding. So an `--only-changed` run that selects
+nothing exits 0: the canary must cover it. (2026-11-02: an empty selection exited 0 and
 45 of 1,221 source files had no importing test.)
 
 ## 4. Candidates: adopt only after measuring on the repo

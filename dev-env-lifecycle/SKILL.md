@@ -30,9 +30,12 @@ edits that tree until it ends; prefer building from a committed snapshot.
 1. **Inventory before you start.** Record what is already running on the ports and paths
    you are about to use. You are responsible for what *you* start, and you must not kill
    what you did not. If a port is already bound, find out by whom before taking it.
-   A host resource share the operator sets ("at most half the server") is enforced with
-   `systemd-run --scope` (`CPUQuota`/`MemoryMax`), cgroup, `taskset` or `nice`, and
-   verified in the process table.
+   The operator's share is enforced by cgroup, not promises: root runs
+   [`scripts/colocate.sh`](scripts/colocate.sh) `apply` once (production `MemoryLow`; agent
+   `CPUWeight`/`MemoryHigh`/`MemoryMax`/`TasksMax`; systemd-oomd on `user@.service`). Each heavy
+   job runs as `systemd-run --user --scope -p CPUWeight= -p MemoryHigh= -p MemoryMax= -p
+   RuntimeMaxSec=`, sized by effective-development's `host_load.py`; weights, never `CPUQuota`
+   (quotas throttle an idle host). Verify in the scope's cgroup files.
 2. **One entrypoint each for up, down and status.** Use the repo's script, Compose or
    Make target; encode required ordering there.
 3. **Down means all of it.** Stop covers every process the up path created, not the
