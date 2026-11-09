@@ -31,34 +31,35 @@ an unavailable optional specialist alone does not block acceptance.
 
 ### Work nature → tier
 
-Pick the work tier, then the harness model. The parent remains lead; only its context may grow (≤ 120k,
-[tracking](tracking.md)); every other row is capped and set explicitly on the spawn.
+Define the outcome, risk and observable checks first; then choose a capable model and effort
+for the actual work, subject to required project review gates. The parent remains lead; only its context may grow (≤ 120k,
+[tracking](tracking.md)); every worker is capped and set explicitly on the spawn.
 
 | Work | Tier | Effort | Cap | Return |
 | --- | --- | --- | --- | --- |
-| Design note, architecture, conflicting evidence, integration review; merge-gate review of migrations, tenancy/RLS, auth, routing, prompts/evals — once per release over the combined diff | hardest scoped judgment (Fable / Astra / Argon) | high | 60 turns; reads the diff and artifacts, runs nothing heavier than `git`/`grep` | one line per finding |
-| Scoped build, patch, refactor, migrate; routine diff review; spec update for a rename named in the diff; E2E flow authoring | bounded builder (Sonnet / Sol 6.1 / 3.8 Flash) | medium; high for a repair after one failed check | 80 turns / 150k context | builder contract |
-| Source-based writing, chart/screen interpretation, bounded app workflows | scoped specialist (Codex: Terra 6.1) | low; raise when checks justify it | 60 turns / 150k context | artifact + evidence + uncertainties |
-| Mechanical run: gate or shard runner (one command → `EXIT=n · passed/failed · log path`), browser read/click/screenshot check against named routes, selectors, widths and expected text with PASS/FAIL per item, log triage ≤ 30 lines (failing test, error class, suspect file, stale-vs-bug guess), inventory, file moves, host hygiene | focused checked work (Haiku 5.5 / Luna / Flash-Lite) | low or none | 60 turns; never edits code or tests | verdict line + results file |
-| Waiting on a job, relaying a message, a "placeholder" | no agent | — | — | the harness's completion notification or wait tool |
+| Specific unresolved hard question; an explicitly requested specialist | hardest scoped judgment (Fable / Astra / Argon) | as needed | 60 turns; reads the diff and artifacts, runs nothing heavier than `git`/`grep` | one line per finding |
+| Broader or risky build, refactor, migration, integration or review; E2E flow authoring | bounded builder (Sonnet / Sol 6.1 / 3.8 Flash) | task-dependent | 80 turns / 150k context | builder contract |
+| Source-based writing, chart/screen interpretation, bounded app workflows; narrow, low-risk app edits with explicit acceptance checks | scoped specialist (Codex: Terra 6.1) | task-dependent | 60 turns / 150k context | artifact + evidence + uncertainties |
+| Bounded multi-step triage, source verification, narrow low-risk edits with observable checks, or specified browser checks | focused checked work (Haiku 5.5 / Luna / Flash-Lite) | task-dependent | 60 turns | verdict + evidence |
+| A single mechanical command, waiting, relaying, or a "placeholder" | no agent needed | — | — | command result or completion notification |
 
-Give mechanical workers exact routes, selectors, widths and expected text. They escalate
-visual judgment, unspecified flows, stale-base vs bug decisions, assertion edits and
-ambiguous acceptance; report measurements such as `scrollWidth` rather than impressions.
+For specified browser checks give routes, selectors, widths and expected text; report
+measurements such as `scrollWidth`. Escalate work exceeding the worker’s capability or scope.
 
 **Set `model`, effort and the turn cap on every spawn.** Omitted models inherit the parent
 or definition. Enforce caps with available controls: Claude `maxTurns`, Codex
 `job_max_runtime_seconds`, agy per-task runtime, plus the brief's budget. Re-brief workers
 past 80 turns or 150k context from their results files to bound repeated context costs.
 
-Escalate immediately when risk, ambiguity or capability exceeds the worker's scope. After
+Escalate immediately when risk, ambiguity or capability exceeds the worker’s scope. After
 two failures of the same acceptance check, the lead diagnoses or takes the task back before
-choosing another model. Do not create workers solely to exercise a cheaper model. Vendor
-descriptions are starting points, not proof of performance on a particular project.
-
-Terra handles specialist tasks; Sol and Astra retain their roles. Require source/screen
-evidence, flag unreadable values, and verify app changes. Tool support grants no write
-authority. If unavailable, choose a capable same-harness model unless explicitly pinned.
+choosing another model. Use the smallest context needed for a specific hard question; for
+Astra, seek a capable cheaper pass and counterevidence first unless explicitly requested.
+Choose effort for complexity and correctness, not price or inherited parent effort. Do not
+force tiers or spawn solely to exercise a model. Vendor descriptions are not proof of project
+performance. Require source/screen evidence, flag unreadable values, and verify app changes.
+Tool support grants no write authority. If unavailable, choose a capable same-harness model
+unless explicitly pinned.
 
 ### Claude models
 
@@ -115,10 +116,11 @@ use it only when nested work is permitted by the task and harness.
 
 Use Responses for tool-calling API workers: Terra and Sol 6.1 Chat Completions have no tool
 calling; Sol 6/Luna Chat Completions function calling requires effort `none`.
-Model rollout and workspace settings still control access. During rollout, available
-legacy fallbacks include `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna`; do not
-select them unless the active catalog exposes them. Prefer Sol 6 when Sol 6.1
-is unavailable and the task remains suitable.
+Model rollout and workspace settings still control access. Choose from the active spawn
+schema, not a cached CLI catalog alone. Prefer an exposed 6-series model suited to the
+task; select a legacy 5.6 fallback only when the needed 6-series model is unavailable
+and the active spawn schema exposes that fallback. Prefer Sol 6 when Sol 6.1 is
+unavailable and the task remains suitable.
 The 2026-10-01 API notice deprecates `gpt-5.3-codex`, `gpt-5.1` and
 `gpt-5.4-nano` for removal on 2027-04-01. Deprecation is advance notice;
 it is distinct from shutdown and from ChatGPT product retirement.
