@@ -46,7 +46,7 @@ busy; one 1,903 s file set the wall):
    stale after an upgrade; the sensor reads today's `nproc` and cgroup quota.
 5. **No overlap.** One host lock for gate, E2E and affected runs; overlap produced false
    failures and a full rerun.
-6. **Typecheck.** Use the native checker for the inner loop once it matches `tsc` on the repo.
+6. **Typecheck.** Use the TypeScript 7 `tsc` for the inner loop once it matches `tsc6` on the repo.
 
 ## Shared-checkout hazards (one line each)
 

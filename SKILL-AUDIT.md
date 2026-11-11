@@ -1,4 +1,6 @@
-# Skill audit — 2026-10-02
+# Skill audit log (latest 2026-11-11)
+
+The 2026-10-02 audit follows; later sections are dated below.
 
 Supersedes the 2026-09-15 audit. Scope: all 32 first-party skill entrypoints and the
 files they reference, the install/update tooling (`harness.py`, `refsync.py`,
@@ -373,4 +375,27 @@ All 172 unit tests and the 10 required repository gates pass. Fixture workspaces
 evaluation processes were cleaned up; working evidence stays in ignored `.agents/`.
 These are routing and repository checks, not proof of equal implementation quality,
 live store acceptance, scanner compatibility or every OS/tool/version combination.
+No commit or push was requested or performed.
+
+## 2026-11-11 — model releases and currency pass (34 skills, 46 files changed)
+
+Trigger: Claude Fable 5.2 (released 2026-11-09) and Gemini 4 Carbon (GA 2026-11-10).
+Seven read-only workers checked vendor and standards pages fetched that day; the lead
+judged each finding against its quoted primary source, and four workers applied the
+accepted ones.
+
+| Area | Findings accepted | Main corrections |
+| --- | --- | --- |
+| Routing policy | 3 vendor sections | Fable 5.2 replaces 5.1 (5.1 legacy); Carbon added as agy hardest-judgment tier with Argon fallback; agy 1.5.5 catalog; Claude Code effort defaults; OpenAI table unchanged |
+| Agent infrastructure | 20 of 23 | `/goal` evaluator replaces the self-attested completion phrase; no-op thinking-budget key removed from the settings template; non-existent `/handoff` and `/pickup` commands; local scheduling and the 30-day transcript cleanup for mining and backup; depth/concurrency behaviour; agy loading row |
+| Web quality | 13 of 14 | Supply-chain install controls, scanner provenance, ASVS and agentic-list pointers; missing WCAG 2.2 AA items and two imprecise criteria; a theme init-script that failed in the page; `networkidle` wait |
+| Mobile | 18 of 19 | Guideline 2.5.19 renumbering; a URL recipe that failed as written; 16 KB page size, Play Billing Library floor, age-rating and iPhone Duo dates; TTS model removal date |
+| Process and data | 11 of 11 | TypeScript 7 `tsc`/`tsc6`; Stryker subcommand; Wikipedia and arXiv source drift; a misattributed em-dash figure; systemd 257 floor; trial-count rule for backtests |
+
+Not changed: two vendored upstreams reported newer than their 2026-11-07 review (`design-qa`,
+`shipping-changes`); an Apple guideline code with no primary source. The settings template's
+global `effortLevel` moved from `high` to `medium` on the operator's decision. Thirteen size ceilings were raised by 46–1,800 B for the added
+text. No frontmatter description changed, so no trigger eval was run. Limits: vendor pages
+were read, no model call tested Carbon entitlement or any worker tier; the agy
+`invoke_subagent` tier names and several Codex config keys have no public documentation.
 No commit or push was requested or performed.

@@ -20,7 +20,7 @@ do a job repeatedly; the design serves scanning and acting.
 - **Copy**: user's vocabulary, sentence case, a verb on every action, the same name for an
   action through the whole flow, errors say what happened and how to fix it.
 - **Numbers must be right**: any displayed metric goes through `metric-integrity`.
-- Verify by operating it (filters, pickers, popovers), at 375px and in both themes.
+- Verify by operating it (filters, pickers, popovers), at 390px and in both themes.
 - **Motion is feedback** on work screens (press, hover, menu open, a row arriving), not
   entrances, unless the project's design system specifies otherwise.
 - **Chrome** (top bar, nav, launcher, account menu) is one system: one control height, one icon

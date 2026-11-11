@@ -57,6 +57,8 @@ survive this whole checklist and reproduce from a clean re-run.
   flat, not "14% CAGR").
 - Parameter sweeps: report the neighborhood, not the peak. A config whose CAGR swings widely
   across nearby params is overfit noise.
+- Record N, every config/feature/variant tried; deflate the Sharpe for N (Bailey & López
+  de Prado 2014). No N: draft.
 
 ## Provenance (every published number is auditable)
 

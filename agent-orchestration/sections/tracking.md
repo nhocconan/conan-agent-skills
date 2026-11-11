@@ -47,8 +47,9 @@ At 120k, or after two corrections on one issue, write
 `<workdir>/handoff.md` — GOAL · STATE (landed, in gate, live, in flight with agent ids
 and results files) · NEXT 5 · OPEN RISKS · IDS · COMMANDS · READ FIRST — then `/clear`
 and resume from that file plus the shared brief. `/compact <focus>` only below ~60k when
-continuity matters: a compaction re-reads the whole context. Operator trigger, one word
-each: `/handoff`, `/clear`, `/pickup`. Cross-session messages and notifications start
+continuity matters: a compaction re-reads the whole context. Operator trigger: ask for
+`<workdir>/handoff.md`, then `/clear` and "read handoff.md and the shared brief"
+(`/handoff` and `/pickup` exist only if the operator defined them as custom skills). Cross-session messages and notifications start
 full-context turns: ≤ 5 lines plus a results path, batched.
 
 ## Continue and communicate

@@ -28,10 +28,10 @@ says the task succeeded. Every loop reports the gate's verdict, never the run's 
 
 | Rung | Trigger | Write access | What earns the next rung |
 | --- | --- | --- | --- |
-| 1 · Skill | a human invokes it | as the session allows | representative runs reviewed; gate catches forced failure |
+| 1 · Skill | a human invokes it; `/goal` keeps one session going until an evaluator model confirms the end state | as the session allows | representative runs reviewed; gate catches forced failure |
 | 2 · Hook | a supported blocking session event; verify the active harness's events and rejection semantics ([harness mechanics](sections/harness-mechanics.md)). Notification-only hooks cannot enforce a gate | none of its own | the hook has never blocked something it should have allowed |
 | 3 · Headless CI | repo event (push, PR) or CI cron; local artifacts only | **none; posting comments needs write authority** | outputs were correct for N runs and cheap to check |
-| 4 · Scheduled | a clock outside the repo (routines, automations, Claude Code `/loop`, cron on the box) | still read-only | brakes proven under a forced failure |
+| 4 · Scheduled | a clock outside the repo (cloud scheduled tasks, Desktop scheduled tasks, automations, Claude Code `/loop`, cron on the box) | still read-only | brakes proven under a forced failure |
 | 5 · Agentic workflow | lives in the repo as code; agent runs read-only, a separate narrowly-scoped job holds the token | **proposes PRs by default; bounded authorized writes** | — |
 
 **Escalation law:** hand → read-only CI → scheduled with brakes → write. Write access is
@@ -69,11 +69,12 @@ does not prove readiness. Automate deterministic checks in code before agent tur
 
 ## The completion promise — for "keep going until" loops
 
-An in-session loop that feeds the same prompt back until done needs an explicit
-**completion promise**: a phrase the agent may emit *only* when the statement is
-completely true. Never emit it to escape a loop you are stuck in — say you are stuck,
-name the blocker, and let the iteration cap end it. A false promise is worse than a
-timeout: it reports success that did not happen.
+In Claude Code (and agy) use `/goal <one measurable end state + the check that proves
+it + a turn/time clause>`; an evaluator model, not the worker, decides. Where no `/goal`
+exists, a self-emitted completion phrase is a fallback: emit it only when the statement
+is completely true; never to escape a loop you are stuck in — say you are stuck, name
+the blocker, and let the iteration cap end it. A false promise is worse than a timeout:
+it reports success that did not happen.
 
 ## Section index — Read each section when its situation applies
 

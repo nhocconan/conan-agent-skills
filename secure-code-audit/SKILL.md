@@ -19,12 +19,12 @@ Codex or agy does not prevent the same security checks.
 A repeatable, vendor-neutral security pass any repo can run locally. Four layers: **secrets**, **dependencies**, **static analysis (SAST)**, and a **manual OWASP review**. Prefer tools already installed; otherwise note the one-line install. Never exfiltrate code to a third-party service without the user's explicit OK — local execution does not imply zero network access. Inspect scanner telemetry, rule downloads, and credential-verification behavior. Keep secret values redacted.
 
 ## 1. Secret scanning (run first — leaked creds are the highest-severity, fastest win)
-- Working tree AND all available refs: `gitleaks git --redact --log-opts="--all" .` and `gitleaks dir --redact .` ([Gitleaks usage](https://github.com/gitleaks/gitleaks#usage)). Record shallow/missing history. TruffleHog needs both `git file://<absolute-repo-path> --no-verification` and `filesystem <repo-path> --no-verification`; its output can contain raw secrets, so capture privately and redact before reporting ([usage](https://github.com/trufflesecurity/trufflehog#usage)).
+- Working tree AND all available refs: `gitleaks git --redact --log-opts="--all" .` and `gitleaks dir --redact .` ([Gitleaks usage](https://github.com/gitleaks/gitleaks#usage)). Record shallow/missing history. Gitleaks is security-patch-only; Betterleaks (same maintainers, own config format, `betterleaks git|filesystem`) is the successor. Prefer whichever is installed. TruffleHog needs both `git file://<absolute-repo-path> --no-verification` and `filesystem <repo-path> --no-verification`; its output can contain raw secrets, so capture privately and redact before reporting ([usage](https://github.com/trufflesecurity/trufflehog#usage)).
 - Look for: API keys, tokens, JWTs, private keys, DB/LDAP passwords, cloud creds, `.env` committed by accident.
 - If a real secret is found in history: say plainly it must be **rotated** (history rewrite does not unleak it from clones/caches), then offer to scrub history. Add the path to `.gitignore` and commit a `.env.example` instead.
 
 ## 2. Dependency / CVE audit
-- JS/TS: `npm audit` / `pnpm audit` (include build/dev dependencies; use `--omit=dev` only for an explicitly production-only pass). Python: `pip-audit`. Go: `govulncheck ./...`. Multi-ecosystem: `osv-scanner scan source -r .` ([source scanning](https://google.github.io/osv-scanner/usage/scan-source)). Containers/images: `trivy fs .` or `trivy image <img>`.
+- JS/TS: `npm audit` / `pnpm audit` (include build/dev dependencies; use `--omit=dev` only for an explicitly production-only pass). Python: `pip-audit`. Go: `govulncheck ./...`. Multi-ecosystem: `osv-scanner scan source -r .` ([source scanning](https://google.github.io/osv-scanner/usage/scan-source)). Containers/images: `trivy fs .` or `trivy image <img>`. Install scanners from a pinned, verified release (digest or SHA); a scanner is part of the supply chain (Trivy's own binary and action tags were compromised in March 2026).
 - Triage by reachability and severity — a critical CVE in a transitive, unused path is lower priority than a high in your request path. Pin/upgrade; record anything intentionally deferred with the reason.
 
 ## 3. Static analysis (SAST)
@@ -36,7 +36,7 @@ A repeatable, vendor-neutral security pass any repo can run locally. Four layers
 Read `sections/owasp-top-10-2025.md` for the ten categories and what to check in each.
 Numbering follows [OWASP Top 10:2025](https://top10.owasp.org/2025);
 OWASP renumbers each release, so confirm the list before quoting a category id in a
-report. Two categories are new in 2025: **A03 Software
+report. For a requirement-level checklist, use OWASP ASVS 5.0.0 (30 May 2025). Two categories are new in 2025: **A03 Software
 Supply Chain Failures** and **A10 Mishandling of Exceptional Conditions**. SSRF is no
 longer standalone — OWASP rolled it into A01; check it there.
 

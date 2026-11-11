@@ -25,7 +25,7 @@ snapshot does not establish a field pass. See [Web Vitals](https://web.dev/artic
 
 ## How to measure (don't optimize blind)
 1. **Lab baseline**: run Lighthouse (CLI `npx lighthouse <url> --only-categories=performance --form-factor=mobile` or DevTools) for a scored snapshot + opportunities. Mobile + throttling on — desktop hides real problems. A navigation run reports TBT, not INP: never report it as an INP pass. Measure INP from field data (CrUX, or RUM via `web-vitals` `onINP`), or in the lab with a Lighthouse user-flow timespan or a DevTools Performance trace over the real interactions; TBT is only a lab proxy.
-2. **Trace the bottleneck**: DevTools Performance panel — record a load and a key interaction. Find long tasks, layout thrashing, and what's blocking the main thread.
+2. **Trace the bottleneck**: DevTools Performance panel — record a load and a key interaction. Find long tasks, layout thrashing, and what's blocking the main thread. For INP use the web-vitals attribution build (LoAF entries, Chrome only); for LCP split TTFB / load delay / load time / render delay before choosing a fix.
 3. **Bundle**: inspect what ships (`@next/bundle-analyzer`, `vite-bundle-visualizer`, or `npx source-map-explorer`). Hunt large/duplicate deps (moment, lodash whole-import, two date libs, untree-shaken icon sets).
 4. **Field data** if available (Chrome UX Report / RUM) — lab and field disagree; field is truth.
 

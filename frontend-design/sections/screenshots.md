@@ -38,7 +38,7 @@ for (const [vp, w, h] of [['d', 1440, 900], ['m', 390, 844]])
     });
     // Theme through the app's own storage key, set before load; never by clicking a toggle
     // that saves a user preference.
-    await ctx.addInitScript((t) => localStorage.setItem(THEME_KEY, t), theme);
+    await ctx.addInitScript(([k, t]) => localStorage.setItem(k, t), [THEME_KEY, theme]);
     const page = await ctx.newPage();
     await page.goto(url, { waitUntil: 'load' }); await page.getByRole('heading').first().waitFor({ timeout: 10_000 });
     await page.screenshot({ path: `${out}/${name}-${vp}-${theme}.png` });

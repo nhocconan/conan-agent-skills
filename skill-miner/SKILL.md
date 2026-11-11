@@ -33,6 +33,8 @@ The watermark lives in `state/last-run.json` (gitignored) and is advanced **only
 `--commit`. Run without `--commit` first; commit at the end, once the analysis actually
 finished. A crashed run therefore re-mines the same window rather than silently skipping it.
 
+Claude Code deletes transcripts after `cleanupPeriodDays` (default 30): mine at least
+every 3 weeks or raise the setting; `--full` covers only what survives.
 Default to incremental. Use `--full` when the user asks for it, when the bar itself
 changed, or when `state/last-run.json` is missing.
 
@@ -88,6 +90,9 @@ python3 validate_skills.py ~/.claude/skills   # everything installed on this mac
 python3 validate_skills.py --errors-only
 python3 context_budget.py --no-ratchet   # eager/on-demand bytes after every skill edit
 ```
+
+Claude Code also ships `claude plugin validate <dir>` (≥ 2.1.233) and `/doctor`; our
+520-char description rule is stricter than its 1,536-char listing cap.
 
 Checks portable frontmatter and local conventions. Harness rejection behavior varies:
 
@@ -173,9 +178,11 @@ an unrelated skill. Creating a skill does not itself authorize global installati
 
 ## Scheduling
 
-There is no daemon. Either the operator invokes it, or wire it to a scheduler
-(Claude Code `/loop`, a cron routine) — the watermark makes repeated invocation cheap and correct.
-A sensible cadence is every 2–4 weeks: less often and the digest is too big to reason
-over, more often and nothing has cleared the "recurring" bar yet.
+There is no daemon. Either the operator invokes it, or wire it to a local scheduler: a
+Desktop scheduled task or OS cron (Claude Code `/loop` expires after 7 days; cloud
+scheduled tasks cannot read local history) — the watermark makes repeated invocation
+cheap and correct. A sensible cadence is every 2–3 weeks: less often and the digest is
+too big to reason over (and Claude Code deletes transcripts after `cleanupPeriodDays`,
+default 30), more often and nothing has cleared the "recurring" bar yet.
 
 Adapted from mattpocock/skills (writing-for-agents, commit 4ae2317, MIT).

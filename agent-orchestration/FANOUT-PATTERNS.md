@@ -22,6 +22,7 @@ schema before relying on anything below.
 | CI, deploy, or external job in progress | Supported background completion and bounded waits |
 | Small or inherently sequential change | The lead handles it directly |
 | The same deterministic DAG, repeated, with mechanical checks | A harness workflow script (Claude Code's Workflow tool; a Codex scheduled task), not ad-hoc fan-out |
+| Large mechanical change split into independent units | Claude Code `/batch` (5–30 worktree subagents) or a workflow; agent teams are experimental and off by default |
 
 Do not start an external CLI solely because a native subagent call is unavailable.
 Check authorization, available tools, and value before adding another harness.
@@ -34,20 +35,24 @@ hosted-execution or scheduling surface.
 
 ## Concurrency and depth limits
 
-Read from the installed builds on 2026-09-15. Re-check after any upgrade; never state a
+Read from the installed builds and vendor docs on 2026-11-11. Re-check after any upgrade; never state a
 ceiling you have not read from the active configuration.
 
-**Claude Code 2.1.272.** `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` caps concurrent
-subagents (built-in default 20). `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` caps nesting
-(built-in default 3). A slot is taken when a subagent launches, so the lead does not
-consume one. Exceeding either limit returns an error instructing the agent to do the work
-itself rather than retry.
+**Claude Code ≥ 2.1.219 (checked on 2.1.322).** `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`
+caps concurrent subagents (built-in default 20). `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`
+caps nesting (built-in default 3). A slot is taken when a subagent launches, so the lead
+does not consume one. A launch over the concurrency cap fails with `Concurrent subagent
+limit reached` and the error tells the agent not to retry. At the depth limit the `Agent`
+tool is withheld from the subagent, so it does the work itself. A workflow runs up to 16
+concurrent agents by default and 1,000 agents per run.
 
-**Codex CLI 0.154.0.** The `agents` config table carries
+**Codex CLI (keys first seen 0.154.0, still present in 0.167.1 on 2026-11-11; `max_depth` and
+`job_max_runtime_seconds` are absent from the public config reference).** The `agents` config table carries
 `max_concurrent_threads_per_session`, `max_depth`, `job_max_runtime_seconds`,
 `default_subagent_model`, `default_subagent_reasoning_effort`. A completed agent keeps
 occupying a concurrency slot until `close_agent`, so close each one as it lands.
-Depth exhaustion returns `Agent depth limit reached. Solve the task yourself.`
+The depth-limit string `Agent depth limit reached. Solve the task yourself.` was seen in
+0.154.0 and not found in the 0.167.1 binary.
 
 ## Lane enforcement
 
@@ -74,12 +79,12 @@ with `agent_type`; the `config_file` is a config overlay (`model`, `model_reason
 full-history fork can reject `agent_type` overrides.
 Sources: [Claude subagents](https://code.claude.com/docs/en/sub-agents),
 [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
-(checked 2026-10-04).
+(checked 2026-11-11).
 
 Check the effective permissions after inheritance and runtime overrides. Claude plugin
 subagents ignore `permissionMode`, inline `mcpServers` and subagent hooks; Codex live
 parent overrides can supersede custom-agent defaults. These controls need verification,
-not assumed enforcement (official docs checked 2026-10-04).
+not assumed enforcement (official docs checked 2026-11-11).
 
 ## Resume primitives
 
@@ -87,8 +92,8 @@ Resume existing workers when supported; a ledger alone cannot restore worker con
 
 **Claude Code.** `SendMessage` to the agent id returned by the Agent tool continues that
 agent with its context intact; a fresh `Agent` call starts over. A run that hits
-`maxTurns` reports `stopped at its N-turn limit` — a partial result the same
-`SendMessage` continues. The built-in Explore and Plan agents are one-shot and return no
+`maxTurns` returns its output marked partial (≥ 2.1.246); the same `SendMessage`
+continues it. The built-in Explore and Plan agents are one-shot and return no
 id, so use `general-purpose` or a custom subagent for work you may need to resume.
 Subagents can themselves launch background subagents, within the depth limit above.
 
@@ -101,7 +106,8 @@ do not copy CLI lifecycle calls into another surface or treat interruption as cl
 **agy (Antigravity).** `send_message` with `Recipient=<conversationId>` continues a
 subagent with its context intact. `manage_subagents` with `Action="list"` enumerates
 active subagents and their states (`running`, `idle`, `waiting_for_input`, etc.);
-`Action="kill"` cancels a worker. `manage_task` monitors background commands. The harness
+`Action="kill"` ends a worker permanently (to resume one, `send_message` an idle agent).
+`manage_task` monitors background commands. The harness
 resumes execution reactively on subagent messages or task completion without polling.
 
 ## Progress cadence
@@ -183,7 +189,10 @@ Set `Workspace` to `"share"` to share the repository directory like a git worktr
 `"branch"` for an isolated clone. For read-only scout/verifier roles, pass
 `TypeName: "research"`, or register a scoped worker first via `define_subagent` with
 `enable_write_tools: false` and `enable_subagent_tools: false`. `Model` accepts
-`inherit`, `flash_lite`, `flash`, or `pro` ([routing](sections/routing.md)).
+`inherit`, `flash_lite`, `flash`, or `pro` ([routing](sections/routing.md)). The docs list
+Model `inherit|flash|pro`; `flash_lite`, `manage_subagents` and the `enable_*` flags come
+from the live tool schema (UNVERIFIED against docs), so re-inspect it. Docs state a
+maximum depth of 10 beneath the primary agent and no concurrency cap.
 
 ## Shared-host resources
 

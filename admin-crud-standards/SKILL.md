@@ -23,7 +23,7 @@ These are the recurring gaps that turn a "finished" management UI into a pile of
 - Any select with potentially many options → **type-ahead/searchable combobox**, grouped by category. Never a raw 100-item dropdown.
 - Hierarchical data (departments, org trees, categories) → tree picker, with parent selection implying children.
 - Colors → color picker, never free-text hex. Dates → proper date picker.
-- Non-obvious inputs get a (?) tooltip explaining meaning and effect — instant on hover, not delayed.
+- Non-obvious inputs get a (?) tooltip explaining meaning and effect — instant on hover and on keyboard focus, dismissible with Esc, pointer can move onto it (1.4.13).
 - Validation/block messages must be visible; a silently blocked action is a bug.
 
 ## Destructive actions

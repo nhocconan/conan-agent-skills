@@ -89,6 +89,7 @@ def synth_line(text, wav_path, out_dir, stem, index):
                         wav_path], check=True, capture_output=True)
         os.remove(raw)
     elif VO_BACKEND == "openai":
+        # endpoint's TTS model is removed 2027-01-06
         import urllib.request
         key = os.environ["OPENAI_API_KEY"]
         body = json.dumps({

@@ -29,7 +29,7 @@ Items that sit outside that guard's scope:
   re-organize yearly. Verify against current official docs, link the deep URL, and add
   "type the page name into the console search box" as fallback.
 
-**Rollout ladder (don't skip rungs):** internal testing → closed testing → (optional
+**Rollout ladder (don't skip rungs):** internal testing → closed testing (new personal Play accounts: >= 12 testers opted in for 14 continuous days before production access can be requested) → (optional
 but recommended) a geo-limited **soft launch** to validate the §0 retention numbers
 with real users BEFORE the global push and any ASO spend → production with **staged
 rollout** (Play lets you set the percentage manually and never auto-increases it; a

@@ -42,7 +42,9 @@ the result the same frame it appears) and must never appear on the FIRST death o
 - [ ] Safe areas correct on notch/Dynamic Island/home-indicator AND small devices (SE class).
 - [ ] 120Hz: request high refresh rate explicitly (CADisplayLink preferred range / Android
       frame-rate API); interpolate world rendering at display Hz even if simulation ticks fixed.
-- [ ] Predictive back (Android 14+), back never exits the app from a sub-screen.
+- [ ] Predictive back (system animations on by default from Android 15): handle back through
+      `OnBackPressedCallback`/`BackHandler`, not `onBackPressed`/`KEYCODE_BACK`; back never exits
+      the app from a sub-screen.
 - [ ] SplashScreen API (Android) / launch storyboard (iOS) matching the menu's first frame —
       no white flash, no double-splash.
 - [ ] Dark-appropriate status bar, display cutout modes, landscape either fully supported

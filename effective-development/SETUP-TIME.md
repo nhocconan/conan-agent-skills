@@ -52,8 +52,9 @@ nothing exits 0: the canary must cover it. (2026-11-02: an empty selection exite
 - Faster linter as a first pass (Oxlint), keeping the full linter for typed and invariant rules.
   Ports of compiler rules can disagree with the originals (23 false hits on one rule): keep
   such rules in the original linter until a seeded-violation parity check matches.
-- Native typecheck (`tsgo`): adopt when its diagnostics equal `tsc` on the repo and on a
-  seeded-error fixture; use it fail-fast and keep `tsc` authoritative.
+- Native typecheck (TypeScript 7 `tsc`; `tsc6` is the JS 6.x checker): adopt when it
+  matches `tsc6` on the repo and a seeded-error fixture; keep `tsc6` for typescript-eslint until
+  7.1.
 - Test-runner isolation off (`isolate: false`): measure the import share of test time first;
   isolation pays only where import dominates (2026-11-02: no gain at 31 % import share).
   Use a per-file allow-list of files proven pure, a state-reset hook that fails on leaked

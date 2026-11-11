@@ -79,12 +79,16 @@ Templates next to this SKILL.md: copy `store_frames.py` (shared renderer) plus
 Edit the `SLIDES` list (raw file, headline lines, subline, background
 gradient, alternating tilt) and call `render_slides(SLIDES, raw_dir, out_dir, W, H)`.
 
+The renderer's default font paths (`FONTS`, `F_BLACK`, `F_BOLD` in `store_frames.py`) are macOS; override them elsewhere.
+
 Canvas sizes (the renderer scales its layout to any of these):
 - **Google Play:** 1080×1920 (9:16 — the recommended minimum for promotion placements)
 - **Apple App Store iPhone:** use Apple's [required device sizes and size table](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/), then confirm the required set in App Store Connect. The table lists **1179×2556 / 1206×2622** for Dynamic Island medium and **1260×2736 / 1290×2796 / 1320×2868** for large (portrait; rotate for landscape). Scaling depends on the source set and matching UI; do not assume one canvas fills every required slot.
 - **Apple App Store iPad:** for the current 13-inch set use **2064×2752** or
   **2048×2732** portrait (and rotated landscape). Choose the target slot rather
   than assuming one size is universally required.
+- **Apple iPhone Duo:** 1398×2034 outer / 2007×2853 inner (portrait; rotate for landscape), required from April 2027 for iOS 27.1 SDK builds; the product page shows an "optimized for iPhone Duo" badge when supplied.
+- **Google Play graphics:** feature graphic 1024×500 (JPEG/24-bit PNG, no alpha); icon 512×512.
 
 Per slide the renderer draws: vertical brand-gradient background + soft glow →
 rotated white "sticker" headline boxes (heavy font, ink text, drop shadow) →

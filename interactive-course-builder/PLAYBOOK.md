@@ -18,9 +18,6 @@
 > human) does the work.** The trick is never taste — it's sequence + artifacts
 > + mechanical gates. Follow the phases in order; each phase produces a file
 > the next phase consumes, so quality survives weak links and context resets.
->
-> Written by Claude Fable 5 (2026-07) after building multi-module courses with
-> parallel Opus builders. Every rule here paid for itself at least once.
 
 ## The one-line method
 

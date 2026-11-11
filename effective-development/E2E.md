@@ -4,10 +4,10 @@ Playwright docs read 2026-11-07. Launch mechanics:
 [headless-server.md](../browsing-web/sections/headless-server.md); memory: [SHARED-HOST.md](SHARED-HOST.md).
 
 ## Layer
-SWE book ch.11 sizes: small (no I/O), medium (localhost DB/API: route handlers, resolvers),
-large (browser). Google's guideline: about 80/15/5 by count; every team's mix differs. A
-large test carries one line saying why it cannot be medium; the browser is for journeys that
-cross the UI boundary.
+SWE book ch.11 sizes, house gloss: small (no I/O), medium (localhost DB/API: route
+handlers), large (browser, multi-service). Google's guideline: about 80/15/5 by count;
+every team's mix differs. A large test carries one line saying why it cannot be medium;
+the browser is for journeys that cross the UI boundary.
 
 ## Auth
 One setup project per role writes `storageState` to gitignored `playwright/.auth`; projects

@@ -88,7 +88,7 @@ paste the URL in the listing. [Play's preview guidance](https://support.google.c
   error). H.264 .mp4/.mov/.m4v, **up to 30 fps**, **15–30 s**, ≤500 MB.
 - **No device frames / bezels** in the footage (2.3.4) — full-bleed only.
 - **A stereo audio track is required** (256kbps AAC, 44.1/48 kHz) — a silent
-  `anullsrc` stereo track satisfies it if you ship without voiceover.
+  `anullsrc` stereo track is expected to satisfy it if you ship without voiceover; measured bitrate is ~2 kbps, not 256 — unverified against Apple's 256 kbps AAC spec, confirm on upload.
 - Verify with ffprobe: codec h264, **886×1920**, 30/1, aac 2ch, duration 15–30,
   and that no frame shows a phone bezel.
 
@@ -116,9 +116,9 @@ Pick a voice source; check the exact model, voice and recording licenses before 
 | Backend | Quality | Cost / setup | Local? | Notes |
 |---|---|---|---|---|
 | `kokoro` | Excellent | see below; ~350MB model | Yes | Verify the selected weights and voice assets' licenses. `VO_VOICE=af_heart`/`af_bella`/`am_michael` etc. |
-| `piper` | Good | Piper binary + a `.onnx` voice (`VO_VOICE=<path>`) | Yes | Check the selected voice's model card and license |
+| `piper` | Good | Piper binary + a `.onnx` voice (`VO_VOICE=<path>`) | Yes | Expects the legacy rhasspy binary's flags (the maintained piper1-gpl CLI is `python3 -m piper -m <voice> -f <out.wav> -- '<text>'`). Check the selected voice's model card and license |
 | `say` | OK | zero install; **download a Premium voice** in System Settings (defaults sound robotic) | Yes | `VO_VOICE="Ava (Premium)"`. Fine for a draft |
-| `openai` | Excellent | `OPENAI_API_KEY`, model `gpt-4o-mini-tts` <!-- model-id-allow: TTS API model, not an orchestration routing tier --> | No | Verify model access, current account pricing and voice disclosure requirements |
+| `openai` | Excellent | `OPENAI_API_KEY`, model `gpt-4o-mini-tts` <!-- model-id-allow: TTS API model, not an orchestration routing tier --> | No | OpenAI removes this TTS model on 2027-01-06; the successor is Realtime-API-only, not a drop-in — prefer another backend. Verify model access, current account pricing and voice disclosure requirements |
 | `file` | — | drop `vo/<stem>-<i>.wav` per scene | Yes | Use your own recorded voice — most authentic |
 
 **Installing Kokoro (use kokoro-onnx — `pip install kokoro` breaks on Python

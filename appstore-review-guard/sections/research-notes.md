@@ -12,7 +12,7 @@ Checklist items (3.1.1(a) storefront scope, 4.3, 3.1.2 disclosure, anonymous URL
 
 ## Sources
 
-- App Store Review Guidelines (the page carries no revision date; Apple presents it as a living document — re-read at submission time) — https://developer.apple.com/app-store/review/guidelines/
+- App Store Review Guidelines (revision date shown at page foot; last seen 2026-10-16 — re-read at submission time) — https://developer.apple.com/app-store/review/guidelines/
 - App Previews — stay within the app, no device frames/hands — https://developer.apple.com/app-store/app-previews/
 - Screenshot specifications — App Store Connect Help — https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/
 - Manage app privacy (privacy policy URL and app/third-party disclosure responsibility) — https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy/
@@ -26,4 +26,5 @@ Checklist items (3.1.1(a) storefront scope, 4.3, 3.1.2 disclosure, anonymous URL
 
 - Auto-renewable Subscriptions (in-app presentation requirements) — https://developer.apple.com/app-store/subscriptions/
 - Updated guidelines now available — 3.1.1/3.1.1(a)/3.1.3/3.1.3(a) external-purchase-link changes for the US storefront, May 1 2025 — https://developer.apple.com/news/?id=9txfddzf
+- Updated App Review Guidelines, 2026-10-16 (1.2, 2.5.19, 3.1.1(a) wording, Section 5) — https://developer.apple.com/news?id=vvzx6cul
 - For later guideline revisions, use the living guidelines and Apple's current news; an older announcement does not establish the latest policy.

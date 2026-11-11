@@ -1,7 +1,7 @@
 {
   "a11y-audit": {
     "always_on": 500,
-    "eager": 4900,
+    "eager": 5350,
     "on_demand": 0
   },
   "admin-crud-standards": {
@@ -12,7 +12,7 @@
   "agent-orchestration": {
     "always_on": 520,
     "eager": 4800,
-    "on_demand": 65000
+    "on_demand": 66800
   },
   "agent-session-backup": {
     "always_on": 500,
@@ -27,12 +27,12 @@
   "appstore-review-guard": {
     "always_on": 600,
     "eager": 3700,
-    "on_demand": 27300
+    "on_demand": 27850
   },
   "autonomous-loops": {
     "always_on": 600,
     "eager": 6100,
-    "on_demand": 3300
+    "on_demand": 3550
   },
   "backtest-integrity": {
     "always_on": 500,
@@ -42,7 +42,7 @@
   "browsing-web": {
     "always_on": 370,
     "eager": 4150,
-    "on_demand": 12800
+    "on_demand": 12950
   },
   "bug-class-audits": {
     "always_on": 600,
@@ -52,7 +52,7 @@
   "coding-env-bootstrap": {
     "always_on": 500,
     "eager": 3100,
-    "on_demand": 35700
+    "on_demand": 36350
   },
   "demo-data-craft": {
     "always_on": 500,
@@ -102,7 +102,7 @@
   "mobile-app-playbook": {
     "always_on": 600,
     "eager": 6000,
-    "on_demand": 28400
+    "on_demand": 28500
   },
   "ref-skills": {
     "always_on": 400,
@@ -126,8 +126,8 @@
   },
   "secure-code-audit": {
     "always_on": 540,
-    "eager": 5400,
-    "on_demand": 5450
+    "eager": 5750,
+    "on_demand": 5750
   },
   "senior-operator": {
     "always_on": 600,
@@ -141,13 +141,13 @@
   },
   "skill-miner": {
     "always_on": 500,
-    "eager": 10600,
+    "eager": 10950,
     "on_demand": 3100
   },
   "store-screenshots": {
     "always_on": 400,
-    "eager": 7900,
-    "on_demand": 9500
+    "eager": 8200,
+    "on_demand": 9800
   },
   "tenant-scope-integrity": {
     "always_on": 600,
@@ -161,7 +161,7 @@
   },
   "web-perf-audit": {
     "always_on": 500,
-    "eager": 3650,
+    "eager": 3750,
     "on_demand": 0
   },
   "web-qa": {

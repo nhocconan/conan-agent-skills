@@ -2,7 +2,7 @@
 
 Scope: signs a staff member meets when AI drafts captions, emails, reports, slides. Grouped A Từ ngữ, B Mẫu câu, C Trình bày, D Nội dung. Each sign carries a source status:
 
-- **WP** = quoted verbatim from Wikipedia "Signs of AI writing" (live page, fetched 29/09/2026; quotes re-checked with grep -F and independently re-verified). Page carries `{{update|the most recent models|type=page|date=August 2026}}`, so treat all its signs as "observed 2023-2026, model mix changing".
+- **WP** = quoted verbatim from Wikipedia "Signs of AI writing" (live page, fetched 29/09/2026; quotes re-checked with grep -F and independently re-verified). Re-fetched 11/11/2026; treat all its signs as "observed 2023-2026, model mix changing".
 - **paper** = arXiv abstract or full text, read live on 29/09/2026 (only what was read is quoted).
 - **BVN** = Brands Vietnam Help Desk "Dấu hiệu nhận biết nội dung được viết bởi AI" (page shows "Cập nhật vào: 23/09/2025"). A Vietnamese trade article, not research.
 - **quan sát thực tế** = owner observation (29/09/2026) plus practitioner patterns. Not research. Every Vietnamese phrase list in this file has this status unless marked BVN.
@@ -11,7 +11,7 @@ Detectability: **script** = regex/heuristic catches it with few false positives;
 
 Baseline caveat (WP, Caveats): "Do not solely rely on [[artificial intelligence content detection]] tools ... these tools have non-trivial error rates." And: "Humans are notoriously bad at distinguishing human and LLM-generated text." A sign is a cue to edit, not proof of authorship.
 
-Definition used in the lesson. Kommers et al., "Why Slop Matters" (arXiv 2601.06060, abstract): prototypical slop shows "superficial competence (its veneer of quality is belied by a deeper lack of substance), asymmetry effort ... and mass producibility". Shaib et al., "Measuring AI 'Slop' in Text" (arXiv 2509.19163v2, Appendix): seven codes, of which the two the lesson leans on are "Density – Many words, little information; filler or fluff." and "Structure – Repetitive or templated sentence / formula pattern." The same paper finds "binary 'slop' judgments are (somewhat) subjective".
+Definition used in the lesson. Kommers et al., "Why Slop Matters" (arXiv 2601.06060, abstract): prototypical slop shows "superficial competence (its veneer of quality is belied by a deeper lack of substance), asymmetry effort ... and mass producibility". Shaib et al., "Measuring AI 'Slop' in Text" (arXiv 2509.19163v3, Oct 2026; quotes re-checked against v3, Appendix): seven codes, of which the two the lesson leans on are "Density – Many words, little information; filler or fluff." and "Structure – Repetitive or templated sentence / formula pattern." The same paper finds "binary 'slop' judgments are (somewhat) subjective".
 
 ## Contents
 
@@ -34,7 +34,7 @@ Definition used in the lesson. Kommers et al., "Why Slop Matters" (arXiv 2601.06
 
 ### A2. Từ khoa trương / AI vocabulary and puffery
 - VI: "giải pháp toàn diện", "nâng tầm thương hiệu", "đóng vai trò then chốt", "hành trình", "bức tranh toàn cảnh" (quan sát thực tế; a Finhay 2026 blog post lists the same words — trade writing, not research). EN: "delve", "tapestry", "testament", "pivotal", "robust", "vibrant", "showcase", "underscore", "boasts".
-- Why AI: WP, AI vocabulary: "Many studies have demonstrated that LLMs overuse specific words ... an edit (post-2022) introducing lots of them, lots of times, is one of the strongest tells for AI use." Word set drifts: "the word delve was famously overused by ChatGPT in 2023 and early 2024, but became less frequent later in 2024, then dropped off sharply in 2025." WP era list: mid-2025 on (GPT-5): "emphasizing, enhance, highlighting, showcasing". Kobak et al. (arXiv 2406.07016, abstract) measured "an abrupt increase in the frequency of certain style words" in 15 million PubMed abstracts. Promotional tone: WP, "LLMs have serious problems keeping a neutral tone" and "older LLMs (e.g., GPT-4) tend to output more blatantly positive text" [ref] "than newer LLMs, which are more subtly positive".
+- Why AI: WP, AI vocabulary: "Many studies have demonstrated that LLMs overuse specific words ... an edit (post-2022) introducing lots of them, lots of times, is one of the strongest tells for AI use." Word set drifts: "the word delve was famously overused by ChatGPT in 2023 and early 2024, but became less frequent later in 2024, then dropped off sharply in 2025." WP era list: mid-2025 to mid-2026 (GPT-5): "emphasizing, enhance, highlighting, showcasing"; mid-2026 and on (GPT-6): "challenge, clearer, dependable, echoed, foster, leverage, matters, multifaceted, practical, prioritize, quietly, steady, universally" (WP notes it gives no examples for 2026 vocabulary; single commercial source, unverified). Kobak et al. (arXiv 2406.07016, abstract) measured "an abrupt increase in the frequency of certain style words" in 15 million PubMed abstracts. Promotional tone: WP, "LLMs have serious problems keeping a neutral tone" and "older LLMs (e.g., GPT-4) tend to output more blatantly positive text" [ref] "than newer LLMs, which are more subtly positive".
 - Fix: Before: "Giải pháp toàn diện giúp nâng tầm thương hiệu." After: "Gói gồm 3 việc: audit, 2 bài/tuần, báo cáo tháng."
 - Source: WP + paper (EN); quan sát thực tế (VI list). Detect: script (lexicon lists; the validator already has SLOP_HARD/SOFT).
 
@@ -110,7 +110,7 @@ Definition used in the lesson. Kommers et al., "Why Slop Matters" (arXiv 2601.06
 
 ### C5. Dấu gạch dài (—) / em dash
 - VI: "Bình giữ nhiệt — người bạn đồng hành mỗi ngày — cho mọi hành trình." EN: "An insulated bottle — your everyday companion — for every journey."
-- Why AI: WP: "LLM output uses them more often than nonprofessional human-written text of the same genre, and uses them in places where humans are more likely to use commas, parentheses, colons ... AI-generated em dashes are usually surrounded by spaces". **Now less common**: WP hatnote (September 2026): "If more recent examples of this AI sign can't be found, it should probably be moved to #Historical indicators, as it seems to be less common in current LLM output." and "A July 2026 study found that of contemporary models only Claude used em dashes more than professional writers, and ChatGPT used them less." Freeburg (abstract): "Em dash frequency and suppression resistance vary from 0.0 per 1,000 words (Llama) to 9.1 (GPT-4.1 under suppression)" and "even explicit em dash prohibition fails to eliminate the artifact in some models". BVN: "Nếu bạn thấy dấu gạch ngang này xuất hiện đến 2-3 lần trong một đoạn văn ngắn thì khả năng cao đó là nội dung AI." VnExpress 15/11/2025 reports OpenAI's update so ChatGPT follows a user instruction to avoid em dashes.
+- Why AI: WP: "LLM output uses them more often than nonprofessional human-written text of the same genre, and uses them in places where humans are more likely to use commas, parentheses, colons ... AI-generated em dashes are usually surrounded by spaces". **Now less common**: WP now lists "Overuse of em dashes (2022–September 2026)" under Historical indicators; newest models are often hard-coded to avoid em dashes, and the resulting comma/period-heavy prose is itself listed as a sign. WP also says: "A July 2026 study found that of contemporary models only Claude used em dashes more than professional writers, and ChatGPT used them less." Freeburg (abstract): "Em dash frequency and suppression resistance vary from 0.0 per 1,000 words (Llama) to 9.1 (GPT-4.1 under suppression)" and "even explicit em dash prohibition fails to eliminate the artifact in some models". BVN: "Nếu bạn thấy dấu gạch ngang này xuất hiện đến 2-3 lần trong một đoạn văn ngắn thì khả năng cao đó là nội dung AI." VnExpress 15/11/2025 reports OpenAI's update so ChatGPT follows a user instruction to avoid em dashes.
 - Fix: comma, colon, or a new sentence. Before: "Bình giữ nhiệt — người bạn đồng hành mỗi ngày." After: "Bình giữ nhiệt dùng mỗi ngày."
 - Source: WP + paper + BVN. Detect: script (count; spaced " — " is the AI-typical form). Keep in the lesson because Vietnamese typing rarely produces "—" at all, so any occurrence in VI staff copy is worth a look; label it "model mới dùng ít hơn".
 
@@ -151,18 +151,20 @@ Definition used in the lesson. Kommers et al., "Why Slop Matters" (arXiv 2601.06
 ---
 
 ## Which signs the sources say are fading (do not teach as certainties)
-- Em dash: WP hatnote Sept 2026 "less common in current LLM output"; ChatGPT below professional writers per the July 2026 study WP cites; still above for Claude. Lesson keeps it with the note "Model mới dùng ít hơn".
+- Em dash: WP lists it under Historical indicators (2022–September 2026); ChatGPT below professional writers per the July 2026 study WP cites; still above for Claude. Lesson keeps it with the note "Model mới dùng ít hơn".
 - Emoji in headings/bullets: WP "more rare now".
-- "delve" and the 2023-24 vocabulary: WP "dropped off sharply in 2025"; newer set is "emphasizing, enhance, highlighting, showcasing".
+- "delve" and the 2023-24 vocabulary: WP "dropped off sharply in 2025"; newer sets are "emphasizing, enhance, highlighting, showcasing" (mid-2025 to mid-2026) and "challenge, leverage, foster, practical" (mid-2026 and on).
 - Boldface: WP "Some newer large language models or apps have instructions to avoid overuse of boldface."
 - Blatant superlatives: WP says newer models are "more subtly positive".
-- Knowledge-cutoff disclaimers: tied to older fixed-cutoff models; source-usage disclaimers now take their place.
+- Source-usage disclaimers ("rather than", "does not establish", "should not be confused with") are the mid-2026 pattern (WP, citing one commercial study); the older knowledge-cutoff disclaimers are 2022-2023.
+- Mid-2026 vocabulary shifts toward "challenge, leverage, foster, practical" with shorter, comma-light sentences (WP; single commercial source, unverified).
 
 
 ## Sources (fetched 29/09/2026)
-- https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing (raw wikitext, 222,208 bytes)
+- https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing (raw wikitext; 179,852 bytes on 11/11/2026, was 222,208)
+- https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing/Style and /Markup: WP quotes C1-C4 (boldface, title case, emoji, curly quotes, thematic breaks, Markdown default) come from these subpages
 - https://arxiv.org/abs/2601.06060 Kommers et al., Why Slop Matters (Dec 2025)
-- https://arxiv.org/abs/2509.19163 Shaib et al., Measuring AI "Slop" in Text (v2 Jan 2026; full HTML also saved)
+- https://arxiv.org/abs/2509.19163 Shaib et al., Measuring AI "Slop" in Text (v3 Oct 2026; quotes re-checked against v3)
 - https://arxiv.org/abs/2603.27006 Freeburg, The Last Fingerprint (Mar 2026)
 - https://arxiv.org/abs/2406.07016 Kobak et al., excess vocabulary in PubMed abstracts (2024)
 - https://help.brandsvietnam.com/vi/article/dau-hieu-nhan-biet-noi-dung-duoc-viet-boi-ai-3zy07d/ (VI, trade article)
@@ -172,7 +174,7 @@ Definition used in the lesson. Kommers et al., "Why Slop Matters" (arXiv 2601.06
 
 ## Independent check (29/09/2026): corrections to apply when teaching
 - A3 transitions ("Hơn nữa", "Moreover"): Wikipedia lists transition words under *Ineffective indicators* and "In conclusion / Overall" under *Historical indicators*. Weak on its own; mostly older models.
-- C4 emoji: Wikipedia says emoji are "more rare now". C5 em dash: Wikipedia (Sept 2026 note) says it is "less common in current LLM output"; a July 2026 study it cites found Claude still above professional writers, ChatGPT below. Treat both as cues only alongside other signs.
+- C4 emoji: Wikipedia says emoji are "more rare now". C5 em dash: Wikipedia now lists it under Historical indicators; a July 2026 study it cites found Claude still above professional writers, ChatGPT below. Treat both as cues only alongside other signs.
 - C1 one sentence per line and B2 rhetorical-question openers: no primary source; practitioner observation.
 - Signs are edit cues, never proof of authorship; detectors have "non-trivial error rates" (Wikipedia).
 

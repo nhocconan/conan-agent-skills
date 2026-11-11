@@ -6,6 +6,7 @@ Group by guideline area. ☐ = must verify every submission.
 - ☐ Built with **Xcode 26 or later** against the iOS/iPadOS/tvOS/visionOS/watchOS 26 SDK (required since 2026-04-28).
 - ☐ iOS/iPadOS deployment target is **iOS 13 or later** (required since 2026-09-09).
 - Source: [Upcoming requirements](https://developer.apple.com/news/upcoming-requirements/) — re-check before each release, including the age-rating questionnaire and any device-specific submission changes.
+- Upcoming: age-rating declarations for Shared Location and Dating and Relationships (open 2026-11-16, mandatory 2027-01-12); iPhone Duo screenshots required from April 2027 for apps on the iOS 27.1 SDK or later; iOS 27 SDK required from April 2027.
 
 ### 3.1.1 — In-App Purchase & payments
 - ☐ A **distinct, clearly-labelled "Restore Purchases" button** exists and is reachable in **every** entitlement state — fresh install, mid-trial, **after purchase**, and after trial-ended. Not gated behind `!isPro`. Not auto-restore-only.
@@ -20,8 +21,9 @@ Group by guideline area. ☐ = must verify every submission.
 ### 3.1.2 — Auto-renewable subscription disclosure
 > Reviewers reproduce subscription terms from the **binary**, not just App Store
 > Connect. If the disclosure is incomplete in-app, you get 3.1.2 even when ASC is
-> correct. Apple requires it "clearly and conspicuously".
+> correct. Apple requires it "clearly and prominently".
 - ☐ The paywall shows, **inline (not only inside a Terms sheet)**: subscription **title**, **length/period**, **price per period**, and a one-line **auto-renew disclosure** ("Automatically renews unless cancelled at least 24 hours before the end of the current period").
+- ☐ Billed amount is the most prominent price element; any per-month breakdown is visually subordinate.
 - ☐ **Free-trial terms** are stated where a trial is offered: trial length, what happens at conversion (paid subscription begins), and that you can cancel during the trial. Don't show a "free trial" badge without the conversion sentence.
 - ☐ **Terms of Use / EULA** and **Privacy Policy** are reachable from the paywall as tappable links (sheets or external URLs that return 200).
 - ☐ If you offer **multiple cadences** (weekly/monthly/yearly/lifetime), each plan's price + period is shown; a plan with no trial must not be captioned as having one.
@@ -41,6 +43,7 @@ Group by guideline area. ☐ = must verify every submission.
 - ☐ Preview video uploads at the [accepted resolution for its device set](https://developer.apple.com/help/app-store-connect/reference/app-information/app-preview-specifications/) (Dynamic Island / Face ID iPhone: 886×1920 or 1920×886; other iPhone/iPad sets differ). Do not substitute screenshot dimensions.
 - ☐ The advertised USP is **demonstrated** in screenshots/video, not just claimed (Apple can reject "feature not shown").
 - ☐ App name/subtitle/keywords aren't spammy or trademark-infringing (2.3.7).
+- ☐ Product-page header/search-result assets carry no unverifiable claims or pricing (2.3.14).
 
 ### 5.1 — Privacy
 - ☐ **Privacy policy URL is set in App Store Connect metadata AND linked within the app itself in an easily accessible manner** — Guideline 5.1.1(i) requires both placements for **every app**, regardless of whether it has an account or IAP.
@@ -58,9 +61,10 @@ Group by guideline area. ☐ = must verify every submission.
 - ☐ For a **new** account/app in a saturated category, the app clears a genuine usefulness bar, not just "it works". Reviewer notes should spell out *why this exists*, not just *how to test it*.
 - ☐ No duplicate apps under the same Apple ID doing essentially the same job (consolidate, don't multiply).
 
-### 2.3.1 / 2.5 — Hidden features, debug code, APIs
+### 2.5.19 / 2.5 — Hidden features, debug code, APIs
 - ☐ **No debug/QA hook can activate in a release build.** Every launch-arg / test path is wrapped in `#if DEBUG`; the flags it sets default to inert.
 - ☐ No hidden/undocumented features toggled by special input.
+- ☐ Notes for Review describe every new feature specifically and make it reachable by the reviewer (2.3.1(a)); no feature is added after approval that review did not see (2.5.19).
 - ☐ No entitlements the app isn't approved for / doesn't use (e.g. don't ship `com.apple.developer.alarmkit`, critical-alerts, push `aps-environment` if unused).
 - ☐ No private API usage.
 

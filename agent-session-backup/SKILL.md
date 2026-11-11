@@ -12,6 +12,8 @@ Platform limits: the two Cowork trees exist only on macOS (Claude Desktop), so o
 Linux/Windows `Cowork` backup and restore are no-ops and `map_account.py` does not
 apply. The Claude Code half works on any OS and uses `$CLAUDE_CONFIG_DIR/projects`
 when `CLAUDE_CONFIG_DIR` is set, else `~/.claude/projects`.
+Claude Code transcripts older than `cleanupPeriodDays` (default 30) are already gone;
+run backup within that window.
 
 ## Where the data lives (macOS)
 

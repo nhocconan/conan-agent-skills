@@ -72,11 +72,11 @@ first-party vì vẫn nằm dưới trần. Skill không nằm trong load-out v�
 `~/.conan-agent-skills/<tên>/SKILL.md` rồi làm theo. Load-out chỉ quản việc **tự động
 fire**, không quản việc có sẵn hay không.
 
-The point: **"installed" ≠ "active."** gstack's installer would write its whole suite; you run 50 (49 in `loadout.txt` +
+The point: **"installed" ≠ "active."** gstack's installer would write its whole suite; you run 36 (35 in `loadout.txt` +
 `impeccable` from `keep.txt`). Inactive skills are invisible to the model; the wrappers
 read the fetched upstream markdown in `.vendor/gstack/` by path.
 
-For a production server, do not copy the 50-skill workstation set. Apply the self-contained
+For a production server, do not copy the 36-skill workstation set. Apply the self-contained
 `core` profile to both agents:
 
 ```bash
@@ -96,7 +96,7 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 
 ---
 
-## 3. What you have (50 active on Claude)
+## 3. What you have (35 active on Claude + impeccable)
 
 ### Yours — correctness checks
 | Skill | Fires when |
@@ -118,6 +118,7 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | `investigating-bugs` | Something is broken — reproduce before editing |
 | `effective-development` | Which checks prove the changed behavior: affected feedback per batch, required gates at their declared stage, valid evidence reuse; "đừng chạy full test", "test cái liên quan thôi" |
 | `shipping-changes` | Commit + push (repository branch/review policy, your identity, hooks must pass) |
+| `verify` | Trước khi commit: chạy gate của repo, in exit code, kiểm tra residue, replay một flow; chặn commit nếu có gate fail |
 | `browsing-web` | Anything involving a browser |
 | `web-qa` | Test a running web app (reports by default; fixes only if you ask) |
 | `design-qa` | "Nhìn xấu / không hài hoà / nhìn như lỗi / rớt hàng" — chấm rubric có đếm số trên screenshot, cả 2 theme + 390px |
@@ -184,7 +185,7 @@ việc đã có tiêu chí và không bao giờ tự accept. Không thay lead gi
 báo final review là pending thay vì tự duyệt. Việc nhỏ hoặc tuần tự lead làm trực tiếp.
 Bảng model ID, giá, ngày retirement và harness mechanics chỉ nằm ở một chỗ:
 [routing](agent-orchestration/sections/routing.md).
-Kết quả rà soát mới nhất (2026-11-05, 33 skills): [SKILL-AUDIT.md](SKILL-AUDIT.md).
+Kết quả rà soát mới nhất (2026-11-11, 34 skills): [SKILL-AUDIT.md](SKILL-AUDIT.md).
 
 ---
 

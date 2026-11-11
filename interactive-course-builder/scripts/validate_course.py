@@ -122,11 +122,9 @@ CALQUE_VI = {  # machine-translation calques: an EN term rendered literally
     "kỹ thuật nhắc": "prompt engineering → giữ 'prompt engineering'",
 }
 
-# Em-dash density. Freeburg 2026 ("The Last Fingerprint", arXiv 2603.27006):
-# human control 3.23/1k words; published literary corpus 4.76–6.43/1k;
-# GPT-4.1 10.62/1k; Claude Opus 4.6 9.09/1k. House reference implementation
-# (an approved reference course) measures 6.4/1k in
-# lesson prose. Courses built by fan-out in 2026-07/08 measure 16–19/1k.
+# Em-dash density. Freeburg 2026 ("The Last Fingerprint", arXiv 2603.27006): human
+# baseline 3.23/1k words (eight published essays), GPT-4.1 10.62/1k, Claude Opus 4.6
+# 9.09/1k unconstrained. The house reference course measures 6.4/1k in lesson prose.
 # Signs age: Wikipedia "Signs of AI writing" (Sept 2026) marks the em dash as a
 # fading, candidate-historical indicator: ChatGPT output now sits below
 # professional writers, Claude still above. Density stays an edit cue, not proof.
@@ -240,8 +238,8 @@ def prose_checks(html, cards, lang, errors, warns):
     if words < 1500:
         pass  # too little prose for a density verdict (template / stub)
     elif dens >= EMDASH_ERROR_PER_1K:
-        errors.append(f"em-dash density {dens:.1f}/1k {where} — human baseline 3.2/1k, "
-                      f"literary max ~6.4, GPT-4.1 10.6 (Freeburg 2026). Convert asides to "
+        errors.append(f"em-dash density {dens:.1f}/1k {where} — human baseline 3.2/1k (Freeburg 2026), "
+                      f"house reference course 6.4/1k. Convert asides to "
                       f"commas, colons, or their own sentence.")
     elif dens >= EMDASH_WARN_PER_1K:
         warns.append(f"em-dash density {dens:.1f}/1k {where} — above the house reference "

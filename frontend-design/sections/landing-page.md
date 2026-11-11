@@ -46,7 +46,7 @@ structured data when the FAQ is real, one h1, descriptive meta, no keyword stuff
 
 ## Ship list
 Real content only (no fake logos, reviews, counts); all states (hover, focus, disabled,
-loading, error); responsive at 375px; one h1 and ordered headings; alt text; the motion rules
+loading, error); responsive at 390px; one h1 and ordered headings; alt text; the motion rules
 in [motion.md](motion.md) honoured; route allow-list and bundle budget checked when the
 project has them (a new public route can be redirected by auth middleware until allow-listed).
 

@@ -29,13 +29,14 @@
 - **Data safety / privacy labels:** reconcile the binary's SDK traffic with each
   store's collection/sharing definitions and the SDK's disclosure guidance. Audit
   analytics and ad SDKs explicitly; do not infer disclosures from the SDK name alone.
-- **Consent stack:** Google publisher products require a [Google-certified TCF CMP](https://support.google.com/admob/answer/13554116) for personalized ads in the EEA, UK and Switzerland. With UMP, refresh consent information and check [`canRequestAds()`](https://developers.google.com/admob/android/privacy) before requests; a denied consent choice does not automatically prohibit every ad mode. On iOS, obtain ATT permission before tracking/IDFA access; privacy labels must match actual behavior.
+- **Consent stack:** Google publisher products require a [Google-certified TCF CMP](https://support.google.com/admob/answer/13554116) for personalized ads in the EEA, UK and Switzerland. With UMP, refresh consent information and check [`canRequestAds()`](https://developers.google.com/admob/android/privacy) before requests; a denied consent choice does not automatically prohibit every ad mode. On iOS, obtain ATT permission before tracking/IDFA access (in the EU the prompt can be the alternative ATT prompt, iOS 27.2+, mandatory in DE/FR/IT/PL/RO); privacy labels must match actual behavior.
 - **Accounts imply deletion:** Apple's requirement includes automatically created guest accounts. Play applies its [app-account definition and creation-flow scope](https://support.google.com/googleplay/android-developer/answer/13327111), with an in-app deletion path plus a web resource. Do not equate a device identifier with an app account; inspect the actual account flow. Ship required deletion alongside account creation (`appstore-review-guard`).
 
 ### 4.3 Money correctness (silent-failure class — verify hardest here)
 
 - Server verifies every receipt/transaction (Play Developer API / App Store Server API);
   client-side grant is a placebo.
+- Play Billing Library >= 8 (7 was cut off 2026-08-31, ext. 2026-11-01; 9.x drops `queryPurchaseHistoryAsync`/SkuDetails); acknowledge purchases within 3 days or Play refunds them.
 - **Unit/decimal discipline:** store amounts in the smallest unit with the AUTHORITATIVE
   decimals of the asset. Real failure: a token had 6 decimals on-chain; code assumed 9;
   every real payment was rejected as underpaid. Verify decimals against the source of

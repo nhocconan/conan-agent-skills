@@ -29,7 +29,7 @@ a rescue audit.
   `scripts/audit/` and run `--base <merge-base>` in the pre-push hook (it judges added lines
   only, so existing debt never blocks); wire it per bug-class-audits steps 4-5.
 - **Test-value proof in a trim pass.** Mutation testing on the changed files only
-  (`stryker --incremental --mutate <files>`); a surviving mutant on a line the suite claims
+  (`npx stryker run --incremental --mutate <files>`); a surviving mutant on a line the suite claims
   to cover is a finding; never a repo-wide score gate.
 
 ## Recipes and measurement

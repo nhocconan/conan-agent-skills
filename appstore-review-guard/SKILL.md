@@ -40,7 +40,7 @@ not work from memory. Paths are relative to this skill's directory.
 | When | Read this section |
 |------|-------------------|
 | starting any submission, resubmission, or rejection response — always first | `sections/rejection-ledger.md` |
-| running the Apple pre-submission checklist (3.1.1, 3.1.2, 2.1, 2.3, 5.1, 4.3, 2.3.1/2.5, 4.5.4, 4.0) | `sections/apple-checklist.md` |
+| running the Apple pre-submission checklist (3.1.1, 3.1.2, 2.1, 2.3, 5.1, 4.3, 2.5.19/2.5, 4.5.4, 4.0) | `sections/apple-checklist.md` |
 | the target is Google Play — policy, Play Protect, binary hygiene, listing | `sections/play-checklist.md` |
 | the app sells restorable IAP, or the rejection cites 3.1.1 — the full Restore Purchases pattern with code | `sections/restore-purchases.md` |
 | producing or reviewing App Preview video / marketing screenshots, or the rejection cites 2.3.4 | `../store-screenshots/sections/preview-video.md` |

@@ -3,13 +3,18 @@
 `AGENTS.md` holds shared rules, decisions and durable constraints; adapters import it.
 Its directory defines scope. Preserve nested rules instead of flattening them into the root.
 
+## Contents
+
+[Loading contract](#loading-contract) · [Saving a rule](#saving-a-rule) · [Rule hygiene](#rule-hygiene) · [Drift checker](#drift-checker) · [Global instructions](#global-generated-instructions) · [References](#official-references-checked-2026-09-08-claude-memory-and-agy-rules-re-checked-2026-11-11)
+
 ## Loading contract
 
 | File or tool | Contract |
 | --- | --- |
 | `AGENTS.md` | Canonical content. Codex loads project instructions from the current directory and its ancestors, with closer instructions taking precedence. |
-| `CLAUDE.md` | Thin Claude adapter containing exactly `@AGENTS.md` when it is generated here. Claude Code natively reads `CLAUDE.md`; its documented `@...` import resolves relative to the containing file. Since v2.1.277 Claude Code also reads `AGENTS.md` directly, but by default only when no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists in the working directory or above — a personal `CLAUDE.local.md` silently turns that off. Keep the adapter: the import never double-loads, and some sessions (Bedrock, telemetry disabled, first run after an upgrade) cannot read `AGENTS.md` directly. |
+| `CLAUDE.md` | Thin Claude adapter containing exactly `@AGENTS.md` when it is generated here. Claude Code natively reads `CLAUDE.md`; its documented `@...` import resolves relative to the containing file. Since v2.1.277 Claude Code also reads `AGENTS.md` directly, but by default only when no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists in the working directory or above — a personal `CLAUDE.local.md` silently turns that off. Keep the adapter: the import never double-loads, and some sessions cannot read `AGENTS.md` directly (Claude Code < 2.1.281 on Bedrock or with telemetry off; < 2.1.277; built-in AGENTS.md plugin disabled; first session after upgrading from ≤ 2.1.276). |
 | `GEMINI.md` | Thin Gemini adapter containing exactly `@AGENTS.md` when it is generated here. Gemini CLI supports `@` imports; its default context filename is `GEMINI.md`, and filename configuration must be checked before relying on another name. |
+| agy (Antigravity CLI) | Reads `AGENTS.md`/`GEMINI.md` natively, from the folder where `agy` starts up to the repo root only (no nested-subfolder loading); the CLI does not expand `@` rule mentions; 24,000 B per file. A GEMINI.md adapter is not needed for agy. Global file: `~/.gemini/AGENTS.md`. |
 | Other agents | No generic import convention is assumed. Add an adapter only after that tool's official documentation and an actual runtime check establish its native behavior. |
 
 Codex reads `AGENTS.md` directly; it does not need (and should not be given) a
@@ -92,7 +97,7 @@ harness apply/verify flow. This project-rules contract makes no global setting
 changes and must not be used to edit global auto-memory, account settings, or
 generated blocks.
 
-## Official references (checked 2026-09-08; Claude memory re-checked 2026-09-23)
+## Official references (checked 2026-09-08; Claude memory and agy rules re-checked 2026-11-11)
 
 - [Claude Code memory and imports](https://code.claude.com/docs/en/memory): `CLAUDE.md` discovery, `@AGENTS.md` imports, hierarchy, and path-scoped rules.
 - [Gemini CLI `GEMINI.md`](https://geminicli.com/docs/cli/gemini-md/): hierarchy, `@` imports, and configurable context filenames.

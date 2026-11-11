@@ -30,7 +30,7 @@ edits that tree until it ends; prefer building from a committed snapshot.
 1. **Inventory before you start.** Record what is already running on the ports and paths
    you are about to use. You are responsible for what *you* start, and you must not kill
    what you did not. If a port is already bound, find out by whom before taking it.
-   On Linux with systemd/cgroup v2, root runs [`scripts/colocate.sh`](scripts/colocate.sh)
+   On Linux with systemd >= 257 and cgroup v2, root runs [`scripts/colocate.sh`](scripts/colocate.sh)
    `apply` once for production protection and agent limits. Heavy jobs use
    `systemd-run --user --scope` with CPU/memory/time limits sized by effective-development's
    `host_load.py`; weights, never `CPUQuota` (quotas throttle an idle host). Verify cgroup

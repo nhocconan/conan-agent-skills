@@ -55,15 +55,15 @@ that checkout. Do not reset it or overwrite local work.
 
 ## 1. [CORE] Toolchain
 
-Reference versions re-checked 2026-10-02 against each project's release feed. Newer is fine; note any major
+Reference versions re-checked 2026-11-11 against each project's release feed. Newer is fine; note any major
 version you install that differs, and don't downgrade to match.
 
 | Tool | Source version | Tier | Notes |
 | --- | --- | --- | --- |
-| node | 24.x | CORE | agent CLIs and most projects |
+| node | 24.x or 26.x (26 = current LTS line) | CORE | agent CLIs and most projects |
 | npm | 11.x (bundled with node 24; 12.x standalone) | CORE | ships with node |
 | pnpm | 12.x (11.x fine) | CORE | primary package manager for the operator's repos; `corepack prepare pnpm@latest` installs 12 |
-| python3 | 3.14 | CORE | skill scripts assume `python3`, stdlib only |
+| python3 | 3.14 or 3.15 | CORE | skill scripts assume `python3`, stdlib only |
 | uv | 0.12.x | CORE | python env/deps without polluting system python |
 | git | 2.47+ | CORE | |
 | gh | 2.95+ | CORE | PR/issue flows |
@@ -214,7 +214,7 @@ rescue` lists anything that lives only there.
 
 The canonical secret-free files are under `coding-env-bootstrap/templates/`:
 
-- `claude-settings.core.json` — output/thinking budgets plus a narrow command allowlist;
+- `claude-settings.core.json` — output budget plus a narrow command allowlist;
 - `codex-production.config.toml` — a separate production profile, not a replacement for
   `~/.codex/config.toml`;
 - `global-instructions.md` — vendor-neutral quality and verification rules installed
@@ -246,7 +246,7 @@ registry itself — hand-editing is more fragile).
 
 | Plugin | Tier | Why |
 | --- | --- | --- |
-| `code-review` | CORE | diff review before landing |
+| `code-review` | CORE | bundled `/code-review` covers it; install the plugin only if the repo pins it |
 | `plugin-dev` | CORE | authoring/validating skills and plugins |
 | `typescript-lsp` | CORE for TS repos | real symbol resolution beats grep |
 | official `frontend-design` plugin | DEV | marketing-page aesthetic direction only; same name as this repo's `frontend-design` skill, a different thing. The repo `frontend-design` loop wins on any conflict |
@@ -255,7 +255,7 @@ registry itself — hand-editing is more fragile).
 | `karpathy-skills` | CORE | the behavioural guidelines the operator's `CLAUDE.md` mirrors |
 | `claude-hud` | DEV | statusline; cosmetic |
 | `caveman` | DEV | token-compression mode; situational |
-| `ralph-loop` | DEV | |
+| `ralph-loop` | DEV | superseded by `/goal` |
 | `last30days` | DEV | research; needs its own API keys |
 
 Rule of thumb for the production machine: **LSP for the languages present + code-review +
@@ -268,9 +268,9 @@ are workstation capabilities, not server defaults. Use `codex plugin list` and
 cache or marketplace snapshot.
 
 There is no Claude custom-command tree to reproduce on the source machine. Its nine
-legacy Codex `speckit.*` prompts are deliberately not copied: Codex custom prompts are
-deprecated, and reusable workflows belong in skills. Convert a prompt to a repo skill
-only when that production repository actually uses it.
+legacy Codex `speckit.*` prompts are deliberately not copied: reusable workflows belong in
+skills (the documented mechanism, learn.chatgpt.com/docs/build-skills). Convert a prompt
+to a repo skill only when that production repository actually uses it.
 
 **Verify**: `/plugin` lists the enabled set; restart and confirm no load errors.
 

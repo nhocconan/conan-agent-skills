@@ -106,7 +106,8 @@ page.on('pageerror', (e) => errors.push(`pageerror: ${e}`));
 page.on('requestfailed', (r) => failures.push(`${r.method()} ${r.url()} :: ${r.failure()?.errorText}`));
 page.on('response', (r) => r.status() >= 400 && failures.push(`HTTP ${r.status()} ${r.url()}`));
 
-const resp = await page.goto(url, { waitUntil: 'networkidle', timeout: 45_000 });
+const resp = await page.goto(url, { waitUntil: 'load', timeout: 45_000 });
+await page.getByRole('heading').first().waitFor({ timeout: 15_000 }).catch(() => {}); // headingless pages still get captured
 
 await page.screenshot({ path: `${out}.png`, fullPage: true });
 await writeFile(`${out}.aria.yml`, await page.locator('body').ariaSnapshot(), 'utf8');

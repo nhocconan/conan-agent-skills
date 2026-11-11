@@ -7,7 +7,7 @@ Run these against the repo before submitting (paths are examples; adapt):
 # transport check fail closed. Run from the repo root; adapt the paths/exclusions.
 set -euo pipefail
 urls=$(mktemp); trap 'rm -f "$urls"' EXIT
-rg -No 'https?://[^ )"`>]+' appstore/ docs/APPSTORE*.md \
+rg -NoI 'https?://[^ )"`>]+' appstore/ docs/APPSTORE*.md \
   | grep -vE 'developer\.apple\.com|apps\.apple\.com/account|archive\.org|microsoft|googleapis' \
   | sort -u > "$urls"
 test -s "$urls" || { echo 'FAIL: no listing URLs found; check paths'; exit 1; }
@@ -37,7 +37,7 @@ test "$failed" -eq 0
 grep -rn "Restore purchases\|AppStore.sync\|restorePurchases" ios/ --include="*.swift"
 #   → expect a button in Settings gated only on the IAP flag, plus an always-visible paywall section.
 
-# 2.3.1 / 2.5 — every QA/launch-arg hook must be inside #if DEBUG
+# 2.5.19 / 2.5 — every QA/launch-arg hook must be inside #if DEBUG
 grep -rn "ProcessInfo.processInfo.arguments\|CommandLine\|-ui[A-Z]" ios/ --include="*.swift"
 #   → each must sit within a #if DEBUG ... #endif; the vars they set default to inert.
 

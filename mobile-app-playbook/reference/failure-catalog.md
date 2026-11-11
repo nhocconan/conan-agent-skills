@@ -4,7 +4,7 @@
 | --- | --- |
 | Six "green" build stages; nothing had compiled (SDK missing; exit code was `tail`'s) | §5.1 never pipe builds; check exit code + positive marker |
 | JVM tests green, iOS won't link (`java.lang.*` in shared code) | §1.2 iOS link task in every stage gate |
-| CMP iOS app crashed at launch (missing frame-duration plist key) | §1.2 iOS host minimum |
+| CMP iOS app crashed at launch; fixed by adding `CADisableMinimumFrameDurationOnPhone` per that CMP version's host setup docs | §1.2 verify the CMP host setup, cold-launch on device |
 | Play rejection: Families ad-format violation after audience declaration drifted from ad config | §4.2 declaration ⇔ code ⇔ rating must agree, decided up front |
 | Every real token payment rejected: code assumed 9 decimals, asset had 6 | §4.3 verify decimals against the authoritative source |
 | Paying users couldn't restore after account-system migration (v1 rows not mapped to v2) | §4.3 restore matrix includes schema-migration case |
