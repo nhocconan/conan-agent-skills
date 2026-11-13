@@ -1,4 +1,4 @@
-# Skill audit log (latest 2026-11-11)
+# Skill audit log (latest 2026-11-13)
 
 The 2026-10-02 audit follows; later sections are dated below.
 
@@ -399,3 +399,24 @@ text. No frontmatter description changed, so no trigger eval was run. Limits: ve
 were read, no model call tested Carbon entitlement or any worker tier; the agy
 `invoke_subagent` tier names and several Codex config keys have no public documentation.
 No commit or push was requested or performed.
+
+## 2026-11-13 — Gemini 4 Hydrogen, Orchestrator and agy 1.5.7 routing pass
+
+Trigger: Gemini 4 Hydrogen (GA 2026-11-12), Antigravity Orchestrator, `/swarm` preview, and
+Antigravity CLI 1.5.7 (2026-11-12). Primary Gemini API (`ai.google.dev`) and Antigravity
+(`antigravity.google`) pages were fetched on 2026-11-13 alongside live `agy 1.5.7` catalog
+and tool-schema checks (`agy models`, `invoke_subagent`, `define_subagent`, `swarm`).
+
+| File | Finding | Change |
+| --- | --- | --- |
+| `agent-orchestration/sections/routing.md` | Hydrogen (GA 2026-11-12, flat `$1.50 → $7.50`, `low`/`medium`/`high` default/`xhigh`, 64K non-streaming hop, Free API tier, all-plan agy access) and Orchestrator (`Carbon` on Ultra, `Argon` on Pro/Ultra, fixed effort) were absent; bounded-builder and focused tiers still pointed at 3.8 Flash; 2026-11-11 backlog left Flash/3.1 Pro limits and `thinking_budget` unconfirmed | Hydrogen added to Gemini tables and assigned to agy bounded-builder (`high` default), scoped-specialist (`medium`) and focused (`low`) tiers, with `xhigh` escalation and Carbon (Ultra/Enterprise/ADC) → Argon → Hydrogen `xhigh` for hardest judgment; Orchestrator, `/swarm` model pinning, 2.5 Pro 2026-12-01 auto-route, Flash/3.1 Pro row limits, and Gemini 4 `thinking_budget` deprecation recorded |
+| `agent-orchestration/FANOUT-PATTERNS.md` | `invoke_subagent` example wrapped calls in an obsolete `Subagents` array and used lowercase `enable_*` keys; `/swarm` board/model/workspace mechanics and custom `.agents/agents/*.md` rules were undocumented | Updated to the live 1.5.7 flat `invoke_subagent` call and `EnableWriteTools`/`EnableMCPTools`/`EnableSubagentTools` schema; added `/swarm` `add`/`model`/`waiting` mechanics and single-session Orchestrator distinction |
+| `autonomous-loops/sections/harness-mechanics.md` | `agy 1.5.7` changed unset sessions (including headless `-p`) from `default` to `auto` mode where available | Added explicit `--mode` requirement on `agy -p` within existing byte ceiling |
+| `skill-miner/validate_skills.py`, `tests/test_validate_skills.py` | `MODEL_ID_RE` matched digit-prefixed Gemini IDs only, missing `agy` Orchestrator IDs | Extended regex and added isolated containment regression test (seen failing first; 39 tests pass in `test_validate_skills.py`) |
+
+Context budget: `agent-orchestration` `on_demand` ceiling raised `66,800 → 70,600 B` for the
+Gemini 4 Hydrogen, Orchestrator and `/swarm` additions; `always_on` and `eager` totals are
+unchanged across all 34 skills, so no trigger eval was run. Limits: vendor docs and live
+`agy 1.5.7` schemas/catalogs were verified, but no paid worker spawn probed per-plan
+entitlement, and the exact model IDs behind `invoke_subagent` coarse tiers (`flash_lite`,
+`flash`, `pro`) remain undocumented. No installer, commit or push ran.

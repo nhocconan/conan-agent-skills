@@ -185,7 +185,7 @@ việc đã có tiêu chí và không bao giờ tự accept. Không thay lead gi
 báo final review là pending thay vì tự duyệt. Việc nhỏ hoặc tuần tự lead làm trực tiếp.
 Bảng model ID, giá, ngày retirement và harness mechanics chỉ nằm ở một chỗ:
 [routing](agent-orchestration/sections/routing.md).
-Kết quả rà soát mới nhất (2026-11-11, 34 skills): [SKILL-AUDIT.md](SKILL-AUDIT.md).
+Kết quả rà soát mới nhất (2026-11-13, 34 skills): [SKILL-AUDIT.md](SKILL-AUDIT.md).
 
 ---
 

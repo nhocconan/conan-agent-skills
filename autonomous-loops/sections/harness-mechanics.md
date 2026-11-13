@@ -3,13 +3,14 @@
 Check harness interfaces; historical commands are not portable APIs.
 
 1. Check tools, official docs and CLI help: `codex --help` /
-   `codex exec --help`, or `agy --help` (print mode/timeout). Headless does not
-   imply scheduling or blocking hooks; use a CI/job gate where hooks cannot block.
+   `codex exec --help`, or `agy --help` (print mode/timeout; unset `agy -p` defaults to
+   `auto` from 1.5.7, so pass `--mode`). Headless does not imply scheduling or blocking
+   hooks; use a CI/job gate where hooks cannot block.
 2. Establish whether execution survives session closure, where credentials and
-   skills load, and which identity performs writes. Session-scoped schedulers do
-   not survive it: Claude Code `/loop` tasks fire only while that session runs and
-   recurring ones expire after 7 days; cloud scheduled tasks (formerly routines) run at
-   a 1-hour minimum interval; Desktop scheduled tasks run locally and survive closing the
+   skills load, and which identity performs writes. Session schedulers do
+   not survive it: Claude Code `/loop` fires only while that session runs (recurring
+   tasks expire after 7 days); cloud scheduled tasks (formerly routines) have a 1-hour
+   minimum interval; Desktop scheduled tasks run locally and survive closing the
    session (scheduled-tasks docs, read 2026-11-11).
    Claude hooks: exit 2 blocks on PreToolUse, UserPromptSubmit, Stop, SubagentStop,
    PostToolBatch, PreCompact, TaskCreated/Completed (full table in the hooks docs); not
@@ -18,12 +19,12 @@ Check harness interfaces; historical commands are not portable APIs.
 3. Configure supported time/iteration/cost limits, overlap protection, error
    reporting, and a kill switch. Test a forced failure in an isolated environment,
    including a duplicate trigger, expired budget and stop during a running job.
-   The gate must return failure to the scheduler; logging a failed exit is insufficient.
+   The gate must exit non-zero to the scheduler; logging failure is insufficient.
 4. Record the actual command/configuration and version in the project loop spec.
-   Do not claim installation or scheduling from a drafted command.
+   Never claim installation or scheduling from a drafted command.
 5. Separate observation from external writes: posting a comment is a write.
-   Use only the authority supplied for this recurring job; successful earlier
-   read-only runs do not grant permission to merge, message, or deploy.
+   Use only the authority supplied for this recurring job; prior
+   read-only runs grant no permission to merge, message, or deploy.
 
 Use `agent-orchestration/sections/routing.md` for routing and lead ownership.
 For a local cron/launchd job, record owner, schedule, logs, environment, overlap

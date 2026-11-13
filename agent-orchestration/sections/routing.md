@@ -27,7 +27,7 @@ an unavailable optional specialist alone does not block acceptance.
 | --- | --- | --- | --- | --- |
 | Claude (Claude Code, Agent SDK) | `claude-opus-5-5` | `claude-fable-5-2` | `claude-sonnet-5-5` | `claude-haiku-5-5` |
 | Codex (OpenAI) | `gpt-6.1-sol` | `gpt-6-astra` | `gpt-6.1-sol` | `gpt-6-luna` |
-| agy (Antigravity CLI) | `gemini-4-argon` / `gemini-3.8-flash` | `gemini-4-carbon` (Ultra/Enterprise), else `gemini-4-argon` | `gemini-3.8-flash` | `gemini-3.8-flash` (`low`) |
+| agy (Antigravity CLI) | `gemini-4-argon` / `gemini-4-hydrogen` (or `gemini-pro-orchestrator` / `gemini-pro-orchestrator-argon`) | `gemini-4-carbon` (Ultra/Enterprise/ADC), else `gemini-4-argon`, else `gemini-4-hydrogen` (`xhigh`) | `gemini-4-hydrogen` | `gemini-4-hydrogen` (`low`) |
 
 ### Work nature → tier
 
@@ -38,9 +38,9 @@ for the actual work, subject to required project review gates. The parent remain
 | Work | Tier | Effort | Cap | Return |
 | --- | --- | --- | --- | --- |
 | Specific unresolved hard question; an explicitly requested specialist | hardest scoped judgment (Fable / Astra / Carbon, else Argon) | as needed | 60 turns; reads the diff and artifacts, runs nothing heavier than `git`/`grep` | one line per finding |
-| Broader or risky build, refactor, migration, integration or review; E2E flow authoring | bounded builder (Sonnet / Sol 6.1 / 3.8 Flash) | task-dependent | 80 turns / 150k context | builder contract |
-| Source-based writing, chart/screen interpretation, bounded app workflows; narrow, low-risk app edits with explicit acceptance checks | scoped specialist (Codex: Terra 6.1) | task-dependent | 60 turns / 150k context | artifact + evidence + uncertainties |
-| Bounded multi-step triage, source verification, narrow low-risk edits with observable checks, or specified browser checks | focused checked work (Haiku 5.5 / Luna / 3.8 Flash `low`) | task-dependent | 60 turns | verdict + evidence |
+| Broader or risky build, refactor, migration, integration or review; E2E flow authoring | bounded builder (Sonnet / Sol 6.1 / Hydrogen) | task-dependent | 80 turns / 150k context | builder contract |
+| Source-based writing, chart/screen interpretation, bounded app workflows; narrow, low-risk app edits with explicit acceptance checks | scoped specialist (Codex: Terra 6.1; Gemini: Hydrogen `medium`) | task-dependent | 60 turns / 150k context | artifact + evidence + uncertainties |
+| Bounded multi-step triage, source verification, narrow low-risk edits with observable checks, or specified browser checks | focused checked work (Haiku 5.5 / Luna / Hydrogen `low`) | task-dependent | 60 turns | verdict + evidence |
 | A single mechanical command, waiting, relaying, or a "placeholder" | no agent needed | — | — | command result or completion notification |
 
 For specified browser checks give routes, selectors, widths and expected text; report
@@ -135,37 +135,51 @@ it is distinct from shutdown and from ChatGPT product retirement.
 | --- | --- | --- | --- | --- | --- |
 | 4 Carbon | `gemini-4-carbon` | GA, most capable | 2026-11-10 | 1,048,576 / 65,536 (1M long decode) | 2 → 10 |
 | 4 Argon | `gemini-4-argon` | GA, efficient frontier | 2026-10-13 | 1,048,576 / 65,536 (1M long decode) | 2 → 10 |
-| 3.8 Flash | `gemini-3.8-flash` | GA, newest Flash | 2026-09-02 | 1,048,576 / 65,536 | 0.75 → 3.75 |
+| 4 Hydrogen | `gemini-4-hydrogen` | GA, fast workhorse | 2026-11-12 | 1,048,576 / 65,536 (1M long decode) | 1.50 → 7.50 |
+| 3.8 Flash | `gemini-3.8-flash` | GA, previous Flash | 2026-09-02 | 1,048,576 / 65,536 | 0.75 → 3.75 |
 | 3.6 Flash | `gemini-3.6-flash` | GA | 2026-07-21 | 1,048,576 / 65,536 | 0.75 → 3.75 |
 | 3.5 Flash-Lite | `gemini-3.5-flash-lite` | GA | 2026-07-21 | 1,048,576 / 65,536 | 0.30 → 2.50 |
 | 3.1 Pro | `gemini-3.1-pro-preview` | Preview | — | 1,048,576 / 65,536 | 2 → 12 (≤200K input) |
 
-**Carbon is Google's most capable reasoning model, Argon the efficient frontier tier, 3.8
-Flash the cross-plan workhorse.** `gemini-4-carbon` shares Argon's limits, API pricing and
-cache terms; Antigravity lists it for Ultra and Enterprise only, so Argon stays the fallback.
-`gemini-4-argon` has a unified 1,048,576 input+thinking+output window (1M long decode
-via `background: true`), Antigravity access on paid Pro/eligible-device trials,
-Ultra and Enterprise (app, CLI, IDE extensions),
-and `$2 → $10` intro API pricing through 2026-11-30 (`$4 → $20` from 2026-12-01; implicit
-cache `$0.10` then `$0.20`; no explicit cache or Free API tier). Flash `$0.75 → $3.75`
-intro rates move to `$1.50 → $7.50` on 2027-01-01. `gemini-3.7-flash` and
+**Carbon is Google's deepest reasoning model, Argon the efficient frontier tier, and Hydrogen
+the cross-plan Gemini 4 workhorse (recommended upgrade from 3.8 Flash).** All three Gemini 4
+models share a unified 1,048,576 input+thinking+output window (1M long decode via
+`background: true` or continuation; 65,536 streaming cap, with single non-streaming hops
+capped at 32,768 on Carbon/Argon and 65,536 on Hydrogen) and implicit-only caching (≥4,096
+tokens; no explicit cache). Carbon and Argon run at `$2 → $10` intro API pricing through
+2026-11-30 (`$4 → $20` from 2026-12-01; implicit cache `$0.10` then `$0.20`; no Free API
+tier). Hydrogen runs at flat `$1.50 → $7.50` across 1M context (implicit cache `$0.075`, Free
+API tier included) and serves as the default Antigravity Managed Agent model. Antigravity
+entitles Carbon on Ultra, Enterprise and Google Cloud ADC (`AGY_ADC_AUTH`), Argon on paid
+Pro/eligible-device trials, Ultra and Enterprise, Hydrogen and 3.8 Flash on every plan, and
+3.6 Flash / 3.1 Pro on Enterprise only. Flash `$0.75 → $3.75` intro rates move to
+`$1.50 → $7.50` on 2027-01-01 and retain explicit caching. `gemini-3.7-flash` and
 `gemini-3.5-flash` (deprecated 2026-10-08) auto-route to `gemini-3.8-flash` and
-`gemini-3.6-flash`. Never combine `thinking_budget` with `thinking_level`.
+`gemini-3.6-flash`; `gemini-2.5-pro` auto-routes to `gemini-3.8-flash` on 2026-12-01. On
+Gemini 4, `thinking_budget` is deprecated (HTTP 400 in Interactions API or alongside
+`thinking_level`) and custom `temperature`/`top_p`/`top_k` are ignored.
 
 | Model | Accepts (`thinking_level`) | Default |
 | --- | --- | --- |
 | 4 Carbon, 4 Argon, 3.8 Flash | `low`, `medium`, `high` | `medium` |
+| 4 Hydrogen | `low`, `medium`, `high`, `xhigh` | `high` |
 | 3.6 Flash | `minimal`, `low`, `medium`, `high` | `medium` |
 | 3.5 Flash-Lite | `minimal`, `low`, `medium`, `high` | `minimal` |
 | 3.1 Pro (Preview) | `low`, `medium`, `high` | `high` |
 
-Use Carbon `high` (Argon `high` where Carbon is not entitled) for hardest architecture,
-math/science, high-risk review and long decode; Argon `medium` for general lead and complex multi-step engineering; `low` for lighter
-cost-sensitive reasoning. Use 3.8 Flash `high` for harder multi-step coding/agents or lead
-fallback when Argon is unavailable; `medium` for standard bounded builds and routine
-review; `low` for fast checks, inventory, extraction and narrow edits (`minimal` errors on
-3.8 Flash; 3.5 Flash-Lite `minimal`/`low` suits the lightest high-volume API checks, but the
-agy catalog does not list it).
+Use Carbon `high` (Argon `high` where Carbon is unentitled; Hydrogen `xhigh` on Free/Plus)
+for hardest architecture, subtle concurrency/race root-cause, math/science, security audits,
+high-risk review and long decode; Argon `medium` (or single-session Orchestrator) for general
+lead and long-horizon engineering at lower per-turn token spend than Carbon, and Carbon
+`medium` when every step needs deeper verification. Use Hydrogen `high` (its default) for
+bounded builders, multi-step tool agents, routine review, dense multimodal/PDF/chart/video
+work and Free/Plus lead; set `medium` explicitly for well-specified coding, UI prototyping
+and latency-sensitive specialist passes; reserve `xhigh` (`Extra` in the App) for hard
+multi-step escalations where `high` falls short, since it can overthink simple prompts; use
+`low` for fast checks, triage, inventory, extraction and narrow edits (`minimal` errors on
+Gemini 4 and 3.8 Flash). Keep 3.8 Flash (`low`–`high`) when its `$0.75 → $3.75` intro rate
+(through 2026-12-31) or explicit API caching is required; 3.5 Flash-Lite `minimal`/`low`
+suits the lightest high-volume API checks (absent from `agy models`).
 
 ### Cross-provider fleets
 
@@ -206,16 +220,24 @@ Astra, Sol 6.1, Terra 6.1, Sol 6 and Luna 6 (checked 2026-10-29); other surfaces
 differ. The Work/Codex Terra release is dated 2026-10-26; official guidance requires
 CLI 0.159.0+, but version alone does not establish catalog or workspace access.
 
-**agy (Antigravity CLI), 1.5.5 (`agy --version`, `agy models`, 2026-11-11).** The catalog exposes
-`gemini-4-carbon-{low,medium,high}`, `gemini-4-argon-{low,medium,high}` and
-`gemini-3.8-flash-{low,medium,high}` (plus Claude 5.5 and `gpt-oss-120b-medium`, removed
-2026-11-18). A listed Carbon entry is not entitlement: the 1.5.5 changelog ties it to ADC
-sign-in and the models page to Ultra/Enterprise, so confirm with one spawn. Since 1.3.4, `--model` and `/model` accept a
-base model name without `--effort` (default thinking level, else `medium`), or pair with
-`--effort` (`low|medium|high|xhigh|max`). `invoke_subagent` tiers (`inherit`, `flash_lite`,
-`flash`, `pro`; names from the installed schema, not a vendor page): `flash_lite` for light lookups/checks, `flash` for bounded builders,
-scouts and routine verifiers, `pro` (or `inherit` on the desired Argon level) for complex
-refactors, architecture or high-risk verification. Mechanics:
+**agy (Antigravity CLI), 1.5.7 (`agy --version`, `agy models`, 2026-11-13).** The catalog
+exposes `gemini-4-carbon-{low,medium,high}`, `gemini-4-argon-{low,medium,high}`,
+`gemini-4-hydrogen-{low,medium,high,xhigh}`, `gemini-pro-orchestrator`,
+`gemini-pro-orchestrator-argon` and `gemini-3.8-flash-{low,medium,high}` (plus Claude 5.5 and
+`gpt-oss-120b-medium`, removed with Free/Pro Claude 4.6 on 2026-11-18). A listed ID does not
+prove plan entitlement; confirm on first use. Orchestrator pairs Carbon (Ultra) or Argon
+(paid/eligible-trial Pro, Ultra; absent on Enterprise) planning and review with Hydrogen
+execution in one conversation at fixed effort (`--effort` and `/effort` rejected). Since
+1.3.4, `--model` and `/model` accept a base name without `--effort` (runs the model's default
+thinking level — `high` on Hydrogen, `medium` on Carbon/Argon/3.8 Flash) or pair with
+`--effort` (`low|medium|high|xhigh|max`). `invoke_subagent` exposes coarse tiers (`inherit`,
+`flash_lite`, `flash`, `pro`; `flash_lite` is in the live schema though omitted from the
+subagents page, and exact tier-to-model-ID mapping is undocumented): `flash_lite` for light
+lookups/checks, `flash` for bounded builders, scouts and routine verifiers, `pro` (or
+`inherit` when the parent runs the target model/effort) for complex refactors, architecture
+or high-risk verification. `/swarm` (`Pro`/`Ultra` preview) accepts exact catalog IDs on
+`add` (`model`) and in-place switches on waiting members (`action: "model"`), defaulting to
+the coordinator's model unless multi-model routing is requested. Mechanics:
 [fan-out patterns](../FANOUT-PATTERNS.md#antigravity-agy-collaboration).
 
 ### Freshness and evidence
@@ -223,15 +245,16 @@ refactors, architecture or high-risk verification. Mechanics:
 Re-verify on a release, a deprecation, a rejected model ID, a retirement date coming within
 90 days, or a maintenance audit. Check the vendor model pages and the session catalog before
 changing a default, and preserve the user's explicit model choice. Keep historical benchmarks
-dated; do not relabel an old run as a new model. All three vendors
-were re-checked against their model, pricing, effort and deprecation pages on 2026-11-11:
-Claude (Fable 5.2 released 2026-11-09), Gemini and agy 1.5.5 (Carbon GA 2026-11-10), OpenAI
-(no general-availability change since 2026-11-07; Codex CLI 0.167.1). Not re-confirmed that
-day: per-model limits for the Flash and 3.1 Pro rows (last 2026-11-07), Terra's Codex catalog
-values (2026-10-29), and the `thinking_budget` rule. Restricted-access models (Mythos 5.2,
-GPT-6 Cyber, Rosalind) are not routing targets. These are not account-specific quotes.
-Compare candidate models on representative inputs and
-checks; record quality, elapsed time, actual token usage and rework where available.
+dated; do not relabel an old run as a new model. Gemini and agy 1.5.7 were re-checked on
+2026-11-13 across model, latest-model, thinking, pricing, deprecation, subagent and swarm
+pages (Hydrogen GA 2026-11-12, Carbon GA 2026-11-10, Orchestrator, all Flash/3.1 Pro row
+limits, `gemini-2.5-pro` 2026-12-01 auto-route, and the `thinking_budget` rule). Claude
+(Fable 5.2 released 2026-11-09) and OpenAI (no general-availability change since 2026-11-07;
+Codex CLI 0.167.1; Terra's Codex catalog values 2026-10-29) were last re-checked on
+2026-11-11. Restricted-access models (Mythos 5.2, GPT-6 Cyber, Rosalind) are not routing
+targets. These are not account-specific quotes. Compare candidate models on representative
+inputs and checks; record quality, elapsed time, actual token usage and rework where
+available.
 
 Sources:
 - [Claude models overview](https://platform.claude.com/docs/en/models/overview)
@@ -254,11 +277,15 @@ Sources:
 - [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
 - [OpenAI deprecations](https://developers.openai.com/api/docs/deprecations)
 - [Gemini API models](https://ai.google.dev/gemini-api/docs/models)
+- [Latest Gemini models](https://ai.google.dev/gemini-api/docs/latest-model)
 - [Gemini 4 Carbon](https://ai.google.dev/gemini-api/docs/models/gemini-4-carbon)
 - [Gemini 4 Argon](https://ai.google.dev/gemini-api/docs/models/gemini-4-argon)
+- [Gemini 4 Hydrogen](https://ai.google.dev/gemini-api/docs/models/gemini-4-hydrogen)
 - [Gemini 3.8 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash)
 - [Gemini thinking](https://ai.google.dev/gemini-api/docs/thinking)
 - [Gemini API pricing](https://ai.google.dev/gemini-api/docs/pricing)
 - [Gemini API deprecations](https://ai.google.dev/gemini-api/docs/deprecations)
 - [Antigravity models](https://antigravity.google/docs/models)
+- [Antigravity subagents](https://antigravity.google/docs/subagents)
+- [Antigravity swarm](https://antigravity.google/docs/swarm)
 - [Antigravity CLI docs](https://antigravity.google/docs/cli/)

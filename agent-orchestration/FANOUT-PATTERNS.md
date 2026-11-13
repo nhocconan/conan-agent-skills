@@ -16,7 +16,7 @@ schema before relying on anything below.
 
 | Situation | Shape |
 | --- | --- |
-| Independent outcomes with owned files | Concurrent subagents |
+| Independent outcomes with owned files | Concurrent subagents (or agy `/swarm` when shared-board coordination helps) |
 | Workers need overlapping files | Separate worktrees, or serialize those writes |
 | One important conclusion needs independent review | Fresh reviewer; another provider if available |
 | CI, deploy, or external job in progress | Supported background completion and bounded waits |
@@ -65,21 +65,25 @@ isolation plus diff review. Do not change global permissions merely to staff a l
 
 | Lane | Claude Code | Codex | agy (Antigravity) |
 | --- | --- | --- | --- |
-| Scout, read-only | `permissionMode: plan`; a `tools` allowlist without Edit/Write | a role whose `config_file` sets a read-only `sandbox_mode` | built-in `research` type, or `define_subagent` with `enable_write_tools: false` |
-| Builder, owned files | `tools` allowlist, `disallowedTools` for the rest | role `config_file` with a workspace-write `sandbox_mode` | `self` (or `define_subagent` with `enable_write_tools: true`); `Workspace: "share"` or `"branch"` |
-| Verifier, read-only | as Scout, in its own definition so it cannot inherit builder tools | a separate read-only role | fresh context with `research` or `define_subagent` without write tools |
-| MCP scoping | `disallowedTools` with `mcp__<server>` patterns; inline `mcpServers` in the definition | `mcp_servers` in the role's `config_file` | `define_subagent` with `enable_mcp_tools: false` |
-| No nested fleets | omit `Agent` from `tools` | `agents.max_depth` | `define_subagent` with `enable_subagent_tools: false` |
+| Scout, read-only | `permissionMode: plan`; a `tools` allowlist without Edit/Write | a role whose `config_file` sets a read-only `sandbox_mode` | built-in `research` type, or `define_subagent` with `EnableWriteTools: false` |
+| Builder, owned files | `tools` allowlist, `disallowedTools` for the rest | role `config_file` with a workspace-write `sandbox_mode` | `self` (or `define_subagent` with `EnableWriteTools: true`); `Workspace` / `workspace`: `"share"` or `"branch"` |
+| Verifier, read-only | as Scout, in its own definition so it cannot inherit builder tools | a separate read-only role | fresh context with `research` or `define_subagent` (`EnableWriteTools: false`) |
+| MCP scoping | `disallowedTools` with `mcp__<server>` patterns; inline `mcpServers` in the definition | `mcp_servers` in the role's `config_file` | `define_subagent` with `EnableMCPTools: false`, or custom `.agents/agents/*.md` `mcpServers` |
+| No nested fleets | omit `Agent` from `tools` | `agents.max_depth` | `define_subagent` with `EnableSubagentTools: false` |
 
 Claude Code reads these from subagent frontmatter (`model`, `effort`, `maxTurns`,
 `isolation`). Codex roles (`description`, `config_file`, `nickname_candidates`) are chosen
 with `agent_type`; the `config_file` is a config overlay (`model`, `model_reasoning_effort`,
 `sandbox_mode`, `mcp_servers`), and current docs also describe standalone
-`.codex/agents/*.toml` definitions. Read the accepted keys from the installed build; a
-full-history fork can reject `agent_type` overrides.
+`.codex/agents/*.toml` definitions. Antigravity reads reusable subagents from
+`.agents/agents/*.md` or `~/.gemini/config/agents/*.md` (`tools`, `model`,
+`commandExecutionPolicy`, `mcpServers`); check exact `tools` names, as unmapped entries can
+hang the subagent. Read the accepted keys from the installed build; a full-history fork can
+reject `agent_type` overrides.
 Sources: [Claude subagents](https://code.claude.com/docs/en/sub-agents),
 [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
-(checked 2026-11-11).
+(checked 2026-11-11), [Antigravity subagents](https://antigravity.google/docs/subagents)
+(checked 2026-11-13).
 
 Check the effective permissions after inheritance and runtime overrides. Claude plugin
 subagents ignore `permissionMode`, inline `mcpServers` and subagent hooks; Codex live
@@ -103,12 +107,13 @@ The current collaboration surface uses `send_message` for a running worker,
 `list_agents` / `wait_agent` to observe. It exposes no close tool. Use the live schema;
 do not copy CLI lifecycle calls into another surface or treat interruption as cleanup.
 
-**agy (Antigravity).** `send_message` with `Recipient=<conversationId>` continues a
+**agy (Antigravity).** `send_message` with `Recipient=<conversationId>` continues an idle
 subagent with its context intact. `manage_subagents` with `Action="list"` enumerates
-active subagents and their states (`running`, `idle`, `waiting_for_input`, etc.);
-`Action="kill"` ends a worker permanently (to resume one, `send_message` an idle agent).
-`manage_task` monitors background commands. The harness
-resumes execution reactively on subagent messages or task completion without polling.
+active subagents and their live states (`running`, `idle`, `killed`); `Action="kill"` ends a
+worker permanently and removes temporary worktrees. In `/swarm`, `waiting` members sleep at
+zero token cost until `@mentioned`, and `swarm` `action: "model"` switches a `waiting`
+member's model in place (preserving history) on quota exhaustion. `manage_task` monitors
+background commands; reactive wakeups resume execution without polling.
 
 ## Progress cadence
 
@@ -168,31 +173,36 @@ mechanisms without copying secrets. Its verdict is evidence for the lead, not ac
 
 ## Antigravity (agy) collaboration
 
-Subagents are launched via `invoke_subagent`. The tool accepts an array `Subagents` to
-launch an entire wave concurrently:
+Emit parallel `invoke_subagent` calls in one turn to launch a wave concurrently (live 1.5.7
+schema, checked 2026-11-13):
 
 ```json
 {
-  "Subagents": [
-    {
-      "TypeName": "self",
-      "Role": "Scoped Builder",
-      "Model": "flash",
-      "Workspace": "share",
-      "Prompt": "MODE: build. Working directory: /absolute/repo. Goal: ... Owned files: ... Acceptance: ... Return: ..."
-    }
-  ]
+  "TypeName": "self",
+  "Role": "Scoped Builder",
+  "Model": "flash",
+  "Workspace": "share",
+  "Prompt": "MODE: build. Working directory: /absolute/repo. Goal: ... Owned files: ... Acceptance: ... Return: ..."
 }
 ```
 
-Set `Workspace` to `"share"` to share the repository directory like a git worktree, or
-`"branch"` for an isolated clone. For read-only scout/verifier roles, pass
-`TypeName: "research"`, or register a scoped worker first via `define_subagent` with
-`enable_write_tools: false` and `enable_subagent_tools: false`. `Model` accepts
-`inherit`, `flash_lite`, `flash`, or `pro` ([routing](sections/routing.md)). The docs list
-Model `inherit|flash|pro`; `flash_lite`, `manage_subagents` and the `enable_*` flags come
-from the live tool schema (UNVERIFIED against docs), so re-inspect it. Docs state a
-maximum depth of 10 beneath the primary agent and no concurrency cap.
+Set `Workspace` to `"share"` to share repository storage like a worktree, or `"branch"` for
+an isolated clone. Built-in types include `research` (read-only scout/verifier), `browser`
+(UI interaction/captures) and `self`; session-scoped workers register via `define_subagent`
+with `EnableWriteTools: false` and `EnableSubagentTools: false`. `Model` accepts coarse
+tiers `inherit`, `flash_lite`, `flash`, or `pro` ([routing](sections/routing.md)); docs list
+`inherit|flash|pro` while `flash_lite`, `manage_subagents` and the `Enable*` flags come from
+the live tool schema, so re-inspect on upgrades. Docs state a maximum nesting depth of 10
+beneath the primary agent and no concurrency cap.
+
+For shared-board coordination or exact per-worker catalog models (`Pro`/`Ultra` preview,
+checked 2026-11-13), `swarm` (`action: "add"`) spawns named workers (or `tasks`/`n` groups)
+with `workspace: "share"` or `"branch"` (land changes before `kill`, which deletes that
+copy) and optional `fork`. `add` omits `model` by default to inherit the coordinator's
+model; pass an exact ID from `swarm` `models` (`all: true`) only when multi-model routing is
+authorized ([routing](sections/routing.md)). Single-session Orchestrator hands off between
+planner and builder inside one conversation rather than spawning independent lanes; use
+`invoke_subagent` or `/swarm` for parallel fan-out or fresh-context review.
 
 ## Shared-host resources
 

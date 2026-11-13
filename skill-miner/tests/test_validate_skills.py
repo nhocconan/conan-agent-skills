@@ -496,6 +496,23 @@ class ModelIdContainmentCheckTests(unittest.TestCase):
 
             self.assertEqual(errors, [])
 
+    def test_orchestrator_model_id_outside_routing_is_caught(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = self._fixture_root(
+                raw, "| agy | `gemini-pro-orchestrator` / `gemini-pro-orchestrator-argon` |\n",
+            )
+            other = root / "some-skill"
+            other.mkdir()
+            (other / "SKILL.md").write_text(
+                "Docs live under gemini-api and gemini-md; spawn gemini-pro-orchestrator-argon.\n",
+                encoding="utf-8",
+            )
+
+            errors = validate_skills.check_model_id_containment(root)
+
+            self.assertEqual(len(errors), 1, errors)
+            self.assertIn("gemini-pro-orchestrator-argon", errors[0])
+
 
 class FrontLoadAndKeyTests(unittest.TestCase):
     def _check(self, frontmatter, files=None):

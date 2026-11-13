@@ -25,7 +25,7 @@ Local, repo-specific rules (AGENTS.md) added on top of the platform spec:
           are examples, not live citations. If a skill has no `§` headings
           at all, any `§` citation inside it is an error.
   ERROR   (repo-wide, not per-skill) a `gpt-N`/`claude-{opus,sonnet,haiku,
-          fable,mythos}-`/`gemini-N` model-ID literal outside
+          fable,mythos}-`/`gemini-N` (or orchestrator) model-ID literal outside
           agent-orchestration/sections/routing.md — the canonical routing
           policy. A line containing the marker `model-id-allow` is exempt.
   WARN    house-style slop ban-list (senior-operator/OPERATING-MANUAL.md,
@@ -115,7 +115,7 @@ LINT_ALLOW_MARKER = "lint-allow"
 MODEL_ID_RE = re.compile(
     r"\b(?:gpt-[0-9][A-Za-z0-9_.-]*"
     r"|claude-(?:opus|sonnet|haiku|fable|mythos)-[A-Za-z0-9_.-]*"
-    r"|gemini-[0-9][A-Za-z0-9_.-]*)"
+    r"|gemini-(?:[0-9]|pro-orchestrator)[A-Za-z0-9_.-]*)"
 )
 MODEL_ID_ALLOW_MARKER = "model-id-allow"
 ROUTING_POLICY_REL = Path("agent-orchestration") / "sections" / "routing.md"
