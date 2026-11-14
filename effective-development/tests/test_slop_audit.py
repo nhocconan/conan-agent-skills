@@ -120,11 +120,13 @@ class Warnings(Base):
             "readFileSync('src/a.ts');",                      # W6
             "// 2026-01-02 workaround",                       # W7
             "// Removed the old branch",                      # W9
+            "expect(html).toContain('className=\"flex gap-2\"');",  # WA
+            "expect(save).toHaveBeenCalledTimes(2);",         # WB
         ]) + "\n")
         self.write("tests/test_w.py", "import time\ntime.sleep(1)\n")  # audit-ok-slop: fixture text for W8
         rc, codes = self.codes("w.test.ts")
         self.assertEqual(rc, 0)
-        self.assertEqual(sorted(codes), ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W9"])
+        self.assertEqual(sorted(codes), ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W9", "WA", "WB"])
         self.assertEqual(self.codes("tests/test_w.py"), (0, ["W8"]))
 
 class BaseMode(Base):

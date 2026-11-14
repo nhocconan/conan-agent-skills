@@ -6,7 +6,8 @@ a rescue audit.
 
 - **Writing a test (builder).** Its title names the regression it catches (behavior,
   invariant or incident id). Never add: log/console call counts, non-contract wording,
-  source greps that a function is called (an `audit:*` script owns static facts),
+  source greps or class-string pins (`toContain('className=…')`; an `audit:*` script owns
+  static facts, a rendered box owns layout),
   counts or lengths of registries that only grow, a helper checked against itself,
   expected values computed by the subject, a mock-only test, near-identical cases as
   separate tests (one table loop that names the failing row), a slow test whose
@@ -14,8 +15,9 @@ a rescue audit.
   branching in place of a web-first assertion. Put this list in every builder brief.
 - **Review (merge gate).** The reviewer reads the test diff as code: one finding per
   slop test with its delete-or-merge fix; a test diff that grows the suite without a
-  new failure mode is a finding. Test-count/suite-time growth above the repository's
-  baseline needs each new test's failure mode named, else it goes.
+  new failure mode is a finding; so is a new test with no red run, or a test
+  edited only to mirror the implementation (name the changed contract or delete it).
+  Growth above the repository's baseline needs each failure mode named.
 - **A test-only failure in a gate.** If a gate fails only on a test that pins incidental
   output, delete or rewrite that test and rerun only its file, never the whole gate.
 - **Periodic.** When summed suite time or test count grows past the repository threshold
@@ -52,13 +54,11 @@ Runner references: [Vitest](https://vitest.dev/guide/cli.html),
 [Turborepo](https://turborepo.dev/docs/reference/run).
 
 Test-design references (read 2026-11-07): [12 test desiderata](https://testdesiderata.com)
-(undated; structure-insensitive and behavioral are the two this file enforces),
-[SWE book ch.12](https://abseil.io/resources/swe-book/html/ch12.html) (brittle and interaction
-tests), [diff-only mutation testing](https://arxiv.org/abs/2102.11378),
+(undated),
+[SWE book ch.12](https://abseil.io/resources/swe-book/html/ch12.html), [diff-only mutation testing](https://arxiv.org/abs/2102.11378),
 [mutation-guided test generation](https://arxiv.org/abs/2501.12862),
 [SWE mutation study](https://arxiv.org/abs/2605.22175).
 
 Procedure comparison (read 2026-10-12): pstack `tdd`, `principle-test-behavior-not-implementation`,
 `create-verification-skill` and `maintain-verification-skill`, pinned at
 [1b6d44f](https://github.com/cursor/plugins/tree/1b6d44ff26d4e242f4e8f68c391e6d2f7ca16def/pstack/skills).
-Adapted to existing maps and repository authority; no upstream installation required.

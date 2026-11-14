@@ -74,7 +74,7 @@ class TriggerSetTests(unittest.TestCase):
         cases = json.loads(SET_PATH.read_text(encoding="utf-8"))["cases"]
         self.assertEqual({c["src"] for c in cases}, {"synthetic", "negative"})
         self.assertEqual(len({c["id"] for c in cases}), len(cases))
-        self.assertEqual(sum(1 for c in cases if c.get("near_miss")), 4)
+        self.assertEqual(sum(1 for c in cases if c.get("near_miss")), 8)
         self.assertTrue(all(c["expect"] == [] for c in cases if c["src"] == "negative"))
 
 

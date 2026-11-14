@@ -22,7 +22,7 @@ and harness mechanics, with their verification dates, live in
 See [the audit](SKILL-AUDIT.md) for findings and validation limits, including the
 2026-11-07 Codex/agy portability review.
 
-Workstation profiles for Codex and agy include all 34 repository skills plus the
+Workstation profiles for Codex and agy include all 35 repository skills plus the
 optional React skill. `verify` works in each harness; automatic pre-commit invocation
 depends on the harness. Profile definitions do not prove live discovery or equal
 task performance. Claude session backup remains a Claude-data workflow regardless
@@ -166,3 +166,4 @@ wrap by default, fork only when you mean to diverge.
 | 32 | [effective-development](effective-development/SKILL.md) | Verification sized to the change: read the repo's gate policy first; affected checks per edit batch, never hand-narrowed; mechanical widening for schemas/migrations/auth/config/fixtures; fail-before/pass-after for bug fixes; reuse a green result only while revision, diff, deps and config are unchanged; required gates stay full at their declared stage. |
 | 33 | [frontend-design](frontend-design/SKILL.md) | Mandatory loop for any visible UI change: ground in DESIGN.md and tokens, plan, build, screenshot 1440/390 in both themes, critique by a second reader against `design-qa`'s rubric, iterate, report before/after. Landing-page path (strategy + counted motion budget, summarized from elayadesign/ai-design-skills, MIT), app-page path, routing to impeccable commands. |
 | 34 | [verify](verify/SKILL.md) | Runs the repo's own gates with exit codes, checks residue, replays a named flow, blocks commit on failure. |
+| 35 | [web-platform-baseline](web-platform-baseline/SKILL.md) | Cross-project web platform rules for the code behind a UI (input and forms, focus and touch, motion and loading, theme, build-time performance), distilled from Chrome's Modern Web Guidance and Vercel's Web Interface Guidelines; retrofit and refresh sections. Rendered checks stay with `design-qa`, WCAG with `a11y-audit`, measured speed with `web-perf-audit`. |

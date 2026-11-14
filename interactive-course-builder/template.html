@@ -16,8 +16,7 @@
        Color mode: LIGHT by default; dark is the topbar toggle (persisted).
     4. Set  <html lang="…">  to the course's language (vi/en/…).
     5. Author lessons by copying the COMPONENT blocks below. Every lesson MUST
-       end with a Takeaway and a Quiz, and carry a Level badge (L1–L5) and a
-       reading-time chip.
+       end with a Takeaway and a Quiz.
     6. Run through the Authoring Checklist in reference.md before shipping.
 
   Search the file for  "COMPONENT:"  to jump between reusable blocks.
@@ -278,14 +277,6 @@ code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-2);
 .lesson-body li+li{margin-top:6px}
 @media (max-width:640px){.lesson-head,.lesson-body{padding-left:20px;padding-right:20px}}
 
-/* COMPONENT: Level badge (L1–L5 progression) */
-.level-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);
-  font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;
-  padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.3)}
-.level-dots{display:inline-flex;gap:3px}
-.level-dots i{width:5px;height:5px;border-radius:99px;background:rgba(255,255,255,.35)}
-.level-dots i.on{background:var(--brand-gold)}
-
 /* COMPONENT: Learning objectives */
 .objectives{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
 .objectives .eyebrow{margin-bottom:8px;display:block}
@@ -536,12 +527,6 @@ footer.site{border-top:1px solid var(--border);padding:26px 24px;text-align:cent
             <div>
               <span class="eyebrow">Lesson 1.1</span>
               <h3>A concrete lesson title</h3>
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <span class="level-badge">L1 · Foundations
-                <span class="level-dots"><i class="on"></i><i></i><i></i><i></i><i></i></span>
-              </span>
-              <span class="level-badge">⏱ ~4 min</span>
             </div>
           </div>
         </div>

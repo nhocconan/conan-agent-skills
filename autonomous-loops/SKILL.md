@@ -30,7 +30,7 @@ says the task succeeded. Every loop reports the gate's verdict, never the run's 
 | --- | --- | --- | --- |
 | 1 · Skill | a human invokes it; `/goal` keeps one session going until an evaluator model confirms the end state | as the session allows | representative runs reviewed; gate catches forced failure |
 | 2 · Hook | a supported blocking session event; verify the active harness's events and rejection semantics ([harness mechanics](sections/harness-mechanics.md)). Notification-only hooks cannot enforce a gate | none of its own | the hook has never blocked something it should have allowed |
-| 3 · Headless CI | repo event (push, PR) or CI cron; local artifacts only | **none; posting comments needs write authority** | outputs were correct for N runs and cheap to check |
+| 3 · Headless CI | repo event (push, PR) or CI cron; local artifacts only | **none; posting comments needs write authority** | the gate caught a forced failure, a reviewer read the outputs, and they are cheap to check |
 | 4 · Scheduled | a clock outside the repo (cloud scheduled tasks, Desktop scheduled tasks, automations, Claude Code `/loop`, cron on the box) | still read-only | brakes proven under a forced failure |
 | 5 · Agentic workflow | lives in the repo as code; agent runs read-only, a separate narrowly-scoped job holds the token | **proposes PRs by default; bounded authorized writes** | — |
 

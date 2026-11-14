@@ -147,8 +147,7 @@ block; don't reinvent. The kit (and when to reach for each):
 
 | Component | Use it for | Rule |
 |---|---|---|
-| **Lesson card** | the container for one lesson | gradient head (level badge + title) + body |
-| **Level badge** | show L1–L5 at a glance | filled gold dots = level; see §4 |
+| **Lesson card** | the container for one lesson | gradient head (title) + body |
 | **Objectives** | "by the end you can…" | 2–4 verb-first, testable outcomes |
 | **Callout** ×5 | `info` `warn` `success` `danger` `insight` | one idea each; `insight` = mental model |
 | **Comparison** | anti-pattern vs better; novice vs pro | left-border red/green, parallel bullets |
@@ -240,23 +239,21 @@ the standard.
 
 ## 4 · Pedagogy — levels, structure, rigor
 
-**Level bands (L1→L5)** map to Parts and to the gold dots on each lesson badge:
+**Level bands (L1→L5)** map to Parts (no per-lesson badge; `validate_course.py` flags one):
 
-| Level | Band | Learner leaves able to… | Dots |
-|---|---|---|---|
-| **L1** | Foundations | name the concept, recognise it in the wild | ●○○○○ |
-| **L2** | Working knowledge | apply it to a guided example | ●●○○○ |
-| **L3** | Practitioner | choose between options under real constraints | ●●●○○ |
-| **L4** | Advanced | combine patterns; handle failure modes | ●●●●○ |
-| **L5** | Expert / lead | design systems & teach others; know when *not* to | ●●●●● |
+| Level | Band | Learner leaves able to… |
+|---|---|---|
+| **L1** | Foundations | name the concept, recognise it in the wild |
+| **L2** | Working knowledge | apply it to a guided example |
+| **L3** | Practitioner | choose between options under real constraints |
+| **L4** | Advanced | combine patterns; handle failure modes |
+| **L5** | Expert / lead | design systems & teach others; know when *not* to |
 
 Difficulty must be **monotonic**: a later lesson never assumes less than an
 earlier one, and never depends on a *later* one. State prerequisites in the
 module header when a jump is real.
 
 **Learner-tooling additions (proven in the 2026-07 review round — include in new courses):**
-- **Reading-time chip** on every lesson head (`<span class="level-badge">⏱ ~N phút</span>`,
-  N ≈ words/220, min 3) — learners plan before they click.
 - **Recap chapter** ("Tổng kết · Cheat sheet 1 trang") as the final lesson: a
   table distilling every chapter's takeaway to one line + an action checklist +
   one cross-chapter synthesis quiz. Own part label (e.g. `Tổng kết`).
@@ -314,7 +311,7 @@ before/after over hand-waving.
 > WCAG 2.2 (republished 2024-12-12) adds six A/AA criteria on top of 2.1: **2.4.11
 > Focus Not Obscured** (the sticky topbar must not cover the focused element —
 > the template sets `scroll-padding-top` on `html`), **2.5.7 Dragging Movements**,
-> **2.5.8 Target Size (Minimum, 24px; house rule stays 44px)**, **3.2.6 Consistent
+> **2.5.8 Target Size (Minimum; sizes in [a11y-audit](../a11y-audit/SKILL.md#motor--touch))**, **3.2.6 Consistent
 > Help**, **3.3.7 Redundant Entry**, **3.3.8 Accessible Authentication**. 2.4.13
 > Focus Appearance is AAA — nice to have, not the bar.
 
@@ -326,7 +323,7 @@ before/after over hand-waving.
 - **Keyboard**: everything reachable & operable; `:focus-visible` ring on every
   interactive element (built into tokens). Accordions are native `<details>`.
   Quiz options are real `<button>`s.
-- **Touch targets** ≥ 44px (lesson-nav min-height 62px; buttons padded).
+- **Touch targets** at the touch-first size from [a11y-audit](../a11y-audit/SKILL.md#motor--touch) (lesson-nav min-height 62px; buttons padded).
   Padding alone does **not** get you there — measure. `.mobile-toggle` and
   `.mode-toggle` both need explicit `min-width:44px;min-height:44px`; a
   `padding:9px` hamburger renders 40×43 and a `min-height:34px` mode toggle
@@ -447,7 +444,7 @@ A course clears the bar only if a demanding learner would say **all** of:
 - [ ] Completion pane points to a concrete next action.
 
 **Per lesson**
-- [ ] Level badge with correct dots. [ ] Objectives (2–4, verb-first).
+- [ ] Objectives (2–4, verb-first).
 - [ ] Opens with a felt problem. [ ] ≥1 figure/comparison/steps/table.
 - [ ] No >2 screens of unbroken prose. [ ] Mandatory Takeaway. [ ] Mandatory Quiz with `data-explain`.
 - [ ] Coherence triangle holds: felt problem, takeaway and quiz serve the same core idea.

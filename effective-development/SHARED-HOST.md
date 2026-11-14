@@ -1,9 +1,8 @@
 # Test memory-lean on a shared host
 
 Single owner of the conductor rule: heavy jobs on a shared host go through one runner.
-Footprints seen on one 32-core host (2026-11-01): Playwright headless job 340-450 MB, vitest
-~555 MB, `next start` 250 MB-1 GB, `next dev` 5-6.5 GB with an unbounded leak. Choose the
-cheapest layer:
+Measure each process class on your host before sizing caps (browser job, test runner,
+`next start`, `next dev`; a dev server's memory can grow without bound). Choose the cheapest layer:
 
 1. **Production build, not `next dev`.** `next build` once per tree fingerprint, then
    `next start`. Dev only for hot reload while editing: one per checkout, in a capped cgroup.
@@ -24,12 +23,12 @@ cheapest layer:
    kills its command's whole process tree. Agents never run suites in parallel: one suite per
    host, builders run only their own files through the conductor, a lead stops builders' runs
    before a gate. After any run no orphan test, browser or ffmpeg process (check by cwd and
-   parent) and no temp dirs remain. (2026-11-01: raw runs beside a gate pushed host load to 180.)
+   parent) and no temp dirs remain. (Example failure: raw runs beside a gate pushed host load to several times the core count.)
 
 ## Diagnose a slow suite before adding workers
 
-Order of checks (2026-11-01: a 3,400-test tier took 2,274 s on 8 workers with ~2.7 of 32 cores
-busy; one 1,903 s file set the wall):
+Order of checks (example: a tier on 8 workers kept only a few of many cores busy because one file
+set the wall):
 
 1. **CPU used vs cores** (`/usr/bin/time -v`: user+sys / wall). Low use means waiting or a
    long tail; more workers will not help.

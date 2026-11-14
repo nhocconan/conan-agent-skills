@@ -36,7 +36,7 @@
 
 - Server verifies every receipt/transaction (Play Developer API / App Store Server API);
   client-side grant is a placebo.
-- Play Billing Library >= 8 (7 was cut off 2026-08-31, ext. 2026-11-01; 9.x drops `queryPurchaseHistoryAsync`/SkuDetails); acknowledge purchases within 3 days or Play refunds them.
+- Play Billing version floor and acknowledgement window: [play-checklist](../../appstore-review-guard/sections/play-checklist.md) (Listing & policy).
 - **Unit/decimal discipline:** store amounts in the smallest unit with the AUTHORITATIVE
   decimals of the asset. Real failure: a token had 6 decimals on-chain; code assumed 9;
   every real payment was rejected as underpaid. Verify decimals against the source of

@@ -33,6 +33,8 @@ CODE_RULES = [
     ("W3", r"\b(it|test)\(\s*['\"](works|should work|test|renders|basic)['\"]", "title the behavior under test"),
     ("W6", r"readFileSync\([^)]*\.(ts|js|tsx|jsx)\b", "test behavior, not source text"),
     ("W8py", r"time\.sleep\(", "poll a condition instead of sleeping"),
+    ("WA", r"\.(toContain|toMatch)\(\s*['\"`][^'\"`]*\b\w*[cC]lass(Name)?=", "assert the rendered result (role, text, measured box), not a class string in the markup"),
+    ("WB", r"^(?!.*expect\(\s*" + LOG + r"\s*\)).*\)\.toHaveBeenCalledTimes\(", "assert the effect; keep a call count only where the count is the contract (dedupe, idempotence)"),
 ]
 # "py" suffix = Python-only; the rest are JS/TS-only (fixture strings in Python tests would match)
 CODE_RULES = [(c[:2], c.endswith("py"), re.compile(r), t) for c, r, t in CODE_RULES]

@@ -55,6 +55,7 @@ web-qa
 #   gstack install). See design-qa/REF.md.
 design-qa
 frontend-design
+web-platform-baseline
 
 # ── third-party kept as-is (small, well-described, non-overlapping) ──────────
 # Installed by hand into ~/.shared-ai-skills/<name>/ with a SOURCE.txt pin.

@@ -46,7 +46,7 @@ Separate mandatory criteria from additional house conventions.
 - Text still works with line-height 1.5, paragraph spacing 2x, letter spacing 0.12em, word spacing 0.16em (1.4.12).
 
 ### Motor & touch
-- Interactive targets ≥ **24×24 CSS px** (**2.5.8 new in 2.2**); aim 44×44 for primary mobile actions. Account for the spacing and other exceptions in 2.5.8.
+- Interactive targets ≥ **24×24 CSS px** (**2.5.8 new in 2.2**, mind its exceptions); 44×44 is best practice for touch-first, not AA. Other skills link here.
 - Any drag interaction has a single-pointer/keyboard alternative (**2.5.7 Dragging Movements, new in 2.2**).
 
 ### Motion & timing

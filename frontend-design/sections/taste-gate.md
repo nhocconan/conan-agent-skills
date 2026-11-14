@@ -23,7 +23,7 @@ Vendored references are flat in `upstream/taste-skill/` (upstream `references/x.
 | T5 | Equal left and right content edges (house rule 4) | Header, toolbar, tabs and content share one gutter |
 | T6 | Real, consistent icons; icon-only controls carry no text (`icons.md`) | Share, export, info, close are icon buttons with an aria-label and a tooltip, no visible word |
 | T7 | Few actions, one wording each (`copy.md` 4-5) | One primary action per surface; no duplicate entry points for the same filter |
-| T8 | Every visual renders at 1440, 1024, 768, 390 (house rule 2) | No clipped, overlapped or wrapped-to-3-lines block at any of the four |
+| T8 | Every visual renders at the widths in [screenshots.md](screenshots.md) plus 1024 and 768 (the gate's two extra) | No clipped, overlapped or wrapped-to-3-lines block at any width |
 | T9 | Hover micro-animation layer (house rule 5) | Applies only as focus/press/hover steps on kit controls; no tilt, no carousel, no timed tabs |
 
 ## Work-screen additions (same spirit, project-agnostic)

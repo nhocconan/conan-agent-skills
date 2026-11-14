@@ -69,7 +69,7 @@ pedagogy** those plug into.
 - Structure: Parts (= level bands L1→L5) → Modules → Lessons. Difficulty monotonic.
 - Every lesson follows the rhythm: **felt problem → name it → show it (visual)
   → apply it → Takeaway → Quiz.**
-- **Every lesson MUST** carry a Level badge, ≥1 objective set, a **Takeaway**,
+- **Every lesson MUST** carry ≥1 objective set, a **Takeaway**,
   and a **Quiz** (scenario-based, with a `data-explain` that reinforces the takeaway).
 - **Coherence triangle:** each lesson has ONE core idea; the felt problem,
   takeaway and quiz all serve it (`reference.md §4`, `examples.md §4`).
@@ -86,8 +86,7 @@ pedagogy** those plug into.
   is what makes it transfer.
 
 **Accessibility (WCAG 2.2 AA)**
-- Skip-link, landmarks, visible focus, touch targets (24px WCAG 2.2 AA minimum per 2.5.8
-  Target Size (Minimum); 44px house rule), keyboard-operable quizzes/
+- Skip-link, landmarks, visible focus, touch targets (sizes: [a11y-audit](../a11y-audit/SKILL.md#motor--touch)), keyboard-operable quizzes/
   accordions, reduced-motion, never color-only signaling. Details in `reference.md §5`.
 
 **Content**

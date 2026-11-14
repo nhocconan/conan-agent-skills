@@ -25,7 +25,8 @@ count: the cheapest checks that detect them, required gates at their declared st
    affected-check command without narrowing its selection by hand. Build a selector
    only when recurring work warrants one. Writers run the per-change tier (and every
    cheap static audit the touched paths select) before each commit; the full gate
-   confirms, it is never the discovery tool.
+   confirms, it is never the discovery tool. A request that itself says to run the full suite
+   after every change is followed as written.
 4. **Widen for indirect impact** using the rules below. Unknown coverage needs broader
    checks, not an optimistic empty set. Runtime journeys/smoke checks follow affected
    behavior and repository policy; they are not mandatory for every commit.

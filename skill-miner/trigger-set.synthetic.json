@@ -1,5 +1,5 @@
 {
- "note": "Synthetic and negative cases only. Positives cover every repository skill. Ten negatives include near misses; n04 explicitly permits only external React guidance as an auxiliary, while raw loads remain reported. Scope adjudicated against skill contracts and global rules before final acceptance; loading does not prove task performance.",
+ "note": "Synthetic and negative cases only. Positives cover every repository skill. Fourteen negatives include near misses; n04 explicitly permits only external React guidance as an auxiliary, while raw loads remain reported. Scope adjudicated against skill contracts and global rules before final acceptance; loading does not prove task performance.",
  "cases": [
   {
    "id": "s01",
@@ -376,6 +376,66 @@
    "expect": [
     "anti-slop-review"
    ]
+  },
+  {
+   "id": "s39",
+   "src": "synthetic",
+   "prompt": "Review this React form against modern web guidance: Enter submits while a Vietnamese IME composition is still active, and the OTP field uses type=number. List the fixes only; do not edit files.",
+   "expect": [
+    "web-platform-baseline"
+   ]
+  },
+  {
+   "id": "s40",
+   "src": "synthetic",
+   "prompt": "Plan a retrofit of this codebase's modals and drawers to modern web guidance (inert background, overscroll containment, focus return). Planning only; do not edit files.",
+   "expect": [
+    "web-platform-baseline"
+   ]
+  },
+  {
+   "id": "s41",
+   "src": "synthetic",
+   "prompt": "Check this stylesheet for `transition: all`, missing `prefers-reduced-motion` handling and missing `touch-action`, and list the rules to change. Report only; do not edit files.",
+   "expect": [
+    "web-platform-baseline"
+   ]
+  },
+  {
+   "id": "s42",
+   "src": "synthetic",
+   "prompt": "Áp dụng chuẩn web cho form đăng nhập: composition input, inputmode, autocomplete. Chỉ lập kế hoạch, không sửa file.",
+   "expect": [
+    "web-platform-baseline"
+   ]
+  },
+  {
+   "id": "n11",
+   "src": "negative",
+   "prompt": "Explain what `text-wrap: balance` does in CSS.",
+   "expect": [],
+   "near_miss": true
+  },
+  {
+   "id": "n12",
+   "src": "negative",
+   "prompt": "Explain the difference between aria-label and aria-labelledby.",
+   "expect": [],
+   "near_miss": true
+  },
+  {
+   "id": "n13",
+   "src": "negative",
+   "prompt": "What do the three Core Web Vitals metrics stand for?",
+   "expect": [],
+   "near_miss": true
+  },
+  {
+   "id": "n14",
+   "src": "negative",
+   "prompt": "Explain the difference between margin and padding in the CSS box model.",
+   "expect": [],
+   "near_miss": true
   }
  ]
 }

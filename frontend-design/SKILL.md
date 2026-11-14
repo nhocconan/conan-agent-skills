@@ -41,7 +41,7 @@ upstream style rules. The Anthropic plugin `frontend-design:frontend-design` may
    sizes; the states (empty, loading, error, long Vietnamese text, one item, many, no permission);
    the single place emphasis goes. Check the plan against the tells in `design-qa`'s rubric and
    [sections/anti-slop.md](sections/anti-slop.md); revise any hit. When the taste gate applies, add a "Taste" line: T1-T9 hits and fixes.
-3. **Build** with the system: kit components, tokens, icon set, i18n catalog. Paths:
+3. **Build** with the system (kit, tokens, icons, i18n) and `web-platform-baseline`:
    [sections/app-pages.md](sections/app-pages.md) for work screens,
    [sections/landing-page.md](sections/landing-page.md) +
    [sections/motion.md](sections/motion.md) for marketing pages.

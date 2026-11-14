@@ -62,9 +62,9 @@ system prompt và cắt theo một trần khác nhau:
 
 | Agent | Profile | Bộ skill hiện tại | Trần |
 | --- | --- | --- | --- |
-| Claude | `claude-dev` | 35 entries: 34 first-party và React skill tùy chọn | 1% context window; skill ít dùng bị bỏ description trước. 8 skill gọi bằng tên để `name-only` (`skillOverrides`) |
-| Codex | `codex-dev` | Cùng bộ 35 entries | `skills.max_context_tokens`: 2% window, tối đa 10,000 token; 8,000 ký tự chỉ khi không biết window |
-| agy | `agy-dev` | Cùng bộ 35 entries | Kiểm tra catalog thực tế sau apply; số entry không chứng minh skill đã được load |
+| Claude | `claude-dev` | 36 entries: 35 first-party và React skill tùy chọn | 1% context window; skill ít dùng bị bỏ description trước. 8 skill gọi bằng tên để `name-only` (`skillOverrides`) |
+| Codex | `codex-dev` | Cùng bộ 36 entries | `skills.max_context_tokens`: 2% window, tối đa 10,000 token; 8,000 ký tự chỉ khi không biết window |
+| agy | `agy-dev` | Cùng bộ 36 entries | Kiểm tra catalog thực tế sau apply; số entry không chứng minh skill đã được load |
 
 Cả hai agent **cắt description từ cuối trước khi bỏ skill**, nên mọi description mở đầu
 bằng câu "Use when…" (`validate_skills.py` cảnh báo nếu không). `codex-dev` giờ có đủ bộ
@@ -72,11 +72,11 @@ first-party vì vẫn nằm dưới trần. Skill không nằm trong load-out v�
 `~/.conan-agent-skills/<tên>/SKILL.md` rồi làm theo. Load-out chỉ quản việc **tự động
 fire**, không quản việc có sẵn hay không.
 
-The point: **"installed" ≠ "active."** gstack's installer would write its whole suite; you run 36 (35 in `loadout.txt` +
+The point: **"installed" ≠ "active."** gstack's installer would write its whole suite; you run 37 (36 in `loadout.txt` +
 `impeccable` from `keep.txt`). Inactive skills are invisible to the model; the wrappers
 read the fetched upstream markdown in `.vendor/gstack/` by path.
 
-For a production server, do not copy the 36-skill workstation set. Apply the self-contained
+For a production server, do not copy the 37-skill workstation set. Apply the self-contained
 `core` profile to both agents:
 
 ```bash
@@ -96,7 +96,7 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 
 ---
 
-## 3. What you have (35 active on Claude + impeccable)
+## 3. What you have (36 active on Claude + impeccable)
 
 ### Yours — correctness checks
 | Skill | Fires when |
@@ -118,6 +118,7 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | `investigating-bugs` | Something is broken — reproduce before editing |
 | `effective-development` | Which checks prove the changed behavior: affected feedback per batch, required gates at their declared stage, valid evidence reuse; "đừng chạy full test", "test cái liên quan thôi" |
 | `shipping-changes` | Commit + push (repository branch/review policy, your identity, hooks must pass) |
+| `web-platform-baseline` | Code đằng sau UI web (form, input, focus, dialog, touch, motion, loading, theme): luật nền tảng web dùng chung; "chuẩn web", "modern web guidance", retrofit codebase |
 | `verify` | Trước khi commit: chạy gate của repo, in exit code, kiểm tra residue, replay một flow; chặn commit nếu có gate fail |
 | `browsing-web` | Anything involving a browser |
 | `web-qa` | Test a running web app (reports by default; fixes only if you ask) |

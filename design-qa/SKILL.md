@@ -32,24 +32,15 @@ step 5 of `frontend-design`'s loop and the whole job when someone complains abou
 
 ## The recurring defects — check these every time
 
+The [rubric](sections/rubric.md) owns most of them: mismatched controls (row 5), the odd one out
+(6), bare-list panels (4), prose walls (10), AI-slop copy (9), imbalance (3, 8) and cross-page
+inconsistency (step 2, neighbours first). Three defects the rubric lacks:
+
 1. **Text that wraps or drops a line**: headings breaking to 4 lines, a title clipped mid-glyph.
 2. **Content not using its width**: a block wrapping to a narrow column beside empty space. Fix
    the shared component, then add the source rule and rendered probe from
    [sections/text-width.md](sections/text-width.md).
 3. **Collisions**: chart labels over the chart, a toast over the button the user needs.
-4. **Layout imbalance**: controls eating a third of the screen while content gets a sliver.
-5. **Inconsistency across pages**: same component, different padding, size or placement; page
-   headers built three ways.
-6. **AI-slop layout**: subtitle restating the title, decorative boxes with no information, a
-   section header for one sentence.
-7. **A bar of mismatched controls**: heights, icon sizes and gaps that differ inside one top bar
-   or toolbar; glyphs small in big hit boxes. One height, one glyph size, one gap per cluster.
-8. **The odd one out**: one element boxed, filled or coloured unlike its siblings (a flag in a
-   bordered box, a lone pill). Users read it as a status or an error.
-9. **Bare-list panels**: launchers, menus and drawers that list many items with no icons, group
-   headings or descriptions.
-10. **Prose walls and link farms**: help and docs pages that are paragraphs and links with no
-    picture of the screen, no steps, no headings.
 
 ## Rules
 

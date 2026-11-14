@@ -26,7 +26,7 @@
   },
   "appstore-review-guard": {
     "always_on": 600,
-    "eager": 3700,
+    "eager": 3400,
     "on_demand": 27850
   },
   "autonomous-loops": {
@@ -87,7 +87,7 @@
   "interactive-course-builder": {
     "always_on": 600,
     "eager": 8100,
-    "on_demand": 59700
+    "on_demand": 59600
   },
   "investigating-bugs": {
     "always_on": 500,
@@ -107,7 +107,7 @@
   "ref-skills": {
     "always_on": 400,
     "eager": 7150,
-    "on_demand": 3400
+    "on_demand": 3300
   },
   "reference-parity": {
     "always_on": 600,
@@ -163,6 +163,11 @@
     "always_on": 500,
     "eager": 3750,
     "on_demand": 0
+  },
+  "web-platform-baseline": {
+    "always_on": 500,
+    "eager": 5100,
+    "on_demand": 6800
   },
   "web-qa": {
     "always_on": 500,
