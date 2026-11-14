@@ -1,9 +1,10 @@
 ---
 name: browsing-web
 description: >-
-  Drive an available browser for page interaction, screenshots, console/network
-  inspection, and authenticated UI checks. Use for browser tasks such as "mở web",
-  "chụp màn hình", or verifying a rendered change. Prefer the user's selected session. Driving and capturing only: test passes go to web-qa, visual critique to design-qa, WCAG to a11y-audit.
+  Use when a task needs a browser: page interaction, screenshots, console/network
+  inspection, authenticated UI checks, "mở web", "chụp màn hình", or verifying a
+  rendered change. Prefer the user's selected session. Driving and capturing only: test
+  passes go to web-qa, visual critique to design-qa, WCAG to a11y-audit.
 ---
 
 # Browsing the web

@@ -3,11 +3,11 @@ name: autonomous-loops
 description: >-
   Use when designing a recurring or self-iterating job — "every night", nightly
   reconciliation, docs-drift, CI-failure and post-deploy checks, "keep this PR green",
-  "iterate until the tests pass", "treo lịch", "chạy mỗi đêm", "tự chạy đi", "loop",
-  "cron", "schedule", "routine", "automation", "babysit", "ralph", "keep going until",
-  "đừng để tao phải gõ nữa" — or which job to automate first. Builds trigger, frozen
-  prompt, hard gate, stop condition, brakes, escalation; Claude Code's `/loop` and
-  `/schedule` only run one.
+  "iterate until the tests pass", "treo lịch", "chạy mỗi đêm", "loop", "cron",
+  "schedule", "routine", "automation", "babysit", "ralph", "keep going until", "đừng để
+  tao phải gõ nữa" — or which job to automate first. Builds trigger, frozen prompt, hard
+  gate, stop condition, brakes, escalation; Claude Code's `/loop` and `/schedule` only
+  run one.
 ---
 
 # Autonomous loops

@@ -1,6 +1,9 @@
 ---
 name: verify
-description: Use before committing code changes, or when the user says "verify". Runs the repo's own gates with exit codes, checks for residue, replays a named flow, blocks the commit on any failure.
+description: >-
+  Use when the user asks to commit, or on "verify", "check trước khi commit". Runs the
+  repo's own gates with exit codes, checks for residue, replays a named flow, blocks the
+  commit on any failure.
 ---
 
 # Verify before commit

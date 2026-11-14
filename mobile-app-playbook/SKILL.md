@@ -4,10 +4,10 @@ description: >-
   Use when building a new mobile app/game, upgrading one to "top of market" quality,
   planning a mobile release, auditing a mobile app for quality/retention/ASO, or on
   "world-class app", "SOTA mobile", "top chart", "lên top chart", "build app chuẩn thế
-  giới", "chuẩn bị release app", "làm game mobile", "submit app", "improve retention",
-  "tăng rating", "ASO", "monetization plan". Playbook for shipping Android + iOS
-  through store submission: quality bar in numbers, architecture seams, retention,
-  monetization, LiveOps.
+  giới", "chuẩn bị release app", "làm game mobile", "improve retention", "tăng rating",
+  "ASO", "monetization plan". Playbook for shipping Android + iOS through store
+  submission: quality bar in numbers, architecture seams, retention, monetization,
+  LiveOps.
 ---
 
 # Mobile App Playbook — build through store, top-chart bar

@@ -1,6 +1,11 @@
 ---
 name: coding-env-bootstrap
-description: Reproduce this operator's coding-agent environment on a new/remote machine — skills, plugins, MCP servers, model settings, CLI toolchain, and secrets protocol. Point an agent at BOOTSTRAP.md to install and verify it. Use for a new laptop/server/container, remote setup, or "bring my setup over", "cài lại máy mới", "setup remote", "config snapshot", "what do I need to install".
+description: >-
+  Use when setting up a new laptop/server/container or remote machine, or on "bring my
+  setup over", "cài lại máy mới", "setup remote", "config snapshot", "what do I need to
+  install". Reproduces this operator's coding-agent environment — skills, plugins, MCP
+  servers, model settings, CLI toolchain, and secrets protocol; point an agent at
+  BOOTSTRAP.md to install and verify it.
 ---
 
 # Coding Environment Bootstrap

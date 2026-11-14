@@ -1,10 +1,11 @@
 ---
 name: shipping-changes
 description: >-
-  Ships verified work end to end — run the gates, review the diff, bump version and changelog,
-  commit and push. Use when the user says "ship it", "land this", "đẩy lên", "commit và push",
-  "merge về main". Follow repository branch/review controls, preserve the operator's
-  commit identity, and require passing hooks. Completion alone does not authorize shipping.
+  Use when the user says "ship it", "land this", "đẩy lên", "commit và push", "merge về
+  main". Ships verified work end to end — run the gates, review the diff, bump version
+  and changelog, commit and push. Follow repository branch/review controls, preserve the
+  operator's commit identity, and require passing hooks. Completion alone does not
+  authorize shipping.
 ---
 
 # Shipping changes

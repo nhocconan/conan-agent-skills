@@ -1,12 +1,12 @@
 ---
 name: reference-parity
 description: >-
-  Use for any port, migration, replication or redesign-to-match job — "make ours like
-  theirs", "giống bên kia", "so sánh apple to apple", "match the reference", "port màn
-  hình này", "parity", "vẫn thiếu", "vẫn chưa giống" (competitor dashboard, vendor
+  Use when doing any port, migration, replication or redesign-to-match job — "make ours
+  like theirs", "giống bên kia", "so sánh apple to apple", "match the reference", "port
+  màn hình này", "parity", "vẫn thiếu", "vẫn chưa giống" (competitor dashboard, vendor
   deliverable, legacy screen, design comp, client report). Extracts the reference's
-  complete inventory first (every tab, sub-tab, section, state, content type), makes
-  it the parity checklist that defines done, verifies row by row with evidence.
+  complete inventory first (every tab, sub-tab, section, state, content type), makes it
+  the parity checklist that defines done, verifies row by row with evidence.
 ---
 
 # Reference Parity

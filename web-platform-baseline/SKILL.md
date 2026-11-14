@@ -2,10 +2,11 @@
 name: web-platform-baseline
 description: >-
   Use when writing or reviewing the code behind a web UI (forms, inputs, focus, dialogs,
-  touch, motion, loading states, theme, images), when asked to apply "modern web guidance",
-  "web interface guidelines", "chuẩn web", "baseline", or to retrofit a codebase to it, and
-  when refreshing this standard from its upstreams. Cross-project platform rules distilled
-  from Chrome's Modern Web Guidance and Vercel's Web Interface Guidelines.
+  touch, motion, loading states, theme, images), when asked to apply "modern web
+  guidance", "web interface guidelines", "chuẩn web", "baseline", or to retrofit a
+  codebase to it, and when refreshing this standard from its upstreams. Cross-project
+  platform rules distilled from Chrome's Modern Web Guidance and Vercel's Web Interface
+  Guidelines. Not how it looks (design-qa) or a WCAG audit (a11y-audit).
 ---
 
 # Web platform baseline

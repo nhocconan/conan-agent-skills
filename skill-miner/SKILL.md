@@ -1,6 +1,11 @@
 ---
 name: skill-miner
-description: Mine local coding-agent conversation history (Claude Code, Claude Cowork, Codex) for recurring pain that deserves to become a reusable agent skill — then write the skill. Incremental by stored watermark. Use when the user says "scan my conversations for skills", "quét lịch sử tìm skill", "mine my history", "what should become a skill", or on a recurring schedule to keep ~/.conan-agent-skills current.
+description: >-
+  Use when the user says "scan my conversations for skills", "quét lịch sử tìm skill",
+  "mine my history", "what should become a skill", or on a recurring schedule to keep
+  ~/.conan-agent-skills current. Mines local coding-agent conversation history (Claude
+  Code, Claude Cowork, Codex) for recurring pain that deserves a reusable agent skill,
+  then writes the skill. Incremental by stored watermark.
 ---
 
 # Skill Miner

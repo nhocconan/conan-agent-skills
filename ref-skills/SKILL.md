@@ -1,6 +1,10 @@
 ---
 name: ref-skills
-description: Maintain this skill setup by reviewing drift, upgrading upstream suites, merging forks, reapplying the curated load-out, and validating. Use for "upgrade skills", "update gstack", "nâng cấp skill", "upgrade đám skill", "check skill drift", adding an upstream-derived skill, or maintenance. Use instead of an upstream installer directly.
+description: >-
+  Use when maintaining this skill setup: "upgrade skills", "update gstack", "nâng cấp
+  skill", "upgrade đám skill", "check skill drift", adding an upstream-derived skill, or
+  maintenance. Reviews drift, upgrades upstream suites, merges forks, reapplies the
+  curated load-out, validates. Use instead of an upstream installer directly.
 ---
 
 # Ref skills — derive, refine, upgrade

@@ -1,13 +1,12 @@
 ---
 name: senior-operator
 description: >-
-  Use when starting nontrivial work, before diagnosing a bug, touching
-  money-math/dates/tenancy, shipping, or sending a hard conclusion; on "làm theo
-  playbook", "đọc operating manual", "check theo self-test", "train Opus", "distill
-  project này"; or when handing work to a weaker model. Craft discipline for hard or
-  ambiguous tasks: classify the ask, verify by independent re-derivation, label
-  verified vs inferred, attack your conclusion; plus a recipe for an optional private
-  per-repo map.
+  Use when a hard or ambiguous task needs a conclusion that must hold — money-math,
+  dates, tenancy, a hard verdict before sending it; on "làm theo playbook", "đọc
+  operating manual", "check theo self-test", "train Opus", "distill project này"; or
+  when handing work to a weaker model. Craft discipline: classify the ask, verify by
+  independent re-derivation, label verified vs inferred, attack your conclusion; plus a
+  recipe for an optional private per-repo map.
 ---
 
 # Senior Operator

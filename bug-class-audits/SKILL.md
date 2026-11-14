@@ -2,11 +2,11 @@
 name: bug-class-audits
 description: >-
   Use when the same bug keeps coming back or one case was patched repeatedly while the
-  class stayed broken — "lại bị nữa", "sửa tới sửa lui", "còn các trường hợp khác thì
-  sao", "làm cho đúng cả class", "this happened again", "make sure it can never come
-  back", a review flagging the same pattern. Turns it into an enforced rule: fix every
-  site, numbered anti-pattern entry, audit script, pre-push/CI gate with a baseline
-  that only shrinks. Diagnosis belongs to investigating-bugs.
+  class stayed broken — "sửa tới sửa lui", "còn các trường hợp khác thì sao", "làm cho
+  đúng cả class", "this happened again", "make sure it can never come back", a review
+  flagging the same pattern. Turns it into an enforced rule: fix every site, numbered
+  anti-pattern entry, audit script, pre-push/CI gate with a baseline that only shrinks.
+  Diagnosis belongs to investigating-bugs.
 ---
 
 # Bug-Class Audits

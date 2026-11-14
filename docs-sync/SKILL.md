@@ -1,7 +1,7 @@
 ---
 name: docs-sync
 description: >-
-  Use after shipping features, when the user says docs are outdated, "update
+  Use when shipped features left docs behind, the user says docs are outdated, "update
   documents", or asks for a user guide / "hướng dẫn người dùng". Keeps project
   documentation in sync with shipped reality — PRD, user manual, decision log,
   business-rule/formula reference, in-app docs routes, diagrams.

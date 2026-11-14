@@ -83,7 +83,7 @@ class ValidateSkillsTests(unittest.TestCase):
                 root,
                 "private-skip",
                 "name: private-skip\n"
-                "description: A fixture. Use when testing private paths without scanning local context.",
+                "description: Use when testing private paths without scanning local context in a fixture.",
                 "[private](private/secret.md)\n",
             )
             private = skill / "private"
@@ -102,7 +102,7 @@ class ValidateSkillsTests(unittest.TestCase):
                 parent,
                 "senior-operator",
                 "name: senior-operator\n"
-                "description: A fixture. Use when testing ignored project maps without reading private context.",
+                "description: Use when testing ignored project maps without reading private context in a fixture.",
                 "[map](projects/secret.md)\n",
             )
             projects = skill / "projects"
@@ -535,6 +535,10 @@ class FrontLoadAndKeyTests(unittest.TestCase):
     def test_trigger_clause_in_first_sentence_is_clean(self):
         _, warns = self._check(self._desc("Use when testing. " + "x" * 300))
         self.assertFalse(any("front-load" in w or "trigger clause" in w for w in warns), warns)
+
+    def test_trigger_clause_after_an_opening_summary_warns(self):
+        _, warns = self._check(self._desc("Audits fixtures for drift. Use when testing the validator."))
+        self.assertTrue(any("open with 'Use when'" in w for w in warns), warns)
 
     def test_no_trigger_clause_warns(self):
         _, warns = self._check(self._desc("When asked, this reports things " + "x" * 60))

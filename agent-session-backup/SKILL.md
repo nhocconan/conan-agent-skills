@@ -1,6 +1,12 @@
 ---
 name: agent-session-backup
-description: Light backup & restore of Cowork (macOS only) and Claude Code (portable) session histories, keeping only sessions whose working folder still exists on THIS machine. No caches, VM images, or binaries. Trigger when the user asks to "backup Claude sessions", "backup Cowork", "backup Claude Code history", "restore my Claude sessions", "sao lưu session Claude", "backup light", or wants to move Claude session history between machines.
+description: >-
+  Use when the user asks to "backup Claude sessions", "backup Cowork", "backup Claude
+  Code history", "restore my Claude sessions", "sao lưu session Claude", "backup light",
+  or wants to move Claude session history between machines. Light backup & restore of
+  Cowork (macOS only) and Claude Code (portable) session histories, keeping only
+  sessions whose working folder still exists on THIS machine. No caches, VM images, or
+  binaries.
 ---
 
 # Claude Cowork / Claude Code — light backup & restore

@@ -1,11 +1,11 @@
 ---
 name: admin-crud-standards
 description: >-
-  Baseline for admin, back-office and CRUD surfaces. Use when building or
-  reviewing a management screen, admin list view, record add/edit form, bulk
-  data-upload flow, or an ops console — pagination, filters, search, type-ahead
-  pickers, destructive-action confirms, upload preview, consistent tables.
-  Scope is the admin surface, not end-user or marketing UI.
+  Use when building or reviewing an admin, back-office or CRUD surface — management
+  screen, admin list view, record add/edit form, bulk data-upload flow, ops console,
+  "trang quản trị" — pagination, filters, search, type-ahead pickers, destructive-action
+  confirms, upload preview, consistent tables. Scope is the admin surface, not end-user
+  or marketing UI.
 ---
 
 # Admin / CRUD Page Standards

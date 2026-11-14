@@ -2,12 +2,11 @@
 name: appstore-review-guard
 description: >-
   Use when about to submit or resubmit to the App Store / Google Play, and after any
-  rejection ("App Store reject", "app got rejected", "guideline 3.1.1/2.3.4/2.1/4.x",
-  "before I submit", "App Review", "pre-submission check", "resubmit"). Compliance
-  gate against repeat rejections: missing Restore Purchases, device frames in preview
-  videos, metadata promising unshipped features, debug hooks in release, unused
-  permission strings, missing privacy policy URL; records cause + fix in the rejection
-  ledger.
+  rejection ("App Store reject", "app got rejected", "bị Apple reject", "guideline
+  3.1.1/2.3.4/2.1/4.x", "before I submit", "App Review", "pre-submission check",
+  "resubmit"). Compliance gate against repeat rejections: missing Restore Purchases,
+  device frames in preview videos, metadata promising unshipped features, debug hooks in
+  release, unused permission strings; records cause + fix in the rejection ledger.
 ---
 
 # App Store Review Guard

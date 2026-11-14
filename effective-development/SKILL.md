@@ -1,10 +1,10 @@
 ---
 name: effective-development
 description: >-
-  Choose meaningful checks, avoid redundant runs, diagnose slow verification, keep
-  required gates. Use for affected-test selection, regression coverage, gate-result
-  reuse, expensive test loops, setup-time audits, or a lean suite ("test suite too slow",
-  "CI chậm", "xoá test thừa").
+  Use when adding a test or choosing which checks to run: affected-test selection,
+  regression coverage, gate-result reuse, expensive test loops, slow verification,
+  setup-time audits, a lean suite ("test suite too slow", "CI chậm", "xoá test thừa").
+  Avoids redundant runs; keeps required gates.
 ---
 
 # Effective development

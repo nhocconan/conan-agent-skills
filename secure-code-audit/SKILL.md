@@ -1,10 +1,10 @@
 ---
 name: secure-code-audit
 description: >-
-  Use when the user asks for a "security scan/review/audit", before making a repo
-  public or shipping a release, after adding auth/upload/payment/API code, or when
-  handling secrets, user data, or third-party input. Whole-repo application-security
-  audit with open-source tools — secret scanning incl. history, dependency CVEs, SAST,
+  Use when the user asks for a "security scan/review/audit", "quét bảo mật", before
+  making a repo public or shipping a release, after adding auth/upload/payment/API code,
+  or when handling secrets, user data, or third-party input. Whole-repo
+  application-security audit — secret scanning incl. history, dependency CVEs, SAST,
   OWASP Top 10, LLM-feature checks; severity-ranked findings with fixes. For only the
   pending branch diff, use the harness's built-in diff security review (Claude Code:
   /security-review).

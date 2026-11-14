@@ -605,6 +605,8 @@ def check(skill_dir: Path):
                          f"(>{FRONT_LOAD_CHARS}) — front-load 'Use when…'")
         elif not positions and has_when:
             warns.append("no front-loadable trigger clause ('Use when…') in `description`")
+        elif not low.startswith("use when"):
+            warns.append("`description` must open with 'Use when' (AGENTS.md)")
         if any(p in low for p in FIRST_PERSON):
             warns.append("`description` is not third person")
         if len(desc) < 60:

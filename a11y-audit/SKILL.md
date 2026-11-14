@@ -2,11 +2,11 @@
 name: a11y-audit
 description: >-
   Use when accessibility is the explicit ask ("accessibility", "a11y", "WCAG", "screen
-  reader", "keyboard navigation", "focus ring", "contrast", "axe", "ARIA", "alt
-  text"), or when another skill hands off to the accessibility gate before a UI ships.
-  Audits web UI against WCAG 2.2 AA (report-only; fix when asked) — keyboard, visible
-  focus, ARIA, color contrast, labeled inputs, target size, reduced-motion, semantic
-  HTML, heading order.
+  reader", "keyboard navigation", "focus ring", "contrast", "axe", "ARIA", "alt text",
+  "trợ năng"), or when another skill hands off to the accessibility gate before a UI
+  ships. Audits web UI against WCAG 2.2 AA (report-only; fix when asked): keyboard,
+  focus, ARIA, contrast, labels, target size, motion, semantics. Not for explaining one
+  attribute.
 ---
 
 # Accessibility Audit (WCAG 2.2 AA)

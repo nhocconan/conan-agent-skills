@@ -4,10 +4,9 @@ description: >-
   Use when editing markup, .tsx/.jsx/.vue or CSS that renders — any change a user will
   see in a web UI, including "small" chrome changes ("thêm nút", "sửa header", "đổi
   icon", "làm trang mới", "sửa giao diện", "chỉnh layout", "làm lại top bar", "trang
-  help", "UI/UX", "đẹp hơn", "nhìn xấu quá làm lại", "landing page", "dashboard
-  layout"). Mandatory loop for any new or restructured page, component, form, table,
-  dialog, empty state, header, nav, sidebar, menu, panel, icon, theme, help/docs page,
-  redesign.
+  help", "UI/UX", "đẹp hơn", "landing page", "dashboard layout"). Mandatory loop for any
+  new or restructured page, component, form, table, dialog, empty state, header, nav,
+  sidebar, menu, panel, icon, theme, help/docs page, redesign.
 ---
 
 # Frontend design

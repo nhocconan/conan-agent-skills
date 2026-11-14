@@ -1,12 +1,12 @@
 ---
 name: web-perf-audit
 description: >-
-  Use when the user reports a slow page/app, says "performance", "Core Web Vitals",
-  "Lighthouse", "it feels janky/laggy", before shipping a user-facing release, or when
-  a data-heavy page renders large lists/charts. Framework-agnostic runtime audit
-  against Core Web Vitals — LCP, INP, CLS — plus bundle, network and rendering
-  bottlenecks. Complements optional vercel-react-best-practices (source-level
-  React/Next rules).
+  Use when the user reports a slow page/app, says "performance", "web chậm", "Core Web
+  Vitals", "Lighthouse", "it feels janky/laggy", before shipping a user-facing release,
+  or when a data-heavy page renders large lists/charts. Framework-agnostic runtime audit
+  against Core Web Vitals (LCP, INP, CLS) plus bundle, network and rendering
+  bottlenecks; source-level React/Next rules live in vercel-react-best-practices. Not
+  for defining a metric.
 ---
 
 # Web Performance Audit (Core Web Vitals)
