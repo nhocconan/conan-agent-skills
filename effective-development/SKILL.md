@@ -62,8 +62,9 @@ count: the cheapest checks that detect them, required gates at their declared st
   selection adds a map/widening rule with the fix. Log each selection miss; a rising
   miss count means a stale map. The reviewer confirms the widening matched the touched
   paths (a migration got the DB suite) before the gate. Flake policy: [E2E.md](E2E.md#flake).
-  A failure in code the diff never touched means a stale base: check
-  `git merge-base --is-ancestor <base> HEAD`, rebase, do not retry.
+  A failure in code the diff never touched is diagnosed, not retried: check base freshness
+  (`git merge-base --is-ancestor <base> HEAD`), environment, shared dependencies and the flake
+  record before rebasing or blaming the base.
   Do not invent CI jobs without policy authorization.
 
 ## Recurring failure → fix the system now

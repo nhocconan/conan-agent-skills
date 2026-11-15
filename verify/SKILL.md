@@ -18,7 +18,7 @@ tests-only changes need only the gates that touch them.
    [shipping-changes](../shipping-changes/SKILL.md). Also `git diff --check`.
    In an orchestrated run a runner runs the gates and the lead reads the exit codes from
    its results file ([tracking](../agent-orchestration/sections/tracking.md)); a green run
-   on this exact tree this session is reused, not repeated
+   on this exact tree, same tools and environment, is reused, not repeated
    ([reuse valid evidence](../effective-development/SKILL.md#reuse-valid-evidence)).
 2. **Inventory residue.** List what this run started (dev server, worker, container,
    tunnel, port, temp file) with pid/port in the report; tear down only what the task is

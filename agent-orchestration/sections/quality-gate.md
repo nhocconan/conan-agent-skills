@@ -15,6 +15,9 @@ artifacts. Per-worker passes alone do not establish integration correctness.
 For corpus audits, require separate counts for enumerated, parsed and actually
 content-reviewed artifacts. A generated queue or truncated tool output is not a
 completed semantic review. Resume unread portions before claiming exhaustive coverage.
+A diff review accounts for every `(path, status)` in `git diff --name-status <merge-base>` plus
+untracked files as `reviewed` or `skipped: <reason>`, reporting reviewed/total; an unexplained
+omission blocks a "reviewed the diff" claim.
 
 Gate a frozen revision (release branch), never a moving main. Rerun failed checks and any
 green shard a repair touched; reuse other optional evidence only under
@@ -34,6 +37,10 @@ or a clearly explained violated invariant. Distinguish confirmed defects,
 unverified concerns, and unavailable checks. Confidence scores may prioritize
 investigation; they are not calibrated probabilities and never authorize a fix.
 Do not discard a potentially severe concern solely because its score is low.
+
+Before reporting, reopen each cited `file:line`: it must show the claimed input, missing
+control and consequence. Drop a finding that fails with its reason listed, never silently; a
+severe concern with a proof gap stays as unverified.
 
 Deduplicate by failure mechanism and affected path. Agreement among models is
 supporting evidence, not independent proof when they share assumptions.

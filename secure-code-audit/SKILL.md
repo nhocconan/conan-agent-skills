@@ -14,9 +14,9 @@ description: >-
 
 For a branch-only audit, use an available harness review tool or inspect the diff and
 affected callers directly. Claude's `/security-review` is optional; its absence on
-Codex or agy does not prevent the same security checks.
+Codex or agy does not prevent the same security checks. Keep layers 1–2 on the range (`--log-opts="<base>..HEAD"`, lockfile diff).
 
-A repeatable, vendor-neutral security pass any repo can run locally. Four layers: **secrets**, **dependencies**, **static analysis (SAST)**, and a **manual OWASP review**. Prefer tools already installed; otherwise note the one-line install. Never exfiltrate code to a third-party service without the user's explicit OK — local execution does not imply zero network access. Inspect scanner telemetry, rule downloads, and credential-verification behavior. Keep secret values redacted.
+A repeatable, vendor-neutral security pass any repo can run locally. Four layers: **secrets**, **dependencies**, **static analysis (SAST)**, and a **manual OWASP review**. Pinned scanner versions: `coding-env-bootstrap/BOOTSTRAP.md` (Security scanners). Never exfiltrate code to a third-party service without the user's explicit OK — local execution does not imply zero network access. Inspect scanner telemetry, rule downloads, and credential-verification behavior. Keep secret values redacted.
 
 ## 1. Secret scanning (run first — leaked creds are the highest-severity, fastest win)
 - Working tree AND all available refs: `gitleaks git --redact --log-opts="--all" .` and `gitleaks dir --redact .` ([Gitleaks usage](https://github.com/gitleaks/gitleaks#usage)). Record shallow/missing history. Gitleaks is security-patch-only; Betterleaks (same maintainers, own config format, `betterleaks git|filesystem`) is the successor. Prefer whichever is installed. TruffleHog needs both `git file://<absolute-repo-path> --no-verification` and `filesystem <repo-path> --no-verification`; its output can contain raw secrets, so capture privately and redact before reporting ([usage](https://github.com/trufflesecurity/trufflehog#usage)).
@@ -32,8 +32,11 @@ A repeatable, vendor-neutral security pass any repo can run locally. Four layers
 - Language linters: `bandit -r .` (Python), `eslint` with `eslint-plugin-security` / `eslint-plugin-no-unsanitized` (JS), `gosec ./...` (Go).
 - Tune out false positives with inline ignores + a short justification; don't silence a whole rule globally without saying why.
 
+Optional model layer (Codex Security, sends source off-host): `sections/codex-security.md`.
+
 ## 4. Manual OWASP Top 10 review — **the 2025 list** (what tools miss — focus here)
 Read `sections/owasp-top-10-2025.md` for the ten categories and what to check in each.
+First read the project's security policy or threat model (attackers, trust boundaries, accepted risks); record "no policy" if none.
 Numbering follows [OWASP Top 10:2025](https://top10.owasp.org/2025);
 OWASP renumbers each release, so confirm the list before quoting a category id in a
 report. For a requirement-level checklist, use OWASP ASVS 5.0.0 (30 May 2025). Two categories are new in 2025: **A03 Software
@@ -49,4 +52,4 @@ If the app calls a model, read `sections/llm-features.md` (OWASP LLM Top 10, 202
 - A client-supplied tenant/scope ID is verified server-side against the caller's membership, never trusted. Test with a forged scope ID and a cross-tenant resource ID; check paths that bypass RLS (service-role/admin clients, `SECURITY DEFINER` functions, raw SQL, background jobs).
 
 ## Output
-Findings table: **severity (Critical/High/Medium/Low) → OWASP/CWE → file:line → impact → fix**. Lead with anything exploitable now (exposed secret, missing authz, injection). For audit-only requests, report findings without edits. Apply scoped fixes only when requested; credential rotation and history rewriting need explicit authority. End with the exact commands you ran so the audit is reproducible.
+Findings table: **severity (Critical/High/Medium/Low) → OWASP/CWE → file:line → impact → fix → source**; triage, run record and closing rules in `sections/findings.md`. Lead with anything exploitable now (exposed secret, missing authz, injection). For audit-only requests, report findings without edits. Apply scoped fixes only when requested; credential rotation and history rewriting need explicit authority. End with the per-layer run record so the audit is reproducible.

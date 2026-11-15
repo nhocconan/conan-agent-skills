@@ -95,6 +95,24 @@ corepack enable && corepack prepare pnpm@latest --activate
 for c in node npm pnpm python3 uv git gh rg jq; do printf "%-8s " "$c"; command -v $c >/dev/null && $c --version 2>&1 | head -1 || echo MISSING; done
 ```
 
+### Security scanners [DEV]
+
+Used by `secure-code-audit`. Install pinned releases and compare the checksum before running.
+A scanner is part of the supply chain. Versions and hashes were checked 2026-11-15.
+
+| Tool | Version | Verify | Notes |
+| --- | --- | --- | --- |
+| gitleaks | 8.30.1 | `gitleaks_8.30.1_checksums.txt`; linux_x64 tarball `551f6fc8…2470eb` | secrets, working tree and history |
+| osv-scanner | 2.7.1 | `osv-scanner_SHA256SUMS`; linux_amd64 `fb7dab19…6ee8` | lockfile CVEs, multi-ecosystem |
+| semgrep / opengrep | current | pinned release or `uv tool install semgrep==<ver>` | local rules only (`--metrics=off`) |
+| `@openai/codex-security` (`cs`) | 0.10.0 | `npm audit signatures` in a scratch install (signatures + SLSA provenance) | optional and consent-gated; sends source to OpenAI; global install only |
+
+Install: download the release asset and its checksum file, `sha256sum -c`, `install -m 755` into `~/.local/bin`.
+
+`cs` refuses a state directory whose parent is group-writable. With umask 0002, set
+`CODEX_SECURITY_STATE_DIR` to a mode-700 directory under a mode-700 parent, such as
+`~/.local/codex-security`. Login is the operator's step, like the agent CLIs in section 2.
+
 ---
 
 ## 2. [CORE] Agent CLIs

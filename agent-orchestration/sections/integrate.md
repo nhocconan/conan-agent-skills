@@ -11,6 +11,9 @@ coherent, and only the lead sees the whole of it.
 - **Ownership holds through integration** ([DAG](dag.md) manifest and ledger). A second
   change to one file is applied by the lead by hand, or the nodes ran in worktrees and the
   lead merges; the lead edits the shared index files itself after the writers land.
+- **Review large diffs in bundles, then across them.** One reviewer unit per group read
+  together (schema + migration + caller); then one seam pass over shared boundaries, where
+  isolated units miss auth and tenancy defects.
 - **Read the combined diff as a stranger.** Duplicate helpers that should be one, two
   names for one concept, an interface nobody ended up calling, a seam left dangling. Each
   agent's diff can be locally perfect and the union still incoherent — this pass is the

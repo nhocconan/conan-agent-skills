@@ -14,6 +14,8 @@ Read [routing](routing.md) before selecting a model. Each worker needs:
   rubric line from another reader); "use the design skills if available" gets skipped.
 - Test diff: each new test names the wrong result it catches (slop list: effective-development/LEAN-SUITE.md); no fixed sleeps, log-count asserts or narrating comments.
 - Relevant invariants: auth, tenancy, money, compatibility, or performance when applicable.
+- Review briefs: the enumerated `(path, status)` list to account for, and every project rule
+  whose path scope matches those files (all matching packs, not the first match).
 - Return shape: changes, commands and results, assumptions, and unresolved concerns.
 - Explicit limits on further delegation, time/cost when known, and escalation conditions.
 

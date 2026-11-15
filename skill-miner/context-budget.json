@@ -12,7 +12,7 @@
   "agent-orchestration": {
     "always_on": 520,
     "eager": 4800,
-    "on_demand": 70600
+    "on_demand": 71350
   },
   "agent-session-backup": {
     "always_on": 500,
@@ -52,7 +52,7 @@
   "coding-env-bootstrap": {
     "always_on": 500,
     "eager": 3100,
-    "on_demand": 36350
+    "on_demand": 37550
   },
   "demo-data-craft": {
     "always_on": 500,
@@ -126,8 +126,8 @@
   },
   "secure-code-audit": {
     "always_on": 540,
-    "eager": 5750,
-    "on_demand": 5750
+    "eager": 6150,
+    "on_demand": 10200
   },
   "senior-operator": {
     "always_on": 600,
