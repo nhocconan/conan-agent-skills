@@ -52,6 +52,4 @@ Every feature must be reachable by clicking from a menu — if it exists only as
 
 ## Accessibility floor (non-negotiable, every management screen)
 `a11y-audit` owns the checklist and is the gate: run it before calling any management
-screen done. The one rule admin surfaces add: a sortable column header is a `<button>`
-inside the `<th>`, and the `<th>` carries `aria-sort` (`ascending`/`descending`/`none`)
-reflecting current state. A plain `<div>` with a chevron announces nothing.
+screen done. The one rule admin surfaces add: put a button inside each sortable header. Apply `aria-sort` to the currently sorted `<th>` and move it when the sort column changes. [WAI sortable table](https://www.w3.org/WAI/ARIA/apg/patterns/table/examples/sortable-table/)

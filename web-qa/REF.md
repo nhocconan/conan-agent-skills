@@ -1,14 +1,14 @@
 ---
 mode: wrap
 upstream: gstack
-source: github:garrytan/gstack@5862765a20cd751b73e54fe85ffebd9e4da01e30:qa-only/SKILL.md
+source: github:garrytan/gstack@44170d67916dc80a008803f7b3f7cbf7dbe32ea7:qa-only/SKILL.md
 tracking_source: github:garrytan/gstack@main:qa-only/SKILL.md
 version: 1.0.1
-fingerprint: sha256:1130fd5a80b02eea003d5cd8370e8eab524f2a6bf14a8caf262650ce64606c26
-reviewed: 2026-11-07
-secondary_source: github:garrytan/gstack@5862765a20cd751b73e54fe85ffebd9e4da01e30:qa/SKILL.md
+fingerprint: sha256:fa293b10f023bd40573068a017910ad06cc8cb65e2f964f7319e5eef1441f56d
+reviewed: 2026-11-18
+secondary_source: github:garrytan/gstack@44170d67916dc80a008803f7b3f7cbf7dbe32ea7:qa/SKILL.md
 secondary_tracking_source: github:garrytan/gstack@main:qa/SKILL.md
-secondary_fingerprint: sha256:1cda78da8e01d074966334d1ff3c3103f1a78732f6d7ecf797df5b8cbf6ce540
+secondary_fingerprint: sha256:bfb3ea4ac941c1fc7f3f86089befde79f3ec4bcd509927d654d0b9a5e6bc1833
 ---
 
 # Provenance

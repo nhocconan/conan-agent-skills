@@ -65,6 +65,15 @@ def invoke(
 
 
 class HarnessTests(unittest.TestCase):
+    def test_production_profile_cannot_lag_the_codex_judgment_tier(self):
+        import tomllib
+
+        routing = (REPO / "agent-orchestration/sections/routing.md").read_text()
+        row = next(line for line in routing.splitlines() if line.startswith("| Codex (OpenAI) |"))
+        judgment_model = row.split("|")[3].strip().strip("`")
+        template = REPO / "coding-env-bootstrap/templates/codex-production.config.toml"
+        self.assertEqual(tomllib.loads(template.read_text())["model"], judgment_model)
+
     def test_agy_with_mcp_provisions_documentation_server(self):
         with tempfile.TemporaryDirectory() as raw_home:
             home = Path(raw_home)

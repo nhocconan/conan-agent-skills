@@ -28,7 +28,7 @@ active parent session, with no cross-harness substitution. Read the
    Respect actual model availability, permissions, budget, and the harness's
    configured concurrency and depth limits.
    Tier each node by work nature ([routing](sections/routing.md#work-nature--tier));
-   set model, effort and turn cap on every spawn; confirm the actual worker model.
+   use supported model and effort controls, brief the budget, and verify the worker model.
 4. For a single wave, record a short ledger; for longer runs also keep a plan in
    the repo's declared ignored working directory. Record model, owned files,
    acceptance, status, evidence, and the lead's verdict.

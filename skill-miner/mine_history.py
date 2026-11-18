@@ -15,13 +15,13 @@ agent then reads and reasons over (see SKILL.md).
 
 Incremental by default: reads a watermark from state/last-run.json and only emits
 turns newer than it. `--full` ignores the watermark. The watermark is only
-advanced when `--commit` is passed (so a crashed/abandoned analysis can be redone).
+advanced by an explicit commit. Review workflows commit the original scan.
 
 Usage:
   python3 mine_history.py                      # incremental since last run
   python3 mine_history.py --full               # everything, from the beginning
   python3 mine_history.py --since 2026-07-04   # explicit floor
-  python3 mine_history.py --commit             # advance the watermark after a good run
+  python3 mine_history.py --commit-reviewed PATH  # commit the reviewed digest
   python3 mine_history.py --out /path/digest.md
 """
 
@@ -161,9 +161,15 @@ def classify(text: str):
 
 
 def parse_ts(value) -> str:
-    if not value:
+    if not isinstance(value, str):
         return ""
-    return str(value)
+    try:
+        stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return ""
+    if stamp.tzinfo is None:
+        stamp = stamp.replace(tzinfo=timezone.utc)
+    return stamp.astimezone(timezone.utc).isoformat(timespec="microseconds")
 
 
 # ---------------------------------------------------------------- readers
@@ -369,6 +375,7 @@ def build_digest(turns, memories, floor, files_seen, args) -> str:
     L = []
     A = L.append
     A("# History digest for skill mining")
+    A("<!-- scan " + json.dumps(args.scan_record) + " -->")
     A("")
     A(f"- Generated: {datetime.now(timezone.utc).isoformat(timespec='seconds')}")
     A(f"- Window: {'all discovered history (no date floor)' if not floor else 'since ' + floor}")
@@ -452,11 +459,86 @@ def build_digest(turns, memories, floor, files_seen, args) -> str:
 
 # ---------------------------------------------------------------- main
 
+def load_state():
+    if STATE_FILE.is_symlink():
+        raise RuntimeError(f"refusing symlinked state file: {STATE_FILE}")
+    if STATE_FILE.exists():
+        return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+    return {}
+
+
+def commit_scan(record, digest):
+    if record["scan_errors"]:
+        print("Refusing watermark advance: read/parse gaps remain.", file=sys.stderr)
+        return 1
+    STATE_FILE.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    lock = STATE_FILE.parent / ".watermark-lock"
+    try:
+        lock.mkdir(mode=0o700)
+    except FileExistsError:
+        print("Watermark is locked; confirm the previous writer has exited before clearing the lock.",
+              file=sys.stderr)
+        return 1
+    pending = lock / "state.json"
+    try:
+        state = load_state()
+        previous = state.get("watermark", "")
+        if previous == record["at"] and any(run.get("digest") == str(digest)
+                                            for run in state.get("runs", [])):
+            return 0
+        if previous != record["previous"] or record["at"] <= previous:
+            print("Watermark changed since this scan. Review a new incremental digest.", file=sys.stderr)
+            return 1
+        if record["window"] != "FULL":
+            floor = parse_ts(record["window"])
+            if not floor or floor > parse_ts(previous or record["at"]):
+                print("Scan floor leaves an unreviewed interval. Run an incremental scan.", file=sys.stderr)
+                return 1
+        state["watermark"] = record["at"]
+        state.setdefault("runs", []).append({
+            "at": record["at"], "window": record["window"], "files": record["files"],
+            "prompts": record["prompts"], "digest": str(digest),
+        })
+        state["runs"] = state["runs"][-30:]
+        fd = os.open(pending, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(state, stream, indent=2)
+        os.replace(pending, STATE_FILE)
+    finally:
+        pending.unlink(missing_ok=True)
+        lock.rmdir()
+    return 0
+
+
+def commit_reviewed(digest):
+    try:
+        with digest.open(encoding="utf-8") as stream:
+            title = stream.readline(80)
+            header = stream.readline(4096).rstrip("\n")
+        if title != "# History digest for skill mining\n" or not (
+                header.startswith("<!-- scan ") and header.endswith(" -->")):
+            raise ValueError("missing scan header")
+        record = json.loads(header[len("<!-- scan "):-len(" -->")])
+        if set(record) != {"at", "previous", "window", "files", "prompts", "scan_errors"}:
+            raise ValueError("invalid scan fields")
+        if datetime.fromisoformat(record["at"]) > datetime.now(timezone.utc):
+            raise ValueError("future scan")
+    except (OSError, ValueError, TypeError):
+        print("Cannot read a reviewed scan header. Generate and review a fresh digest.", file=sys.stderr)
+        return 1
+    result = commit_scan(record, digest)
+    if result == 0:
+        print(json.dumps({"digest": str(digest), "watermark_committed": True, "watermark": record["at"]}))
+    return result
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--full", action="store_true", help="ignore the watermark, scan everything")
     ap.add_argument("--since", help="ISO date/time floor, e.g. 2026-07-04")
-    ap.add_argument("--commit", action="store_true", help="advance the watermark to now")
+    commits = ap.add_mutually_exclusive_group()
+    commits.add_argument("--commit", action="store_true", help="scan and immediately commit in one pass")
+    commits.add_argument("--commit-reviewed", type=Path, metavar="DIGEST", help="commit a reviewed scan without rescanning")
     ap.add_argument("--out", help="digest path (default: state/digest-<ts>.md)")
     ap.add_argument("--excerpt", type=int, default=1200, help="max chars per quoted turn")
     ap.add_argument("--oneline", type=int, default=180, help="max chars per sample line")
@@ -467,19 +549,20 @@ def main():
     ap.add_argument("--limit-chars", type=int, default=4000, help="hard cap per stored turn")
     args = ap.parse_args()
 
-    state = {}
-    if STATE_FILE.exists():
-        try:
-            state = json.loads(STATE_FILE.read_text())
-        except Exception:
-            state = {}
+    if args.commit_reviewed:
+        if args.full or args.since or args.out:
+            ap.error("--commit-reviewed uses the original scan's window and output")
+        return commit_reviewed(args.commit_reviewed.resolve())
 
+    state = load_state()
     if args.full:
         floor = ""
     elif args.since:
-        floor = args.since if "T" in args.since else args.since + "T00:00:00.000Z"
+        floor = parse_ts(args.since)
+        if not floor:
+            ap.error("--since requires an ISO date or timestamp")
     else:
-        floor = state.get("watermark", "")
+        floor = parse_ts(state.get("watermark"))
 
     started = datetime.now(timezone.utc).isoformat()
     args.stores = [(str(root), root.is_dir()) for root in
@@ -487,6 +570,11 @@ def main():
     args.scan_errors = Counter()
     turns, files_seen = collect(floor, args.limit_chars, args.scan_errors)
     memories = collect_memory(floor, args.scan_errors)
+    args.scan_record = {
+        "at": started, "previous": state.get("watermark", ""), "window": floor or "FULL",
+        "files": files_seen, "prompts": sum(t["kind"] == "prompt" for t in turns),
+        "scan_errors": dict(args.scan_errors),
+    }
     digest = build_digest(turns, memories, floor, files_seen, args)
 
     STATE_FILE.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -498,30 +586,10 @@ def main():
     with os.fdopen(fd, "w", encoding="utf-8") as stream:
         stream.write(digest)
 
-    if args.commit and args.scan_errors:
-        print("Refusing watermark advance: read/parse gaps remain.", file=sys.stderr)
-        return 1
     if args.commit:
-        state["watermark"] = started
-        state.setdefault("runs", []).append({
-            "at": started,
-            "window": floor or "FULL",
-            "files": files_seen,
-            "prompts": sum(1 for t in turns if t["kind"] == "prompt"),
-            "digest": str(out),
-        })
-        state["runs"] = state["runs"][-30:]
-        if STATE_FILE.is_symlink():
-            raise RuntimeError(f"refusing to write symlinked state file: {STATE_FILE}")
-        nofollow = getattr(os, "O_NOFOLLOW", 0)
-        fd = os.open(STATE_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | nofollow, 0o600)
-        try:
-            os.fchmod(fd, 0o600)
-        except OSError:
-            os.close(fd)
-            raise
-        with os.fdopen(fd, "w", encoding="utf-8") as stream:
-            stream.write(json.dumps(state, indent=2))
+        result = commit_scan(args.scan_record, out.resolve())
+        if result:
+            return result
 
     print(json.dumps({
         "digest": str(out),
@@ -534,7 +602,7 @@ def main():
                            and has_marker(t["text"], CORRECTION_MARKERS)),
         "memory_files": len(memories),
         "watermark_committed": bool(args.commit),
-        "previous_watermark": state.get("watermark", "") if not args.commit else started,
+        "previous_watermark": state.get("watermark", ""),
     }, indent=2))
     return 0
 

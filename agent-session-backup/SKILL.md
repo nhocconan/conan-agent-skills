@@ -40,7 +40,7 @@ polluted with sessions whose project folders live on *another* machine, plus
 stale `.claude/worktrees/…` dirs that were already deleted. Filtering by
 "cwd exists here" cleanly keeps only the sessions that are actually yours on this
 box. Cowork reads `cwd`/`originCwd` from each JSON; Claude Code reads `cwd` from
-the first line of each `.jsonl`.
+the first record containing a working directory in each transcript.
 
 "Light" = copy session metadata and paired transcript files only. No
 `~/Library/Caches`, `claude-code-vm`, `Session Storage`, or binaries. The cwd
@@ -52,7 +52,7 @@ complete archive.
 
 ```bash
 python3 scripts/backup.py [DEST_DIR]
-# DEST_DIR defaults to ~/Claude_Light_Backup_<YYYYMMDD>
+# Use a new or empty directory. The default creates a unique dated folder under ~.
 ```
 
 Produces:

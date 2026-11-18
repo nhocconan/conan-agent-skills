@@ -82,7 +82,7 @@
   "frontend-design": {
     "always_on": 600,
     "eager": 5400,
-    "on_demand": 120000
+    "on_demand": 140400
   },
   "interactive-course-builder": {
     "always_on": 600,

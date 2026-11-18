@@ -9,6 +9,7 @@ import tempfile
 import unittest
 from collections import Counter
 from contextlib import redirect_stdout, redirect_stderr
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
@@ -140,6 +141,11 @@ class MiningTests(unittest.TestCase):
             self.assertFalse(state.exists())
             self.assertEqual(stat.S_IMODE(output.stat().st_mode), 0o600)
             self.assertIn("capped samples", output.read_text())
+            with patch.object(miner, "STATE_FILE", state), \
+                 patch.object(sys, "argv", ["mine", "--commit-reviewed", str(output)]), \
+                 redirect_stderr(io.StringIO()):
+                self.assertEqual(miner.main(), 1)
+            self.assertFalse(state.exists())
 
     def test_memory_gap_cannot_advance_watermark(self):
         with tempfile.TemporaryDirectory() as raw:
@@ -187,6 +193,46 @@ class MiningTests(unittest.TestCase):
                  redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
                 self.assertEqual(miner.main(), 0)
             self.assertEqual(stat.S_IMODE(state.stat().st_mode), 0o600)
+
+    def test_review_commit_leaves_new_arrivals_for_the_next_scan(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            state = root / "state" / "last-run.json"
+            archive = root / "archive"
+            archive.mkdir()
+            reviewed = root / "reviewed.md"
+            following = root / "following.md"
+            with patch.multiple(miner, STATE_FILE=state, CODEX_SESSIONS=root / "active",
+                                CODEX_ARCHIVED=archive, CLAUDE_PROJECTS=root / "claude",
+                                COWORK_DIRS=[]), redirect_stdout(io.StringIO()):
+                with patch.object(sys, "argv", ["mine", "--out", str(reviewed)]):
+                    self.assertEqual(miner.main(), 0)
+                message = codex_message("please review this new fixture session")
+                message["timestamp"] = datetime.now(timezone(-timedelta(hours=5))).isoformat()
+                (archive / "new.jsonl").write_text(json.dumps(message) + "\n")
+                with patch.object(sys, "argv", ["mine", "--commit-reviewed", str(reviewed)]):
+                    self.assertEqual(miner.main(), 0)
+                with patch.object(sys, "argv", ["mine", "--out", str(following)]):
+                    self.assertEqual(miner.main(), 0)
+            self.assertIn("please review this new fixture session", following.read_text())
+            self.assertEqual(json.loads(state.read_text())["runs"][-1]["digest"], str(reviewed))
+
+    def test_explicit_floor_cannot_advance_past_an_unscanned_interval(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            state = root / "last-run.json"
+            prior = {"watermark": "2025-01-01T00:00:00+00:00"}
+            state.write_text(json.dumps(prior))
+            reviewed = root / "partial.md"
+            with patch.multiple(miner, STATE_FILE=state, CODEX_SESSIONS=root / "active",
+                                CODEX_ARCHIVED=root / "archive", CLAUDE_PROJECTS=root / "claude",
+                                COWORK_DIRS=[]), redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                with patch.object(sys, "argv", ["mine", "--since", "2025-02-01", "--out", str(reviewed)]):
+                    self.assertEqual(miner.main(), 0)
+                for args in (["--commit-reviewed", str(reviewed)], ["--since", "2025-02-01", "--commit"]):
+                    with self.subTest(args=args), patch.object(sys, "argv", ["mine", *args]):
+                        self.assertEqual(miner.main(), 1)
+                        self.assertEqual(json.loads(state.read_text()), prior)
 
 
 if __name__ == "__main__":

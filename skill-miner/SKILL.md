@@ -31,12 +31,10 @@ cd ~/.conan-agent-skills/skill-miner
 python3 mine_history.py                    # incremental — since the stored watermark
 python3 mine_history.py --full             # everything from the beginning
 python3 mine_history.py --since 2026-07-04 # explicit floor
-python3 mine_history.py --commit           # advance the watermark (ONLY after a good run)
+python3 mine_history.py --commit-reviewed PATH  # pass the digest you reviewed
 ```
 
-The watermark lives in `state/last-run.json` (gitignored) and is advanced **only** with
-`--commit`. Run without `--commit` first; commit at the end, once the analysis actually
-finished. A crashed run therefore re-mines the same window rather than silently skipping it.
+Scan, review the private digest, then pass its path to `--commit-reviewed`. This saves the original scan cutoff in `state/last-run.json`. New arrivals stay eligible for the next run. Bare `--commit` scans and advances immediately.
 
 Claude Code deletes transcripts after `cleanupPeriodDays` (default 30): mine at least
 every 3 weeks or raise the setting; `--full` covers only what survives.

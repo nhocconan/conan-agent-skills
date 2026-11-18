@@ -420,3 +420,22 @@ unchanged across all 34 skills, so no trigger eval was run. Limits: vendor docs 
 `agy 1.5.7` schemas/catalogs were verified, but no paid worker spawn probed per-plan
 entitlement, and the exact model IDs behind `invoke_subagent` coarse tiers (`flash_lite`,
 `flash`, `pro`) remain undocumented. No installer, commit or push ran.
+
+## 2026-11-18 — 35-skill catalog and model routing review
+
+Session metadata confirmed GPT-6.2 Astra for the lead and three workers. The review covered
+all 35 skill entrypoints. The [routing policy](agent-orchestration/sections/routing.md)
+records the dated vendor sources, plan restrictions, and differences between API support,
+CLI catalogs and the active worker tool. The bootstrap regression test checks that the
+unattended Codex profile selects the model named in the hardest-judgment column.
+
+Checked all six REF manifests against their upstream documents. Updated the shared gstack
+pin, Chrome guidance index and landing-page guide. The motion guide retains its last
+available revision. Two optional gstack section files remain unpublished. Local browser
+and design procedures cover their roles. The six vendored taste-skill references now
+total 116,436 bytes at 2.5.1. The frontend on-demand ceiling increased from 120,000
+to 140,400 bytes for that reference update.
+
+Catalog corrections cover backup session selection, headless profile selection, sortable
+table semantics and accessibility audit criteria. The history scanner now commits the cutoff from the digest that was reviewed. Backup and scanner regression checks used synthetic histories. Comparative task performance across the three harnesses and paid
+Antigravity account entitlements remain unmeasured.

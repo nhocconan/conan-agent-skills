@@ -3,7 +3,7 @@
 # unattended); agent-orchestration/sections/routing.md is the source of truth, and a
 # config file must hold a literal string, so the ID is duplicated here.
 # Re-check it against routing.md on any model release or deprecation.
-model = "gpt-6-astra"  # model-id-allow
+model = "gpt-6.2-astra"  # model-id-allow
 model_reasoning_effort = "high"
 approval_policy = "never"
 sandbox_mode = "workspace-write"

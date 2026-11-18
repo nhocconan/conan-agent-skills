@@ -164,7 +164,7 @@ copy lại theo `SOURCE.txt`, rồi `refsync.py loadout --apply`.
 1440/390 light+dark → một reader khác chấm theo rubric của `design-qa` → sửa → báo cáo
 before/after. `impeccable` (upstream, trong `keep.txt`) được gọi theo tên lệnh từ vòng đó
 (`critique`, `polish`, `layout`, `typeset`, `clarify`, `adapt`, `harden`, `document`);
-hook detector của nó chỉ quét source. Taste gate T1-T9 (taste-skill 2.5.0, vendored trong
+hook detector của nó chỉ quét source. Taste gate T1-T9 (taste-skill 2.5.1, vendored trong
 `frontend-design/upstream/`) chỉ chạy khi thiết kế mới/redesign, review UI, hoặc khi được yêu cầu. Plugin `frontend-design` của
 Anthropic chỉ cho gu trang marketing. Bản `~/.shared-ai-skills/frontend-design` đã gỡ từ 2026-09-05.
 

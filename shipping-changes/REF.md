@@ -1,11 +1,11 @@
 ---
 mode: wrap
 upstream: gstack
-source: github:garrytan/gstack@5862765a20cd751b73e54fe85ffebd9e4da01e30:ship/SKILL.md
+source: github:garrytan/gstack@44170d67916dc80a008803f7b3f7cbf7dbe32ea7:ship/SKILL.md
 tracking_source: github:garrytan/gstack@main:ship/SKILL.md
 version: 1.0.1
-fingerprint: sha256:f1928425c92b41f66b5d4ff96adf9b4c3cc947e01697c275670af41ba4230aa5
-reviewed: 2026-11-07
+fingerprint: sha256:a91073b4dda543940b0a1a213d2d3826e9d5cb38c43e856eadb5463be26d1b5f
+reviewed: 2026-11-18
 ---
 
 # Provenance

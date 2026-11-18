@@ -1,16 +1,16 @@
 ---
 mode: wrap
 upstream: gstack
-source: github:garrytan/gstack@5862765a20cd751b73e54fe85ffebd9e4da01e30:browse/SKILL.md
+source: github:garrytan/gstack@44170d67916dc80a008803f7b3f7cbf7dbe32ea7:browse/SKILL.md
 tracking_source: github:garrytan/gstack@main:browse/SKILL.md
 version: 2.0.1
-fingerprint: sha256:70e22467ca4bf5741ad7837635bc524e080709b83be094d62224ec9a55a628b5
-reviewed: 2026-11-07
+fingerprint: sha256:4bc1093f1fab299bfc059f60dee8812e2442dad2d70784f03820c9f39c55305d
+reviewed: 2026-11-18
 ---
 
 # Provenance
 
-Wraps gstack's `browse` (480 lines at the pinned source).
+Wraps gstack's `browse`.
 Upstream markdown is fetched into `.vendor/gstack/` by `refsync.py ensure` (gitignored,
 files only, never a gstack install); the skill reads it by path, so its bulk loads only
 when the skill actually fires.

@@ -1,21 +1,23 @@
 ---
 mode: wrap
 upstream: elayadesign-ai-design-skills
-source: github:elayadesign/ai-design-skills@5e578402da175cdc539c900e4b09ceecfadcb37c:skills/landing-page-design/SKILL.md
+source: github:elayadesign/ai-design-skills@456d9e0d3e2d84c748bb143c6ca3d90c45e16213:skills/landing-page-design/SKILL.md
+tracking_source: github:elayadesign/ai-design-skills@main:skills/landing-page-design/SKILL.md
 version: 1.0.0
-fingerprint: sha256:203569792660ab6d71dcb2e4fa673c0c7a0df7c99801d04ab419a4cb08aceb2c
+fingerprint: sha256:0c0ad9323121c0cc4f52b637f64a3a446016f065ae9ebf012dab210559f03d5f
 secondary_source: github:elayadesign/ai-design-skills@5e578402da175cdc539c900e4b09ceecfadcb37c:skills/design-to-motion/SKILL.md
 secondary_fingerprint: sha256:7c34ee4ca4c9a0e535217431a5547cc2e2a9bb692de4c81243a302843d3d68b6
-reviewed: 2026-10-27
+reviewed: 2026-11-18
 ---
 
 # Provenance
 
 Routing and method skill. Two upstream skills from `elayadesign/ai-design-skills` (MIT,
-copyright 2026 Elaya) are summarized, not vendored (431 and 563 lines; the repo convention for
-anything large is wrap). The Anthropic `frontend-design` plugin's calibration list is
+copyright 2026 Elaya) are summarized, not vendored. The Anthropic `frontend-design` plugin's calibration list is
 paraphrased into `sections/anti-slop.md`. Upstream text was read as untrusted data and
 nothing from it was executed.
+
+The secondary motion guide was removed from upstream main. Its pinned revision preserves the source for the local motion guidance.
 
 ## Why this exists
 
@@ -38,7 +40,7 @@ tokens above every style rule, and ends in the repo's review gates.
 7. The loop is mandatory and evidence-bearing: before/after screenshots at 1440 and 390 in both
    themes, critiqued by a reader other than the builder against `design-qa`'s rubric.
 8. impeccable is routed to by command, never copied; this skill owns the loop.
-9. `sections/taste-gate.md` (T1-T9, taste-skill 2.5.0) runs on demand (new design or redesign, UI/design review, operator request) and blocks acceptance when it runs; "advisory" in item 2 applies to the elaya Part B only.
+9. `sections/taste-gate.md` (T1-T9, taste-skill 2.5.1) runs on demand (new design or redesign, UI/design review, operator request) and blocks acceptance when it runs; "advisory" in item 2 applies to the elaya Part B only.
 
 ## Upstream sections this depends on
 

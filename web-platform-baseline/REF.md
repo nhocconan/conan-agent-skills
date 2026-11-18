@@ -4,10 +4,10 @@ source: github:vercel-labs/web-interface-guidelines@434b7f91364665f2f733b310ec54
 tracking_source: github:vercel-labs/web-interface-guidelines@main:README.md
 version: 1.0.0
 fingerprint: sha256:eda7dfa9998215267c7f920475d1773ea4129cb08ed088276ca598dd45d20aa5
-secondary_source: github:GoogleChrome/modern-web-guidance-src@ebb6f3aaae8652dd8938c8496e2809bc408ab986:guides/modern-web-guidance/SKILL.md
+secondary_source: github:GoogleChrome/modern-web-guidance-src@bac92a10f8014c4750fea7be1391eba2ce374158:guides/modern-web-guidance/SKILL.md
 secondary_tracking_source: github:GoogleChrome/modern-web-guidance-src@main:guides/modern-web-guidance/SKILL.md
-secondary_fingerprint: sha256:ecdcab8472644b2715dd1173b41b39c9630c40e2e19fdd6a8f7dc28f699700f7
-reviewed: 2026-11-14
+secondary_fingerprint: sha256:9c4cc19931777ad44297265a7ebd84be136749814672a573c09f2a44e51bab01
+reviewed: 2026-11-18
 ---
 
 # Provenance
@@ -37,6 +37,8 @@ distillation does.
 Panel questions for any later rule: is it platform behaviour rather than copy style or a vendor
 preference; does it hold across frameworks; does a project rule already cover or contradict it;
 can a search, a test or a probe check it.
+
+On 2026-11-18 the Chrome index added JavaScript to its retrieval example. The local baseline continues to use the pinned guidance.
 
 ## Where the numbers come from
 

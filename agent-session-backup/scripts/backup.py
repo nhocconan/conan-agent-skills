@@ -7,7 +7,7 @@ This drops sessions that got mixed in from other machines / deleted worktrees.
 
 Usage:
     python3 backup.py [DEST_DIR]
-    # DEST_DIR defaults to ~/Claude_Light_Backup_<YYYYMMDD>
+    # Defaults to a fresh ~/Claude_Light_Backup_<YYYYMMDD>_<suffix> directory.
 
 What it copies (light = session metadata + transcript files only, no caches / VM / binaries):
     Cowork : ~/Library/Application Support/Claude/claude-code-sessions/<acct>/<space>/local_*.json
@@ -19,7 +19,7 @@ silently loses the local-agent-mode half. In local-agent-mode-sessions, a
 directory; copy that pair together. Structure is preserved verbatim so
 restore.py can mirror it straight back.
 """
-import json, os, glob, shutil, collections, sys, time
+import json, os, glob, shutil, collections, sys, tempfile, time
 
 HOME = os.path.expanduser("~")
 # (live source root, subfolder name inside the backup)
@@ -35,15 +35,18 @@ CODE_SRC = os.path.join(CLAUDE_CONFIG, "projects")
 
 def first_cwd_from_jsonl(path):
     try:
-        with open(path) as fh:
+        with open(path, "rb") as fh:
             for line in fh:
                 line = line.strip()
                 if not line:
                     continue
-                d = json.loads(line)
-                if isinstance(d, dict) and d.get("cwd"):
+                try:
+                    d = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(d, dict) and isinstance(d.get("cwd"), str) and d["cwd"]:
                     return d["cwd"]
-    except Exception:
+    except OSError:
         pass
     return None
 
@@ -92,10 +95,15 @@ def main():
         # `backup.py --help` used to create a directory literally named `--help`
         # and run a full backup into it.
         print(__doc__); sys.exit(0 if args[0] in ("-h", "--help") else 1)
-    dest = args[0] if args else os.path.join(
-        HOME, "Claude_Light_Backup_" + time.strftime("%Y%m%d"))
+    if args:
+        dest = args[0]
+        os.makedirs(dest, mode=0o700, exist_ok=True)
+        if os.path.islink(dest) or os.listdir(dest):
+            sys.exit("Choose a new or empty backup directory.")
+    else:
+        dest = tempfile.mkdtemp(prefix=time.strftime("Claude_Light_Backup_%Y%m%d_"), dir=HOME)
     code_dest = os.path.join(dest, "Claude-Code")
-    os.makedirs(code_dest, exist_ok=True)
+    os.mkdir(code_dest, mode=0o700)
 
     man = ["Claude Light Backup — " + time.strftime("%Y-%m-%d %H:%M"),
            "Rule: keep only sessions whose cwd still exists on THIS machine.\n"]
@@ -104,7 +112,7 @@ def main():
     cw_bytes = 0
     for cowork_src, sub in COWORK_TREES:
         cowork_dest = os.path.join(dest, sub)
-        os.makedirs(cowork_dest, exist_ok=True)
+        os.mkdir(cowork_dest, mode=0o700)
         cw_keep = cw_skip = cw_transcripts = cw_skipped_links = 0
         kept = collections.Counter(); skipped = collections.Counter()
         for f in glob.glob(os.path.join(cowork_src, "*", "*", "local_*.json")):
@@ -140,37 +148,38 @@ def main():
         man += [""]
 
     # ---- CLAUDE CODE ----
-    cc_proj = cc_sess = cc_skip = cc_bytes = 0
-    kept_p = []; skipped_p = []
+    cc_proj = cc_bytes = 0
+    kept_sessions = collections.Counter()
+    skipped_sessions = collections.Counter()
     for proj in sorted(glob.glob(os.path.join(CODE_SRC, "*"))):
         if not os.path.isdir(proj):
             continue
-        jsonls = glob.glob(os.path.join(proj, "*.jsonl"))
-        cwd = None
-        for jf in jsonls:
+        project_dest = os.path.join(code_dest, os.path.basename(proj))
+        for jf in sorted(glob.glob(os.path.join(proj, "*.jsonl"))):
             cwd = first_cwd_from_jsonl(jf)
-            if cwd:
-                break
-        if cwd and os.path.isdir(cwd) and jsonls:
-            slug = os.path.basename(proj)
-            dd = os.path.join(code_dest, slug); os.makedirs(dd, exist_ok=True)
-            for jf in jsonls:
-                shutil.copy2(jf, os.path.join(dd, os.path.basename(jf)))
-                cc_bytes += os.path.getsize(jf)
-            cc_proj += 1; cc_sess += len(jsonls); kept_p.append((cwd, len(jsonls)))
-        else:
-            cc_skip += 1; skipped_p.append((cwd or "(no cwd)", len(jsonls), os.path.basename(proj)))
+            if not cwd or not os.path.isdir(cwd):
+                skipped_sessions[cwd or "(no cwd)"] += 1
+                continue
+            os.makedirs(project_dest, exist_ok=True)
+            shutil.copy2(jf, project_dest)
+            cc_bytes += os.path.getsize(jf)
+            kept_sessions[cwd] += 1
+        if os.path.isdir(project_dest):
+            cc_proj += 1
     man += ["\n" + "=" * 60,
-            f"CLAUDE CODE — kept {cc_proj} projects / {cc_sess} sessions, skipped {cc_skip} projects",
+            f"CLAUDE CODE — kept {cc_proj} projects / {sum(kept_sessions.values())} sessions, "
+            f"skipped {sum(skipped_sessions.values())} sessions",
             "=" * 60, "\n[KEPT] cwd -> #jsonl:"]
-    man += [f"  {n:3d}  {c}" for c, n in sorted(kept_p)]
-    man += ["\n[SKIPPED] project -> reason:"]
-    man += [f"  {n:3d} jsonl  {c}   <{s}>" for c, n, s in skipped_p]
+    man += [f"  {n:3d}  {c}" for c, n in sorted(kept_sessions.items())]
+    man += ["\n[SKIPPED] cwd -> #jsonl:"]
+    man += [f"  {n:3d}  {c}" for c, n in sorted(skipped_sessions.items())]
     man += ["\n" + "=" * 60,
             f"TOTAL DATA: Cowork {cw_bytes/1048576:.1f} MB | Code {cc_bytes/1048576:.1f} MB",
             "=" * 60]
 
-    with open(os.path.join(dest, "MANIFEST.txt"), "w", encoding="utf-8") as handle:
+    manifest_path = os.path.join(dest, "MANIFEST.txt")
+    fd = os.open(manifest_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as handle:
         handle.write("\n".join(man))
     # drop the restore guide next to the data
     guide = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "RESTORE_TEMPLATE.md")

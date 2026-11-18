@@ -49,8 +49,8 @@ concurrent agents by default and 1,000 agents per run.
 **Codex CLI (keys first seen 0.154.0, still present in 0.167.1 on 2026-11-11; `max_depth` and
 `job_max_runtime_seconds` are absent from the public config reference).** The `agents` config table carries
 `max_concurrent_threads_per_session`, `max_depth`, `job_max_runtime_seconds`,
-`default_subagent_model`, `default_subagent_reasoning_effort`. A completed agent keeps
-occupying a concurrency slot until `close_agent`, so close each one as it lands.
+`default_subagent_model`, `default_subagent_reasoning_effort`. On surfaces with `close_agent`, release completed workers when their
+results are integrated. Use the lifecycle operations exposed by the active tool.
 The depth-limit string `Agent depth limit reached. Solve the task yourself.` was seen in
 0.154.0 and not found in the 0.167.1 binary.
 

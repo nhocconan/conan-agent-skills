@@ -196,6 +196,40 @@ class CoworkRoundTripTests(unittest.TestCase):
 
 
 class ClaudeConfigDirTests(unittest.TestCase):
+    def test_mixed_project_backs_up_only_sessions_with_a_local_cwd(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "projects" / "slug"
+            project.mkdir(parents=True)
+            local = root / "work"
+            local.mkdir()
+            for name, cwd in (("local", local), ("deleted", root / "deleted")):
+                (project / f"{name}.jsonl").write_text(
+                    "{truncated\n{}\n" + json.dumps({"cwd": str(cwd)}) + "\n", encoding="utf-8"
+                )
+            dest = root / "backup"
+            with patch.object(backup, "CODE_SRC", str(project.parent)), \
+                 patch.object(backup, "COWORK_TREES", []), \
+                 patch.object(sys, "argv", ["backup.py", str(dest)]):
+                backup.main()
+            self.assertEqual([p.name for p in (dest / "Claude-Code" / "slug").iterdir()],
+                             ["local.jsonl"])
+
+    def test_reused_destination_cannot_include_a_previously_eligible_session(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            dest = root / "backup"
+            stale = dest / "Claude-Code" / "slug" / "old.jsonl"
+            stale.parent.mkdir(parents=True)
+            stale.write_text("old snapshot\n", encoding="utf-8")
+            with patch.object(backup, "CODE_SRC", str(root / "empty")), \
+                 patch.object(backup, "COWORK_TREES", []), \
+                 patch.object(sys, "argv", ["backup.py", str(dest)]), \
+                 self.assertRaisesRegex(SystemExit, "empty"):
+                backup.main()
+            self.assertEqual(stale.read_text(encoding="utf-8"), "old snapshot\n")
+            self.assertFalse((dest / "MANIFEST.txt").exists())
+
     def load_with_env(self, home: Path, config_dir):
         env = {"HOME": str(home)}
         if config_dir is not None:

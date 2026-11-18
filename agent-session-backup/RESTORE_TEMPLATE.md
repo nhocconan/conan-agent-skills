@@ -6,7 +6,7 @@ accompanied by its paired transcript directories when they exist; caches and
 other application state are intentionally excluded.
 
 ```
-Claude-Code/          -> restores to  ~/.claude/projects/
+Claude-Code/          -> restores to  ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/
 Claude-Cowork/        -> restores to  ~/Library/Application Support/Claude/claude-code-sessions/
 Claude-Cowork-Local/  -> restores to  ~/Library/Application Support/Claude/local-agent-mode-sessions/
 MANIFEST.txt          -> what was kept / skipped, with sizes
@@ -35,13 +35,13 @@ python3 ~/.conan-agent-skills/agent-session-backup/scripts/restore.py "<THIS_FOL
 
 ```bash
 # Cowork sessions (both trees)
-rsync -av "<THIS_FOLDER>/Claude-Cowork/"        "$HOME/Library/Application Support/Claude/claude-code-sessions/"
-rsync -av "<THIS_FOLDER>/Claude-Cowork-Local/"  "$HOME/Library/Application Support/Claude/local-agent-mode-sessions/"
+rsync -av --ignore-existing "<THIS_FOLDER>/Claude-Cowork/"        "$HOME/Library/Application Support/Claude/claude-code-sessions/"
+rsync -av --ignore-existing "<THIS_FOLDER>/Claude-Cowork-Local/"  "$HOME/Library/Application Support/Claude/local-agent-mode-sessions/"
 # Claude Code sessions
-rsync -av "<THIS_FOLDER>/Claude-Code/"          "$HOME/.claude/projects/"
+rsync -av --ignore-existing "<THIS_FOLDER>/Claude-Code/"          "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/"
 ```
 
-(Add `--ignore-existing` to rsync to avoid overwriting live files.)
+Use `--dry-run` to preview these copies.
 
 ## Notes
 - Cowork `<account-uuid>/<space-uuid>` folders are per-account UUIDs; restoring
