@@ -27,7 +27,7 @@ an unavailable optional specialist alone does not block acceptance.
 | --- | --- | --- | --- | --- |
 | Claude (Claude Code, Agent SDK) | `claude-opus-5-5` | `claude-fable-5-2` | `claude-sonnet-5-5` | `claude-haiku-5-5` |
 | Codex (OpenAI) | `gpt-6.2-sol` | `gpt-6.2-astra` | `gpt-6.2-sol` | `gpt-6.1-terra` (or `gpt-6-luna` where exposed) |
-| agy (Antigravity CLI) | `gemini-4-argon` or an entitled Orchestrator. Free/Plus uses `gemini-3.8-flash` | `gemini-4-carbon`, then Argon or Hydrogen where available. Free/Plus uses 3.8 Flash (`high`) when the task fits | `gemini-4-hydrogen`, or 3.8 Flash | Hydrogen or 3.8 Flash (`low`) |
+| agy (Antigravity CLI) | `gemini-4-neon` or an entitled Orchestrator (else `gemini-4-argon`). Free/Plus uses `gemini-3.8-flash` | `gemini-4-carbon`, then Neon (`xhigh`/`high`), Argon or Hydrogen where available. Free/Plus uses 3.8 Flash (`high`) when the task fits | `gemini-4-hydrogen` (`gemini-4-neon` for complex multi-file work), or 3.8 Flash | Hydrogen or 3.8 Flash (`low`) |
 
 ### Work nature → tier
 
@@ -37,8 +37,8 @@ for the actual work, subject to required project review gates. The parent remain
 
 | Work | Tier | Effort | Cap | Return |
 | --- | --- | --- | --- | --- |
-| Specific unresolved hard question; an explicitly requested specialist | hardest scoped judgment (Fable / Astra / Carbon, else Argon) | as needed | 60 turns; reads the diff and artifacts, runs nothing heavier than `git`/`grep` | one line per finding |
-| Broader or risky build, refactor, migration, integration or review; E2E flow authoring | bounded builder (Sonnet / Sol 6.2 / Hydrogen) | task-dependent | 80 turns / 150k context | builder contract |
+| Specific unresolved hard question; an explicitly requested specialist | hardest scoped judgment (Fable / Astra / Carbon, else Neon or Argon) | as needed | 60 turns; reads the diff and artifacts, runs nothing heavier than `git`/`grep` | one line per finding |
+| Broader or risky build, refactor, migration, integration or review; E2E flow authoring | bounded builder (Sonnet / Sol 6.2 / Hydrogen; Neon for complex multi-file builds) | task-dependent | 80 turns / 150k context | builder contract |
 | Source-based writing, chart/screen interpretation, bounded app workflows; narrow, low-risk app edits with explicit acceptance checks | scoped specialist (Codex: Terra 6.1; Gemini: Hydrogen `medium`) | task-dependent | 60 turns / 150k context | artifact + evidence + uncertainties |
 | Bounded multi-step triage, source verification, narrow low-risk edits with observable checks, or specified browser checks | focused checked work (Haiku 5.5 / Terra or Luna where exposed / Hydrogen `low`) | task-dependent | 60 turns | verdict + evidence |
 | A single mechanical command, waiting, relaying, or a "placeholder" | no agent needed | — | — | command result or completion notification |
@@ -126,6 +126,7 @@ The 2026-10-01 API notice deprecates `gpt-5.3-codex`, `gpt-5.1` and
 | Model | API ID | Status | GA | Context / output | $/MTok in → out |
 | --- | --- | --- | --- | --- | --- |
 | 4 Carbon | `gemini-4-carbon` | GA, most capable | 2026-11-10 | 1,048,576 / 65,536 (1M long decode) | 2 → 10 |
+| 4 Neon | `gemini-4-neon` | GA, fast frontier | 2026-11-18 | 1,048,576 / 65,536 (1M long decode) | 3 → 15 |
 | 4 Argon | `gemini-4-argon` | GA, efficient frontier | 2026-10-13 | 1,048,576 / 65,536 (1M long decode) | 2 → 10 |
 | 4 Hydrogen | `gemini-4-hydrogen` | GA, fast workhorse | 2026-11-12 | 1,048,576 / 65,536 (1M long decode) | 1.50 → 7.50 |
 | 3.8 Flash | `gemini-3.8-flash` | GA, previous Flash | 2026-09-02 | 1,048,576 / 65,536 | 0.75 → 3.75 |
@@ -133,41 +134,47 @@ The 2026-10-01 API notice deprecates `gpt-5.3-codex`, `gpt-5.1` and
 | 3.5 Flash-Lite | `gemini-3.5-flash-lite` | GA | 2026-07-21 | 1,048,576 / 65,536 | 0.30 → 2.50 |
 | 3.1 Pro | `gemini-3.1-pro-preview` | Preview | — | 1,048,576 / 65,536 | 2 → 12 (≤200K input) |
 
-**Carbon targets difficult reasoning, Argon balances reasoning and latency, and Hydrogen
-is Google's recommended API upgrade from 3.8 Flash.** All three Gemini 4
-models share a unified 1,048,576 input+thinking+output window (1M long decode via
-`background: true` or continuation; 65,536 streaming cap, with single non-streaming hops
-capped at 32,768 on Carbon/Argon and 65,536 on Hydrogen) and implicit-only caching (≥4,096
-tokens; no explicit cache). Carbon and Argon run at `$2 → $10` intro API pricing through
+**Carbon targets hardest reasoning, Neon sits between Hydrogen and Carbon for complex
+engineering, knowledge and science work (and is Google's recommended upgrade from 3.1 Pro
+Preview), Argon is the earlier efficient frontier tier, and Hydrogen is the fast default and
+recommended upgrade from 3.8 Flash.** All four Gemini 4 models share a unified 1,048,576
+input+thinking+output window (1M long decode via `background: true` with `max_output_tokens >
+65,536` or continuation; 65,536 streaming cap, with single non-streaming hops capped at 32,768
+on Carbon/Argon and 65,536 on Neon/Hydrogen) and implicit-only caching (≥4,096 tokens; no
+explicit cache). Neon runs at flat `$3 → $15` across 1M context (implicit cache `$0.15`; no
+promo rate or Free API tier). Carbon and Argon run at `$2 → $10` intro API pricing through
 2026-11-30 (`$4 → $20` from 2026-12-01; implicit cache `$0.10` then `$0.20`; no Free API
 tier). Hydrogen runs at flat `$1.50 → $7.50` across 1M context (implicit cache `$0.075`, Free
-API tier included) and serves as the default Antigravity Managed Agent model. The Antigravity
-picker offers 3.8 Flash on every plan. Paid Pro adds Argon and Hydrogen. Eligible premium-device
-Pro trials include Argon. Ultra and Enterprise also include Carbon. CLI 1.5.8 supports Carbon
-and Hydrogen with a Gemini API key or Google Cloud application default credentials. Flash
-`$0.75 → $3.75` intro rates move to
-`$1.50 → $7.50` on 2027-01-01 and retain explicit caching. `gemini-3.7-flash` and
-`gemini-3.5-flash` (deprecated 2026-10-08) auto-route to `gemini-3.8-flash` and
-`gemini-3.6-flash`; `gemini-2.5-pro` auto-routes to `gemini-3.8-flash` on 2026-12-01. On
-Gemini 4, `thinking_budget` is deprecated (HTTP 400 in Interactions API or alongside
-`thinking_level`) and custom `temperature`/`top_p`/`top_k` are ignored.
+API tier included) and serves as the default Antigravity Managed Agent model (`model`
+overridable to `gemini-4-neon` or `gemini-4-carbon`). Antigravity offers 3.8 Flash on every
+plan; paid Pro adds Neon, Argon and Hydrogen, eligible premium-device Pro trials include Neon
+and Argon, and Ultra and Enterprise include Neon, Carbon, Argon and Hydrogen. Neon is
+Antigravity's default conversation model where included (up to 512K session context
+documented). Flash `$0.75 → $3.75` intro rates move to `$1.50 → $7.50` on 2027-01-01 and
+retain explicit caching. `gemini-3.7-flash` and `gemini-3.5-flash` (deprecated 2026-10-08)
+auto-route to `gemini-3.8-flash` and `gemini-3.6-flash`; `gemini-2.5-pro` auto-routes to
+`gemini-3.8-flash` on 2026-12-01. On Gemini 4, `thinking_budget` is deprecated (HTTP 400 in
+Interactions API or alongside `thinking_level`) and in-range custom
+`temperature`/`top_p`/`top_k` are ignored.
 
 | Model | Accepts (`thinking_level`) | Default |
 | --- | --- | --- |
 | 4 Carbon, 4 Argon, 3.8 Flash | `low`, `medium`, `high` | `medium` |
-| 4 Hydrogen | `low`, `medium`, `high`, `xhigh` | `high` |
+| 4 Neon, 4 Hydrogen | `low`, `medium`, `high`, `xhigh` | `high` |
 | 3.6 Flash | `minimal`, `low`, `medium`, `high` | `medium` |
 | 3.5 Flash-Lite | `minimal`, `low`, `medium`, `high` | `minimal` |
 | 3.1 Pro (Preview) | `low`, `medium`, `high` | `high` |
 
-Use Carbon `high` (or Argon `high` where Carbon is unavailable)
-for hardest architecture, subtle concurrency/race root-cause, math/science, security audits,
-high-risk review and long decode; Argon `medium` (or single-session Orchestrator) for general
-lead and long-horizon engineering at lower per-turn token spend than Carbon, and Carbon
-`medium` when every step needs deeper verification. Use Hydrogen `high` (its default) for
-bounded builders, multi-step tool agents, routine review, dense multimodal/PDF/chart/video
-work. Set `medium` explicitly for well-specified coding, UI prototyping
-and latency-sensitive specialist passes; reserve `xhigh` (`Extra` in the App) for hard
+Use Carbon `high` (or Neon `xhigh`/`high`, then Argon `high` where Carbon is unavailable) for
+hardest architecture, subtle concurrency/race root-cause, math/science, security audits,
+high-risk review and long decode, and Carbon `medium` when every step needs deeper
+verification. Use Neon `high` (its default) or single-session Orchestrator (else Argon
+`medium`) for general lead, repo-level debugging, complex multi-file refactoring, and dense
+knowledge/science synthesis with faster completion and fewer output tokens than Carbon; set
+Neon `medium` for interactive coding and latency-sensitive tool loops. Use Hydrogen `high`
+(its default) for bounded builders, multi-step tool agents, routine review, and dense
+multimodal/PDF/chart/video work. Set Hydrogen `medium` explicitly for well-specified coding
+and UI prototyping; reserve `xhigh` (`Extra` in the App) on Neon or Hydrogen for hard
 multi-step escalations where `high` falls short, since it can overthink simple prompts; use
 `low` for fast checks, triage, inventory, extraction and narrow edits (`minimal` errors on
 Gemini 4 and 3.8 Flash). On Antigravity Free/Plus, use 3.8 Flash at `medium` for general work,
@@ -216,25 +223,30 @@ spawn schema offered Sol 6.2, Astra 6.2, Terra 6.1, Sol 6.1 and Astra 6.
 The Codex CLI 0.170.0 catalog also listed Luna 6 and Sol 6. Check the active
 spawn tool before assigning either model.
 
-**agy (Antigravity CLI), 1.5.10 (`agy --version`, `agy models`, 2026-11-18).** The catalog
-exposes `gemini-4-carbon-{low,medium,high}`, `gemini-4-argon-{low,medium,high}`,
-`gemini-4-hydrogen-{low,medium,high,xhigh}`, `gemini-pro-orchestrator`,
-`gemini-pro-orchestrator-argon` and `gemini-3.8-flash-{low,medium,high}`. It also lists Opus
-and Sonnet 5.5 at `low`, `medium` and `high`. Google scheduled GPT-OSS 120B and Claude 4.6
-for removal on 2026-11-18. The catalog still returned `gpt-oss-120b-medium` that day.
-Confirm access on first use. Orchestrator pairs Carbon (Ultra) or Argon
-(paid/eligible-trial Pro, Ultra; absent on Enterprise) planning and review with Hydrogen
-execution in one conversation at fixed effort (`--effort` and `/effort` rejected). Since
-1.3.4, `--model` and `/model` accept a base name without `--effort` (runs the model's default
-thinking level — `high` on Hydrogen, `medium` on Carbon/Argon/3.8 Flash) or pair with
-`--effort` (`low|medium|high|xhigh|max`). `invoke_subagent` exposes coarse tiers (`inherit`,
+**agy (Antigravity CLI), 1.5.12 (`agy --version`, `agy models`, 2026-11-19).** The catalog
+exposes `gemini-4-neon-{low,medium,high,xhigh}`, `gemini-4-carbon-{low,medium,high}`,
+`gemini-4-argon-{low,medium,high}`, `gemini-4-hydrogen-{low,medium,high,xhigh}`,
+`gemini-pro-orchestrator-neon`, `gemini-pro-orchestrator`, `gemini-pro-orchestrator-argon`
+and `gemini-3.8-flash-{low,medium,high}`. It also lists Opus and Sonnet 5.5 at `low`,
+`medium` and `high` (`gpt-oss-120b-medium` remained in the catalog on 2026-11-19 past its
+scheduled 2026-11-18 removal; Claude 4.6 was removed). Confirm access on first use; CLI
+sessions also support Gemini 4 models with a Gemini API key or Google Cloud ADC
+(`AGY_ADC_AUTH`). Orchestrator pairs Neon (paid/eligible-trial Pro, Ultra), Carbon (Ultra;
+also CLI `/model` on Enterprise and `AGY_ADC_AUTH` from 1.5.10 when both Carbon and Hydrogen
+are selectable, though marked absent on Enterprise in the App matrix) or Argon
+(paid/eligible-trial Pro, Ultra) planning and review with Hydrogen execution in one
+conversation at fixed effort (`--effort` and `/effort` rejected). Since 1.3.4, `--model` and
+`/model` accept a base name without `--effort` (runs the model's default thinking level —
+`high` on Neon/Hydrogen, `medium` on Carbon/Argon/3.8 Flash) or pair with `--effort`
+(`low|medium|high|xhigh|max`). `invoke_subagent` exposes coarse tiers (`inherit`,
 `flash_lite`, `flash`, `pro`; `flash_lite` is in the live schema though omitted from the
 subagents page, and exact tier-to-model-ID mapping is undocumented): `flash_lite` for light
 lookups/checks, `flash` for bounded builders, scouts and routine verifiers, `pro` (or
 `inherit` when the parent runs the target model/effort) for complex refactors, architecture
-or high-risk verification. `/swarm` (`Pro`/`Ultra` preview) accepts exact catalog IDs on
-`add` (`model`) and in-place switches on waiting members (`action: "model"`), defaulting to
-the coordinator's model unless multi-model routing is requested. Mechanics:
+or high-risk verification. `/swarm` (`Pro`/`Ultra` preview; App 2.33.0 also enables
+business/enterprise when admin-allowed) accepts exact catalog IDs on `add` (`model`) and
+in-place switches on waiting members (`action: "model"`), defaulting to the coordinator's
+model unless multi-model routing is requested. Mechanics:
 [fan-out patterns](../FANOUT-PATTERNS.md#antigravity-agy-collaboration).
 
 ### Freshness and evidence
@@ -242,8 +254,9 @@ the coordinator's model unless multi-model routing is requested. Mechanics:
 Re-verify on a release, a deprecation, a rejected model ID, a retirement date coming within
 90 days, or a maintenance audit. Check the vendor model pages and the session catalog before
 changing a default, and preserve the user's explicit model choice. Keep historical benchmarks
-dated. On 2026-11-18, the Gemini API release notes, Antigravity plan matrix and agy 1.5.10
-catalog supported the routes above. Anthropic's model overview and the local Claude Code
+dated. Google released Gemini 4 Neon on 2026-11-18; the Gemini API release notes, Neon model
+and migration guides, Antigravity plan matrix and changelog, and live agy 1.5.12 and `swarm`
+catalogs were checked on 2026-11-19. Anthropic's model overview and the local Claude Code
 2.1.327 installation's catalog (fetched 2026-11-17) listed the four current Claude IDs.
 OpenAI released Sol 6.2 and Astra 6.2 on 2026-11-17. The API model cards, Work/Codex
 guidance, CLI 0.170.0 catalog and active spawn schema were checked on 2026-11-18.
@@ -279,8 +292,11 @@ Sources:
 - [OpenAI deprecations](https://developers.openai.com/api/docs/deprecations)
 - [Gemini API models](https://ai.google.dev/gemini-api/docs/models)
 - [Gemini API release notes](https://aistudio.google.com/docs/changelog)
+- [Gemini choosing a model](https://ai.google.dev/gemini-api/docs/choosing-a-model)
 - [Latest Gemini models](https://ai.google.dev/gemini-api/docs/latest-model)
 - [Gemini 4 Carbon](https://ai.google.dev/gemini-api/docs/models/gemini-4-carbon)
+- [Gemini 4 Neon](https://ai.google.dev/gemini-api/docs/models/gemini-4-neon)
+- [What's new in Gemini 4 Neon](https://ai.google.dev/gemini-api/docs/whats-new-gemini-4-neon)
 - [Gemini 4 Argon](https://ai.google.dev/gemini-api/docs/models/gemini-4-argon)
 - [Gemini 4 Hydrogen](https://ai.google.dev/gemini-api/docs/models/gemini-4-hydrogen)
 - [Gemini 3.8 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash)
