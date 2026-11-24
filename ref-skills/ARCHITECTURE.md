@@ -53,7 +53,7 @@ Adopted from gstack v1.71 (2026-08-27), which cut its per-invocation prompt cost
 inline-bash preamble every one of its skills carried. Ours have no preamble. The
 transferable half is the **section carve**, and the discipline that keeps it.
 
-**Two numbers, measured by `skill-miner/context_budget.py`:**
+**Three numbers, measured by `skill-miner/context_budget.py`:**
 
 - `always_on` — the frontmatter description. Paid in every session for every
   skill in the load-out. **Do not trim it to save tokens.** The description is
@@ -62,13 +62,18 @@ transferable half is the **section carve**, and the discipline that keeps it.
   correct routing, and it is worth it.
 - `eager` — all of SKILL.md, paid once when the skill fires. This is what a
   carve moves.
+- `on_demand` — every local file SKILL.md references transitively (`sections/`,
+  `reference/`, `TEMPLATES.md`), summed so growth moved out of `SKILL.md` stays
+  visible too.
 
 **When to carve.** A SKILL.md over ~12KB whose bulk is reference material
 consulted at one step, not read-through doctrine. Below that, the indirection
-and the extra Read round-trip cost more than they save. Four skills met the bar
+and the extra Read round-trip cost more than they save (for smaller skills whose
+reference bulk would otherwise exceed ~12KB, carve proactively into `sections/`).
+At the initial pass, four skills met the bar
 (appstore-review-guard 28→3.5KB, mobile-app-playbook 26.6→6.8KB,
-agent-orchestration 17.4→5.9KB, store-screenshots 15.8→7.6KB); the other 22 did
-not, and were deliberately left whole.
+agent-orchestration 17.4→5.9KB, store-screenshots 15.8→7.6KB) and the remaining
+skills stayed whole until later additions justified sections.
 
 **How to carve.** The skeleton stays a decision tree, never a summary: intro,
 the doctrine that applies at all times, and a `## Section index — Read each

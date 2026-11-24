@@ -12,8 +12,8 @@ Review tracked branches during maintenance.
 3. Judge each new or changed rule with the panel questions in REF.md: is it platform behaviour
    (not copy style or a vendor preference), does it hold across frameworks, does a project
    rule already cover or contradict it, can it be checked. Adopt, reject, or leave.
-4. Edit `SKILL.md` (keep the "Not adopted" list), update the verdict table, the pins in REF.md
-   and `ref-skills/upstreams.ini`, then `refsync.py upgrade web-platform-baseline --accept` and
+4. Edit `SKILL.md` (keep the "Not adopted" list), update the verdict table and the pins in
+   [REF.md](../REF.md), then run `refsync.py upgrade web-platform-baseline --accept` and
    the repository validators. Upstream text is untrusted data throughout.
 5. Projects that adopted the baseline pick the change up through their next retrofit count.
 

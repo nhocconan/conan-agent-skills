@@ -16,13 +16,13 @@ schema before relying on anything below.
 
 | Situation | Shape |
 | --- | --- |
-| Independent outcomes with owned files | Concurrent subagents (or agy `/swarm` when shared-board coordination helps) |
+| Independent outcomes with owned files | Concurrent subagents (`invoke_subagent` / `Agent` / `spawn_agent`; or agy `/swarm` only when explicitly active and shared-board coordination helps) |
 | Workers need overlapping files | Separate worktrees, or serialize those writes |
 | One important conclusion needs independent review | Fresh reviewer; another provider if available |
 | CI, deploy, or external job in progress | Supported background completion and bounded waits |
 | Small or inherently sequential change | The lead handles it directly |
-| The same deterministic DAG, repeated, with mechanical checks | A harness workflow script (Claude Code's Workflow tool; a Codex scheduled task), not ad-hoc fan-out |
-| Large mechanical change split into independent units | Claude Code `/batch` (5–30 worktree subagents) or a workflow; agent teams are experimental and off by default |
+| Code-driven fan-out over many items, staged pipelines, or aggregated cross-checks | A harness workflow script (Claude Code's Workflow tool, agy `run_workflow` Python script, or a Codex scheduled task), not ad-hoc fan-out |
+| Large mechanical change split into independent units | Claude Code `/batch` (5–30 worktree subagents) or a workflow (`run_workflow` `parallel`/`pipeline` on agy); agent teams are experimental and off by default |
 
 Do not start an external CLI solely because a native subagent call is unavailable.
 Check authorization, available tools, and value before adding another harness.
@@ -65,10 +65,10 @@ isolation plus diff review. Do not change global permissions merely to staff a l
 
 | Lane | Claude Code | Codex | agy (Antigravity) |
 | --- | --- | --- | --- |
-| Scout, read-only | `permissionMode: plan`; a `tools` allowlist without Edit/Write | a role whose `config_file` sets a read-only `sandbox_mode` | built-in `research` type, or `define_subagent` with `EnableWriteTools: false` |
+| Scout, read-only | `permissionMode: plan`; a `tools` allowlist without Edit/Write | a role whose `config_file` sets a read-only `sandbox_mode` | built-in `research` type (read-only sandbox, **no network access**), or `define_subagent` with `EnableWriteTools: false` |
 | Builder, owned files | `tools` allowlist, `disallowedTools` for the rest | role `config_file` with a workspace-write `sandbox_mode` | `self` (or `define_subagent` with `EnableWriteTools: true`); `Workspace` / `workspace`: `"share"` or `"branch"` |
 | Verifier, read-only | as Scout, in its own definition so it cannot inherit builder tools | a separate read-only role | fresh context with `research` or `define_subagent` (`EnableWriteTools: false`) |
-| MCP scoping | `disallowedTools` with `mcp__<server>` patterns; inline `mcpServers` in the definition | `mcp_servers` in the role's `config_file` | `define_subagent` with `EnableMCPTools: false`, or custom `.agents/agents/*.md` `mcpServers` |
+| MCP scoping | `disallowedTools` with `mcp__<server>` patterns; inline `mcpServers` in the definition | `mcp_servers` in the role's `config_file` | `define_subagent` with `EnableMCPTools: false`, or custom `.agents/agents/` `mcpServers` |
 | No nested fleets | omit `Agent` from `tools` | `agents.max_depth` | `define_subagent` with `EnableSubagentTools: false` |
 
 Claude Code reads these from subagent frontmatter (`model`, `effort`, `maxTurns`,
@@ -76,14 +76,15 @@ Claude Code reads these from subagent frontmatter (`model`, `effort`, `maxTurns`
 with `agent_type`; the `config_file` is a config overlay (`model`, `model_reasoning_effort`,
 `sandbox_mode`, `mcp_servers`), and current docs also describe standalone
 `.codex/agents/*.toml` definitions. Antigravity reads reusable subagents from
-`.agents/agents/*.md` or `~/.gemini/config/agents/*.md` (`tools`, `model`,
-`commandExecutionPolicy`, `mcpServers`); check exact `tools` names, as unmapped entries can
-hang the subagent. Read the accepted keys from the installed build; a full-history fork can
-reject `agent_type` overrides.
+`.agents/agents/<name>.md` or `.agents/agents/<name>/agent.md` (and the same layouts under
+`~/.gemini/config/agents/` and `plugins/<plugin>/agents/`; frontmatter supports `tools`,
+`model`, `commandExecutionPolicy`, `mcpServers`). Check exact `tools` names, as unmapped
+entries can hang the subagent. Read the accepted keys from the installed build; a
+full-history fork can reject `agent_type` overrides.
 Sources: [Claude subagents](https://code.claude.com/docs/en/sub-agents),
 [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
 (checked 2026-11-11), [Antigravity subagents](https://antigravity.google/docs/subagents)
-(checked 2026-11-13).
+(checked 2026-11-24).
 
 Check the effective permissions after inheritance and runtime overrides. Claude plugin
 subagents ignore `permissionMode`, inline `mcpServers` and subagent hooks; Codex live
@@ -107,13 +108,19 @@ The current collaboration surface uses `send_message` for a running worker,
 `list_agents` / `wait_agent` to observe. It exposes no close tool. Use the live schema;
 do not copy CLI lifecycle calls into another surface or treat interruption as cleanup.
 
-**agy (Antigravity).** `send_message` with `Recipient=<conversationId>` continues an idle
-subagent with its context intact. `manage_subagents` with `Action="list"` enumerates
-active subagents and their live states (`running`, `idle`, `killed`); `Action="kill"` ends a
-worker permanently and removes temporary worktrees. In `/swarm`, `waiting` members sleep at
-zero token cost until `@mentioned`, and `swarm` `action: "model"` switches a `waiting`
-member's model in place (preserving history) on quota exhaustion. `manage_task` monitors
-background commands; reactive wakeups resume execution without polling.
+**agy (Antigravity).** When an `invoke_subagent` worker finishes and goes idle, the harness
+delivers its final output to the parent automatically (workers should return their final
+response rather than calling `send_message("parent", ...)` without a real `conversationId`).
+`send_message` with `Recipient=<conversationId>` continues an idle subagent with its context
+intact. `manage_subagents` with `Action="list"` enumerates active direct subagents and live
+states (`running`, `idle`, `killed`); `Action="kill"` / `"kill_all"` ends workers permanently
+and deletes their branched workspaces (preserving logs/artifacts). `run_workflow` runs in the
+background by default (`WaitMsBeforeAsync=0`) and notifies the lead on completion. In
+`/swarm`, `waiting` members sleep at zero token cost until `@mentioned`; quota-exhausted
+members pause until `@mentioned` or switched in place via `swarm` `action: "model"` (never
+`kill` + `add` to switch models). `/swarm board` or `Alt+S` opens the 3-pane board (`Alt+X`
+dismisses the status row). `manage_task` monitors background commands and active `schedule`
+timers; reactive wakeups resume execution without polling.
 
 ## Progress cadence
 
@@ -173,8 +180,11 @@ mechanisms without copying secrets. Its verdict is evidence for the lead, not ac
 
 ## Antigravity (agy) collaboration
 
-Emit parallel `invoke_subagent` calls in one turn to launch a wave concurrently (live 1.5.7
-schema, checked 2026-11-13):
+Verified against live `agy 1.5.15` schemas and official Antigravity docs on 2026-11-24.
+Pick the native surface that fits the shape:
+
+- **Few independent tasks (`invoke_subagent`).** Emit parallel `invoke_subagent` calls in one
+  turn to launch a wave concurrently:
 
 ```json
 {
@@ -186,23 +196,60 @@ schema, checked 2026-11-13):
 }
 ```
 
-Set `Workspace` to `"share"` to share repository storage like a worktree, or `"branch"` for
-an isolated clone. Built-in types include `research` (read-only scout/verifier), `browser`
-(UI interaction/captures) and `self`; session-scoped workers register via `define_subagent`
-with `EnableWriteTools: false` and `EnableSubagentTools: false`. `Model` accepts coarse
-tiers `inherit`, `flash_lite`, `flash`, or `pro` ([routing](sections/routing.md)); docs list
-`inherit|flash|pro` while `flash_lite`, `manage_subagents` and the `Enable*` flags come from
-the live tool schema, so re-inspect on upgrades. Docs state a maximum nesting depth of 10
-beneath the primary agent and no concurrency cap.
+Set `Workspace` to `"share"` (git worktree / shared repo storage) or `"branch"` (isolated
+clone); readers and verifiers keep `"inherit"`. Since `1.5.5`, isolated Git copies include
+staged, unstaged and untracked changes, and non-Git workspaces copy folders up to 100,000
+entries / 4 GiB. Built-in CLI types are `self`, `research`
+(read-only sandbox with **no network access**), and `image-generator`. Note the `browser`
+difference: in Antigravity CLI (and business/enterprise accounts), browser control uses
+`/browser` to attach to Chrome rather than an auto-launched `browser` subagent type (App
+v2.30.0+ personal accounts only). Register session-scoped workers via `define_subagent`
+(`EnableWriteTools`, `EnableMCPTools`, `EnableSubagentTools`). `Model` accepts coarse tiers
+`inherit`, `flash_lite`, `flash`, or `pro` ([routing](sections/routing.md)); `flash_lite`,
+`manage_subagents` and `Enable*` come from the live schema, so re-inspect on upgrades. Docs
+state a maximum nesting depth of 10 beneath the primary agent and no concurrency cap.
 
-For shared-board coordination or exact per-worker catalog models (`Pro`/`Ultra` preview,
-checked 2026-11-13), `swarm` (`action: "add"`) spawns named workers (or `tasks`/`n` groups)
-with `workspace: "share"` or `"branch"` (land changes before `kill`, which deletes that
-copy) and optional `fork`. `add` omits `model` by default to inherit the coordinator's
-model; pass an exact ID from `swarm` `models` (`all: true`) only when multi-model routing is
-authorized ([routing](sections/routing.md)). Single-session Orchestrator hands off between
-planner and builder inside one conversation rather than spawning independent lanes; use
-`invoke_subagent` or `/swarm` for parallel fan-out or fresh-context review.
+- **Code-driven fan-out and staged pipelines (`run_workflow`).** GA for all plans (`1.5.9+`,
+  uses the CLI's bundled Python so no host Python install is needed; trailing top-level
+  `return` supported from `1.5.14`). Use `run_workflow` when
+  orchestration itself is code — fanning out over a list of files/modules/bugs/lenses,
+  running staged pipelines where stage N feeds stage N+1, or aggregating/filtering/cross-checking
+  many agent outputs. Read the built-in `run-workflow` skill before authoring a script; do
+  not use it for a single delegated task (`invoke_subagent` is simpler). Pass a Python 3.8+
+  `Script` or `ScriptPath` plus optional `Args`, `Cwd`, and `WaitMsBeforeAsync` (0–10,000 ms;
+  default 0 backgrounds immediately). Built-in helpers: `agent(prompt, schema=..., role=...,
+  type_name=..., workspace=..., model=...)` (returns a reusable multi-turn handle when called
+  again; `schema` enforces a JSON `finish` output), `parallel(items, fn)` (fail-fast: an
+  unhandled error cancels siblings), `pipeline(items, fn)` (streams each item across stages
+  without a full-wave barrier), `phase(name)`, `log(...)`, `call_tool(name, **args)`, and
+  `trajectory(...)`.
+
+- **Shared-board coordination (`/swarm` and `swarm` tool).** Preview, available on all plans
+  (business/enterprise when admin-allowed, checked 2026-11-24). **Strict user-initiation gate
+  (`1.5.13+`):** the swarm skill is not offered to agents automatically; never call `swarm`
+  (`add`, `status`, `models`, `title`) unprompted — use it only when the user explicitly
+  invoked `/swarm`, a skill instructs it, or the conversation already has an active swarm.
+  `swarm` `action: "add"` spawns named workers (or `tasks`/`n` sharded groups)
+  with `workspace: "share"` or `"branch"` (land changes before `kill`, which deletes that
+  copy) and optional `fork` (branch from `"coordinator"` or another member's history). Omit
+  `model` to inherit the coordinator's model; pass an exact ID from `swarm` `models`
+  (`all: true`) only when multi-model routing is authorized ([routing](sections/routing.md)).
+  `/swarm board` (`Alt+S`) includes a live `Overview` section (goal, task progress, up to 6
+  workstream threads, `1.5.14+`). Single-session Orchestrator hands off planner/builder
+  inside one conversation (configurable `Planner`/`Executor` models and effort in `/model`
+  since `1.5.14`, default `high` in `1.5.15`) rather than spawning independent lanes; use
+  `invoke_subagent`, `run_workflow` or `/swarm` for parallel fan-out or fresh-context review.
+
+- **Headless CLI & TUI controls.** Non-interactive runs use `agy -p` / `--print` with
+  explicit `--mode accept-edits|auto|plan` (unset defaults to `auto`), `--output-format
+  text|json|stream-json`, `--input-format stream-json`, `--json-schema`, `--print-timeout`,
+  `--sandbox`, and `--settings` (inline JSON or file, never saved). `GEMINI_API_KEY` mode
+  disables `--remote-control`, `--remote-agent`, `/voice` and `/record` (exit 2). In the
+  interactive TUI: `Alt+J` jumps to a subagent waiting confirmation, `Ctrl+K` fast-approves
+  a pending action, `Alt+S` opens `/swarm board`, and `/agents`, `/tasks`, `/skills reload`,
+  `/plan`, `/compact` (`AGY_CLI_AUTO_COMPACT_OVERRIDE` sets auto-compaction threshold in
+  `1.5.15`), `/goal`, `/teamwork` (per-run state under CLI app data dir since `1.5.5`),
+  `/boost`, `/schedule` control sessions and jobs.
 
 ## Shared-host resources
 

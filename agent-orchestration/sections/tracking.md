@@ -45,10 +45,12 @@ commands and 455 log reads in their own context). Work at ≤ 120k; never start 
 [work-nature table](routing.md#work-nature--tier) runs it and returns the verdict line.
 At 120k, or after two corrections on one issue, write
 `<workdir>/handoff.md` — GOAL · STATE (landed, in gate, live, in flight with agent ids
-and results files) · NEXT 5 · OPEN RISKS · IDS · COMMANDS · READ FIRST — then `/clear`
+and results files) · NEXT 5 · OPEN RISKS · IDS · COMMANDS · READ FIRST — then reset
+the session (`/clear` in Claude Code; `/new` in agy)
 and resume from that file plus the shared brief. `/compact <focus>` only below ~60k when
-continuity matters: a compaction re-reads the whole context. Operator trigger: ask for
-`<workdir>/handoff.md`, then `/clear` and "read handoff.md and the shared brief"
+continuity matters: a compaction re-reads the whole context (on agy `1.5.15+`,
+`AGY_CLI_AUTO_COMPACT_OVERRIDE` sets the auto-compaction threshold, shown in `/context`). Operator trigger: ask for
+`<workdir>/handoff.md`, then `/clear` (or `/new`) and "read handoff.md and the shared brief"
 (`/handoff` and `/pickup` exist only if the operator defined them as custom skills). Cross-session messages and notifications start
 full-context turns: ≤ 5 lines plus a results path, batched.
 

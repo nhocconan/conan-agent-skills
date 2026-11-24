@@ -223,30 +223,36 @@ spawn schema offered Sol 6.2, Astra 6.2, Terra 6.1, Sol 6.1 and Astra 6.
 The Codex CLI 0.170.0 catalog also listed Luna 6 and Sol 6. Check the active
 spawn tool before assigning either model.
 
-**agy (Antigravity CLI), 1.5.12 (`agy --version`, `agy models`, 2026-11-19).** The catalog
+**agy (Antigravity CLI), 1.5.15 (`agy --version`, `agy models`, 2026-11-24).** The catalog
 exposes `gemini-4-neon-{low,medium,high,xhigh}`, `gemini-4-carbon-{low,medium,high}`,
 `gemini-4-argon-{low,medium,high}`, `gemini-4-hydrogen-{low,medium,high,xhigh}`,
 `gemini-pro-orchestrator-neon`, `gemini-pro-orchestrator`, `gemini-pro-orchestrator-argon`
 and `gemini-3.8-flash-{low,medium,high}`. It also lists Opus and Sonnet 5.5 at `low`,
-`medium` and `high` (`gpt-oss-120b-medium` remained in the catalog on 2026-11-19 past its
+`medium` and `high` (`gpt-oss-120b-medium` remained in the catalog on 2026-11-24 past its
 scheduled 2026-11-18 removal; Claude 4.6 was removed). Confirm access on first use; CLI
 sessions also support Gemini 4 models with a Gemini API key or Google Cloud ADC
-(`AGY_ADC_AUTH`). Orchestrator pairs Neon (paid/eligible-trial Pro, Ultra), Carbon (Ultra;
+(`AGY_ADC_AUTH`; 1.5.13 added Neon under `AGY_ADC_AUTH` and enterprise model gateways).
+Orchestrator pairs Neon (paid/eligible-trial Pro, Ultra), Carbon (Ultra;
 also CLI `/model` on Enterprise and `AGY_ADC_AUTH` from 1.5.10 when both Carbon and Hydrogen
 are selectable, though marked absent on Enterprise in the App matrix) or Argon
 (paid/eligible-trial Pro, Ultra) planning and review with Hydrogen execution in one
-conversation at fixed effort (`--effort` and `/effort` rejected). Since 1.3.4, `--model` and
+conversation. Since 1.5.14, consumer-plan local sessions configure Orchestrator's `Planner`
+and `Executor` models and per-role thinking `Effort` in `/model` (saved under `"orchestrator"`
+in `settings.json` / `--settings`; 1.5.15 sets default role effort to `high` when available),
+while `--effort`/`/effort` remain rejected on fixed-effort Orchestrator presets. Since 1.3.4, `--model` and
 `/model` accept a base name without `--effort` (runs the model's default thinking level —
 `high` on Neon/Hydrogen, `medium` on Carbon/Argon/3.8 Flash) or pair with `--effort`
-(`low|medium|high|xhigh|max`). `invoke_subagent` exposes coarse tiers (`inherit`,
-`flash_lite`, `flash`, `pro`; `flash_lite` is in the live schema though omitted from the
-subagents page, and exact tier-to-model-ID mapping is undocumented): `flash_lite` for light
-lookups/checks, `flash` for bounded builders, scouts and routine verifiers, `pro` (or
-`inherit` when the parent runs the target model/effort) for complex refactors, architecture
-or high-risk verification. `/swarm` (`Pro`/`Ultra` preview; App 2.33.0 also enables
-business/enterprise when admin-allowed) accepts exact catalog IDs on `add` (`model`) and
-in-place switches on waiting members (`action: "model"`), defaulting to the coordinator's
-model unless multi-model routing is requested. Mechanics:
+(`low|medium|high|xhigh|max`). Both `invoke_subagent` and `run_workflow`'s `agent(...)` helper
+expose coarse tiers (`inherit`, `flash_lite`, `flash`, `pro`; `flash_lite` is in the live
+schema though omitted from the subagents page, and exact tier-to-model-ID mapping is
+undocumented): `flash_lite` for light lookups/checks, `flash` for bounded builders, scouts
+and routine verifiers, `pro` (or `inherit` when the parent runs the target model/effort) for
+complex refactors, architecture or high-risk verification. `/swarm` (preview, available on
+all plans; business/enterprise when admin-allowed, checked 2026-11-24) accepts exact catalog
+IDs on `add` (`model`) and in-place switches on waiting members (`action: "model"`),
+defaulting to the coordinator's model unless multi-model routing is requested; never invoke
+`swarm` unprompted (use only when `/swarm` was explicitly invoked, a skill instructs it, or a
+swarm is already active). Mechanics:
 [fan-out patterns](../FANOUT-PATTERNS.md#antigravity-agy-collaboration).
 
 ### Freshness and evidence
@@ -255,8 +261,9 @@ Re-verify on a release, a deprecation, a rejected model ID, a retirement date co
 90 days, or a maintenance audit. Check the vendor model pages and the session catalog before
 changing a default, and preserve the user's explicit model choice. Keep historical benchmarks
 dated. Google released Gemini 4 Neon on 2026-11-18; the Gemini API release notes, Neon model
-and migration guides, Antigravity plan matrix and changelog, and live agy 1.5.12 and `swarm`
-catalogs were checked on 2026-11-19. Anthropic's model overview and the local Claude Code
+and migration guides, and Antigravity plan matrix were checked on 2026-11-19, and live agy
+1.5.15 (`agy models`, `agy --help`, `invoke_subagent`, `run_workflow`, `swarm`), Antigravity
+subagents, swarm, CLI reference and changelog docs were re-checked on 2026-11-24. Anthropic's model overview and the local Claude Code
 2.1.327 installation's catalog (fetched 2026-11-17) listed the four current Claude IDs.
 OpenAI released Sol 6.2 and Astra 6.2 on 2026-11-17. The API model cards, Work/Codex
 guidance, CLI 0.170.0 catalog and active spawn schema were checked on 2026-11-18.

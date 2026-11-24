@@ -31,7 +31,7 @@ says the task succeeded. Every loop reports the gate's verdict, never the run's 
 | 1 · Skill | a human invokes it; `/goal` keeps one session going until an evaluator model confirms the end state | as the session allows | representative runs reviewed; gate catches forced failure |
 | 2 · Hook | a supported blocking session event; verify the active harness's events and rejection semantics ([harness mechanics](sections/harness-mechanics.md)). Notification-only hooks cannot enforce a gate | none of its own | the hook has never blocked something it should have allowed |
 | 3 · Headless CI | repo event (push, PR) or CI cron; local artifacts only | **none; posting comments needs write authority** | the gate caught a forced failure, a reviewer read the outputs, and they are cheap to check |
-| 4 · Scheduled | a clock outside the repo (cloud scheduled tasks, Desktop scheduled tasks, automations, Claude Code `/loop`, cron on the box) | still read-only | brakes proven under a forced failure |
+| 4 · Scheduled | a clock outside the repo (cloud scheduled tasks, Desktop scheduled tasks, automations, Claude Code `/loop`, agy `schedule` / `/schedule`, cron on the box) | still read-only | brakes proven under a forced failure |
 | 5 · Agentic workflow | lives in the repo as code; agent runs read-only, a separate narrowly-scoped job holds the token | **proposes PRs by default; bounded authorized writes** | — |
 
 **Escalation law:** hand → read-only CI → scheduled with brakes → write. Write access is
@@ -64,8 +64,8 @@ does not prove readiness. Automate deterministic checks in code before agent tur
 - **Machine limits** — a loop competes with the humans' dev server for the same RAM and
   the same DB; schedule it when they are off (see the project map).
 - **A kill switch** the operator can hit without reading the code: a file, a flag, a
-  cron line to comment out. Claude Code's scheduler has one built in
-  (see [harness mechanics](sections/harness-mechanics.md)).
+  cron line to comment out. Claude Code's scheduler has an env switch and agy cancels
+  active schedules via `manage_task` (see [harness mechanics](sections/harness-mechanics.md)).
 
 ## The completion promise — for "keep going until" loops
 

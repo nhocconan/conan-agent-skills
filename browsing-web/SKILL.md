@@ -19,7 +19,8 @@ upstream files or binary are unavailable, use the active harness's documented br
 1. **Use the user-selected browser and project-approved tools.** Prefer an available
    purpose-built connector for data tasks; follow the active tool's instructions. In this
    setup never use the Chrome MCP (`mcp__claude-in-chrome__*`): use the selected browser,
-   gstack `browse` (Aside or `$B`) where installed, or the Playwright CLI loop.
+   gstack `browse` (Aside or `$B`) where installed, `agy`'s `/browser` subagent when
+   desktop Chrome is attached, or the Playwright CLI loop.
 2. **The operator's browser is usually already open and logged in.** When they say so,
    proceed without re-confirming or asking for credentials. Track authority for non-local writes
    separately: proceed when the current request already authorizes the action and

@@ -77,11 +77,11 @@ The point: **"installed" ≠ "active."** gstack's installer would write its whol
 read the fetched upstream markdown in `.vendor/gstack/` by path.
 
 For a production server, do not copy the 37-skill workstation set. Apply the self-contained
-`core` profile to both agents:
+`core` profile to all targets (or `--target both` for Claude + Codex only):
 
 ```bash
 python3 ~/.conan-agent-skills/coding-env-bootstrap/harness.py \
-  apply --target both --profile core --with-mcp
+  apply --target all --profile core --with-mcp
 ```
 
 Codex jobs use the installed bounded profile with `codex --profile production`.
@@ -105,7 +105,7 @@ dung lượng đĩa — và trên Codex nó còn là bài toán bị cắt cụt
 | `backtest-integrity` | Trading research, backtests, Sharpe ratios |
 | `anti-slop-review` | Content, courses, docs — fact-check and de-slop |
 | `secure-code-audit` | Security pass before going public or shipping |
-| `web-perf-audit` | Slow page, Core Web Vitals |
+| `web-perf-audit` | Slow page, Core Web Vitals, compression (`br`/`zstd`), caching, Early Hints, font/CSS/RSC waterfalls (works with or without CDN) |
 | `a11y-audit` | Is this UI actually WCAG-correct |
 | `bug-class-audits` | A bug appears a second time → fix the class, add an audit script |
 | `tenant-scope-integrity` | Multi-tenant/brand/org: scope phải là điều kiện của MỌI write, key upsert phải có scope, picker phải nhớ lựa chọn |
@@ -172,7 +172,7 @@ Anthropic chỉ cho gu trang marketing. Bản `~/.shared-ai-skills/frontend-desi
 
 ## 4. The quality bar (always on)
 
-`~/.claude/CLAUDE.md` holds a **Quality bar** section that applies to every request, even
+`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` and `~/.gemini/AGENTS.md` hold a managed **Quality bar** block that applies to every request, even
 a throwaway one: consider more than one approach → pick the best solution, not the first
 one that works → verify against reality instead of memory → test and review before
 reporting → report honestly, including what was skipped.
@@ -186,7 +186,7 @@ việc đã có tiêu chí và không bao giờ tự accept. Không thay lead gi
 báo final review là pending thay vì tự duyệt. Việc nhỏ hoặc tuần tự lead làm trực tiếp.
 Bảng model ID, giá, ngày retirement và harness mechanics chỉ nằm ở một chỗ:
 [routing](agent-orchestration/sections/routing.md).
-Kết quả rà soát mới nhất (2026-11-13, 34 skills): [SKILL-AUDIT.md](SKILL-AUDIT.md).
+Kết quả rà soát mới nhất (2026-11-24, 35 skills): [SKILL-AUDIT.md](SKILL-AUDIT.md).
 
 ---
 
@@ -204,7 +204,7 @@ impeccable when the selected profile needs it → check each wrapper's upstream 
 drift → merge forks / flag wraps for review → run the validator → **re-apply the
 load-out**. Default target is every agent; default profile is `auto`.
 
-On a production box, pin the headless set: `harness.py apply --target both --profile core`.
+On a production box, pin the headless set: `harness.py apply --target all --profile core`.
 
 > **Do not run `/gstack-upgrade` or gstack `./setup`.** They write the whole gstack suite into
 > `~/.claude/skills`. This repo fetches only the markdown the wrappers need. If you
@@ -220,7 +220,7 @@ refsync.py loadout --target codex --profile codex-dev --apply  # explicit workst
 refsync.py rescue            # list skills that exist ONLY on this machine
 refsync.py rescue --out ~/Backups   # tarball them (skips node_modules etc.)
 
-python3 skill-miner/validate_skills.py ~/.claude/skills   # which skills are broken
+python3 skill-miner/validate_skills.py ~/.claude/skills          # or ~/.agents/skills, ~/.gemini/config/skills
 ```
 
 ---
