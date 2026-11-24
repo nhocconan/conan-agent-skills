@@ -3,15 +3,25 @@
 Check harness interfaces; historical commands are not portable APIs.
 
 1. Check tools, official docs and CLI help: `codex --help` /
-   `codex exec --help`, or `agy --help` (print mode/timeout; unset `agy -p` defaults to
-   `auto` from 1.5.7, so pass `--mode`). Headless does not imply scheduling or blocking
-   hooks; use a CI/job gate where hooks cannot block.
+   `codex exec --help`, or `agy --help` (checked on 1.5.15, 2026-11-24: print mode `-p`
+   defaults to `--mode auto`, so pass `--mode` explicitly; supports `--print-timeout`,
+   `--output-format json|stream-json`, `--json-schema`, and `--sandbox`). Headless does not
+   imply scheduling or blocking hooks; use a CI/job gate where hooks cannot block.
 2. Establish whether execution survives session closure, where credentials and
-   skills load, and which identity performs writes. Session schedulers do
-   not survive it: Claude Code `/loop` fires only while that session runs (recurring
+   skills load, and which identity performs writes. Session schedulers generally do
+   not survive closure: Claude Code `/loop` fires only while that session runs (recurring
    tasks expire after 7 days); cloud scheduled tasks (formerly routines) have a 1-hour
    minimum interval; Desktop scheduled tasks run locally and survive closing the
    session (scheduled-tasks docs, read 2026-11-11).
+   In **agy** (`1.5.15`, checked 2026-11-24), the built-in `schedule` tool (and `/schedule`)
+   registers either a one-shot timer (`DurationSeconds`, optional `TimerCondition` for early
+   cancellation on a matching message) or a 5-field `CronExpression` (`MaxIterations`,
+   `ExactTiming` — jittered by default when false — and `IsDaemon` only for an independent
+   standing cron that should keep firing after the current task finishes); cancel active
+   schedules via `manage_task`, and never use shell `sleep` as a timer. Verify persistence
+   across CLI restarts before relying on an in-harness daemon instead of system cron/CI.
+   For `agy` command hooks (`hooks.json`, validated by `agy plugin validate`), timeouts and
+   cancellations kill the hook's full process group on Linux/macOS (`1.5.14+`).
    Claude hooks: exit 2 blocks on PreToolUse, UserPromptSubmit, Stop, SubagentStop,
    PostToolBatch, PreCompact, TaskCreated/Completed (full table in the hooks docs); not
    on PostToolUse, Notification, PermissionRequest. Scheduler kill switch:

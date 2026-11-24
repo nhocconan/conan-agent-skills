@@ -155,13 +155,14 @@ On a headless production machine, pin `core` so those suites are skipped:
 
 ```bash
 python3 "$HOME/.conan-agent-skills/coding-env-bootstrap/harness.py" \
-  apply --target both --profile core --with-mcp
+  apply --target all --profile core --with-mcp
 ```
 
 This one command:
 
-- links the self-contained production skills into `~/.claude/skills` and
-  `~/.agents/skills` (Codex's documented user-skill directory);
+- links the self-contained production skills into `~/.claude/skills`,
+  `~/.agents/skills` (Codex's documented user-skill directory), and
+  `~/.gemini/config/skills` (agy's user-skill directory);
 - merges the portable subset into Claude settings without deleting unrelated keys;
 - installs the shared quality bar as managed blocks in each selected harness:
   `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.gemini/AGENTS.md`, preserving text outside the blocks;
@@ -190,7 +191,7 @@ Load-outs are explicit and version-controlled:
 
 | Profile | Destination | Contents |
 | --- | --- | --- |
-| `core` | Claude and/or Codex | Repo-owned, headless-safe skills only |
+| `core` | Claude, Codex and/or agy | Repo-owned, headless-safe skills only |
 | `claude-dev` | `~/.claude/skills` | Exact workstation Claude load-out, including installed third parties |
 | `codex-dev` | `~/.agents/skills` | Repo-owned Codex skills; external suites are preserved |
 | `agy-dev` | `~/.gemini/config/skills` | Repo-owned agy skills; unlisted entries are preserved |
@@ -203,11 +204,13 @@ The harness defaults to `core` (production-safe). Pass `--profile auto` on a wor
 
 ```bash
 python3 "$HOME/.conan-agent-skills/coding-env-bootstrap/harness.py" \
-  verify --target both --profile core
+  verify --target all --profile core
 python3 "$HOME/.conan-agent-skills/skill-miner/validate_skills.py" \
   "$HOME/.claude/skills"
 python3 "$HOME/.conan-agent-skills/skill-miner/validate_skills.py" \
   "$HOME/.agents/skills"
+python3 "$HOME/.conan-agent-skills/skill-miner/validate_skills.py" \
+  "$HOME/.gemini/config/skills"
 ```
 
 > Two things do **not** come from this repo and must not be assumed present:
@@ -218,9 +221,10 @@ python3 "$HOME/.conan-agent-skills/skill-miner/validate_skills.py" \
 ### 3b. [DEV] Third-party skill suites
 
 Do **not** install gstack. The wrappers in this repo (`browsing-web`, `shipping-changes`,
-`investigating-bugs`, `web-qa`, `design-qa`) read a handful of SKILL.md files that
+`web-qa`, `design-qa`) read a handful of SKILL.md files that
 `harness.py apply --profile auto` / `refsync.py ensure` fetch from GitHub into
-`$HOME/.conan-agent-skills/.vendor/gstack/`.
+`$HOME/.conan-agent-skills/.vendor/gstack/` (`investigating-bugs` is standalone local since
+2026-11-07).
 
 The source machine may still have a leftover `~/.shared-ai-skills` tree from an older
 gstack install. Leave it; do not re-run `./setup`. Before wiping a machine, `refsync.py
@@ -290,7 +294,10 @@ legacy Codex `speckit.*` prompts are deliberately not copied: reusable workflows
 skills (the documented mechanism, learn.chatgpt.com/docs/build-skills). Convert a prompt
 to a repo skill only when that production repository actually uses it.
 
-**Verify**: `/plugin` lists the enabled set; restart and confirm no load errors.
+For agy, use `agy plugin list`, `agy plugin validate <path|zip|url>` (1.5.11+), and
+`agy plugin install <id>`; organization admins can gate plugins via `pluginsDisabled`.
+
+**Verify**: `/plugin` (Claude), `codex plugin list`, or `agy plugin list` lists the enabled set; restart and confirm no load errors.
 
 ---
 
@@ -307,7 +314,7 @@ to a repo skill only when that production repository actually uses it.
 instead of relying on model memory, which is the difference between a correct API call
 and a confidently wrong one.
 
-**Verify**: `claude mcp list` and `codex mcp list`. MCP configuration is not credential
+**Verify**: `claude mcp list`, `codex mcp list`, and `agy mcp list`. MCP configuration is not credential
 configuration; complete any required OAuth interaction as the operator.
 
 ---
@@ -361,11 +368,13 @@ echo "=== tools ==="
 for c in node pnpm python3 uv git gh rg jq; do printf "%-8s " "$c"; command -v $c >/dev/null && $c --version 2>&1|head -1 || echo MISSING; done
 echo "=== claude skills ==="; find ~/.claude/skills -mindepth 1 -maxdepth 1 | wc -l
 echo "=== codex user skills ==="; find ~/.agents/skills -mindepth 1 -maxdepth 1 | wc -l
+echo "=== agy user skills ==="; find ~/.gemini/config/skills -mindepth 1 -maxdepth 1 | wc -l
 echo "=== skills repo ==="; git -C ~/.conan-agent-skills log --oneline -1
 echo "=== claude mcp ==="; claude mcp list
 echo "=== codex mcp ==="; codex mcp list
+echo "=== agy mcp ==="; agy mcp list
 python3 ~/.conan-agent-skills/coding-env-bootstrap/harness.py \
-  verify --target both --profile core
+  verify --target all --profile core
 ```
 
 Then the real check — a live task, not a version string. In a scratch clone, ask the

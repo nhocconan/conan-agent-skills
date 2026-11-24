@@ -12,7 +12,7 @@
   "agent-orchestration": {
     "always_on": 520,
     "eager": 4800,
-    "on_demand": 73100
+    "on_demand": 78500
   },
   "agent-session-backup": {
     "always_on": 500,
@@ -31,8 +31,8 @@
   },
   "autonomous-loops": {
     "always_on": 600,
-    "eager": 6100,
-    "on_demand": 3550
+    "eager": 6200,
+    "on_demand": 4600
   },
   "backtest-integrity": {
     "always_on": 500,
@@ -52,7 +52,7 @@
   "coding-env-bootstrap": {
     "always_on": 500,
     "eager": 3100,
-    "on_demand": 37550
+    "on_demand": 38500
   },
   "demo-data-craft": {
     "always_on": 500,
@@ -107,7 +107,7 @@
   "ref-skills": {
     "always_on": 400,
     "eager": 7150,
-    "on_demand": 3300
+    "on_demand": 8200
   },
   "reference-parity": {
     "always_on": 600,
@@ -141,7 +141,7 @@
   },
   "skill-miner": {
     "always_on": 500,
-    "eager": 10950,
+    "eager": 11300,
     "on_demand": 3100
   },
   "store-screenshots": {
@@ -161,8 +161,8 @@
   },
   "web-perf-audit": {
     "always_on": 500,
-    "eager": 3750,
-    "on_demand": 0
+    "eager": 5250,
+    "on_demand": 19100
   },
   "web-platform-baseline": {
     "always_on": 500,

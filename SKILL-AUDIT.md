@@ -1,4 +1,4 @@
-# Skill audit log (latest 2026-11-13)
+# Skill audit log (latest 2026-11-24)
 
 The 2026-10-02 audit follows; later sections are dated below.
 
@@ -439,3 +439,29 @@ to 140,400 bytes for that reference update.
 Catalog corrections cover backup session selection, headless profile selection, sortable
 table semantics and accessibility audit criteria. The history scanner now commits the cutoff from the digest that was reviewed. Backup and scanner regression checks used synthetic histories. Comparative task performance across the three harnesses and paid
 Antigravity account entitlements remain unmeasured.
+
+## 2026-11-24 — web-perf-audit full-stack delivery, agy 1.5.15 parity and 35-skill audit
+
+Scope: all 35 skill entrypoints, supporting sections, docs and validators against live
+`agy 1.5.15` (`agy --version`, `agy models`, `agy --help`, `agy changelog`, live tool schemas
+and official Antigravity subagents/swarm/CLI docs checked 2026-11-24).
+
+| Area | Finding | Change |
+| --- | --- | --- |
+| `web-perf-audit` | 41-line stub lacked origin/reverse-proxy compression, zero-stale-deploy caching, Early Hints/font/CSS critical path, dynamic `<Link>` prefetch storms, server/DB waterfalls, `Server-Timing`, real-RTT benchmarks and CI budget/header gates; absent from `global-instructions.md` routing table | Expanded `SKILL.md` with a section index and two on-demand sections (`sections/delivery-and-caching.md`, `sections/app-waterfalls-and-budgets.md`) written vendor-neutral first (works without any CDN; Cloudflare Free isolated as an optional section); added routing line in `coding-env-bootstrap/templates/global-instructions.md` and updated `README.md` / `MANUAL.md` |
+| `agent-orchestration` (`agy 1.5.15`) | `routing.md` cited `agy 1.5.12` and stale fixed-effort Orchestrator text (1.5.14/1.5.15 added configurable Planner/Executor models and effort, default `high`; 1.5.13 added Neon under `AGY_ADC_AUTH`/gateways and user-initiated `/swarm` gate); `FANOUT-PATTERNS.md` cited `1.5.7`, omitted `run_workflow` (GA `1.5.9`, trailing `return` `1.5.14`), `image-generator`, CLI `/browser` nuance, `1.5.5` worktree copies, `/swarm board` Overview (`1.5.14`), and headless/TUI flags; `tracking.md` named only Claude `/clear` | Updated `sections/routing.md`, `FANOUT-PATTERNS.md` and `sections/tracking.md` to live `agy 1.5.15` behavior and official docs (checked 2026-11-24); documented `run_workflow` primitives, `/swarm` strict user-initiation gate and all-plans preview status, and idle subagent completion delivery |
+| Cross-harness `agy` & repo hygiene | `autonomous-loops` omitted `agy` `schedule`/`/schedule`, `manage_task` cancellation and `hooks.json` process-group kill (`1.5.14`); `browsing-web` omitted `agy` `/browser`; `BOOTSTRAP.md` / `MANUAL.md` used `--target both`, omitted `agy` checks/plugins and still listed retired `investigating-bugs` as a gstack wrap; `skill-miner` omitted `agy` coverage-gap note and `agy plugin validate`; `web-platform-baseline/sections/refresh.md` cited `upstreams.ini` erroneously; `ref-skills/SKILL.md` left `ARCHITECTURE.md` unlinked and `ARCHITECTURE.md` said "Two numbers" / "other 22"; 6 stale Oct-28 `.upstream-preview*.md` files sat on disk | Updated each file, linked `ref-skills/ARCHITECTURE.md`, removed the 6 stale `.upstream-preview*.md` files (including orphan `investigating-bugs/.upstream-preview.md`), and refreshed this audit header |
+
+Context budget: ceilings raised deliberately in `skill-miner/context-budget.json` in the
+same diff (`web-perf-audit` eager 3,750→5,250, on_demand 0→19,100; `agent-orchestration`
+on_demand 73,100→78,500; `autonomous-loops` eager 6,100→6,200, on_demand 3,550→4,600;
+`coding-env-bootstrap` on_demand 37,550→38,500; `ref-skills` on_demand 3,300→8,200 after
+linking `ARCHITECTURE.md`; `skill-miner` eager 10,950→11,300). No frontmatter `description`
+changed (all 35 `always_on` sizes unchanged), so `trigger_eval.py` was not re-run.
+
+Limits and open items: `refsync.py status --target all` reports upstream drift since
+2026-11-18 on the 4 gstack wraps (`browsing-web`, `design-qa`, `shipping-changes`, `web-qa`);
+left un-upgraded (no `refsync.py upgrade` or `harness.py apply` ran; global template edits
+are not yet applied to `~/.claude`/`~/.codex`/`~/.gemini`). Two minor Claude-specific phrases
+remain in always-on descriptions (`web-qa` `/code-review`, `autonomous-loops` `/loop`) to
+avoid unverified trigger drift without a live `trigger_eval.py` run. No commit or push ran.

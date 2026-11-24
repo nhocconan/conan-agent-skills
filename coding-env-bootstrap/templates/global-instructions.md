@@ -37,6 +37,7 @@ harness did not list it) before acting:
 - Any visible UI change → `frontend-design` (critique through `design-qa`).
 - Updating project docs → `docs-sync`; any reader-facing copy passes `anti-slop-review`.
 - Signing in or driving a browser → `browsing-web` (sign in once, reuse the session).
+- Slow page, Core Web Vitals, caching, compression or load waterfalls → `web-perf-audit`.
 - React/Next.js components, data fetching or bundles → `vercel-react-best-practices`;
   current library API docs → the `context7` MCP, not memory.
 

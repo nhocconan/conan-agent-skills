@@ -50,6 +50,7 @@ changed, or when `state/last-run.json` is missing.
 | Codex CLI / Desktop | `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` |
 | Archived Codex sessions | `~/.codex/archived_sessions/**/*.jsonl` |
 | Distilled findings | `~/.claude/projects/*/memory/*.md` |
+| Antigravity CLI (agy) | not yet parsed by `mine_history.py` — report as coverage gap (transcripts live under `~/.gemini/antigravity-cli/brain/<id>/.system_generated/logs/`) |
 
 Inventory active and archived stores before claiming full coverage. Record discovered,
 read, failed, excluded and context-reviewed files separately, with the date window.
@@ -89,13 +90,14 @@ For real-harness skill-loading checks, read [TRIGGER-EVAL.md](TRIGGER-EVAL.md).
 
 ```bash
 python3 validate_skills.py                    # the conan repo
-python3 validate_skills.py ~/.claude/skills   # everything installed on this machine
+python3 validate_skills.py ~/.claude/skills   # or ~/.agents/skills, ~/.gemini/config/skills
 python3 validate_skills.py --errors-only
 python3 context_budget.py --no-ratchet   # eager/on-demand bytes after every skill edit
 ```
 
-Claude Code also ships `claude plugin validate <dir>` (≥ 2.1.233) and `/doctor`; our
-520-char description rule is stricter than its 1,536-char listing cap.
+Claude Code also ships `claude plugin validate <dir>` (≥ 2.1.233) and `/doctor`, and agy
+ships `agy plugin validate <dir|zip|url>` (≥ 1.5.11); our
+520-char description rule is stricter than Claude's 1,536-char listing cap.
 
 Checks portable frontmatter and local conventions. Harness rejection behavior varies:
 

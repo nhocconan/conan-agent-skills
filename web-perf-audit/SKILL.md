@@ -24,12 +24,20 @@ snapshot does not establish a field pass. See [Web Vitals](https://web.dev/artic
 - Supporting: TTFB < 0.8s, total JS transferred, main-thread long tasks (>50ms).
 
 ## How to measure (don't optimize blind)
-1. **Lab baseline**: run Lighthouse (CLI `npx lighthouse <url> --only-categories=performance --form-factor=mobile` or DevTools) for a scored snapshot + opportunities. Mobile + throttling on — desktop hides real problems. A navigation run reports TBT, not INP: never report it as an INP pass. Measure INP from field data (CrUX, or RUM via `web-vitals` `onINP`), or in the lab with a Lighthouse user-flow timespan or a DevTools Performance trace over the real interactions; TBT is only a lab proxy.
-2. **Trace the bottleneck**: DevTools Performance panel — record a load and a key interaction. Find long tasks, layout thrashing, and what's blocking the main thread. For INP use the web-vitals attribution build (LoAF entries, Chrome only); for LCP split TTFB / load delay / load time / render delay before choosing a fix.
-3. **Bundle**: inspect what ships (`@next/bundle-analyzer`, `vite-bundle-visualizer`, or `npx source-map-explorer`). Hunt large/duplicate deps (moment, lodash whole-import, two date libs, untree-shaken icon sets).
-4. **Field data** if available (Chrome UX Report / RUM) — lab and field disagree; field is truth.
+1. **Lab + realistic-RTT baseline**: run Lighthouse (CLI `npx lighthouse <url> --only-categories=performance --form-factor=mobile` or DevTools) AND headless Chromium at both local (`0 ms`) and realistic user-to-origin RTT (e.g., `150–200 ms` via CDP `Network.emulateNetworkConditions`), cold and warm cache. Mobile + throttling on — desktop hides real problems. A navigation run reports TBT, not INP: never report it as an INP pass. Measure INP from field data (CrUX, or RUM via `web-vitals` `onINP`), or in the lab with a Lighthouse user-flow timespan or a DevTools Performance trace over real interactions; TBT is only a lab proxy.
+2. **Trace and split the bottleneck**: DevTools Performance panel + `Server-Timing` headers — record a load and a key interaction. Find long tasks, layout thrashing and main-thread blockers. For INP use the `web-vitals` attribution build (LoAF entries, Chrome only); for LCP split TTFB / load delay / load time / render delay before choosing a fix.
+3. **Delivery, headers and critical path**: inspect `content-encoding` (`br`/`zstd` vs `gzip`), `cache-control` / `etag` (`immutable` hashed assets vs `no-cache` un-hashed vs `no-store` dynamic HTML), render-blocking stylesheets, preloaded web-font weights and `Link: rel=preload` headers.
+4. **Bundle and network waterfalls**: inspect what ships (`@next/bundle-analyzer`, `vite-bundle-visualizer`, or `npx source-map-explorer`) for large/duplicate deps, plus viewport `<Link>` prefetch storms, duplicate SSR/client fetches, and sequential server/DB awaits.
+5. **Field data** if available (Chrome UX Report / RUM) — lab and field disagree; field is truth.
 
 Fix by metric only after the trace names the bottleneck. For Next.js images, check the installed version's [Image reference](https://nextjs.org/docs/app/api-reference/components/image#preload): `priority` is deprecated since 16. For a confirmed LCP image, choose `loading="eager"` or `fetchPriority="high"` where appropriate; use `preload` when early discovery is needed, without combining it with `loading` or `fetchPriority`.
+
+## Section index — read on demand
+
+| When | Read |
+| --- | --- |
+| Tuning reverse-proxy compression (`br`/`zstd` off Node), zero-stale-deploy caching (direct origin or any proxy/CDN), static CSS/Early Hints, font trimming, LCP priority, or optional Cloudflare Free hardening | [Delivery, compression, caching and optional CDN](sections/delivery-and-caching.md) |
+| Fixing dynamic `<Link>` prefetch storms, public middleware bypass, server/DB waterfalls (with single-client tx guard), duplicate SSR/client fetches, `Server-Timing`, real-RTT benchmarks, or CI budget/header gates | [App waterfalls, observability and CI budgets](sections/app-waterfalls-and-budgets.md) |
 
 ## Data-heavy app checklist (fits dashboard/BI work)
 - Paginate or virtualize big tables; don't ship 100k rows to the client.
@@ -38,4 +46,4 @@ Fix by metric only after the trace names the bottleneck. For Next.js images, che
 - Images/screenshots in lists: lazy + correctly sized thumbnails, not full-res.
 
 ## Definition of done
-Re-run the lab measurement after fixes and show before→after numbers for each affected metric. Report: starting scores, the bottleneck found, what changed, resulting scores. Don't claim a win without the re-measure.
+Re-run measurements after fixes at both local and realistic RTT (cold + warm cache) and show before→after numbers (`TTFB`, `LCP`, `CLS`, `reqCount`, `blockingCount`, `fontKB`, `totalTransferKB`, `content-encoding`, `cache-control`, `0` console/network errors). Verify headers live on the deployed target and lock durable wins with a CI budget or static audit. Don't claim a win without the re-measure.

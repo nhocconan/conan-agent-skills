@@ -122,7 +122,7 @@ growth past one fails the run — raise the ceiling deliberately, in the same di
 Over ~12KB of SKILL.md, carve the reference bulk into `sections/` behind a
 "Section index" table and leave the doctrine in the skeleton. Trim redundant description text while preserving precise triggers; avoid giant
 capability lists that compete with unrelated skills.
-See ARCHITECTURE.md → "Context budget".
+See [ARCHITECTURE.md](ARCHITECTURE.md#context-budget--the-carve-and-the-ratchet).
 
 ## Related
 
