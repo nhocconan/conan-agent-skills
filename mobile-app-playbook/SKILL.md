@@ -43,6 +43,7 @@ description: >-
 | D1 fine but D7/D30 weak (no reason to return) | §3 |
 | Ads/IAP planning, or a policy question | §4 |
 | Got rejected by a store | §4.2 + `reference/launch-and-growth.md` §6 + `appstore-review-guard` |
+| App is slow, janky, drains network, or "doesn't feel native" | `reference/performance.md` (§P) |
 | Agent/CI says green but the app is broken | §5 |
 | Preparing to submit / resubmit | `reference/launch-and-growth.md` §6 |
 | Good app, low installs or low rating | `reference/launch-and-growth.md` §7 |
@@ -65,6 +66,7 @@ working its phase; do not work from memory of the router table alone.
 | planning ads/IAP, answering a policy question, or auditing money correctness (§4) | `reference/monetization.md` |
 | any verification question — fake green, the per-stage gate, bot-verified difficulty (§5). Applies at ALL times | `reference/verification.md` |
 | the build is real: store submission gates and the staged-rollout dwell ladder (§6), ASO as a product surface — listing, keywords, review-prompt policy, localization (§7), running the app as a service afterwards — LiveOps cadence, crash/ANR budgets, rating recovery (§8) | `reference/launch-and-growth.md` |
+| a performance or native-feel pass: measurement recipes, transport, startup, lists, platform conventions (§P) | `reference/performance.md` |
 | a step failed in a new way and you want the generalized scars behind these rules (§9) | `reference/failure-catalog.md` |
 
 ## §OP. Orchestration — spend model capacity like money

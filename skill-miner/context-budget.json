@@ -102,7 +102,7 @@
   "mobile-app-playbook": {
     "always_on": 600,
     "eager": 6000,
-    "on_demand": 28500
+    "on_demand": 40500
   },
   "ref-skills": {
     "always_on": 400,
@@ -161,8 +161,8 @@
   },
   "web-perf-audit": {
     "always_on": 500,
-    "eager": 3750,
-    "on_demand": 0
+    "eager": 3900,
+    "on_demand": 4000
   },
   "web-platform-baseline": {
     "always_on": 500,

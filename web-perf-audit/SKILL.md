@@ -31,6 +31,9 @@ snapshot does not establish a field pass. See [Web Vitals](https://web.dev/artic
 
 Fix by metric only after the trace names the bottleneck. For Next.js images, check the installed version's [Image reference](https://nextjs.org/docs/app/api-reference/components/image#preload): `priority` is deprecated since 16. For a confirmed LCP image, choose `loading="eager"` or `fetchPriority="high"` where appropriate; use `preload` when early discovery is needed, without combining it with `loading` or `fetchPriority`.
 
+## Server transport
+Check reuse, ALPN, compression and caching first: [sections/server-transport.md](sections/server-transport.md).
+
 ## Data-heavy app checklist (fits dashboard/BI work)
 - Paginate or virtualize big tables; don't ship 100k rows to the client.
 - Charts: cap series/points, render off-main-thread or canvas for large datasets, lazy-load the chart lib.
