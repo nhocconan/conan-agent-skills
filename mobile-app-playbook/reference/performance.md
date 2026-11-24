@@ -38,15 +38,23 @@ and with `web-perf-audit` for web pages and server transport.
 
 ## P1. Transport (usually the largest real-world win)
 
-- **One HTTP client per process (or per account epoch), never one per request.**
+- **A few long-lived HTTP clients split by traffic type, never one per request.**
   - iOS: a new `URLSession` per request (then `invalidateAndCancel()`) pays TCP + TLS on
     every call. That is about 20 ms on a LAN and about 2 RTT (100–160 ms) on cellular.
-  - Use one session with a router delegate keyed by `taskIdentifier`. Keep the per-request
-    state object as the logical delegate, and end a request with `task.cancel()`, not
-    session teardown.
-  - Keep privacy settings on the shared config: `httpShouldSetCookies = false`,
+  - Use one session per traffic type with a shared router delegate:
+    - an interactive session for REST, auth and small reads;
+    - a bulk session for long-polls, uploads and downloads to file.
+  - Why separate them: on an HTTP/1.1 server, a 65 s long-poll or a large transfer
+    otherwise holds one of the few per-host connections that a user's write is queued
+    behind. Size each lane explicitly with `httpMaximumConnectionsPerHost`.
+  - Key the router by task object (`ObjectIdentifier(task)`), because
+    `taskIdentifier` values repeat across sessions. Keep the per-request state object as
+    the logical delegate, and end a request with `task.cancel()`, not session teardown.
+  - Keep privacy settings on every config: `httpShouldSetCookies = false`,
     `httpCookieStorage = nil`, `urlCredentialStorage = nil`, `urlCache = nil`.
   - Refuse callbacks for tasks with no owner.
+  - Changing the transport under auth code is security-sensitive: get it reviewed like auth
+    code.
 - Android `HttpURLConnection`: read the body to EOF and close the stream so the
   connection returns to the pool. `disconnect()` is for cancellation or abandoned bodies.
 - **Check the server's ALPN before blaming the client.** HTTP/1.1-only servers cap
